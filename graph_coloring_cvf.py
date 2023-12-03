@@ -139,6 +139,18 @@ while unranked_states:
     unranked_states -= remove_from_unranked_states
 
 
+pt_rank_effect = {}
+for state, transition_cvfs in program_transitions_n_cvf.items():
+    for pt in transition_cvfs["program_transitions"]:
+        pt_rank_effect[(state, pt)] = {
+            "A": program_transitions_rank[pt]["A"]
+            - program_transitions_rank[state]["A"],
+            "M": program_transitions_rank[pt]["M"]
+            - program_transitions_rank[state]["M"],
+        }
+        pt_rank_effect[(state, pt)]["Ar"] = round(pt_rank_effect[(state, pt)]["A"])
+
+
 cvfs_rank = {}
 for state, transition_cvfs in program_transitions_n_cvf.items():
     for cvf in transition_cvfs["cvfs"]:
@@ -151,15 +163,15 @@ for state, transition_cvfs in program_transitions_n_cvf.items():
         cvfs_rank[(state, cvf)]["Ar"] = round(cvfs_rank[(state, cvf)]["A"])
 
 
-fieldnames = ["State", "L", "C", "A", "Ar", "M"]
+fieldnames = ["State", "A", "Ar", "M"]
 with open(f"program_transitions_rank_{graph_name}.csv", "w", newline="") as f:
     writer = csv.DictWriter(f, fieldnames=fieldnames)
     writer.writeheader()
 
-    for state, rank in program_transitions_rank.items():
+    for state, rank in pt_rank_effect.items():
         writer.writerow({"State": state, **rank})
 
-fieldnames = ["State", "A", "Ar", "M"]
+
 with open(f"cvf_rank_{graph_name}.csv", "w", newline="") as f:
     writer = csv.DictWriter(f, fieldnames=fieldnames)
     writer.writeheader()
