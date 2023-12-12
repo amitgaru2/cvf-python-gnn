@@ -1,11 +1,13 @@
 import csv
 import copy
 
+import pandas as pd
+
 from itertools import combinations
 
 graph_name = "graph"
 graph = {}
-with open(f"{graph_name}.txt", "r") as f:
+with open(f"graphs/{graph_name}.txt", "r") as f:
     line = f.readline()
     while line:
         node_edges = line.split()
@@ -24,7 +26,9 @@ with open(f"{graph_name}.txt", "r") as f:
 nodes = list(graph.keys())
 node_positions = {v: i for i, v in enumerate(nodes)}
 
-degree_of_nodes = {n: len(graph[n]) for n in nodes}
+# degree_of_nodes = {n: len(graph[n]) for n in nodes}
+max_len = max(len(graph[n]) for n in nodes)
+degree_of_nodes = {n: max_len for n in nodes}
 
 # print("Degree of all nodes (starting from 0):")
 
@@ -39,7 +43,7 @@ for n in nodes:
             cc[node_pos] = i
             configurations.add(tuple(cc))
 
-# print("All possible configurations:")
+print("No. of Configurations:", len(configurations))
 
 invariants = set()
 for state in configurations:
@@ -164,7 +168,7 @@ for state, transition_cvfs in program_transitions_n_cvf.items():
 
 
 fieldnames = ["State", "A", "Ar", "M"]
-with open(f"program_transitions_rank_{graph_name}.csv", "w", newline="") as f:
+with open(f"results/program_transitions_{graph_name}.csv", "w", newline="") as f:
     writer = csv.DictWriter(f, fieldnames=fieldnames)
     writer.writeheader()
 
@@ -172,7 +176,7 @@ with open(f"program_transitions_rank_{graph_name}.csv", "w", newline="") as f:
         writer.writerow({"State": state, **rank})
 
 
-with open(f"cvf_rank_{graph_name}.csv", "w", newline="") as f:
+with open(f"results/cvf_{graph_name}.csv", "w", newline="") as f:
     writer = csv.DictWriter(f, fieldnames=fieldnames)
     writer.writeheader()
 
