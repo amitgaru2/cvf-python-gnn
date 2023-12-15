@@ -5,32 +5,26 @@ import pandas as pd
 
 from itertools import combinations
 
-graph_name = "graph"
+graph_name = "graph_powerlaw_cluster_graph_n9"
 graph = {}
 with open(f"graphs/{graph_name}.txt", "r") as f:
     line = f.readline()
     while line:
         node_edges = line.split()
-        node = node_edges[0]
+        node = node_edges[0]        
         edges = node_edges[1:]
         graph[node] = set(edges)
         line = f.readline()
 
 
-# graph = {
-#     "A": {"B", "C", "D"},
-#     "B": {"A"},
-#     "C": {"A"},
-#     "D": {"A"}
-# }
 nodes = list(graph.keys())
 node_positions = {v: i for i, v in enumerate(nodes)}
 
-# degree_of_nodes = {n: len(graph[n]) for n in nodes}
-max_len = max(len(graph[n]) for n in nodes)
-degree_of_nodes = {n: max_len for n in nodes}
+degree_of_nodes = {n: len(graph[n]) for n in nodes}
+# max_len = max(len(graph[n]) for n in nodes)
+# degree_of_nodes = {n: max_len for n in nodes}
 
-# print("Degree of all nodes (starting from 0):")
+print("Degree of all nodes (starting from 0):", degree_of_nodes)
 
 configurations = {tuple([0 for i in range(len(nodes))])}
 # perturb each state at a time for all states in configurations and accumulate the same in the configurations for next state to perturb
