@@ -25,6 +25,6 @@ module load gcc/11.2.0 python/3.10.8
 
 echo "Running the script..."
 cd coloring
-python graph_coloring_cvf.py
+python graph_coloring_node_effect.py
 
 echo "Done!"
