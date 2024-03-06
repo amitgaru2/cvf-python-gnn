@@ -11,7 +11,7 @@ graphs_dir = "graphs"
 results_dir = "results"
 
 
-graph_name = "graph_8"
+graph_name = "graph_powerlaw_cluster_graph_n9"
 
 graph = {}
 with open(os.path.join(graphs_dir, f"{graph_name}.txt"), "r") as f:
