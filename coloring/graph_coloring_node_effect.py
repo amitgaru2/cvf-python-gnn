@@ -11,7 +11,7 @@ graphs_dir = "graphs"
 results_dir = "results"
 
 
-graph_name = "graph_powerlaw_cluster_graph_n8"
+graph_name = "graph_powerlaw_cluster_graph_n7"
 
 graph = {}
 with open(os.path.join(graphs_dir, f"{graph_name}.txt"), "r") as f:
@@ -32,9 +32,10 @@ nodes = list(graph.keys())
 node_positions = {v: i for i, v in enumerate(nodes)}
 
 max_degree = max(len(graph[n]) for n in nodes)
-degree_of_nodes = {n: max_degree for n in nodes}
 
-# degree_of_nodes = {n: len(graph[n]) for n in nodes}
+# degree_of_nodes = {n: max_degree for n in nodes}
+
+degree_of_nodes = {n: len(graph[n]) for n in nodes}
 
 print("Degree of all nodes (starting from 0):")
 degree_of_nodes # start from 0
