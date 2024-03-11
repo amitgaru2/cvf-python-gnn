@@ -203,18 +203,9 @@ def get_program_transitions(start_state):
 
 
 def evaluate_perturbed_pr_married(position, state):
-    results = [False]
-    config = state[position]
-
-    if config.p is None:
-        return results
-
-    for nbr in graph_based_on_indx[position]:
-        if nbr == config.p:
-            results.append(True)
-            return results
-
-    return results
+    if state[position].p is None:
+        return [False]
+    return [True, False]
 
 
 def get_cvfs(start_state):
