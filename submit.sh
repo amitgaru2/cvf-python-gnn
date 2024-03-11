@@ -24,7 +24,10 @@ echo "Loading Modules..."
 module load gcc/11.2.0 python/3.10.8
 
 echo "Running the script..."
-cd coloring
-python graph_coloring_node_effect.py
+#cd coloring
+#python graph_coloring_node_effect.py
+
+cd 'maximal matching'
+python node_effect.py graph_8
 
 echo "Done!"
