@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --account=cvf-analysis
-#SBATCH --time=10:00:00
+#SBATCH --time=24:00:00
 #SSBATCH --mail-type=ALL
 #SSBATCH --mail-user=agaru@uwyo.edu
 #SBATCH --output=cvf_%A.log
@@ -28,6 +28,6 @@ echo "Running the script..."
 #python graph_coloring_node_effect.py
 
 cd 'maximal matching'
-python node_effect.py graph_8
+python node_effect.py graph_3
 
 echo "Done!"
