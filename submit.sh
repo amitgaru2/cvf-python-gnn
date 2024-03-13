@@ -28,6 +28,6 @@ echo "Running the script..."
 #python graph_coloring_node_effect.py
 
 cd 'maximal matching'
-python node_effect.py graph_3
+python node_effect.py graph_8
 
 echo "Done!"
