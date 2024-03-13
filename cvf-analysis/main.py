@@ -29,7 +29,7 @@ def start(graphs_dir, graph_names):
                 graph[node] = set(edges)
                 line = f.readline()
 
-        yield graph
+        yield graph_name, graph
 
 
 def main():
@@ -50,8 +50,8 @@ def main():
     # analysis_type = FullAnalysisType if args.full_analysis else PartialAnalysisType
     AnalysisKlass: Analysis = AnalysisMap[args.program]
     logger.info("Analysis program : %s.", AnalysisKlass.__name__)
-    for graph in start(AnalysisKlass.graphs_dir, args.graph_names):
-        analysis = AnalysisKlass(graph)
+    for graph_name, graph in start(AnalysisKlass.graphs_dir, args.graph_names):
+        analysis = AnalysisKlass(graph_name, graph)
         analysis.start()
 
 
