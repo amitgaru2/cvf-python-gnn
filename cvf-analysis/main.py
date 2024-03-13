@@ -1,13 +1,14 @@
 import os
 import argparse
 
+from maximal_matching import MaximalMatchingFullAnalysis
 from dijkstra_token_ring import DijkstraTokenRingFullAnalysis
 from graph_coloring import GraphColoringFullAnalysis, GraphColoringPartialAnalysis
 from cvf_analysis import CVFAnalysis, logger, PartialAnalysisType, FullAnalysisType
 
 ColoringProgram = "coloring"
 DijkstraProgram = "dijkstra"
-MaxMatchingProgram = "max_matching"
+MaxMatchingProgram = "maximal_matching"
 
 AnalysisMap = {
     ColoringProgram: {
@@ -15,6 +16,7 @@ AnalysisMap = {
         PartialAnalysisType: GraphColoringPartialAnalysis,
     },
     DijkstraProgram: {FullAnalysisType: DijkstraTokenRingFullAnalysis},
+    MaxMatchingProgram: {FullAnalysisType: MaximalMatchingFullAnalysis},
 }
 
 
