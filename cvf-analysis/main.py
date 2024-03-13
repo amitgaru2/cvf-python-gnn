@@ -1,14 +1,19 @@
 import os
 import argparse
 
-from coloring import GraphColoringAnalysis
+from graph_coloring import GraphColoringAnalysis, GraphPartialAnalysis
 from analysis import Analysis, logger, PartialAnalysisType, FullAnalysisType
 
 ColoringProgram = "coloring"
 DijkstraProgram = "dijkstra"
 MaxMatchingProgram = "max_matching"
 
-AnalysisMap = {ColoringProgram: GraphColoringAnalysis}
+AnalysisMap = {
+    ColoringProgram: {
+        FullAnalysisType: GraphColoringAnalysis,
+        PartialAnalysisType: GraphPartialAnalysis,
+    }
+}
 
 
 def start(graphs_dir, graph_names):
@@ -47,8 +52,8 @@ def main():
     args = parser.parse_args()
     print(args.program, args.full_analysis, args.graph_names)
 
-    # analysis_type = FullAnalysisType if args.full_analysis else PartialAnalysisType
-    AnalysisKlass: Analysis = AnalysisMap[args.program]
+    analysis_type = FullAnalysisType if args.full_analysis else PartialAnalysisType
+    AnalysisKlass: Analysis = AnalysisMap[args.program][analysis_type]
     logger.info("Analysis program : %s.", AnalysisKlass.__name__)
     for graph_name, graph in start(AnalysisKlass.graphs_dir, args.graph_names):
         analysis = AnalysisKlass(graph_name, graph)

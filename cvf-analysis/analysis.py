@@ -3,6 +3,7 @@ import os
 import math
 import copy
 import logging
+import random
 
 import pandas as pd
 
@@ -17,6 +18,7 @@ PartialAnalysisType = "partial"
 class Analysis:
     graphs_dir = "graphs"
     results_dir = "results"
+    analysis_type = "full"
     results_prefix = ""
 
     def __init__(self, graph_name, graph) -> None:
@@ -164,7 +166,7 @@ class Analysis:
         with open(
             os.path.join(
                 self.results_dir,
-                f"rank__full__{self.results_prefix}__{self.graph_name}.csv",
+                f"rank__{self.analysis_type}__{self.results_prefix}__{self.graph_name}.csv",
             ),
             "w",
             newline="",
@@ -223,7 +225,7 @@ class Analysis:
         with open(
             os.path.join(
                 self.results_dir,
-                f"rank_effect__full__{self.results_prefix}__{self.graph_name}.csv",
+                f"rank_effect__{self.analysis_type}__{self.results_prefix}__{self.graph_name}.csv",
             ),
             "w",
             newline="",
@@ -298,7 +300,7 @@ class Analysis:
         with open(
             os.path.join(
                 self.results_dir,
-                f"rank_effect_by_node__full__{self.results_prefix}__{self.graph_name}.csv",
+                f"rank_effect_by_node__{self.analysis_type}__{self.results_prefix}__{self.graph_name}.csv",
             ),
             "w",
             newline="",
@@ -319,3 +321,32 @@ class Analysis:
                             "CVF Out (Avg)": cvf_out_avg_counts_by_node.get(node_re, 0),
                         }
                     )
+
+
+class PartialAnalysisMixin:
+    analysis_type = "partial"
+    K_sampling = 100
+
+    @staticmethod
+    def generate_random_samples(population, k):
+        N = copy.deepcopy(population)
+        random.shuffle(N)
+        indx = 0
+        samples = []
+        while k > 0 and N:
+            sampled_indx = random.randint(0, len(N[indx]) - 1)
+            samples.append(N[indx].pop(sampled_indx))
+
+            if not N[indx]:  # all elements popped for this list
+                N.pop(indx)
+                if N:
+                    indx = indx % len(N)
+            else:
+                indx = (indx + 1) % len(N)
+
+            if indx == 0 and len(N) > 1:
+                random.shuffle(N)
+
+            k -= 1
+
+        return samples

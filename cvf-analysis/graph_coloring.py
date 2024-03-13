@@ -2,7 +2,7 @@ import os
 
 from itertools import combinations
 
-from analysis import Analysis, logger
+from analysis import Analysis, PartialAnalysisMixin, logger
 
 
 class GraphColoringAnalysis(Analysis):
@@ -94,3 +94,77 @@ class GraphColoringAnalysis(Analysis):
                         cvfs_out[perturb_state] = position
 
         return {"cvfs_in": cvfs_in, "cvfs_out": cvfs_out}
+
+
+class GraphPartialAnalysis(PartialAnalysisMixin, GraphColoringAnalysis):
+
+    def _get_program_transitions(self, start_state):
+        program_transitions = []
+        pt_per_node = []
+        for position, val in enumerate(start_state):
+            # check if node already has different color among the neighbors => If yes => no need to perturb that node's value
+            node = self.nodes[position]
+            neighbor_pos = [self.node_positions[n] for n in self.graph[node]]
+            neighbor_colors = set(start_state[i] for i in neighbor_pos)
+            if self._is_different_color(val, neighbor_colors):
+                continue
+
+            # if the current node's color is not different among the neighbors => search for the program transitions possible
+            possible_node_colors = set(
+                range(self.degree_of_nodes[self.nodes[position]] + 1)
+            ) - {start_state[position]}
+            for perturb_val in possible_node_colors:
+                perturb_state = list(start_state)
+                perturb_state[position] = perturb_val
+                perturb_state = tuple(perturb_state)
+                if self._is_program_transition(position, start_state, perturb_state):
+                    pt_per_node.append(perturb_state)
+
+            if pt_per_node:
+                program_transitions.append(pt_per_node)
+                pt_per_node = []
+
+        result = self.generate_random_samples(program_transitions, self.K_sampling)
+
+        return {"program_transitions": set(result)}
+
+    def _get_cvfs(self, start_state):
+        def _flat_list_to_dict(lst):
+            result = {}
+            for item in lst:
+                result[item[0]] = item[1]
+            return result
+
+        cvfs_in = []
+        cvfs_out = []
+        cvfs_in_per_node = []
+        cvfs_out_per_node = []
+        for position, _ in enumerate(start_state):
+            possible_node_colors = set(
+                range(self.degree_of_nodes[self.nodes[position]] + 1)
+            ) - {start_state[position]}
+            for perturb_val in possible_node_colors:
+                perturb_state = list(start_state)
+                perturb_state[position] = perturb_val
+                perturb_state = tuple(perturb_state)
+                if start_state in self.invariants:
+                    cvfs_in_per_node.append((perturb_state, position))
+                else:
+                    cvfs_out_per_node.append((perturb_state, position))
+
+            if cvfs_in_per_node:
+                cvfs_in.append(cvfs_in_per_node)
+                cvfs_in_per_node = []
+
+            if cvfs_out_per_node:
+                cvfs_out.append(cvfs_out_per_node)
+                cvfs_out_per_node = []
+
+            result_cvfs_in = _flat_list_to_dict(
+                self.generate_random_samples(cvfs_in, self.K_sampling)
+            )
+            result_cvfs_out = _flat_list_to_dict(
+                self.generate_random_samples(cvfs_out, self.K_sampling)
+            )
+
+        return {"cvfs_in": result_cvfs_in, "cvfs_out": result_cvfs_out}
