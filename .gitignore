@@ -3,3 +3,5 @@ __pycache__/
 cvf_*.log
 
 venv
+
+cvf-nalaysis/plots
