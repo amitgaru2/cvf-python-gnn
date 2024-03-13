@@ -106,7 +106,7 @@ class GraphColoringFullAnalysis(Analysis):
         return {"cvfs_in": cvfs_in, "cvfs_out": cvfs_out}
 
 
-class GraphColoringPartialAnalysis(PartialAnalysisMixin, GraphColoringAnalysis):
+class GraphColoringPartialAnalysis(PartialAnalysisMixin, GraphColoringFullAnalysis):
 
     def _get_program_transitions(self, start_state):
         program_transitions = []
