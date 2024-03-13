@@ -15,7 +15,7 @@ FullAnalysisType = "full"
 PartialAnalysisType = "partial"
 
 
-class Analysis:
+class CVFAnalysis:
     graphs_dir = "graphs"
     results_dir = "results"
     analysis_type = "full"
@@ -322,7 +322,7 @@ class Analysis:
                     )
 
 
-class PartialAnalysisMixin:
+class PartialCVFAnalysisMixin:
     analysis_type = "partial"
     K_sampling = 100
 

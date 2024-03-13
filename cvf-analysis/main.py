@@ -2,7 +2,7 @@ import os
 import argparse
 
 from graph_coloring import GraphColoringFullAnalysis, GraphColoringPartialAnalysis
-from analysis import Analysis, logger, PartialAnalysisType, FullAnalysisType
+from cvf_analysis import CVFAnalysis, logger, PartialAnalysisType, FullAnalysisType
 
 ColoringProgram = "coloring"
 DijkstraProgram = "dijkstra"
@@ -53,10 +53,10 @@ def main():
     print(args.program, args.full_analysis, args.graph_names)
 
     analysis_type = FullAnalysisType if args.full_analysis else PartialAnalysisType
-    AnalysisKlass: Analysis = AnalysisMap[args.program][analysis_type]
-    logger.info("Analysis program : %s.", AnalysisKlass.__name__)
-    for graph_name, graph in start(AnalysisKlass.graphs_dir, args.graph_names):
-        analysis = AnalysisKlass(graph_name, graph)
+    CVFAnalysisKlass: CVFAnalysis = AnalysisMap[args.program][analysis_type]
+    logger.info("Analysis program : %s.", CVFAnalysisKlass.__name__)
+    for graph_name, graph in start(CVFAnalysisKlass.graphs_dir, args.graph_names):
+        analysis = CVFAnalysisKlass(graph_name, graph)
         analysis.start()
 
 

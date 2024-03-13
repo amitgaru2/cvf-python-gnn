@@ -3,10 +3,10 @@ import copy
 
 from itertools import combinations
 
-from analysis import Analysis, PartialAnalysisMixin, logger
+from cvf_analysis import CVFAnalysis, PartialCVFAnalysisMixin, logger
 
 
-class GraphColoringFullAnalysis(Analysis):
+class GraphColoringFullAnalysis(CVFAnalysis):
     results_prefix = "coloring"
     results_dir = os.path.join("results", "coloring")
 
@@ -106,7 +106,7 @@ class GraphColoringFullAnalysis(Analysis):
         return {"cvfs_in": cvfs_in, "cvfs_out": cvfs_out}
 
 
-class GraphColoringPartialAnalysis(PartialAnalysisMixin, GraphColoringFullAnalysis):
+class GraphColoringPartialAnalysis(PartialCVFAnalysisMixin, GraphColoringFullAnalysis):
 
     def _get_program_transitions(self, start_state):
         program_transitions = []
