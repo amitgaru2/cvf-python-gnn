@@ -1,13 +1,28 @@
 import os
+import copy
 
 from itertools import combinations
 
 from analysis import Analysis, PartialAnalysisMixin, logger
 
 
-class GraphColoringAnalysis(Analysis):
+class GraphColoringFullAnalysis(Analysis):
     results_prefix = "coloring"
     results_dir = os.path.join("results", "coloring")
+
+    def _gen_configurations(self):
+        self.configurations = {tuple([0 for i in range(len(self.nodes))])}
+        # perturb each state at a time for all states in configurations and accumulate the same in the configurations for next state to perturb
+        for n in self.nodes:
+            node_pos = self.node_positions[n]
+            config_copy = copy.deepcopy(self.configurations)
+            for i in range(1, self.degree_of_nodes[n] + 1):
+                for cc in config_copy:
+                    cc = list(cc)
+                    cc[node_pos] = i
+                    self.configurations.add(tuple(cc))
+
+        logger.info("No. of Configurations: %s", len(self.configurations))
 
     def _find_invariants(self):
         for state in self.configurations:
@@ -52,8 +67,7 @@ class GraphColoringAnalysis(Analysis):
         program_transitions = set()
         for position, val in enumerate(start_state):
             # check if node already has different color among the neighbors => If yes => no need to perturb that node's value
-            node = self.nodes[position]
-            neighbor_pos = [self.node_positions[n] for n in self.graph[node]]
+            neighbor_pos = [n for n in self.graph_based_on_indx[position]]
             neighbor_colors = set(start_state[i] for i in neighbor_pos)
             if self._is_different_color(val, neighbor_colors):
                 continue
@@ -61,16 +75,13 @@ class GraphColoringAnalysis(Analysis):
             # if the current node's color is not different among the neighbors => search for the program transitions possible
             possible_node_colors = set(
                 range(self.degree_of_nodes[self.nodes[position]] + 1)
-            )
+            ) - {start_state[position]}
             for perturb_val in possible_node_colors:
                 perturb_state = list(start_state)
                 perturb_state[position] = perturb_val
                 perturb_state = tuple(perturb_state)
-                if perturb_state != start_state:
-                    if self._is_program_transition(
-                        position, start_state, perturb_state
-                    ):
-                        program_transitions.add(perturb_state)
+                if self._is_program_transition(position, start_state, perturb_state):
+                    program_transitions.add(perturb_state)
 
         return {"program_transitions": program_transitions}
 
@@ -80,31 +91,29 @@ class GraphColoringAnalysis(Analysis):
         for position, _ in enumerate(start_state):
             possible_node_colors = set(
                 range(self.degree_of_nodes[self.nodes[position]] + 1)
-            )
+            ) - {start_state[position]}
             for perturb_val in possible_node_colors:
                 perturb_state = list(start_state)
                 perturb_state[position] = perturb_val
                 perturb_state = tuple(perturb_state)
-                if perturb_state != start_state:
-                    if start_state in self.invariants:
-                        cvfs_in[perturb_state] = (
-                            position  # track the nodes to calculate its overall rank effect
-                        )
-                    else:
-                        cvfs_out[perturb_state] = position
+                if start_state in self.invariants:
+                    cvfs_in[perturb_state] = (
+                        position  # track the nodes to calculate its overall rank effect
+                    )
+                else:
+                    cvfs_out[perturb_state] = position
 
         return {"cvfs_in": cvfs_in, "cvfs_out": cvfs_out}
 
 
-class GraphPartialAnalysis(PartialAnalysisMixin, GraphColoringAnalysis):
+class GraphColoringPartialAnalysis(PartialAnalysisMixin, GraphColoringAnalysis):
 
     def _get_program_transitions(self, start_state):
         program_transitions = []
         pt_per_node = []
         for position, val in enumerate(start_state):
             # check if node already has different color among the neighbors => If yes => no need to perturb that node's value
-            node = self.nodes[position]
-            neighbor_pos = [self.node_positions[n] for n in self.graph[node]]
+            neighbor_pos = [n for n in self.graph_based_on_indx[position]]
             neighbor_colors = set(start_state[i] for i in neighbor_pos)
             if self._is_different_color(val, neighbor_colors):
                 continue

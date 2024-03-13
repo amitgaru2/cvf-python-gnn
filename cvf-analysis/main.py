@@ -1,7 +1,7 @@
 import os
 import argparse
 
-from graph_coloring import GraphColoringAnalysis, GraphPartialAnalysis
+from graph_coloring import GraphColoringFullAnalysis, GraphColoringPartialAnalysis
 from analysis import Analysis, logger, PartialAnalysisType, FullAnalysisType
 
 ColoringProgram = "coloring"
@@ -10,8 +10,8 @@ MaxMatchingProgram = "max_matching"
 
 AnalysisMap = {
     ColoringProgram: {
-        FullAnalysisType: GraphColoringAnalysis,
-        PartialAnalysisType: GraphPartialAnalysis,
+        FullAnalysisType: GraphColoringFullAnalysis,
+        PartialAnalysisType: GraphColoringPartialAnalysis,
     }
 }
 

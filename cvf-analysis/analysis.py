@@ -37,7 +37,17 @@ class Analysis:
         self.cvfs_in_rank_effect_df = None
         self.cvfs_out_rank_effect_df = None
 
+        self._gen_graph_based_on_indx()
         self.create_results_dir_if_not_exists()
+
+    def _gen_graph_based_on_indx(self):
+        self.graph_based_on_indx = {}
+        for k, v in self.graph.items():
+            self.graph_based_on_indx[self.node_positions[k]] = []
+            for iv in v:
+                self.graph_based_on_indx[self.node_positions[k]].append(
+                    self.node_positions[iv]
+                )
 
     def start(self):
         self._start()
@@ -59,18 +69,7 @@ class Analysis:
             os.makedirs(self.results_dir)
 
     def _gen_configurations(self):
-        self.configurations = {tuple([0 for i in range(len(self.nodes))])}
-        # perturb each state at a time for all states in configurations and accumulate the same in the configurations for next state to perturb
-        for n in self.nodes:
-            node_pos = self.node_positions[n]
-            config_copy = copy.deepcopy(self.configurations)
-            for i in range(1, self.degree_of_nodes[n] + 1):
-                for cc in config_copy:
-                    cc = list(cc)
-                    cc[node_pos] = i
-                    self.configurations.add(tuple(cc))
-
-        logger.info("No. of Configurations: %s", len(self.configurations))
+        raise NotImplemented
 
     def _find_invariants(self):
         raise NotImplemented
