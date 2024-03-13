@@ -31,7 +31,7 @@ print(graph)
 nodes = list(graph.keys())
 node_positions = {v: i for i, v in enumerate(nodes)}
 
-max_degree = max(len(graph[n]) for n in nodes)
+# max_degree = max(len(graph[n]) for n in nodes)
 
 # degree_of_nodes = {n: max_degree for n in nodes}
 
