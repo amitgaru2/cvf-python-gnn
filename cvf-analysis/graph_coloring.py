@@ -8,7 +8,7 @@ from cvf_analysis import CVFAnalysis, PartialCVFAnalysisMixin, logger
 
 class GraphColoringFullAnalysis(CVFAnalysis):
     results_prefix = "coloring"
-    results_dir = os.path.join("results", "coloring")
+    results_dir = os.path.join("results", results_prefix)
 
     def _gen_configurations(self):
         self.configurations = {tuple([0 for i in range(len(self.nodes))])}

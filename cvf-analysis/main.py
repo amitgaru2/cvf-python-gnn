@@ -1,6 +1,7 @@
 import os
 import argparse
 
+from dijkstra_token_ring import DijkstraTokenRingFullAnalysis
 from graph_coloring import GraphColoringFullAnalysis, GraphColoringPartialAnalysis
 from cvf_analysis import CVFAnalysis, logger, PartialAnalysisType, FullAnalysisType
 
@@ -12,7 +13,8 @@ AnalysisMap = {
     ColoringProgram: {
         FullAnalysisType: GraphColoringFullAnalysis,
         PartialAnalysisType: GraphColoringPartialAnalysis,
-    }
+    },
+    DijkstraProgram: {FullAnalysisType: DijkstraTokenRingFullAnalysis},
 }
 
 
@@ -47,7 +49,7 @@ def main():
         "--graph_names",
         type=str,
         nargs="+",
-        help="list of graph names in the 'graphs_dir'",
+        help="list of graph names in the 'graphs_dir' or list of number of nodes for implict graphs (if implicit program)",
     )
     args = parser.parse_args()
     print(args.program, args.full_analysis, args.graph_names)
@@ -55,9 +57,18 @@ def main():
     analysis_type = FullAnalysisType if args.full_analysis else PartialAnalysisType
     CVFAnalysisKlass: CVFAnalysis = AnalysisMap[args.program][analysis_type]
     logger.info("Analysis program : %s.", CVFAnalysisKlass.__name__)
-    for graph_name, graph in start(CVFAnalysisKlass.graphs_dir, args.graph_names):
-        analysis = CVFAnalysisKlass(graph_name, graph)
-        analysis.start()
+    if args.program == DijkstraProgram:
+        for no_nodes in args.graph_names:
+            no_nodes = int(no_nodes)
+            graph_name = f"implicit_graph_n{no_nodes}"
+            logger.info('Started for Graph: "%s".', graph_name)
+            graph = CVFAnalysisKlass.gen_implicit_graph(no_nodes)
+            analysis = CVFAnalysisKlass(graph_name, graph)
+            analysis.start()
+    else:
+        for graph_name, graph in start(CVFAnalysisKlass.graphs_dir, args.graph_names):
+            analysis = CVFAnalysisKlass(graph_name, graph)
+            analysis.start()
 
 
 if __name__ == "__main__":

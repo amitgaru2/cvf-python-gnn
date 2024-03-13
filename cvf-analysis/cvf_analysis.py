@@ -49,6 +49,10 @@ class CVFAnalysis:
                     self.node_positions[iv]
                 )
 
+    @staticmethod
+    def gen_implicit_graph(no_nodes: int) -> dict:
+        raise NotImplemented
+
     def start(self):
         self._start()
 
