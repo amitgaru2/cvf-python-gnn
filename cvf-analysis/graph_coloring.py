@@ -56,8 +56,7 @@ class GraphColoringFullAnalysis(CVFAnalysis):
         if start_state in self.invariants and dest_state in self.invariants:
             return False
 
-        node = self.nodes[perturb_pos]
-        neighbor_pos = [self.node_positions[n] for n in self.graph[node]]
+        neighbor_pos = [*self.graph_based_on_indx[perturb_pos]]
         neighbor_colors = set(dest_state[i] for i in neighbor_pos)
         min_color = self._find_min_possible_color(neighbor_colors)
 
@@ -67,7 +66,7 @@ class GraphColoringFullAnalysis(CVFAnalysis):
         program_transitions = set()
         for position, val in enumerate(start_state):
             # check if node already has different color among the neighbors => If yes => no need to perturb that node's value
-            neighbor_pos = [n for n in self.graph_based_on_indx[position]]
+            neighbor_pos = [*self.graph_based_on_indx[position]]
             neighbor_colors = set(start_state[i] for i in neighbor_pos)
             if self._is_different_color(val, neighbor_colors):
                 continue
@@ -113,7 +112,7 @@ class GraphColoringPartialAnalysis(PartialCVFAnalysisMixin, GraphColoringFullAna
         pt_per_node = []
         for position, val in enumerate(start_state):
             # check if node already has different color among the neighbors => If yes => no need to perturb that node's value
-            neighbor_pos = [n for n in self.graph_based_on_indx[position]]
+            neighbor_pos = [*self.graph_based_on_indx[position]]
             neighbor_colors = set(start_state[i] for i in neighbor_pos)
             if self._is_different_color(val, neighbor_colors):
                 continue
