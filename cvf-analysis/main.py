@@ -1,10 +1,10 @@
 import os
 import argparse
 
-from maximal_matching import MaximalMatchingFullAnalysis
 from dijkstra_token_ring import DijkstraTokenRingFullAnalysis
 from graph_coloring import GraphColoringFullAnalysis, GraphColoringPartialAnalysis
 from cvf_analysis import CVFAnalysis, logger, PartialAnalysisType, FullAnalysisType
+from maximal_matching import MaximalMatchingFullAnalysis, MaximalMatchingPartialAnalysis
 
 ColoringProgram = "coloring"
 DijkstraProgram = "dijkstra"
@@ -16,7 +16,7 @@ AnalysisMap = {
         PartialAnalysisType: GraphColoringPartialAnalysis,
     },
     DijkstraProgram: {FullAnalysisType: DijkstraTokenRingFullAnalysis},
-    MaxMatchingProgram: {FullAnalysisType: MaximalMatchingFullAnalysis},
+    MaxMatchingProgram: {FullAnalysisType: MaximalMatchingFullAnalysis, PartialAnalysisType: MaximalMatchingPartialAnalysis},
 }
 
 
@@ -44,7 +44,7 @@ def start(graphs_dir, graph_names):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--program", choices=[ColoringProgram, DijkstraProgram, MaxMatchingProgram]
+        "--program", choices=[ColoringProgram, DijkstraProgram, MaxMatchingProgram], required=True
     )  # coloring, dijkstra, max_matching
     parser.add_argument("-f", "--full-analysis", action="store_true")
     parser.add_argument(
@@ -52,6 +52,7 @@ def main():
         type=str,
         nargs="+",
         help="list of graph names in the 'graphs_dir' or list of number of nodes for implict graphs (if implicit program)",
+        required=True
     )
     args = parser.parse_args()
     print(args.program, args.full_analysis, args.graph_names)

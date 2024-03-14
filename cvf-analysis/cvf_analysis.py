@@ -2,8 +2,9 @@ import csv
 import os
 import math
 import copy
-import logging
+import time
 import random
+import logging
 
 import pandas as pd
 
@@ -54,7 +55,9 @@ class CVFAnalysis:
         raise NotImplemented
 
     def start(self):
+        start_time = time.time()
         self._start()
+        logger.info("Total time taken: %s seconds.", round(time.time() - start_time, 2))
 
     def _start(self):
         self._gen_configurations()
@@ -328,7 +331,7 @@ class CVFAnalysis:
 
 class PartialCVFAnalysisMixin:
     analysis_type = "partial"
-    K_sampling = 100
+    K_sampling = 10
 
     @staticmethod
     def generate_random_samples(population, k):

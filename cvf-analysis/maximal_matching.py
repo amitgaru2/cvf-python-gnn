@@ -208,7 +208,7 @@ class MaximalMatchingFullAnalysis(CVFAnalysis):
         return {"cvfs_in": cvfs_in, "cvfs_out": cvfs_out}
 
 
-class MaximalMatchingPartialAnalysis(MaximalMatchingFullAnalysis):
+class MaximalMatchingPartialAnalysis(PartialCVFAnalysisMixin, MaximalMatchingFullAnalysis):
     def _get_program_transitions(self, start_state):
         program_transitions = []
         pt_per_node = []
@@ -238,48 +238,59 @@ class MaximalMatchingPartialAnalysis(MaximalMatchingFullAnalysis):
                 program_transitions.append(pt_per_node)
                 pt_per_node = []
 
-        result = self._generate_random_samples(program_transitions, self.K_sampling)
+        result = self.generate_random_samples(program_transitions, self.K_sampling)
 
         return {"program_transitions": set(result)}
 
-    # def _get_cvfs(self, start_state):
-    #     def _flat_list_to_dict(lst):
-    #         result = {}
-    #         for item in lst:
-    #             result[item[0]] = item[1]
-    #         return result
+    def _get_cvfs(self, start_state):
+        def _flat_list_to_dict(lst):
+            result = {}
+            for item in lst:
+                result[item[0]] = item[1]
+            return result
     
-    #     cvfs_in = []
-    #     cvfs_out = []
-    #     cvfs_in_per_node = []
-    #     cvfs_out_per_node = []
+        cvfs_in = []
+        cvfs_out = []
+        cvfs_in_per_node = []
+        cvfs_out_per_node = []
 
-    #     def _add_to_cvf(perturb_state, position):
-    #         if start_state in self.invariants:
-    #             cvfs_in[perturb_state] = position
-    #         else:
-    #             cvfs_out[perturb_state] = position
+        def _add_to_cvf(perturb_state, position):
+            if start_state in self.invariants:
+                cvfs_in_per_node.append((perturb_state, position))
+            else:
+                cvfs_out_per_node.append((perturb_state, position))
 
-    #     for position, _ in enumerate(start_state):
-    #         config = start_state[position]
-    #         for a_pr_married_value in self._evaluate_perturbed_pr_married(
-    #             position, start_state
-    #         ):
-    #             if config.m is not a_pr_married_value:
-    #                 perturb_state = copy.deepcopy(start_state)
-    #                 perturb_state[position].m = a_pr_married_value
-    #                 _add_to_cvf(perturb_state, position)
-    #             else:
-    #                 if config.p is None:
-    #                     for nbr in self.graph_based_on_indx[position]:
-    #                         perturb_state = copy.deepcopy(start_state)
-    #                         perturb_state[position].p = nbr
-    #                         perturb_state[position].m = a_pr_married_value
-    #                         _add_to_cvf(perturb_state, position)
-    #                 else:
-    #                     perturb_state = copy.deepcopy(start_state)
-    #                     perturb_state[position].p = None
-    #                     perturb_state[position].m = a_pr_married_value
-    #                     _add_to_cvf(perturb_state, position)
+        for position, _ in enumerate(start_state):
+            config = start_state[position]
+            for a_pr_married_value in self._evaluate_perturbed_pr_married(
+                position, start_state
+            ):
+                if config.m is not a_pr_married_value:
+                    perturb_state = copy.deepcopy(start_state)
+                    perturb_state[position].m = a_pr_married_value
+                    _add_to_cvf(perturb_state, position)
+                else:
+                    if config.p is None:
+                        for nbr in self.graph_based_on_indx[position]:
+                            perturb_state = copy.deepcopy(start_state)
+                            perturb_state[position].p = nbr
+                            perturb_state[position].m = a_pr_married_value
+                            _add_to_cvf(perturb_state, position)
+                    else:
+                        perturb_state = copy.deepcopy(start_state)
+                        perturb_state[position].p = None
+                        perturb_state[position].m = a_pr_married_value
+                        _add_to_cvf(perturb_state, position)
 
-    #     return {"cvfs_in": cvfs_in, "cvfs_out": cvfs_out}
+            if cvfs_in_per_node:
+                cvfs_in.append(cvfs_in_per_node)
+                cvfs_in_per_node = []
+
+            if cvfs_out_per_node:
+                cvfs_out.append(cvfs_out_per_node)
+                cvfs_out_per_node = []
+
+        result_cvfs_in = _flat_list_to_dict(self.generate_random_samples(cvfs_in, self.K_sampling))
+        result_cvfs_out = _flat_list_to_dict(self.generate_random_samples(cvfs_out, self.K_sampling))
+
+        return {"cvfs_in": result_cvfs_in, "cvfs_out": result_cvfs_out}
