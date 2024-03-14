@@ -330,8 +330,8 @@ class CVFAnalysis:
 
 
 class PartialCVFAnalysisMixin:
-    analysis_type = "partial"
     K_sampling = 10
+    analysis_type = f"partial_{K_sampling}"
 
     @staticmethod
     def generate_random_samples(population, k):
