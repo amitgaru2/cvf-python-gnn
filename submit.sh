@@ -27,7 +27,7 @@ echo "Running the script..."
 #cd coloring
 #python graph_coloring_node_effect.py
 
-cd 'maximal matching'
-python node_effect.py graph_8
+cd 'cvf-analysis'
+python main.py --program maximal_matching --graph_names graph_1 graph_2 graph_3 graph_4 graph_5 graph_6 graph_7 graph_8
 
 echo "Done!"
