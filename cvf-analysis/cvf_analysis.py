@@ -356,3 +356,23 @@ class PartialCVFAnalysisMixin:
             k -= 1
 
         return samples
+
+    @staticmethod
+    def generate_next_random_node_position(no_nodes, init_ignore_node_positions=set()):
+        ignore_node_positions = copy.deepcopy(init_ignore_node_positions)
+        nodes = [i for i in range(no_nodes) if i not in ignore_node_positions]
+        random.shuffle(nodes)
+        indx = len(nodes) - 1
+        
+        while nodes:
+            node_position = nodes.pop(indx)
+            ignore_node_position = yield node_position
+            if ignore_node_position:
+                ignore_node_positions.add(node_position)
+
+            if indx == 0:
+                nodes = [i for i in range(no_nodes) if i not in ignore_node_positions]
+                random.shuffle(nodes)
+                indx = len(nodes) - 1
+            else:
+                indx -= 1

@@ -209,6 +209,7 @@ class MaximalMatchingFullAnalysis(CVFAnalysis):
 
 
 class MaximalMatchingPartialAnalysis(PartialCVFAnalysisMixin, MaximalMatchingFullAnalysis):
+
     def _get_program_transitions(self, start_state):
         program_transitions = []
         pt_per_node = []
@@ -241,6 +242,55 @@ class MaximalMatchingPartialAnalysis(PartialCVFAnalysisMixin, MaximalMatchingFul
         result = self.generate_random_samples(program_transitions, self.K_sampling)
 
         return {"program_transitions": set(result)}
+
+    # def _get_program_transitions(self, start_state):
+    #     """v2"""
+    #     program_transitions = set()
+        
+    #     ignore_node_p_perturb_values = {i: {start_state[i].p} for i in range(len(start_state))}
+    #     ignore_node_m_perturb_values = {i: {start_state[i].m} for i in range(len(start_state))}
+        
+    #     generator = self.generate_next_random_node_position(len(start_state))
+        
+    #     for _ in range(self.K_sampling):
+    #         try:
+    #             position = next(generator)
+    #         except StopIteration:
+    #             break
+            
+    #         perturb_p_values = self.possible_pvalues_of_node(position) - ignore_node_p_perturb_values[position]
+    #         perturb_m_values = {True, False} - ignore_node_m_perturb_values[position]
+    
+    #         if not perturb_p_values and not perturb_m_values:
+    #             try:
+    #                 generator.send(True)
+    #             except StopIteration:
+    #                 break
+    #         else:
+    #             for perturb_value in perturb_p_values:
+    #                 perturb_state = list(copy.deepcopy(start_state))
+    #                 perturb_state[position].p = perturb_value
+    #                 perturb_state = tuple(perturb_state)
+    #                 if self._is_program_transition(position, start_state, perturb_state):
+    #                     program_transitions.add(perturb_state)
+    #                     ignore_node_p_perturb_values[position].add(perturb_value)
+    #                     break
+    #                 else:
+    #                     ignore_node_p_perturb_values[position].add(perturb_value)
+    #             else:
+    #                 for perturb_value in perturb_m_values:
+    #                     perturb_state = list(copy.deepcopy(start_state))
+    #                     perturb_state[position].m = perturb_value
+    #                     perturb_state = tuple(perturb_state)
+    #                     if self._is_program_transition(position, start_state, perturb_state):
+    #                         program_transitions.add(perturb_state)
+    #                         ignore_node_m_perturb_values[position].add(perturb_value)
+    #                         break
+    #                     else:
+    #                         ignore_node_m_perturb_values[position].add(perturb_value)
+        
+    #     return {"program_transitions": program_transitions}       
+
 
     def _get_cvfs(self, start_state):
         def _flat_list_to_dict(lst):
