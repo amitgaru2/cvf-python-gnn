@@ -28,6 +28,9 @@ class CVFAnalysis:
         self.nodes = list(graph.keys())
         self.node_positions = {v: i for i, v in enumerate(self.nodes)}
         self.degree_of_nodes = {n: len(self.graph[n]) for n in self.nodes}
+        self.degree_of_nodes_based_on_indx = {
+            self.node_positions[k]: v for k, v in self.degree_of_nodes.items()
+        }
         self.configurations = set()
         self.invariants = set()
         self.pts_rank = dict()
@@ -363,7 +366,7 @@ class PartialCVFAnalysisMixin:
         nodes = [i for i in range(no_nodes) if i not in ignore_node_positions]
         random.shuffle(nodes)
         indx = len(nodes) - 1
-        
+
         while nodes:
             node_position = nodes.pop(indx)
             ignore_node_position = yield node_position

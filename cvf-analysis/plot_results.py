@@ -5,10 +5,10 @@ import seaborn as sns
 from matplotlib import pyplot as plt
 
 results_dir = "results"
-# program = "coloring"  # coloring, dijkstra, maximal_matching
-program = "maximal_matching"  # coloring, dijkstra, maximal_matching
-analysis_type = "partial_10"  # full, partial
-graph_names = ["graph_powerlaw_cluster_graph_n5"]
+# program = "coloring"  # coloring, dijkstra, maximal_matching, maximal_set_independence
+program = "maximal_set_independence"  # coloring, dijkstra, maximal_matching
+analysis_type = "full"  # full, partial
+graph_names = ["test_token_ring_n5"]
 plots_dir = os.path.join("plots", program)
 
 
@@ -33,7 +33,8 @@ def plot_node_rank_effect(node, df, ax):
     sns.lineplot(data=df, x="Rank Effect", y="CVF (Avg)", ax=ax)
     ax.set(xlabel=f"Rank Effect of Node: {node}", ylabel="Count")
     ax.set_title("CVF Avg")
-    ax.set_yscale("log")
+    if df.shape[0] > 0:
+        ax.set_yscale("log")
 
 
 def plot_node_rank_effect_max(node, df, ax):
@@ -41,7 +42,8 @@ def plot_node_rank_effect_max(node, df, ax):
     sns.lineplot(data=df, x="Rank Effect", y="CVF (Max)", ax=ax)
     ax.set(xlabel=f"Rank Effect of Node: {node}", ylabel="Count")
     ax.set_title("CVF Max")
-    ax.set_yscale("log")
+    if df.shape[0] > 0:
+        ax.set_yscale("log")
 
 
 def create_plots_dir_if_not_exists():

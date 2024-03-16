@@ -2,6 +2,7 @@ import os
 import argparse
 
 from dijkstra_token_ring import DijkstraTokenRingFullAnalysis
+from maximal_set_independence import MaximalSetIndependenceFullAnalysis
 from graph_coloring import GraphColoringFullAnalysis, GraphColoringPartialAnalysis
 from cvf_analysis import CVFAnalysis, logger, PartialAnalysisType, FullAnalysisType
 from maximal_matching import MaximalMatchingFullAnalysis, MaximalMatchingPartialAnalysis
@@ -9,6 +10,7 @@ from maximal_matching import MaximalMatchingFullAnalysis, MaximalMatchingPartial
 ColoringProgram = "coloring"
 DijkstraProgram = "dijkstra"
 MaxMatchingProgram = "maximal_matching"
+MaxIndependentSetProgram = "maximal_independent_set"
 
 AnalysisMap = {
     ColoringProgram: {
@@ -16,7 +18,11 @@ AnalysisMap = {
         PartialAnalysisType: GraphColoringPartialAnalysis,
     },
     DijkstraProgram: {FullAnalysisType: DijkstraTokenRingFullAnalysis},
-    MaxMatchingProgram: {FullAnalysisType: MaximalMatchingFullAnalysis, PartialAnalysisType: MaximalMatchingPartialAnalysis},
+    MaxMatchingProgram: {
+        FullAnalysisType: MaximalMatchingFullAnalysis,
+        PartialAnalysisType: MaximalMatchingPartialAnalysis,
+    },
+    MaxIndependentSetProgram: {FullAnalysisType: MaximalSetIndependenceFullAnalysis},
 }
 
 
@@ -44,7 +50,14 @@ def start(graphs_dir, graph_names):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--program", choices=[ColoringProgram, DijkstraProgram, MaxMatchingProgram], required=True
+        "--program",
+        choices=[
+            ColoringProgram,
+            DijkstraProgram,
+            MaxMatchingProgram,
+            MaxIndependentSetProgram,
+        ],
+        required=True,
     )  # coloring, dijkstra, max_matching
     parser.add_argument("-f", "--full-analysis", action="store_true")
     parser.add_argument(
@@ -52,7 +65,7 @@ def main():
         type=str,
         nargs="+",
         help="list of graph names in the 'graphs_dir' or list of number of nodes for implict graphs (if implicit program)",
-        required=True
+        required=True,
     )
     args = parser.parse_args()
     print(args.program, args.full_analysis, args.graph_names)
