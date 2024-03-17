@@ -333,49 +333,58 @@ class CVFAnalysis:
 
 
 class PartialCVFAnalysisMixin:
-    K_sampling = 10
-    analysis_type = f"partial_{K_sampling}"
+    SAMPLE_SIZE = 1000
+    analysis_type = f"partial_{SAMPLE_SIZE}"
 
-    @staticmethod
-    def generate_random_samples(population, k):
-        N = copy.deepcopy(population)
-        random.shuffle(N)
-        indx = 0
-        samples = []
-        while k > 0 and N:
-            sampled_indx = random.randint(0, len(N[indx]) - 1)
-            samples.append(N[indx].pop(sampled_indx))
+    def _find_rank_of_successors(self, state, probe_limit, init=False):
+        if state in self.invariants:
+            return self.pts_rank[state]
+        else:
+            successors = list(self._get_program_transitions(state))
+            random.shuffle(successors)
+            share = probe_limit // len(successors)
+            add_extra_to_nodes = probe_limit - share * len(successors)
+            total_path_length = 0
+            path_count = 0
+            _max = 0
+            for succ in successors:
+                if add_extra_to_nodes > 0:
+                    result = self._find_rank_of_successors(succ, share + 1)
+                    add_extra_to_nodes -= 1
+                else:
+                    if share > 0:
+                        result = self._find_rank_of_successors(succ, share)
+                    else:
+                        break
 
-            if not N[indx]:  # all elements popped for this list
-                N.pop(indx)
-                if N:
-                    indx = indx % len(N)
-            else:
-                indx = (indx + 1) % len(N)
+                if init:
+                    self.pts_n_cvfs[state]["program_transitions"].add(succ)
 
-            if indx == 0 and len(N) > 1:
-                random.shuffle(N)
+                path_count += result["C"]
+                total_path_length += result["L"] + result["C"]
+                _max = max(_max, result["M"])
 
-            k -= 1
+            return {
+                "L": total_path_length,
+                "C": path_count,
+                "A": total_path_length / path_count,
+                "Ar": math.ceil(total_path_length / path_count),
+                "M": _max + 1,
+            }
 
-        return samples
+    def _find_cvfs_of_successors(self, state, probe_limit, init=None):
+        pass
 
-    @staticmethod
-    def generate_next_random_node_position(no_nodes, init_ignore_node_positions=set()):
-        ignore_node_positions = copy.deepcopy(init_ignore_node_positions)
-        nodes = [i for i in range(no_nodes) if i not in ignore_node_positions]
-        random.shuffle(nodes)
-        indx = len(nodes) - 1
-
-        while nodes:
-            node_position = nodes.pop(indx)
-            ignore_node_position = yield node_position
-            if ignore_node_position:
-                ignore_node_positions.add(node_position)
-
-            if indx == 0:
-                nodes = [i for i in range(no_nodes) if i not in ignore_node_positions]
-                random.shuffle(nodes)
-                indx = len(nodes) - 1
-            else:
-                indx -= 1
+    def _find_program_transitions_n_cvf(self):
+        for state in self.configurations:
+            self.pts_n_cvfs[state] = {
+                "program_transitions": set(),
+                "cvfs_in": dict(),
+                "cvfs_out": dict(),
+            }
+            self.pts_rank[state] = self._find_rank_of_successors(
+                state, self.SAMPLE_SIZE, True
+            )
+            self._find_cvfs_of_successors(
+                state, self.SAMPLE_SIZE, state in self.invariants
+            )
