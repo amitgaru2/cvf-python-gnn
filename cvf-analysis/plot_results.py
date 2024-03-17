@@ -8,7 +8,7 @@ results_dir = "results"
 # program = "coloring"  # coloring, dijkstra, maximal_matching, maximal_set_independence
 program = "maximal_set_independence"  # coloring, dijkstra, maximal_matching
 analysis_type = "full"  # full, partial
-graph_names = ["test_token_ring_n5"]
+graph_names = ["graph_powerlaw_cluster_graph_n9"]
 plots_dir = os.path.join("plots", program)
 
 

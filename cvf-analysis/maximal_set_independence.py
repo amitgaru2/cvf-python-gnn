@@ -120,25 +120,39 @@ class MaximalSetIndependenceFullAnalysis(CVFAnalysis):
         for position, _ in enumerate(start_state):
             if start_state[position].val == 1:
                 for nbr in self.graph_based_on_indx[position]:
-                    if (
-                        self.degree_of_nodes_based_on_indx[nbr]
-                        > self.degree_of_nodes_based_on_indx[position]
-                        and start_state[nbr].val == 0
-                    ):
+                    if self.degree_of_nodes_based_on_indx[nbr] >= self.degree_of_nodes_based_on_indx[position]:
                         perturb_state = copy.deepcopy(start_state)
-                        perturb_state[nbr].val = 1
+                        perturb_state[position].val = 0
                         _add_to_cvf(perturb_state, position)
-
+                        break
+            else:
+                for nbr in self.graph_based_on_indx[position]:
+                    if not self._I_lte_v_null:
+                        perturb_state = copy.deepcopy(start_state)
+                        perturb_state[position].val = 1
+                        _add_to_cvf(perturb_state, position)
+                        break
+            # if start_state[position].val == 1:                                                                                                                                                                                                                                                                   
+            #     for nbr in self.graph_based_on_indx[position]:
+            #         if (
+            #             self.degree_of_nodes_based_on_indx[nbr]
+            #             > self.degree_of_nodes_based_on_indx[position]
+            #             and start_state[nbr].val == 0
+            #         ):
+            #             perturb_state = copy.deepcopy(start_state)
+            #             perturb_state[nbr].val = 1
+            #             _add_to_cvf(perturb_state, position)
+        print(start_state, cvfs_in, cvfs_out)
         return {"cvfs_in": cvfs_in, "cvfs_out": cvfs_out}
 
-    # def _start(self):
-    #     self._gen_configurations()
-    #     self._find_invariants()
-    #     self._init_pts_rank()
-    #     self._find_program_transitions_n_cvf()
-    #     self._rank_all_states()
-    #     self._gen_save_rank_count()
-    #     # self._calculate_pts_rank_effect()
-    #     # self._calculate_cvfs_rank_effect()
-    #     # self._gen_save_rank_effect_count()
-    #     # self._gen_save_rank_effect_by_node_count()
+    def _start(self):
+        self._gen_configurations()
+        self._find_invariants()
+        self._init_pts_rank()
+        self._find_program_transitions_n_cvf()
+        # self._rank_all_states()
+        # self._gen_save_rank_count()
+        # self._calculate_pts_rank_effect()
+        # self._calculate_cvfs_rank_effect()
+        # self._gen_save_rank_effect_count()
+        # self._gen_save_rank_effect_by_node_count()
