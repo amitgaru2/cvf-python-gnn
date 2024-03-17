@@ -113,12 +113,10 @@ class MaximalMatchingFullAnalysis(CVFAnalysis):
             return False
 
         # update m.j
-        if start_state[perturb_pos].m != _pr_married(j, config):
+        if config.m != _pr_married(j, config):
             if dest_config.m == _pr_married(j, config):
                 return True
-
-        # accept a proposal
-        if config.m == _pr_married(j, config):
+        else:
             if config.p is None:
                 for i in self.graph_based_on_indx[j]:
                     if state[i].p == j and dest_config.p == i:
@@ -148,7 +146,8 @@ class MaximalMatchingFullAnalysis(CVFAnalysis):
 
     def _get_program_transitions(self, start_state):
         program_transitions = set()
-        for position, _ in enumerate(start_state):
+
+        for position in range(len(start_state)):
             possible_config_p_val = self.possible_pvalues_of_node(position) - {
                 start_state[position].p
             }
@@ -167,7 +166,7 @@ class MaximalMatchingFullAnalysis(CVFAnalysis):
                 if self._is_program_transition(position, start_state, perturb_state):
                     program_transitions.add(perturb_state)
 
-        return {"program_transitions": program_transitions}
+        return program_transitions
 
     def _evaluate_perturbed_pr_married(self, position, state):
         if state[position].p is None:
@@ -175,15 +174,7 @@ class MaximalMatchingFullAnalysis(CVFAnalysis):
         return [True, False]
 
     def _get_cvfs(self, start_state):
-        cvfs_in = dict()
-        cvfs_out = dict()
-
-        def _add_to_cvf(perturb_state, position):
-            if start_state in self.invariants:
-                cvfs_in[perturb_state] = position
-            else:
-                cvfs_out[perturb_state] = position
-
+        cvfs = {}
         for position, _ in enumerate(start_state):
             config = start_state[position]
             for a_pr_married_value in self._evaluate_perturbed_pr_married(
@@ -192,45 +183,29 @@ class MaximalMatchingFullAnalysis(CVFAnalysis):
                 if config.m is not a_pr_married_value:
                     perturb_state = copy.deepcopy(start_state)
                     perturb_state[position].m = a_pr_married_value
-                    _add_to_cvf(perturb_state, position)
+                    cvfs[perturb_state] = position
                 else:
                     if config.p is None:
                         for nbr in self.graph_based_on_indx[position]:
                             perturb_state = copy.deepcopy(start_state)
                             perturb_state[position].p = nbr
                             perturb_state[position].m = a_pr_married_value
-                            _add_to_cvf(perturb_state, position)
+                            cvfs[perturb_state] = position
                     else:
                         perturb_state = copy.deepcopy(start_state)
                         perturb_state[position].p = None
                         perturb_state[position].m = a_pr_married_value
-                        _add_to_cvf(perturb_state, position)
+                        cvfs[perturb_state] = position
 
-        return {"cvfs_in": cvfs_in, "cvfs_out": cvfs_out}
+        return cvfs
 
 
-class MaximalMatchingPartialAnalysis(PartialCVFAnalysisMixin, MaximalMatchingFullAnalysis):
-
-    
+class MaximalMatchingPartialAnalysis(
+    PartialCVFAnalysisMixin, MaximalMatchingFullAnalysis
+):
 
     def _get_cvfs(self, start_state):
-        def _flat_list_to_dict(lst):
-            result = {}
-            for item in lst:
-                result[item[0]] = item[1]
-            return result
-    
-        cvfs_in = []
-        cvfs_out = []
-        cvfs_in_per_node = []
-        cvfs_out_per_node = []
-
-        def _add_to_cvf(perturb_state, position):
-            if start_state in self.invariants:
-                cvfs_in_per_node.append((perturb_state, position))
-            else:
-                cvfs_out_per_node.append((perturb_state, position))
-
+        cvfs = {}
         for position, _ in enumerate(start_state):
             config = start_state[position]
             for a_pr_married_value in self._evaluate_perturbed_pr_married(
@@ -239,29 +214,18 @@ class MaximalMatchingPartialAnalysis(PartialCVFAnalysisMixin, MaximalMatchingFul
                 if config.m is not a_pr_married_value:
                     perturb_state = copy.deepcopy(start_state)
                     perturb_state[position].m = a_pr_married_value
-                    _add_to_cvf(perturb_state, position)
+                    cvfs[perturb_state] = position
                 else:
                     if config.p is None:
                         for nbr in self.graph_based_on_indx[position]:
                             perturb_state = copy.deepcopy(start_state)
                             perturb_state[position].p = nbr
                             perturb_state[position].m = a_pr_married_value
-                            _add_to_cvf(perturb_state, position)
+                            cvfs[perturb_state] = position
                     else:
                         perturb_state = copy.deepcopy(start_state)
                         perturb_state[position].p = None
                         perturb_state[position].m = a_pr_married_value
-                        _add_to_cvf(perturb_state, position)
+                        cvfs[perturb_state] = position
 
-            if cvfs_in_per_node:
-                cvfs_in.append(cvfs_in_per_node)
-                cvfs_in_per_node = []
-
-            if cvfs_out_per_node:
-                cvfs_out.append(cvfs_out_per_node)
-                cvfs_out_per_node = []
-
-        result_cvfs_in = _flat_list_to_dict(self.generate_random_samples(cvfs_in, self.K_sampling))
-        result_cvfs_out = _flat_list_to_dict(self.generate_random_samples(cvfs_out, self.K_sampling))
-
-        return {"cvfs_in": result_cvfs_in, "cvfs_out": result_cvfs_out}
+        return cvfs

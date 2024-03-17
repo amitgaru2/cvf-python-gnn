@@ -110,11 +110,10 @@ class DijkstraTokenRingFullAnalysis(CVFAnalysis):
                 if self._is_program_transition(position, start_state, perturb_state):
                     program_transitions.add(perturb_state)
 
-        return {"program_transitions": program_transitions}
+        return program_transitions
 
     def _get_cvfs(self, start_state):
-        cvfs_in = dict()
-        cvfs_out = dict()
+        cvfs = dict()
         for position, _ in enumerate(start_state):
             possible_node_colors = set(
                 range(self.degree_of_nodes[self.nodes[position]] + 1)
@@ -123,9 +122,6 @@ class DijkstraTokenRingFullAnalysis(CVFAnalysis):
                 perturb_state = list(start_state)
                 perturb_state[position] = perturb_val
                 perturb_state = tuple(perturb_state)
-                if start_state in self.invariants:
-                    cvfs_in[perturb_state] = position
-                else:
-                    cvfs_out[perturb_state] = position
+                cvfs[perturb_state] = position
 
-        return {"cvfs_in": cvfs_in, "cvfs_out": cvfs_out}
+        return cvfs

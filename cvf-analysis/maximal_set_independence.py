@@ -144,15 +144,3 @@ class MaximalSetIndependenceFullAnalysis(CVFAnalysis):
             #             _add_to_cvf(perturb_state, position)
         print(start_state, cvfs_in, cvfs_out)
         return {"cvfs_in": cvfs_in, "cvfs_out": cvfs_out}
-
-    def _start(self):
-        self._gen_configurations()
-        self._find_invariants()
-        self._init_pts_rank()
-        self._find_program_transitions_n_cvf()
-        # self._rank_all_states()
-        # self._gen_save_rank_count()
-        # self._calculate_pts_rank_effect()
-        # self._calculate_cvfs_rank_effect()
-        # self._gen_save_rank_effect_count()
-        # self._gen_save_rank_effect_by_node_count()

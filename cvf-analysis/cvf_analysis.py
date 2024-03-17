@@ -66,7 +66,7 @@ class CVFAnalysis:
         self._gen_configurations()
         self._find_invariants()
         self._init_pts_rank()
-        self._find_program_transitions_n_cvf()
+        self._find_program_transitions_n_cvfs()
         self._rank_all_states()
         self._gen_save_rank_count()
         self._calculate_pts_rank_effect()
@@ -97,14 +97,19 @@ class CVFAnalysis:
     def _get_cvfs(self, start_state):
         raise NotImplemented
 
-    def _find_program_transitions_n_cvf(self):
+    def _find_program_transitions_n_cvfs(self):
+        logger.info("Finding Program Transitions and CVFS.")
         for state in self.configurations:
             self.pts_n_cvfs[state] = {
-                **self._get_program_transitions(state),
-                **self._get_cvfs(state),
+                "program_transitions": self._get_program_transitions(state),
             }
+            key = "cvfs_in" if state in self.invariants else "cvfs_out"
+            self.pts_n_cvfs[state][key] = self._get_cvfs(state)
 
     def _rank_all_states(self):
+        total_paths = 0
+        total_computation_paths = 0
+        logger.info("Ranking all states .")
         unranked_states = set(self.pts_n_cvfs.keys()) - set(self.pts_rank.keys())
         logger.info("No. of Unranked states: %s", len(unranked_states))
 
@@ -128,6 +133,7 @@ class CVFAnalysis:
                             self.pts_rank[succ]["L"] + self.pts_rank[succ]["C"]
                         )
                         _max = max(_max, self.pts_rank[succ]["M"])
+                        total_computation_paths += 1
                     self.pts_rank[state] = {
                         "L": total_path_length,
                         "C": path_count,
@@ -135,10 +141,15 @@ class CVFAnalysis:
                         "Ar": math.ceil(total_path_length / path_count),
                         "M": _max + 1,
                     }
+                    total_paths += path_count
                     remove_from_unranked_states.add(state)
             unranked_states -= remove_from_unranked_states
 
+        print("Total paths:", total_paths)
+        print("Total computation paths:", total_computation_paths)
+
     def _calculate_pts_rank_effect(self):
+        logger.info("Calculating Program Transition rank effect.")
         for state, pt_cvfs in self.pts_n_cvfs.items():
             for pt in pt_cvfs["program_transitions"]:
                 self.pts_rank_effect[(state, pt)] = {
@@ -147,19 +158,22 @@ class CVFAnalysis:
                 }
 
     def _calculate_cvfs_rank_effect(self):
+        logger.info("Calculating CVF rank effect.")
         for state, pt_cvfs in self.pts_n_cvfs.items():
-            for cvf, node in pt_cvfs["cvfs_in"].items():
-                self.cvfs_in_rank_effect[(state, cvf)] = {
-                    "node": node,
-                    "Ar": self.pts_rank[cvf]["Ar"] - self.pts_rank[state]["Ar"],
-                    "M": self.pts_rank[cvf]["M"] - self.pts_rank[state]["M"],
-                }
-            for cvf, node in pt_cvfs["cvfs_out"].items():
-                self.cvfs_out_rank_effect[(state, cvf)] = {
-                    "node": node,
-                    "Ar": self.pts_rank[cvf]["Ar"] - self.pts_rank[state]["Ar"],
-                    "M": self.pts_rank[cvf]["M"] - self.pts_rank[state]["M"],
-                }
+            if "cvfs_in" in pt_cvfs:
+                for cvf, node in pt_cvfs["cvfs_in"].items():
+                    self.cvfs_in_rank_effect[(state, cvf)] = {
+                        "node": node,
+                        "Ar": self.pts_rank[cvf]["Ar"] - self.pts_rank[state]["Ar"],
+                        "M": self.pts_rank[cvf]["M"] - self.pts_rank[state]["M"],
+                    }
+            else:
+                for cvf, node in pt_cvfs["cvfs_out"].items():
+                    self.cvfs_out_rank_effect[(state, cvf)] = {
+                        "node": node,
+                        "Ar": self.pts_rank[cvf]["Ar"] - self.pts_rank[state]["Ar"],
+                        "M": self.pts_rank[cvf]["M"] - self.pts_rank[state]["M"],
+                    }
 
     def _gen_save_rank_count(self):
         pt_rank_ = []
@@ -333,7 +347,7 @@ class CVFAnalysis:
 
 
 class PartialCVFAnalysisMixin:
-    SAMPLE_SIZE = 1000
+    SAMPLE_SIZE = 100
     analysis_type = f"partial_{SAMPLE_SIZE}"
 
     def _find_rank_of_successors(self, state, probe_limit, init=False):
@@ -372,19 +386,26 @@ class PartialCVFAnalysisMixin:
                 "M": _max + 1,
             }
 
-    def _find_cvfs_of_successors(self, state, probe_limit, init=None):
-        pass
-
-    def _find_program_transitions_n_cvf(self):
+    def _find_program_transitions_n_cvfs(self):
+        logger.info(
+            "Finding Program Transitions and CVFS. Sample size: %d", self.SAMPLE_SIZE
+        )
         for state in self.configurations:
-            self.pts_n_cvfs[state] = {
-                "program_transitions": set(),
-                "cvfs_in": dict(),
-                "cvfs_out": dict(),
-            }
+            self.pts_n_cvfs[state] = {"program_transitions": set()}
             self.pts_rank[state] = self._find_rank_of_successors(
                 state, self.SAMPLE_SIZE, True
             )
-            self._find_cvfs_of_successors(
-                state, self.SAMPLE_SIZE, state in self.invariants
-            )
+            key = "cvfs_in" if state in self.invariants else "cvfs_out"
+            self.pts_n_cvfs[state][key] = self._get_cvfs(state)
+
+    def _start(self):
+        self._gen_configurations()
+        self._find_invariants()
+        self._init_pts_rank()
+        self._find_program_transitions_n_cvfs()  # this does ranking as well
+        # self._rank_all_states()
+        self._gen_save_rank_count()
+        self._calculate_pts_rank_effect()
+        self._calculate_cvfs_rank_effect()
+        self._gen_save_rank_effect_count()
+        self._gen_save_rank_effect_by_node_count()
