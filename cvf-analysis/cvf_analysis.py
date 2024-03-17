@@ -1,7 +1,6 @@
-import csv
 import os
+import csv
 import math
-import copy
 import time
 import random
 import logging
@@ -347,8 +346,19 @@ class CVFAnalysis:
 
 
 class PartialCVFAnalysisMixin:
-    SAMPLE_SIZE = 100
-    analysis_type = f"partial_{SAMPLE_SIZE}"
+    DEFAULT_SAMPLE_SIZE = 10
+
+    @property
+    def sample_size(self):
+        return getattr(self, "_sample_size", self.DEFAULT_SAMPLE_SIZE)
+
+    @sample_size.setter
+    def sample_size(self, val: int):
+        self._sample_size = val
+
+    @property
+    def analysis_type(self):
+        return f"partial_{self.sample_size}"
 
     def _find_rank_of_successors(self, state, probe_limit, init=False):
         if state in self.invariants:
@@ -388,13 +398,15 @@ class PartialCVFAnalysisMixin:
 
     def _find_program_transitions_n_cvfs(self):
         logger.info(
-            "Finding Program Transitions and CVFS. Sample size: %d", self.SAMPLE_SIZE
+            "Finding Program Transitions and CVFS. Sample size: %d", self.sample_size
         )
         for state in self.configurations:
             self.pts_n_cvfs[state] = {"program_transitions": set()}
             self.pts_rank[state] = self._find_rank_of_successors(
-                state, self.SAMPLE_SIZE, True
+                state, self.sample_size, True
             )
+
+        for state in self.configurations:
             key = "cvfs_in" if state in self.invariants else "cvfs_out"
             self.pts_n_cvfs[state][key] = self._get_cvfs(state)
 

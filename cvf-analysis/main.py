@@ -4,8 +4,14 @@ import argparse
 from dijkstra_token_ring import DijkstraTokenRingFullAnalysis
 from maximal_set_independence import MaximalSetIndependenceFullAnalysis
 from graph_coloring import GraphColoringFullAnalysis, GraphColoringPartialAnalysis
-from cvf_analysis import CVFAnalysis, logger, PartialAnalysisType, FullAnalysisType
 from maximal_matching import MaximalMatchingFullAnalysis, MaximalMatchingPartialAnalysis
+from cvf_analysis import (
+    CVFAnalysis,
+    logger,
+    PartialAnalysisType,
+    FullAnalysisType,
+    PartialCVFAnalysisMixin,
+)
 
 ColoringProgram = "coloring"
 DijkstraProgram = "dijkstra"
@@ -47,6 +53,10 @@ def start(graphs_dir, graph_names):
         yield graph_name, graph
 
 
+def set_sample_size(analysis: PartialCVFAnalysisMixin, sample_size: int):
+    analysis.sample_size = sample_size
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -60,6 +70,7 @@ def main():
         required=True,
     )  # coloring, dijkstra, max_matching
     parser.add_argument("-f", "--full-analysis", action="store_true")
+    parser.add_argument("--sample-size", type=int, required=False)
     parser.add_argument(
         "--graph_names",
         type=str,
@@ -68,7 +79,7 @@ def main():
         required=True,
     )
     args = parser.parse_args()
-    print(args.program, args.full_analysis, args.graph_names)
+    # print(args.program, args.full_analysis, args.graph_names, args.sample_size)
 
     analysis_type = FullAnalysisType if args.full_analysis else PartialAnalysisType
     CVFAnalysisKlass: CVFAnalysis = AnalysisMap[args.program][analysis_type]
@@ -80,10 +91,14 @@ def main():
             logger.info('Started for Graph: "%s".', graph_name)
             graph = CVFAnalysisKlass.gen_implicit_graph(no_nodes)
             analysis = CVFAnalysisKlass(graph_name, graph)
+            if analysis_type == PartialAnalysisType and args.sample_size:
+                set_sample_size(analysis, args.sample_size)
             analysis.start()
     else:
         for graph_name, graph in start(CVFAnalysisKlass.graphs_dir, args.graph_names):
             analysis = CVFAnalysisKlass(graph_name, graph)
+            if analysis_type == PartialAnalysisType and args.sample_size:
+                set_sample_size(analysis, args.sample_size)
             analysis.start()
 
 
