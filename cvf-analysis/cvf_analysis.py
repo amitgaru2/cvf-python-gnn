@@ -361,7 +361,7 @@ class PartialCVFAnalysisMixin:
         return f"partial_{self.sample_size}"
 
     def _find_rank_of_successors(self, state, probe_limit, init=False):
-        if state in self.invariants:
+        if state in self.pts_rank:
             return self.pts_rank[state]
         else:
             successors = list(self._get_program_transitions(state))
@@ -381,12 +381,19 @@ class PartialCVFAnalysisMixin:
                     else:
                         break
 
-                if init:
-                    self.pts_n_cvfs[state]["program_transitions"].add(succ)
+                self.pts_n_cvfs[state]["program_transitions"].add(succ)
 
                 path_count += result["C"]
                 total_path_length += result["L"] + result["C"]
                 _max = max(_max, result["M"])
+
+            self.pts_rank[state] = {  # caching the rank for traveresed config
+                "L": total_path_length,
+                "C": path_count,
+                "A": total_path_length / path_count,
+                "Ar": math.ceil(total_path_length / path_count),
+                "M": _max + 1,
+            }
 
             return {
                 "L": total_path_length,
@@ -402,9 +409,9 @@ class PartialCVFAnalysisMixin:
         )
         for state in self.configurations:
             self.pts_n_cvfs[state] = {"program_transitions": set()}
-            self.pts_rank[state] = self._find_rank_of_successors(
-                state, self.sample_size, True
-            )
+
+        for state in self.configurations:
+            self._find_rank_of_successors(state, self.sample_size, True)
 
         for state in self.configurations:
             key = "cvfs_in" if state in self.invariants else "cvfs_out"
