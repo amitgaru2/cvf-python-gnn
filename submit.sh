@@ -32,7 +32,7 @@ cd 'cvf-analysis'
 #python main.py --program maximal_matching --graph_names graph_3 graph_4
 #python main.py --program maximal_matching --graph_names graph_5 graph_6 
 #python main.py --program maximal_matching --graph_names graph_8
-python main.py --program maximal_matching --graph_names graph_1 --sample-size 100
+python main.py --program maximal_matching --graph_names graph_1 --sample-size 5000
 #python main.py --program maximal_matching --graph_names graph_1 graph_2 graph_3 graph_4 graph_5 graph_6 graph_7 graph_8
 
 echo "Done!"
