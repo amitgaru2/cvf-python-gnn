@@ -346,7 +346,7 @@ class CVFAnalysis:
 
 
 class PartialCVFAnalysisMixin:
-    DEFAULT_SAMPLE_SIZE = 10
+    DEFAULT_SAMPLE_SIZE = 10000
 
     @property
     def sample_size(self):
