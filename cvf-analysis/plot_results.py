@@ -6,9 +6,9 @@ from matplotlib import pyplot as plt
 
 results_dir = "results"
 # program = "coloring"  # coloring, dijkstra, maximal_matching, maximal_set_independence
-program = "maximal_set_independence"  # coloring, dijkstra, maximal_matching
+program = "maximal_matching"  # coloring, dijkstra, maximal_matching
 analysis_type = "full"  # full, partial
-graph_names = ["graph_powerlaw_cluster_graph_n9"]
+graph_names = ["graph_1"]
 plots_dir = os.path.join("plots", program)
 
 
