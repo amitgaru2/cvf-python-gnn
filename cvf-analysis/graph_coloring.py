@@ -13,10 +13,9 @@ class GraphColoringFullAnalysis(CVFAnalysis):
     def _gen_configurations(self):
         self.configurations = {tuple([0 for i in range(len(self.nodes))])}
         # perturb each state at a time for all states in configurations and accumulate the same in the configurations for next state to perturb
-        for n in self.nodes:
-            node_pos = self.node_positions[n]
+        for node_pos in self.nodes:
             config_copy = copy.deepcopy(self.configurations)
-            for i in range(1, self.degree_of_nodes[n] + 1):
+            for i in range(1, self.degree_of_nodes[node_pos] + 1):
                 for cc in config_copy:
                     cc = list(cc)
                     cc[node_pos] = i
@@ -56,7 +55,7 @@ class GraphColoringFullAnalysis(CVFAnalysis):
         if start_state in self.invariants and dest_state in self.invariants:
             return False
 
-        neighbor_pos = [*self.graph_based_on_indx[perturb_pos]]
+        neighbor_pos = [*self.graph[perturb_pos]]
         neighbor_colors = set(dest_state[i] for i in neighbor_pos)
         min_color = self._find_min_possible_color(neighbor_colors)
 
@@ -66,7 +65,7 @@ class GraphColoringFullAnalysis(CVFAnalysis):
         program_transitions = set()
         for position, val in enumerate(start_state):
             # check if node already has different color among the neighbors => If yes => no need to perturb that node's value
-            neighbor_pos = [*self.graph_based_on_indx[position]]
+            neighbor_pos = [*self.graph[position]]
             neighbor_colors = set(start_state[i] for i in neighbor_pos)
             if self._is_different_color(val, neighbor_colors):
                 continue
@@ -105,9 +104,7 @@ class GraphColoringPartialAnalysis(PartialCVFAnalysisMixin, GraphColoringFullAna
     def get_cvfs(self, start_state):
         cvfs = {}
         for position, _ in enumerate(start_state):
-            possible_node_colors = set(
-                range(self.degree_of_nodes_based_on_indx[position] + 1)
-            )
+            possible_node_colors = set(range(self.degree_of_nodes[position] + 1))
             for perturb_val in possible_node_colors:
                 perturb_state = list(start_state)
                 perturb_state[position] = perturb_val

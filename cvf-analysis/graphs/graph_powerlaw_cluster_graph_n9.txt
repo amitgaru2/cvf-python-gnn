@@ -1,9 +1,9 @@
-A D F G
-B D E
-C I D E F G
-D A B C E F H I
-E H B C D H
-F A C D G
-G A C F H
-H D E G
-I C D E
+0 3 5 6
+1 3 4
+2 8 3 4 5 6
+3 0 1 2 4 5 7 8
+4 8 1 2 3 7
+5 0 2 3 6
+6 0 2 5 7
+7 3 4 6
+8 2 3 4

@@ -1,0 +1,21 @@
+graphType=random_regular_graph
+numberOfNodes=15
+numberOfEdges=15
+maxDegree=2
+maxNumberOfColors=2
+#
+0 9 14
+1 11 7
+2 8 3
+3 2 6
+4 12 5
+5 11 4
+6 3 13
+7 1 10
+8 2 12
+9 0 13
+10 14 7
+11 1 5
+12 8 4
+13 9 6
+14 0 10

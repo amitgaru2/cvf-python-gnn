@@ -44,7 +44,7 @@ def start(graphs_dir, graph_names):
         with open(full_path, "r") as f:
             line = f.readline()
             while line:
-                node_edges = line.split()
+                node_edges = [int(i) for i in line.split()]
                 node = node_edges[0]
                 edges = node_edges[1:]
                 graph[node] = set(edges)
@@ -72,7 +72,7 @@ def main():
     parser.add_argument("-f", "--full-analysis", action="store_true")
     parser.add_argument("--sample-size", type=int, required=False)
     parser.add_argument(
-        "--graph_names",
+        "--graph-names",
         type=str,
         nargs="+",
         help="list of graph names in the 'graphs_dir' or list of number of nodes for implict graphs (if implicit program)",

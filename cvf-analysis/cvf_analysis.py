@@ -25,11 +25,7 @@ class CVFAnalysis:
         self.graph_name = graph_name
         self.graph = graph
         self.nodes = list(graph.keys())
-        self.node_positions = {v: i for i, v in enumerate(self.nodes)}
         self.degree_of_nodes = {n: len(self.graph[n]) for n in self.nodes}
-        self.degree_of_nodes_based_on_indx = {
-            self.node_positions[k]: v for k, v in self.degree_of_nodes.items()
-        }
         self.configurations = set()
         self.invariants = set()
         self.pts_rank = dict()
@@ -40,17 +36,7 @@ class CVFAnalysis:
         self.cvfs_in_rank_effect_df = None
         self.cvfs_out_rank_effect_df = None
 
-        self._gen_graph_based_on_indx()
         self.create_results_dir_if_not_exists()
-
-    def _gen_graph_based_on_indx(self):
-        self.graph_based_on_indx = {}
-        for k, v in self.graph.items():
-            self.graph_based_on_indx[self.node_positions[k]] = []
-            for iv in v:
-                self.graph_based_on_indx[self.node_positions[k]].append(
-                    self.node_positions[iv]
-                )
 
     @staticmethod
     def gen_implicit_graph(no_nodes: int) -> dict:
@@ -332,7 +318,7 @@ class CVFAnalysis:
 
             for node in self.nodes:
                 for rank_effect in range(min_Ar_M, max_Ar_M + 1):
-                    node_re = (self.node_positions[node], rank_effect)
+                    node_re = (node, rank_effect)
                     writer.writerow(
                         {
                             "Node": node,

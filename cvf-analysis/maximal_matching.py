@@ -42,15 +42,14 @@ class MaximalMatchingFullAnalysis(CVFAnalysis):
     results_dir = os.path.join("results", results_prefix)
 
     def possible_pvalues_of_node(self, position):
-        return set([None, *self.graph_based_on_indx[position]])
+        return set([None, *self.graph[position]])
 
     def _gen_configurations(self):
         self.configurations = {
             tuple([Configuration(p=None, m=False) for i in range(len(self.nodes))])
         }
         # perturb each state at a time for all states in configurations and accumulate the same in the configurations for next state to perturb
-        for _, n in enumerate(self.nodes):
-            node_pos = self.node_positions[n]
+        for _, node_pos in enumerate(self.nodes):
             config_copy = copy.deepcopy(self.configurations)
             for val in self.possible_pvalues_of_node(node_pos):
                 for cc in config_copy:
@@ -66,7 +65,7 @@ class MaximalMatchingFullAnalysis(CVFAnalysis):
         """check invariant"""
 
         def _pr_married(j, config):
-            for i in self.graph_based_on_indx[j]:
+            for i in self.graph[j]:
                 if state[i].p == j and config.p == i:
                     return True
             return False
@@ -79,11 +78,11 @@ class MaximalMatchingFullAnalysis(CVFAnalysis):
             # accept a proposal
             if config.m == _pr_married(j, config):
                 if config.p is None:
-                    for i in self.graph_based_on_indx[j]:
+                    for i in self.graph[j]:
                         if state[i].p == j:
                             return False
 
-                    for k in self.graph_based_on_indx[j]:
+                    for k in self.graph[j]:
                         if state[k].p is None and k < j and not state[k].m:
                             return False
                 else:
@@ -107,7 +106,7 @@ class MaximalMatchingFullAnalysis(CVFAnalysis):
         dest_config = dest_state[perturb_pos]
 
         def _pr_married(j, config):
-            for i in self.graph_based_on_indx[j]:
+            for i in self.graph[j]:
                 if state[i].p == j and config.p == i:
                     return True
             return False
@@ -118,17 +117,17 @@ class MaximalMatchingFullAnalysis(CVFAnalysis):
                 return True
         else:
             if config.p is None:
-                for i in self.graph_based_on_indx[j]:
+                for i in self.graph[j]:
                     if state[i].p == j and dest_config.p == i:
                         return True
 
                 # make a proposal
-                for i in self.graph_based_on_indx[j]:
+                for i in self.graph[j]:
                     if state[i].p == j:
                         break
                 else:
                     max_k = -1
-                    for k in self.graph_based_on_indx[j]:
+                    for k in self.graph[j]:
                         if state[k].p is None and k < j and not state[k].m:
                             if k > max_k:
                                 max_k = k
@@ -186,7 +185,7 @@ class MaximalMatchingFullAnalysis(CVFAnalysis):
                     cvfs[perturb_state] = position
                 else:
                     if config.p is None:
-                        for nbr in self.graph_based_on_indx[position]:
+                        for nbr in self.graph[position]:
                             perturb_state = copy.deepcopy(start_state)
                             perturb_state[position].p = nbr
                             perturb_state[position].m = a_pr_married_value
@@ -217,7 +216,7 @@ class MaximalMatchingPartialAnalysis(
                     cvfs[perturb_state] = position
                 else:
                     if config.p is None:
-                        for nbr in self.graph_based_on_indx[position]:
+                        for nbr in self.graph[position]:
                             perturb_state = copy.deepcopy(start_state)
                             perturb_state[position].p = nbr
                             perturb_state[position].m = a_pr_married_value

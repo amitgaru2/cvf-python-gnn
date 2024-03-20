@@ -25,10 +25,9 @@ class DijkstraTokenRingFullAnalysis(CVFAnalysis):
     def _gen_configurations(self):
         self.configurations = {tuple([0 for i in range(len(self.nodes))])}
         # perturb each state at a time for all states in configurations and accumulate the same in the configurations for next state to perturb
-        for n in self.nodes:
-            node_pos = self.node_positions[n]
+        for node_pos in self.nodes:
             config_copy = copy.deepcopy(self.configurations)
-            for i in range(1, self.degree_of_nodes[n] + 1):
+            for i in range(1, self.degree_of_nodes[node_pos] + 1):
                 for cc in config_copy:
                     cc = list(cc)
                     cc[node_pos] = i
@@ -75,7 +74,7 @@ class DijkstraTokenRingFullAnalysis(CVFAnalysis):
 
         node = self.nodes[perturb_pos]
 
-        neighbor_pos = [self.node_positions[n] for n in self.graph[node]]
+        neighbor_pos = self.graph[node]
         neighbor_states = [start_state[i] for i in neighbor_pos]
         left_state, right_state = neighbor_states
 

@@ -1,8 +1,14 @@
-A B D F H
-B A D E G
-C D E F H
-D A B C E
-E B C D G
-F A C G H
-G B E F H
-H A C F G
+graphType=random_regular_graph
+numberOfNodes=8
+numberOfEdges=16
+maxDegree=4
+maxNumberOfColors=4
+#
+0 1 3 5 7
+1 0 3 4 6
+2 3 4 5 7
+3 0 1 2 4
+4 1 2 3 6
+5 0 2 6 7
+6 1 4 5 7
+7 0 2 5 6

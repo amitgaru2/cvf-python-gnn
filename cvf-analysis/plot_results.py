@@ -7,8 +7,8 @@ from matplotlib import pyplot as plt
 results_dir = "results"
 # program = "coloring"  # coloring, dijkstra, maximal_matching, maximal_set_independence
 program = "coloring"  # coloring, dijkstra, maximal_matching
-analysis_type = "full"  # full, partial
-graph_names = ["graph_powerlaw_cluster_graph_n8"]
+analysis_type = "partial_10000"  # full, partial
+graph_names = ["graph_powerlaw_cluster_graph_n5"]
 plots_dir = os.path.join("plots", program)
 
 
