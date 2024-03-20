@@ -1,10 +1,10 @@
-A B C D E F G H I J
-B A F
-C A F
-D A F
-E A F
-F A B C D E G H I J
-G A F
-H A F
-I A F
-J A F
+0 1 2 3 4 5 6 7 8 9
+1 0 5
+2 0 5
+3 0 5
+4 0 5
+5 0 1 2 3 4 6 7 8 9 
+6 0 5
+7 0 5
+8 0 5
+9 0 5
