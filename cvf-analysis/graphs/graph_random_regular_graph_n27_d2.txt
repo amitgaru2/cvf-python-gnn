@@ -1,9 +1,3 @@
-graphType=random_regular_graph
-numberOfNodes=27
-numberOfEdges=27
-maxDegree=2
-maxNumberOfColors=2
-#
 0 4 6
 1 17 2
 2 16 1
