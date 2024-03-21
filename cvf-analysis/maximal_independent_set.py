@@ -28,7 +28,7 @@ class Configuration:
 
 
 class MaximalSetIndependenceFullAnalysis(CVFAnalysis):
-    results_prefix = "maximal_set_independence"
+    results_prefix = "maximal_independent_set"
     results_dir = os.path.join("results", results_prefix)
 
     def possible_values_of_node(self, position):

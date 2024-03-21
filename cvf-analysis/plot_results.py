@@ -5,10 +5,9 @@ import seaborn as sns
 from matplotlib import pyplot as plt
 
 results_dir = "results"
-# program = "coloring"  # coloring, dijkstra, maximal_matching, maximal_set_independence
-program = "coloring"  # coloring, dijkstra, maximal_matching
+program = "maximal_independent_set"  # coloring, dijkstra, maximal_matching, maximal_independent_set
 analysis_type = "partial_10000"  # full, partial
-graph_names = ["graph_powerlaw_cluster_graph_n5"]
+graph_names = ["graph_2"]
 plots_dir = os.path.join("plots", program)
 
 

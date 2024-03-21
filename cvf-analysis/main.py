@@ -4,7 +4,7 @@ import argparse
 from dijkstra_token_ring import DijkstraTokenRingFullAnalysis
 from graph_coloring import GraphColoringFullAnalysis, GraphColoringPartialAnalysis
 from maximal_matching import MaximalMatchingFullAnalysis, MaximalMatchingPartialAnalysis
-from maximal_set_independence import (
+from maximal_independent_set import (
     MaximalSetIndependenceFullAnalysis,
     MaximalSetIndependencePartialAnalysis,
 )
