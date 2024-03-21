@@ -50,7 +50,7 @@ class MaximalSetIndependenceFullAnalysis(CVFAnalysis):
         logger.info("No. of Configurations: %s", len(self.configurations))
 
     def _I_lte_v_null(self, position, state):
-        for nbr in self.graph_based_on_indx[position]:
+        for nbr in self.graph[position]:
             if (
                 self.degree_of_nodes[nbr] <= self.degree_of_nodes[position]
                 and state[nbr].val == 1
@@ -74,7 +74,6 @@ class MaximalSetIndependenceFullAnalysis(CVFAnalysis):
                 self.invariants.add(state)
 
         logger.info("No. of Invariants: %s", len(self.invariants))
-        print(self.invariants)
 
     def _is_program_transition(self, perturb_pos, start_state, dest_state) -> bool:
         if start_state[perturb_pos].val == 0 and self._I_lte_v_null(
@@ -100,7 +99,7 @@ class MaximalSetIndependenceFullAnalysis(CVFAnalysis):
                 if self._is_program_transition(position, start_state, perturb_state):
                     program_transitions.add(perturb_state)
 
-        return {"program_transitions": program_transitions}
+        return program_transitions
 
     def _get_cvfs(self, start_state):
         """
