@@ -202,29 +202,4 @@ class MaximalMatchingFullAnalysis(CVFAnalysis):
 class MaximalMatchingPartialAnalysis(
     PartialCVFAnalysisMixin, MaximalMatchingFullAnalysis
 ):
-
-    def _get_cvfs(self, start_state):
-        cvfs = {}
-        for position, _ in enumerate(start_state):
-            config = start_state[position]
-            for a_pr_married_value in self._evaluate_perturbed_pr_married(
-                position, start_state
-            ):
-                if config.m is not a_pr_married_value:
-                    perturb_state = copy.deepcopy(start_state)
-                    perturb_state[position].m = a_pr_married_value
-                    cvfs[perturb_state] = position
-                else:
-                    if config.p is None:
-                        for nbr in self.graph[position]:
-                            perturb_state = copy.deepcopy(start_state)
-                            perturb_state[position].p = nbr
-                            perturb_state[position].m = a_pr_married_value
-                            cvfs[perturb_state] = position
-                    else:
-                        perturb_state = copy.deepcopy(start_state)
-                        perturb_state[position].p = None
-                        perturb_state[position].m = a_pr_married_value
-                        cvfs[perturb_state] = position
-
-        return cvfs
+    pass

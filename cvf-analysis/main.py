@@ -2,9 +2,12 @@ import os
 import argparse
 
 from dijkstra_token_ring import DijkstraTokenRingFullAnalysis
-from maximal_set_independence import MaximalSetIndependenceFullAnalysis
 from graph_coloring import GraphColoringFullAnalysis, GraphColoringPartialAnalysis
 from maximal_matching import MaximalMatchingFullAnalysis, MaximalMatchingPartialAnalysis
+from maximal_set_independence import (
+    MaximalSetIndependenceFullAnalysis,
+    MaximalSetIndependencePartialAnalysis,
+)
 from cvf_analysis import (
     CVFAnalysis,
     logger,
@@ -28,7 +31,10 @@ AnalysisMap = {
         FullAnalysisType: MaximalMatchingFullAnalysis,
         PartialAnalysisType: MaximalMatchingPartialAnalysis,
     },
-    MaxIndependentSetProgram: {FullAnalysisType: MaximalSetIndependenceFullAnalysis},
+    MaxIndependentSetProgram: {
+        FullAnalysisType: MaximalSetIndependenceFullAnalysis,
+        PartialAnalysisType: MaximalSetIndependencePartialAnalysis,
+    },
 }
 
 

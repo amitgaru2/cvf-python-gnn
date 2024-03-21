@@ -101,16 +101,4 @@ class GraphColoringFullAnalysis(CVFAnalysis):
 
 
 class GraphColoringPartialAnalysis(PartialCVFAnalysisMixin, GraphColoringFullAnalysis):
-    def get_cvfs(self, start_state):
-        cvfs = {}
-        for position, _ in enumerate(start_state):
-            possible_node_colors = set(range(self.degree_of_nodes[position] + 1)) - {
-                start_state[position]
-            }
-            for perturb_val in possible_node_colors:
-                perturb_state = list(start_state)
-                perturb_state[position] = perturb_val
-                perturb_state = tuple(perturb_state)
-                cvfs[perturb_state] = position
-
-        return cvfs
+    pass

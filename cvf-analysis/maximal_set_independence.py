@@ -39,8 +39,7 @@ class MaximalSetIndependenceFullAnalysis(CVFAnalysis):
             tuple([Configuration(val=0) for i in range(len(self.nodes))])
         }
         # perturb each state at a time for all states in configurations and accumulate the same in the configurations for next state to perturb
-        for _, n in enumerate(self.nodes):
-            node_pos = self.node_positions[n]
+        for node_pos in self.nodes:
             config_copy = copy.deepcopy(self.configurations)
             for val in self.possible_values_of_node(node_pos):
                 for cc in config_copy:
@@ -53,8 +52,7 @@ class MaximalSetIndependenceFullAnalysis(CVFAnalysis):
     def _I_lte_v_null(self, position, state):
         for nbr in self.graph_based_on_indx[position]:
             if (
-                self.degree_of_nodes_based_on_indx[nbr]
-                <= self.degree_of_nodes_based_on_indx[position]
+                self.degree_of_nodes[nbr] <= self.degree_of_nodes[position]
                 and state[nbr].val == 1
             ):
                 return False
@@ -106,41 +104,28 @@ class MaximalSetIndependenceFullAnalysis(CVFAnalysis):
 
     def _get_cvfs(self, start_state):
         """
-        Case 1: If you are IN and a neighbor with degree > yours is OUT: then your neighbor turning IN is a CVF
+        1. If the perturbation is from 0 to 1 then it is always C.V.F.
+        2. If the perturbation is from 1 to 0 then it is C.V.F only if it has degree >= any of its neighbor.
         """
-        cvfs_in = dict()
-        cvfs_out = dict()
-
-        def _add_to_cvf(perturb_state, position):
-            if start_state in self.invariants:
-                cvfs_in[perturb_state] = position
-            else:
-                cvfs_out[perturb_state] = position
-
+        cvfs = dict()
         for position, _ in enumerate(start_state):
-            if start_state[position].val == 1:
-                for nbr in self.graph_based_on_indx[position]:
-                    if self.degree_of_nodes_based_on_indx[nbr] >= self.degree_of_nodes_based_on_indx[position]:
-                        perturb_state = copy.deepcopy(start_state)
-                        perturb_state[position].val = 0
-                        _add_to_cvf(perturb_state, position)
-                        break
+            if start_state[position].val == 0:
+                perturb_state = list(copy.deepcopy(start_state))
+                perturb_state[position].val = 1
+                perturb_state = tuple(perturb_state)
+                cvfs[perturb_state] = position
             else:
-                for nbr in self.graph_based_on_indx[position]:
-                    if not self._I_lte_v_null:
-                        perturb_state = copy.deepcopy(start_state)
-                        perturb_state[position].val = 1
-                        _add_to_cvf(perturb_state, position)
+                for nbr in self.graph[position]:
+                    if self.degree_of_nodes[nbr] <= self.degree_of_nodes[position]:
+                        perturb_state = list(copy.deepcopy(start_state))
+                        perturb_state[position].val = 0
+                        perturb_state = tuple(perturb_state)
+                        cvfs[perturb_state] = position
                         break
-            # if start_state[position].val == 1:                                                                                                                                                                                                                                                                   
-            #     for nbr in self.graph_based_on_indx[position]:
-            #         if (
-            #             self.degree_of_nodes_based_on_indx[nbr]
-            #             > self.degree_of_nodes_based_on_indx[position]
-            #             and start_state[nbr].val == 0
-            #         ):
-            #             perturb_state = copy.deepcopy(start_state)
-            #             perturb_state[nbr].val = 1
-            #             _add_to_cvf(perturb_state, position)
-        print(start_state, cvfs_in, cvfs_out)
-        return {"cvfs_in": cvfs_in, "cvfs_out": cvfs_out}
+        return cvfs
+
+
+class MaximalSetIndependencePartialAnalysis(
+    PartialCVFAnalysisMixin, MaximalSetIndependenceFullAnalysis
+):
+    pass
