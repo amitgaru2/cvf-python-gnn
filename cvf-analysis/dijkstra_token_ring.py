@@ -1,6 +1,5 @@
 import os
 import copy
-import string
 
 from cvf_analysis import CVFAnalysis, PartialCVFAnalysisMixin, logger
 
@@ -14,12 +13,11 @@ class DijkstraTokenRingFullAnalysis(CVFAnalysis):
         if no_nodes < 3 or no_nodes > 26:
             raise Exception("no_nodes must be >= 3.")
 
-        all_nodes = string.ascii_uppercase
         graph = {}
         for i in range(no_nodes):
             left = (i - 1) % no_nodes
             right = (i + 1) % no_nodes
-            graph[all_nodes[i]] = [all_nodes[left], all_nodes[right]]
+            graph[i] = [left, right]
         return graph
 
     def _gen_configurations(self):
@@ -124,3 +122,9 @@ class DijkstraTokenRingFullAnalysis(CVFAnalysis):
                 cvfs[perturb_state] = position
 
         return cvfs
+
+
+class DijkstraTokenRingPartialAnalysis(
+    PartialCVFAnalysisMixin, DijkstraTokenRingFullAnalysis
+):
+    pass

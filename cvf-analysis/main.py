@@ -1,9 +1,12 @@
 import os
 import argparse
 
-from dijkstra_token_ring import DijkstraTokenRingFullAnalysis
 from graph_coloring import GraphColoringFullAnalysis, GraphColoringPartialAnalysis
 from maximal_matching import MaximalMatchingFullAnalysis, MaximalMatchingPartialAnalysis
+from dijkstra_token_ring import (
+    DijkstraTokenRingFullAnalysis,
+    DijkstraTokenRingPartialAnalysis,
+)
 from maximal_independent_set import (
     MaximalSetIndependenceFullAnalysis,
     MaximalSetIndependencePartialAnalysis,
@@ -16,8 +19,8 @@ from cvf_analysis import (
     PartialCVFAnalysisMixin,
 )
 
-ColoringProgram = "coloring"
-DijkstraProgram = "dijkstra"
+ColoringProgram = "graph_coloring"
+DijkstraProgram = "dijkstra_token_ring"
 MaxMatchingProgram = "maximal_matching"
 MaxIndependentSetProgram = "maximal_independent_set"
 
@@ -26,7 +29,10 @@ AnalysisMap = {
         FullAnalysisType: GraphColoringFullAnalysis,
         PartialAnalysisType: GraphColoringPartialAnalysis,
     },
-    DijkstraProgram: {FullAnalysisType: DijkstraTokenRingFullAnalysis},
+    DijkstraProgram: {
+        FullAnalysisType: DijkstraTokenRingFullAnalysis,
+        PartialAnalysisType: DijkstraTokenRingPartialAnalysis,
+    },
     MaxMatchingProgram: {
         FullAnalysisType: MaximalMatchingFullAnalysis,
         PartialAnalysisType: MaximalMatchingPartialAnalysis,
