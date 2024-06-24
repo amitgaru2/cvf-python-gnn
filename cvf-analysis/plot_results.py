@@ -5,9 +5,9 @@ import seaborn as sns
 from matplotlib import pyplot as plt
 
 results_dir = "results"
-program = "maximal_independent_set"  # coloring, dijkstra, maximal_matching, maximal_independent_set
-analysis_type = "partial_10000"  # full, partial
-graph_names = ["graph_2"]
+program = "dijkstra_token_ring"  # coloring, dijkstra_token_ring, maximal_matching, maximal_independent_set
+analysis_type = "full"  # full, partial
+graph_names = ["implicit_graph_n10", "implicit_graph_n10", "implicit_graph_n11", "implicit_graph_n12", "implicit_graph_n13", "implicit_graph_n14"]
 plots_dir = os.path.join("plots", program)
 
 
