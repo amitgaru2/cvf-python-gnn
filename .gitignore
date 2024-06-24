@@ -5,3 +5,4 @@ cvf_*.log
 venv
 
 cvf-analysis/plots
+cvf-analysis/analysis/plots
