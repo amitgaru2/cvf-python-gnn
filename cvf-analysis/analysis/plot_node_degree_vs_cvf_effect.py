@@ -78,7 +78,7 @@ if __name__ == "__main__":
         )
         fig, ax = plt.subplots(
             1,
-            figsize=(10, 8),
+            figsize=(8, 5),
         )
         fig_title = (
             f"node_degree_vs_rank_effect__{analysis_type}__{program}__{graph_name}"
