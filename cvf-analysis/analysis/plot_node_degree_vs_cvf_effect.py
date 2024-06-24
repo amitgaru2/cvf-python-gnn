@@ -76,7 +76,10 @@ if __name__ == "__main__":
             .agg({"Rank Effect": ["max"]})
             .droplevel(1, axis=1)
         )
-        fig, ax = plt.subplots(1)
+        fig, ax = plt.subplots(
+            1,
+            figsize=(10, 8),
+        )
         fig_title = (
             f"node_degree_vs_rank_effect__{analysis_type}__{program}__{graph_name}"
         )
