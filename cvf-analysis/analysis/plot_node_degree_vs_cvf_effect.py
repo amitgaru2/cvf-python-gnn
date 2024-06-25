@@ -43,8 +43,7 @@ def create_plots_dir_if_not_exists():
 
 
 def plot_node_degree_vs_rank_effect(df, ax):
-    sns.barplot(data=df, x="Node Degree", y="Rank Effect", ax=ax)
-    ax.set_ylim(bottom=0)
+    sns.scatterplot(data=df, x="Node Degree", y="Rank Effect", ax=ax)
 
 
 if __name__ == "__main__":
@@ -70,12 +69,12 @@ if __name__ == "__main__":
         df = get_df(graph_name)
         if df is None:
             continue
-        node_degree_vs_rank_effect = (
-            df[df["CVF (Avg)"] > 0]
-            .groupby(["Node Degree"])
-            .agg({"Rank Effect": ["max"]})
-            .droplevel(1, axis=1)
+        grps = df[(df["CVF (Avg)"] > 0) & (df["Rank Effect"] > 0)].groupby(
+            ["Node Degree", "Rank Effect"]
         )
+        data = grps.groups.keys()
+        df = pd.DataFrame(data, columns=["Node Degree", "Rank Effect"])
+        df["Node Degree"] = df["Node Degree"].astype("str")
         fig, ax = plt.subplots(
             1,
             figsize=(12, 5),
@@ -84,7 +83,7 @@ if __name__ == "__main__":
             f"node_degree_vs_rank_effect__{analysis_type}__{program}__{graph_name}"
         )
         fig.suptitle(fig_title, fontsize=16)
-        plot_node_degree_vs_rank_effect(node_degree_vs_rank_effect, ax)
+        plot_node_degree_vs_rank_effect(df, ax)
 
         fig.savefig(
             os.path.join(
