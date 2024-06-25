@@ -55,7 +55,7 @@ if __name__ == "__main__":
         )
         fig, ax = plt.subplots(
             1,
-            figsize=(9, 5),
+            figsize=(12, 5),
         )
         fig_title = f"node_vs_max_rank_effect__{analysis_type}__{program}__{graph_name}"
         fig.suptitle(fig_title, fontsize=16)
