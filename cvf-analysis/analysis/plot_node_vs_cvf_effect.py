@@ -58,9 +58,7 @@ if __name__ == "__main__":
             1,
             figsize=(12, 5),
         )
-        fig_title = (
-            f"node_degree_vs_rank_effect__{analysis_type}__{program}__{graph_name}"
-        )
+        fig_title = f"node__vs__rank_effect>={cut_off}__{analysis_type}__{program}__{graph_name}"
         fig.suptitle(fig_title, fontsize=16)
         plot_node_vs_rank_effect(df, ax, node_id_max)
 
