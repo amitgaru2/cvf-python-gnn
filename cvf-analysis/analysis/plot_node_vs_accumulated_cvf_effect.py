@@ -34,10 +34,10 @@ def plot_node_vs_accumulated_cvf_effect(df, ax, y_max):
 if __name__ == "__main__":
     results_dir = os.path.join(os.pardir, "results")
     graphs_dir = os.path.join(os.pardir, "graphs")
-    program = "dijkstra_token_ring"  # coloring, dijkstra_token_ring, maximal_matching, maximal_independent_set
+    program = "maximal_matching"  # coloring, dijkstra_token_ring, maximal_matching, maximal_independent_set
     analysis_type = "full"  # full, partial
-    cut_off = [60]
-    graph_names = ["implicit_graph_n12"]
+    cut_off = [5, 5, 5, 15]
+    graph_names = ["graph_1", "graph_2", "graph_3", "graph_6"]
     plots_dir = os.path.join("plots", program, "node_vs_accumulated_cvf_effect")
 
     create_plots_dir_if_not_exists()
