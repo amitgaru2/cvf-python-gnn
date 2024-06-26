@@ -5,14 +5,14 @@ import seaborn as sns
 from matplotlib import pyplot as plt
 
 results_dir = "results"
-program = "maximal_matching"  # coloring, dijkstra_token_ring, maximal_matching, maximal_independent_set
+program = "coloring"  # coloring, dijkstra_token_ring, maximal_matching, maximal_independent_set
 analysis_type = "full"  # full, partial
 graph_names = [
-    "graph_1",
-    "graph_2",
+    # "graph_1",
+    # "graph_2",
     "graph_3",
-    "graph_6",
-    "graph_7",
+    # "graph_6",
+    # "graph_7",
 ]
 plots_dir = os.path.join("plots", program)
 

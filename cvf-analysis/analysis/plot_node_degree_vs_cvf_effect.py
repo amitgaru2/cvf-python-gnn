@@ -52,14 +52,14 @@ if __name__ == "__main__":
     program = "coloring"  # coloring, dijkstra_token_ring, maximal_matching, maximal_independent_set
     analysis_type = "full"  # full, partial
     graph_names = [
-        "graph_1",
-        "graph_2",
+        # "graph_1",
+        # "graph_2",
         "graph_3",
-        "graph_4",
-        "graph_5",
-        "graph_6",
-        "graph_7",
-        "graph_8",
+        # "graph_4",
+        # "graph_5",
+        # "graph_6",
+        # "graph_7",
+        # "graph_8",
     ]
     plots_dir = os.path.join("plots", program, "node_degree_vs_cvf_effect")
 
