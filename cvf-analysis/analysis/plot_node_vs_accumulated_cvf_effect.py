@@ -79,9 +79,7 @@ if __name__ == "__main__":
         any_grps_filtered_out = list(any_grps_filtered_out)
         any_grps_filtered_out.sort()
         for grp in any_grps_filtered_out:
-            node_vs_accumulated_cvf_effect.loc[
-                len(node_vs_accumulated_cvf_effect.index)
-            ] = 0
+            node_vs_accumulated_cvf_effect.loc[grp] = 0
         fig_title = f"node__vs__accumulated_severe_cvf_effect_gte_{cut_off[indx]}__{analysis_type}__{program}__{graph_name}"
         fig.suptitle(fig_title, fontsize=16)
         plot_node_vs_accumulated_cvf_effect(
