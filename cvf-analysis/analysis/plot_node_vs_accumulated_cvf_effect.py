@@ -46,10 +46,10 @@ if __name__ == "__main__":
     ]
     cut_off = [40, 40, 50, 60]
     graph_names = [
-        'implicit_graph_n10',
-        'implicit_graph_n11',
-        'implicit_graph_n12',
-        'implicit_graph_n13',
+        "implicit_graph_n10",
+        "implicit_graph_n11",
+        "implicit_graph_n12",
+        "implicit_graph_n13",
     ]
     plots_dir = os.path.join("plots", program, "node_vs_accumulated_cvf_effect")
 
@@ -59,7 +59,7 @@ if __name__ == "__main__":
         df = get_df(graph_name)
         if df is None:
             continue
-        df = df[(df["CVF (Avg)"] > 0) & (df["Rank Effect"] > 0)]
+        df = df[(df["CVF (Avg)"] > 0) & (df["Rank Effect"] > cut_off[indx])]
         df["Accumulated Severe CVF Effect (Avg)"] = df.apply(
             lambda x: x["Rank Effect"] * x["CVF (Avg)"], axis=1
         )
