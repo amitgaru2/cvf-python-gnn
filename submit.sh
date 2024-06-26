@@ -31,7 +31,7 @@ cd 'cvf-analysis'
 #python main.py --program maximal_matching --graph_names graph_1 graph_2 
 #python main.py --program maximal_matching --graph_names graph_3 graph_4
 #python main.py --program maximal_matching --graph-names graph_1 graph_2 graph_3 graph_4 graph_5 graph_6 graph_7 graph_8
-python main.py --program maximal_matching -f --graph-names graph_3
+python main.py --program graph_coloring -f --graph-names graph_3
 #python main.py -f --program maximal_independent_set --graph-names graph_1 graph_2 graph_3 graph_4 graph_5 graph_6 graph_7 graph_8
 #python main.py --program graph_coloring --graph-names graph_3 graph_4 graph_5 graph_8
 #python main.py --program maximal_matching --graph_names graph_1 --sample-size 10000
