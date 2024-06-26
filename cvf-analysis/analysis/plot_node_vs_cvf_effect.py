@@ -34,22 +34,25 @@ def plot_node_vs_rank_effect(df, ax, node_id_max):
 if __name__ == "__main__":
     results_dir = os.path.join(os.pardir, "results")
     graphs_dir = os.path.join(os.pardir, "graphs")
-    program = "dijkstra_token_ring"  # coloring, dijkstra_token_ring, maximal_matching, maximal_independent_set
+    program = "maximal_matching"  # coloring, dijkstra_token_ring, maximal_matching, maximal_independent_set
     analysis_type = "full"  # full, partial
-    cut_off = 60
+    cut_off = [20, 10, 15, 10]
     graph_names = [
-        "implicit_graph_n13",
+        "graph_1",
+        "graph_2",
+        "graph_3",
+        "graph_6",
     ]
-    plots_dir = os.path.join("plots", program, "node_degree_vs_cvf_effect")
+    plots_dir = os.path.join("plots", program, "node_vs_cvf_effect")
 
     create_plots_dir_if_not_exists()
 
-    for graph_name in graph_names:
+    for indx, graph_name in enumerate(graph_names):
         df = get_df(graph_name)
         if df is None:
             continue
         node_id_max = df.agg({"Node": ["max"]})["Node"]["max"]
-        grps = df[(df["CVF (Avg)"] > 0) & (df["Rank Effect"] > cut_off)].groupby(
+        grps = df[(df["CVF (Avg)"] > 0) & (df["Rank Effect"] > cut_off[indx])].groupby(
             ["Node", "Rank Effect"]
         )
         data = grps.groups.keys()
@@ -58,7 +61,7 @@ if __name__ == "__main__":
             1,
             figsize=(12, 5),
         )
-        fig_title = f"node__vs__rank_effect>={cut_off}__{analysis_type}__{program}__{graph_name}"
+        fig_title = f"node__vs__rank_effect>={cut_off[indx]}__{analysis_type}__{program}__{graph_name}"
         fig.suptitle(fig_title, fontsize=16)
         plot_node_vs_rank_effect(df, ax, node_id_max)
 

@@ -41,7 +41,6 @@ if __name__ == "__main__":
         "graph_2",
         "graph_3",
         "graph_6",
-        "graph_7",
     ]
     plots_dir = os.path.join("plots", program, "node_vs_max_cvf_effect")
 
