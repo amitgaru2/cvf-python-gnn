@@ -30,9 +30,11 @@ class Configuration:
 class MaximalSetIndependenceFullAnalysis(CVFAnalysis):
     results_prefix = "maximal_independent_set"
     results_dir = os.path.join("results", results_prefix)
+    OUT = 0
+    IN = 1
 
     def possible_values_of_node(self, position):
-        return {0, 1}  # 0: out, 1: in
+        return {self.OUT, self.IN}  # 0: out, 1: in
 
     def _gen_configurations(self):
         self.configurations = {
@@ -53,7 +55,7 @@ class MaximalSetIndependenceFullAnalysis(CVFAnalysis):
         for nbr in self.graph[position]:
             if (
                 self.degree_of_nodes[nbr] <= self.degree_of_nodes[position]
-                and state[nbr].val == 1
+                and state[nbr].val == self.IN
             ):
                 return False
         return True
@@ -61,9 +63,9 @@ class MaximalSetIndependenceFullAnalysis(CVFAnalysis):
     def _check_if_none_eligible_process(self, state):
         """check invariant"""
         for position, config in enumerate(state):
-            if config.val == 0 and self._I_lte_v_null(position, state):
+            if config.val == self.OUT and self._I_lte_v_null(position, state):
                 return False
-            if config.val == 1 and not self._I_lte_v_null(position, state):
+            if config.val == self.IN and not self._I_lte_v_null(position, state):
                 return False
 
         return True
@@ -76,14 +78,14 @@ class MaximalSetIndependenceFullAnalysis(CVFAnalysis):
         logger.info("No. of Invariants: %s", len(self.invariants))
 
     def _is_program_transition(self, perturb_pos, start_state, dest_state) -> bool:
-        if start_state[perturb_pos].val == 0 and self._I_lte_v_null(
+        if start_state[perturb_pos].val == self.OUT and self._I_lte_v_null(
             perturb_pos, start_state
         ):
-            return dest_state[perturb_pos].val == 1
-        if start_state[perturb_pos].val == 1 and not self._I_lte_v_null(
+            return dest_state[perturb_pos].val == self.IN
+        if start_state[perturb_pos].val == self.IN and not self._I_lte_v_null(
             perturb_pos, start_state
         ):
-            return dest_state[perturb_pos].val == 0
+            return dest_state[perturb_pos].val == self.OUT
         return False
 
     def _get_program_transitions(self, start_state):
@@ -108,16 +110,16 @@ class MaximalSetIndependenceFullAnalysis(CVFAnalysis):
         """
         cvfs = dict()
         for position, _ in enumerate(start_state):
-            if start_state[position].val == 0:
+            if start_state[position].val == self.OUT:
                 perturb_state = list(copy.deepcopy(start_state))
-                perturb_state[position].val = 1
+                perturb_state[position].val = self.IN
                 perturb_state = tuple(perturb_state)
                 cvfs[perturb_state] = position
             else:
                 for nbr in self.graph[position]:
                     if self.degree_of_nodes[nbr] <= self.degree_of_nodes[position]:
                         perturb_state = list(copy.deepcopy(start_state))
-                        perturb_state[position].val = 0
+                        perturb_state[position].val = self.OUT
                         perturb_state = tuple(perturb_state)
                         cvfs[perturb_state] = position
                         break
