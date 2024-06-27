@@ -61,14 +61,16 @@ if __name__ == "__main__":
         if df is None:
             continue
         node_id_max = df.agg({"Node": ["max"]})["Node"]["max"]
-
         for c_off in [cut_off[indx], cut_off[indx] // 2, 0]:
-            df = df[(df["CVF (Avg)"] > 0) & (df["Rank Effect"] > c_off)]
-            df["Accumulated Severe CVF Effect (Avg)"] = df.apply(
+            df_copy = df.copy()
+            df_copy = df_copy[
+                (df_copy["CVF (Avg)"] > 0) & (df_copy["Rank Effect"] >= c_off)
+            ]
+            df_copy["Accumulated Severe CVF Effect (Avg)"] = df.apply(
                 lambda x: x["Rank Effect"] * x["CVF (Avg)"], axis=1
             )
             node_vs_accumulated_cvf_effect = (
-                df.groupby(["Node"])
+                df_copy.groupby(["Node"])
                 .agg({"Accumulated Severe CVF Effect (Avg)": ["sum"]})
                 .droplevel(1, axis=1)
             )
@@ -92,7 +94,6 @@ if __name__ == "__main__":
                     "Accumulated Severe CVF Effect (Avg)"
                 ].max(),
             )
-
             fig.savefig(
                 os.path.join(
                     plots_dir,
