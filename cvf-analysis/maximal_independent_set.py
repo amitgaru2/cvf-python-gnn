@@ -105,8 +105,8 @@ class MaximalSetIndependenceFullAnalysis(CVFAnalysis):
 
     def _get_cvfs(self, start_state):
         """
-        1. If the perturbation is from 0 to 1 then it is always C.V.F.
-        2. If the perturbation is from 1 to 0 then it is C.V.F only if it has degree >= any of its neighbor.
+        1. If the perturbation is from OUT to IN then it is always C.V.F.
+        2. If the perturbation is from IN to OUT then it is C.V.F only if it has degree >= any of its neighbor.
         """
         cvfs = dict()
         for position, _ in enumerate(start_state):
