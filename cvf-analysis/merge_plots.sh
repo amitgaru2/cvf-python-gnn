@@ -17,15 +17,21 @@ NODE_VS_ACCUMULATED_CVF_PLOTS_LOCATION="${ANALYSIS_PLOT_LOCATION}/node_vs_accumu
 NODE_VS_ACCUMULATED_CVF_PLOTS_MERGE_FILELIST="${TEMP_DIR}/accumulated_cvf_plots_${1}_${2}.txt"
 NODE_VS_ACCUMULATED_CVF_PLOTS_MERGE_PLOT=${TEMP_DIR}/accumulated_cvf_plots__${1}__${2}.png
 
+NODE_DEGREE_VS_CVF__NODE_VS_CVF=${TEMP_DIR}/node_degree_vs_cvf__node_vs_cvf__${1}__${2}.png
 NODE_VS_MAX_CVF__CVF__ACCUMULATED_CVF_MERGE_PLOT=${TEMP_DIR}/node_vs_max_cvf__cvf__accumulated_cvf__${1}__${2}.png
 
 if [[ "$1" == "coloring" ]];
 then
+        # vertically append
+        convert ${NODE_DEGREE_VS_RANK_EFFECT_PLOTS_LOCATION}/node_degree_vs_rank_effect__full__${1}__${2}.png \
+                ${NODE_VS_CVF_PLOTS_LOCATION}/node__vs__rank_effect_gte_*__full__${1}__${2}.png \
+                -append ${NODE_DEGREE_VS_CVF__NODE_VS_CVF}
+
         convert graph_images/${2}.png plots/coloring/rank_effect_by_node__full__${1}__${2}.png \
-                ${NODE_DEGREE_VS_RANK_EFFECT_PLOTS_LOCATION}/node_degree_vs_rank_effect__full__${1}__${2}.png \
+                ${NODE_DEGREE_VS_CVF__NODE_VS_CVF} \
                 -gravity center \
                 +append merged_plots/${1}_merged_plot_${2}.png
-        
+
         exit 0
 fi
 

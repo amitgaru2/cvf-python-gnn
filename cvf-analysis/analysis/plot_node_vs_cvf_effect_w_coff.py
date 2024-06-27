@@ -34,14 +34,16 @@ def plot_node_vs_rank_effect(df, ax, node_id_max):
 if __name__ == "__main__":
     results_dir = os.path.join(os.pardir, "results")
     graphs_dir = os.path.join(os.pardir, "graphs")
-    program = "maximal_matching"  # coloring, dijkstra_token_ring, maximal_matching, maximal_independent_set
+    program = "coloring"  # coloring, dijkstra_token_ring, maximal_matching, maximal_independent_set
     analysis_type = "full"  # full, partial
-    cut_off = [20, 10, 15, 10]
+    cut_off = [0, 0, 0, 0, 0, 0]
     graph_names = [
         "graph_1",
         "graph_2",
         "graph_3",
         "graph_6",
+        "graph_6b",
+        "graph_7",
     ]
     # cut_off = [40, 40, 50, 60]
     # graph_names = [
