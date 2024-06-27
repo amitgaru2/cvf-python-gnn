@@ -61,37 +61,41 @@ if __name__ == "__main__":
         if df is None:
             continue
         node_id_max = df.agg({"Node": ["max"]})["Node"]["max"]
-        df = df[(df["CVF (Avg)"] > 0) & (df["Rank Effect"] > cut_off[indx])]
-        df["Accumulated Severe CVF Effect (Avg)"] = df.apply(
-            lambda x: x["Rank Effect"] * x["CVF (Avg)"], axis=1
-        )
-        node_vs_accumulated_cvf_effect = (
-            df.groupby(["Node"])
-            .agg({"Accumulated Severe CVF Effect (Avg)": ["sum"]})
-            .droplevel(1, axis=1)
-        )
-        fig, ax = plt.subplots(
-            1,
-            figsize=(12, 5),
-        )
-        any_grps_filtered_out = set(range(node_id_max + 1)) - set(
-            node_vs_accumulated_cvf_effect.index
-        )
-        any_grps_filtered_out = list(any_grps_filtered_out)
-        any_grps_filtered_out.sort()
-        for grp in any_grps_filtered_out:
-            node_vs_accumulated_cvf_effect.loc[grp] = 0
-        fig_title = f"node__vs__accumulated_severe_cvf_effect_gte_{cut_off[indx]}__{analysis_type}__{program}__{graph_name}"
-        fig.suptitle(fig_title, fontsize=16)
-        plot_node_vs_accumulated_cvf_effect(
-            node_vs_accumulated_cvf_effect,
-            ax,
-            node_vs_accumulated_cvf_effect["Accumulated Severe CVF Effect (Avg)"].max(),
-        )
 
-        fig.savefig(
-            os.path.join(
-                plots_dir,
-                f"{fig_title}.png",
+        for c_off in [cut_off[indx], cut_off[indx] // 2, 0]:
+            df = df[(df["CVF (Avg)"] > 0) & (df["Rank Effect"] > c_off)]
+            df["Accumulated Severe CVF Effect (Avg)"] = df.apply(
+                lambda x: x["Rank Effect"] * x["CVF (Avg)"], axis=1
             )
-        )
+            node_vs_accumulated_cvf_effect = (
+                df.groupby(["Node"])
+                .agg({"Accumulated Severe CVF Effect (Avg)": ["sum"]})
+                .droplevel(1, axis=1)
+            )
+            fig, ax = plt.subplots(
+                1,
+                figsize=(12, 5),
+            )
+            any_grps_filtered_out = set(range(node_id_max + 1)) - set(
+                node_vs_accumulated_cvf_effect.index
+            )
+            any_grps_filtered_out = list(any_grps_filtered_out)
+            any_grps_filtered_out.sort()
+            for grp in any_grps_filtered_out:
+                node_vs_accumulated_cvf_effect.loc[grp] = 0
+            fig_title = f"node__vs__accumulated_severe_cvf_effect_gte_{c_off}__{analysis_type}__{program}__{graph_name}"
+            fig.suptitle(fig_title, fontsize=16)
+            plot_node_vs_accumulated_cvf_effect(
+                node_vs_accumulated_cvf_effect,
+                ax,
+                node_vs_accumulated_cvf_effect[
+                    "Accumulated Severe CVF Effect (Avg)"
+                ].max(),
+            )
+
+            fig.savefig(
+                os.path.join(
+                    plots_dir,
+                    f"{fig_title}.png",
+                )
+            )
