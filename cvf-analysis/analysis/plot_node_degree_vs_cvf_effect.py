@@ -55,10 +55,10 @@ if __name__ == "__main__":
     graph_names = [
         # "graph_1",
         # "graph_2",
-        "graph_3",
+        # "graph_3",
         # "graph_4",
         # "graph_5",
-        # "graph_6",
+        "graph_6b",
         # "graph_7",
         # "graph_8",
     ]
