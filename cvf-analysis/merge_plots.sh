@@ -60,6 +60,12 @@ echo "Dijkstra skipping appending graph image"
 else
 # horizontally append
 # resize to base image
+# NODE_MAX_CVF_PLOT_SIZE=$(identify -ping -format '%[width]x%[height]' ${NODE_VS_MAX_CVF_PLOTS_LOCATION}/node_vs_max_rank_effect__full__${1}__${2}.png)
+
+# convert ${GRAPH_IMAGE_LOCATION} \
+#         -resize ${NODE_MAX_CVF_PLOT_SIZE} \
+#         ${GRAPH_IMAGE_LOCATION}
+
 convert ${GRAPH_IMAGE_LOCATION} \
         ${NODE_VS_MAX_CVF__CVF__ACCUMULATED_CVF_MERGE_PLOT} \
         -gravity center \
