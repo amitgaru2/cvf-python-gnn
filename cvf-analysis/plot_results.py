@@ -1,3 +1,4 @@
+import math
 import os
 import pandas as pd
 import seaborn as sns
@@ -8,11 +9,12 @@ results_dir = "results"
 program = "coloring"  # coloring, dijkstra_token_ring, maximal_matching, maximal_independent_set
 analysis_type = "full"  # full, partial
 graph_names = [
-    # "graph_1",
-    # "graph_2",
-    # "graph_3",
+    "graph_1",
+    "graph_2",
+    "graph_3",
+    "graph_6",
     "graph_6b",
-    # "graph_7",
+    "graph_7",
 ]
 plots_dir = os.path.join("plots", program)
 
@@ -63,15 +65,34 @@ for graph_name in graph_names:
     if df is None:
         continue
     node_grps = df.groupby(["Node"])
+    # fig, axs = plt.subplots(
+    #     node_grps.ngroups, 2, figsize=(12, 20), constrained_layout=True
+    # )
+    no_of_cols = 5
+    no_of_rows = math.ceil(node_grps.ngroups / no_of_cols)
     fig, axs = plt.subplots(
-        node_grps.ngroups, 2, figsize=(12, 20), constrained_layout=True
+        no_of_rows,
+        no_of_cols,
+        figsize=(
+            2 * no_of_cols,
+            2 * no_of_rows,
+        ),
+        constrained_layout=True,
     )
     fig_title = f"rank_effect_by_node__{analysis_type}__{program}__{graph_name}"
     fig.suptitle(fig_title, fontsize=16)
 
+    # for i, (index, grp) in enumerate(node_grps):
+    #     plot_node_rank_effect(index[0], grp, axs[i][0])
+    #     plot_node_rank_effect_max(index[0], grp, axs[i][1])
     for i, (index, grp) in enumerate(node_grps):
-        plot_node_rank_effect(index[0], grp, axs[i][0])
-        plot_node_rank_effect_max(index[0], grp, axs[i][1])
+        plot_node_rank_effect(index[0], grp, axs[i // no_of_cols, i % no_of_cols])
+
+    if node_grps.ngroups % no_of_cols != 0:
+        r, c = node_grps.ngroups // no_of_cols, node_grps.ngroups % no_of_cols
+        while c % no_of_cols != 0:
+            axs[r, c].set_axis_off()
+            c += 1
 
     fig.savefig(
         os.path.join(
