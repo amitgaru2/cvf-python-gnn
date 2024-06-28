@@ -10,8 +10,8 @@ analysis_type = "full"  # full, partial
 graph_names = [
     # "graph_1",
     # "graph_2",
-    "graph_3",
-    # "graph_6",
+    # "graph_3",
+    "graph_6b",
     # "graph_7",
 ]
 plots_dir = os.path.join("plots", program)
