@@ -53,14 +53,12 @@ if __name__ == "__main__":
     program = "coloring"  # coloring, dijkstra_token_ring, maximal_matching, maximal_independent_set
     analysis_type = "full"  # full, partial
     graph_names = [
-        # "graph_1",
-        # "graph_2",
-        # "graph_3",
-        # "graph_4",
-        # "graph_5",
+        "graph_1",
+        "graph_2",
+        "graph_3",
+        "graph_6",
         "graph_6b",
-        # "graph_7",
-        # "graph_8",
+        "graph_7",
     ]
     plots_dir = os.path.join("plots", program, "node_degree_vs_cvf_effect")
 
@@ -76,10 +74,7 @@ if __name__ == "__main__":
         data = grps.groups.keys()
         df = pd.DataFrame(data, columns=["Node Degree", "Rank Effect"])
         df["Node Degree"] = df["Node Degree"].astype("str")
-        fig, ax = plt.subplots(
-            1,
-            figsize=(12, 5),
-        )
+        fig, ax = plt.subplots(1, figsize=(12, 5), constrained_layout=True)
         fig_title = (
             f"node_degree_vs_rank_effect__{analysis_type}__{program}__{graph_name}"
         )

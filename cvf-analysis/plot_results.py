@@ -6,16 +6,25 @@ import seaborn as sns
 from matplotlib import pyplot as plt
 
 results_dir = "results"
-program = "coloring"  # coloring, dijkstra_token_ring, maximal_matching, maximal_independent_set
+program = "maximal_matching"  # coloring, dijkstra_token_ring, maximal_matching, maximal_independent_set
 analysis_type = "full"  # full, partial
 graph_names = [
     "graph_1",
     "graph_2",
     "graph_3",
+    "graph_4",
+    "graph_5",
     "graph_6",
     "graph_6b",
     "graph_7",
+    "graph_8",
 ]
+# graph_names = [
+#     "implicit_graph_n10",
+#     "implicit_graph_n11",
+#     "implicit_graph_n12",
+#     "implicit_graph_n13",
+# ]
 plots_dir = os.path.join("plots", program)
 
 
@@ -74,8 +83,8 @@ for graph_name in graph_names:
         no_of_rows,
         no_of_cols,
         figsize=(
-            2 * no_of_cols,
-            2 * no_of_rows,
+            4 * no_of_cols,
+            4 * no_of_rows,
         ),
         constrained_layout=True,
     )

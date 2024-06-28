@@ -74,10 +74,7 @@ if __name__ == "__main__":
                 .agg({"Accumulated Severe CVF Effect (Avg)": ["sum"]})
                 .droplevel(1, axis=1)
             )
-            fig, ax = plt.subplots(
-                1,
-                figsize=(12, 5),
-            )
+            fig, ax = plt.subplots(1, figsize=(12, 5), constrained_layout=True)
             any_grps_filtered_out = set(range(node_id_max + 1)) - set(
                 node_vs_accumulated_cvf_effect.index
             )

@@ -56,10 +56,7 @@ if __name__ == "__main__":
             .agg({"Rank Effect": ["max"]})
             .droplevel(1, axis=1)
         )
-        fig, ax = plt.subplots(
-            1,
-            figsize=(12, 5),
-        )
+        fig, ax = plt.subplots(1, figsize=(12, 5), constrained_layout=True)
         fig_title = f"node_vs_max_rank_effect__{analysis_type}__{program}__{graph_name}"
         fig.suptitle(fig_title, fontsize=16)
         plot_node_vs_max_rank_effect(

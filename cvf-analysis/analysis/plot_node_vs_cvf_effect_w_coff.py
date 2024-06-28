@@ -69,6 +69,7 @@ if __name__ == "__main__":
         fig, ax = plt.subplots(
             1,
             figsize=(12, 5),
+            constrained_layout=True
         )
         fig_title = f"node__vs__rank_effect_gte_{cut_off[indx]}__{analysis_type}__{program}__{graph_name}"
         fig.suptitle(fig_title, fontsize=16)
