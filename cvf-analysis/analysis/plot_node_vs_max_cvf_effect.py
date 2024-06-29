@@ -34,13 +34,20 @@ def plot_node_vs_max_rank_effect(df, ax, y_max):
 if __name__ == "__main__":
     results_dir = os.path.join(os.pardir, "results")
     graphs_dir = os.path.join(os.pardir, "graphs")
-    program = "maximal_matching"  # coloring, dijkstra_token_ring, maximal_matching, maximal_independent_set
+    program = "dijkstra_token_ring"  # coloring, dijkstra_token_ring, maximal_matching, maximal_independent_set
     analysis_type = "full"  # full, partial
     graph_names = [
         "graph_1",
         "graph_2",
         "graph_3",
         "graph_6",
+        "graph_6b",
+    ]
+    graph_names = [
+        "implicit_graph_n10",
+        "implicit_graph_n11",
+        "implicit_graph_n12",
+        "implicit_graph_n13",
     ]
     plots_dir = os.path.join("plots", program, "node_vs_max_cvf_effect")
 
@@ -56,9 +63,9 @@ if __name__ == "__main__":
             .agg({"Rank Effect": ["max"]})
             .droplevel(1, axis=1)
         )
-        fig, ax = plt.subplots(1, figsize=(12, 5), constrained_layout=True)
+        fig, ax = plt.subplots(1, figsize=(10, 5), constrained_layout=True)
         fig_title = f"node_vs_max_rank_effect__{analysis_type}__{program}__{graph_name}"
-        fig.suptitle(fig_title, fontsize=16)
+        fig.suptitle(fig_title, fontsize=10)
         plot_node_vs_max_rank_effect(
             node_vs_max_rank_effect, ax, node_vs_max_rank_effect["Rank Effect"].max()
         )

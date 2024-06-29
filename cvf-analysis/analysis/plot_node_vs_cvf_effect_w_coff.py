@@ -25,39 +25,49 @@ def create_plots_dir_if_not_exists():
         os.makedirs(plots_dir)
 
 
-def plot_node_vs_rank_effect(df, ax, node_id_max):
+def plot_node_vs_rank_effect(df, ax, node_id_max, c_off):
     if program == "coloring":
         sns.scatterplot(data=df, x="Node", y="Rank Effect", ax=ax, s=500)
+    elif program == "maximal_matching":
+        sns.scatterplot(data=df, x="Node", y="Rank Effect", ax=ax, s=250)
     else:
         sns.scatterplot(data=df, x="Node", y="Rank Effect", ax=ax)
     rank_effect_max = df["Rank Effect"].max()
     ax.set_xlim(left=-0.5, right=node_id_max + 0.5)
     ax.set_xticks([i for i in range(0, node_id_max + 1)])
-    if program == "coloring":
-        ax.set_yticks([i for i in range(0, rank_effect_max + 1)])
+    if program == "coloring" or program == "maximal_matching":
+        ax.set_yticks([i for i in range(c_off, rank_effect_max + 1)])
 
 
 if __name__ == "__main__":
     results_dir = os.path.join(os.pardir, "results")
     graphs_dir = os.path.join(os.pardir, "graphs")
-    program = "dijkstra_token_ring"  # coloring, dijkstra_token_ring, maximal_matching, maximal_independent_set
+    program = "maximal_matching"  # coloring, dijkstra_token_ring, maximal_matching, maximal_independent_set
     analysis_type = "full"  # full, partial
-    cut_off = [0, 0, 0, 0, 0, 0]
+    # cut_off = [0, 0, 0, 0, 0, 0]
+    # graph_names = [
+    #     "graph_1",
+    #     "graph_2",
+    #     "graph_3",
+    #     "graph_6",
+    #     "graph_6b",
+    #     "graph_7",
+    # ]
+    cut_off = [20, 10, 15, 10, 10]
     graph_names = [
         "graph_1",
         "graph_2",
         "graph_3",
         "graph_6",
         "graph_6b",
-        "graph_7",
     ]
-    cut_off = [40, 40, 50, 60]
-    graph_names = [
-        "implicit_graph_n10",
-        "implicit_graph_n11",
-        "implicit_graph_n12",
-        "implicit_graph_n13",
-    ]
+    # cut_off = [40, 40, 50, 60]
+    # graph_names = [
+    #     "implicit_graph_n10",
+    #     "implicit_graph_n11",
+    #     "implicit_graph_n12",
+    #     "implicit_graph_n13",
+    # ]
     plots_dir = os.path.join("plots", program, "node_vs_cvf_effect")
 
     create_plots_dir_if_not_exists()
@@ -75,7 +85,7 @@ if __name__ == "__main__":
         fig, ax = plt.subplots(1, figsize=(10, 5), constrained_layout=True)
         fig_title = f"node__vs__rank_effect_gte_{cut_off[indx]}__{analysis_type}__{program}__{graph_name}"
         fig.suptitle(fig_title, fontsize=10)
-        plot_node_vs_rank_effect(df, ax, node_id_max)
+        plot_node_vs_rank_effect(df, ax, node_id_max, cut_off[indx])
 
         fig.savefig(
             os.path.join(

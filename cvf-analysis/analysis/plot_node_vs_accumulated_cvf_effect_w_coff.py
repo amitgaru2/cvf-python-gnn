@@ -35,23 +35,24 @@ def plot_node_vs_accumulated_cvf_effect(df, ax, y_max):
 if __name__ == "__main__":
     results_dir = os.path.join(os.pardir, "results")
     graphs_dir = os.path.join(os.pardir, "graphs")
-    program = "dijkstra_token_ring"  # coloring, dijkstra_token_ring, maximal_matching, maximal_independent_set
+    program = "maximal_matching"  # coloring, dijkstra_token_ring, maximal_matching, maximal_independent_set
     analysis_type = "full"  # full, partial
     # cut_off = [40, 40, 50, 60]
-    cut_off = [20, 10, 15, 10]
+    cut_off = [20, 10, 15, 10, 10]
     graph_names = [
         "graph_1",
         "graph_2",
         "graph_3",
         "graph_6",
+        "graph_6b",
     ]
-    cut_off = [40, 40, 50, 60]
-    graph_names = [
-        "implicit_graph_n10",
-        "implicit_graph_n11",
-        "implicit_graph_n12",
-        "implicit_graph_n13",
-    ]
+    # cut_off = [40, 40, 50, 60]
+    # graph_names = [
+    #     "implicit_graph_n10",
+    #     "implicit_graph_n11",
+    #     "implicit_graph_n12",
+    #     "implicit_graph_n13",
+    # ]
     plots_dir = os.path.join("plots", program, "node_vs_accumulated_cvf_effect")
 
     create_plots_dir_if_not_exists()
@@ -74,7 +75,7 @@ if __name__ == "__main__":
                 .agg({"Accumulated Severe CVF Effect (Avg)": ["sum"]})
                 .droplevel(1, axis=1)
             )
-            fig, ax = plt.subplots(1, figsize=(12, 5), constrained_layout=True)
+            fig, ax = plt.subplots(1, figsize=(10, 5), constrained_layout=True)
             any_grps_filtered_out = set(range(node_id_max + 1)) - set(
                 node_vs_accumulated_cvf_effect.index
             )
@@ -85,7 +86,7 @@ if __name__ == "__main__":
 
             file_name_substr = f"{c_off}" if len(str(c_off)) > 1 else f"0{c_off}"
             fig_title = f"node__vs__accumulated_severe_cvf_effect_gte_{file_name_substr}__{analysis_type}__{program}__{graph_name}"
-            fig.suptitle(fig_title, fontsize=16)
+            fig.suptitle(fig_title, fontsize=10)
             plot_node_vs_accumulated_cvf_effect(
                 node_vs_accumulated_cvf_effect,
                 ax,
