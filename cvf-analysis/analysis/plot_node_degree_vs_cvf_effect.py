@@ -44,8 +44,9 @@ def create_plots_dir_if_not_exists():
 
 
 def plot_node_degree_vs_rank_effect(df, ax):
-    sns.scatterplot(data=df, x="Node Degree", y="Rank Effect", ax=ax)
-
+    sns.scatterplot(data=df, x="Node Degree", y="Rank Effect", ax=ax, s=500)
+    rank_effect_max = df["Rank Effect"].max()
+    ax.set_yticks([i for i in range(0, rank_effect_max + 1)])
 
 if __name__ == "__main__":
     results_dir = os.path.join(os.pardir, "results")

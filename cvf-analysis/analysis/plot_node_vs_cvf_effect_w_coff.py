@@ -26,7 +26,7 @@ def create_plots_dir_if_not_exists():
 
 
 def plot_node_vs_rank_effect(df, ax, node_id_max):
-    sns.scatterplot(data=df, x="Node", y="Rank Effect", ax=ax)
+    sns.scatterplot(data=df, x="Node", y="Rank Effect", ax=ax, s=500)
     ax.set_xlim(left=-0.5, right=node_id_max + 0.5)
     ax.set_xticks([i for i in range(0, node_id_max + 1)])
 
