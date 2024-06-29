@@ -6,7 +6,7 @@ import seaborn as sns
 from matplotlib import pyplot as plt
 
 results_dir = "results"
-program = "coloring"  # coloring, dijkstra_token_ring, maximal_matching, maximal_independent_set
+program = "maximal_matching"  # coloring, dijkstra_token_ring, maximal_matching, maximal_independent_set
 analysis_type = "full"  # full, partial
 graph_names = [
     "graph_1",
