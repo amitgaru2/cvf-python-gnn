@@ -6,7 +6,7 @@ import seaborn as sns
 from matplotlib import pyplot as plt
 
 results_dir = "results"
-program = "maximal_matching"  # coloring, dijkstra_token_ring, maximal_matching, maximal_independent_set
+program = "coloring"  # coloring, dijkstra_token_ring, maximal_matching, maximal_independent_set
 analysis_type = "full"  # full, partial
 graph_names = [
     "graph_1",
@@ -101,7 +101,12 @@ for graph_name in graph_names:
             figsize=(10, 5),
             constrained_layout=True,
         )
-        fig_title = f"rank_effect_by_node__{analysis_type}__{program}__{graph_name}__node_{index[0]}"
+        node_id = index[0]
+        if node_id < 10:
+            node_id = f"0{node_id}"
+        else:
+            node_id = f"{node_id}"
+        fig_title = f"rank_effect_by_node__{analysis_type}__{program}__{graph_name}__node_{node_id}"
         fig.suptitle(fig_title, fontsize=10)
         plot_node_rank_effect(index[0], grp, axs)
         fig.savefig(
