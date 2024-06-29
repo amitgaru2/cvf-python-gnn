@@ -88,24 +88,39 @@ for graph_name in graph_names:
         ),
         constrained_layout=True,
     )
-    fig_title = f"rank_effect_by_node__{analysis_type}__{program}__{graph_name}"
-    fig.suptitle(fig_title, fontsize=16)
+    # fig_title = f"rank_effect_by_node__{analysis_type}__{program}__{graph_name}"
+    # fig.suptitle(fig_title, fontsize=16)
 
     # for i, (index, grp) in enumerate(node_grps):
     #     plot_node_rank_effect(index[0], grp, axs[i][0])
     #     plot_node_rank_effect_max(index[0], grp, axs[i][1])
     for i, (index, grp) in enumerate(node_grps):
-        plot_node_rank_effect(index[0], grp, axs[i // no_of_cols, i % no_of_cols])
-
-    if node_grps.ngroups % no_of_cols != 0:
-        r, c = node_grps.ngroups // no_of_cols, node_grps.ngroups % no_of_cols
-        while c % no_of_cols != 0:
-            axs[r, c].set_axis_off()
-            c += 1
-
-    fig.savefig(
-        os.path.join(
-            plots_dir,
-            f"{fig_title}.png",
+        fig, axs = plt.subplots(
+            1,
+            1,
+            figsize=(10, 5),
+            constrained_layout=True,
         )
-    )
+        fig_title = f"rank_effect_by_node__{analysis_type}__{program}__{graph_name}__node_{index[0]}"
+        fig.suptitle(fig_title, fontsize=10)
+        plot_node_rank_effect(index[0], grp, axs)
+        fig.savefig(
+            os.path.join(
+                plots_dir,
+                f"{fig_title}.png",
+            )
+        )
+        plt.close()
+
+    # if node_grps.ngroups % no_of_cols != 0:
+    #     r, c = node_grps.ngroups // no_of_cols, node_grps.ngroups % no_of_cols
+    #     while c % no_of_cols != 0:
+    #         axs[r, c].set_axis_off()
+    #         c += 1
+
+    # fig.savefig(
+    #     os.path.join(
+    #         plots_dir,
+    #         f"{fig_title}.png",
+    #     )
+    # )

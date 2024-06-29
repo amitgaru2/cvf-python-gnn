@@ -74,11 +74,11 @@ if __name__ == "__main__":
         data = grps.groups.keys()
         df = pd.DataFrame(data, columns=["Node Degree", "Rank Effect"])
         df["Node Degree"] = df["Node Degree"].astype("str")
-        fig, ax = plt.subplots(1, figsize=(12, 5), constrained_layout=True)
+        fig, ax = plt.subplots(1, figsize=(10, 5), constrained_layout=True)
         fig_title = (
             f"node_degree_vs_rank_effect__{analysis_type}__{program}__{graph_name}"
         )
-        fig.suptitle(fig_title, fontsize=16)
+        fig.suptitle(fig_title, fontsize=10)
         plot_node_degree_vs_rank_effect(df, ax)
 
         fig.savefig(
