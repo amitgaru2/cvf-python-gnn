@@ -30,12 +30,14 @@ def create_plots_dir_if_not_exists():
 def plot_node_vs_accumulated_cvf_effect(df, ax, y_max):
     sns.barplot(data=df, x="Node", y="Accumulated Severe CVF Effect (Avg)", ax=ax)
     ax.set_ylim(bottom=0, top=math.ceil(y_max * 1.1))
+    ax.xaxis.label.set_size(15)
+    ax.yaxis.label.set_size(15)
 
 
 if __name__ == "__main__":
     results_dir = os.path.join(os.pardir, "results")
     graphs_dir = os.path.join(os.pardir, "graphs")
-    program = "maximal_matching"  # coloring, dijkstra_token_ring, maximal_matching, maximal_independent_set
+    program = "dijkstra_token_ring"  # coloring, dijkstra_token_ring, maximal_matching, maximal_independent_set
     analysis_type = "full"  # full, partial
     # cut_off = [40, 40, 50, 60]
     cut_off = [20, 10, 15, 10, 10]
@@ -46,13 +48,13 @@ if __name__ == "__main__":
         "graph_6",
         "graph_6b",
     ]
-    # cut_off = [40, 40, 50, 60]
-    # graph_names = [
-    #     "implicit_graph_n10",
-    #     "implicit_graph_n11",
-    #     "implicit_graph_n12",
-    #     "implicit_graph_n13",
-    # ]
+    cut_off = [40, 40, 50, 60]
+    graph_names = [
+        "implicit_graph_n10",
+        "implicit_graph_n11",
+        "implicit_graph_n12",
+        "implicit_graph_n13",
+    ]
     plots_dir = os.path.join("plots", program, "node_vs_accumulated_cvf_effect")
 
     create_plots_dir_if_not_exists()
@@ -86,7 +88,7 @@ if __name__ == "__main__":
 
             file_name_substr = f"{c_off}" if len(str(c_off)) > 1 else f"0{c_off}"
             fig_title = f"node__vs__accumulated_severe_cvf_effect_gte_{file_name_substr}__{analysis_type}__{program}__{graph_name}"
-            fig.suptitle(fig_title, fontsize=10)
+            fig.suptitle(fig_title, fontsize=15)
             plot_node_vs_accumulated_cvf_effect(
                 node_vs_accumulated_cvf_effect,
                 ax,

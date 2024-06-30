@@ -47,6 +47,8 @@ def plot_node_degree_vs_rank_effect(df, ax):
     sns.scatterplot(data=df, x="Node Degree", y="Rank Effect", ax=ax, s=500)
     rank_effect_max = df["Rank Effect"].max()
     ax.set_yticks([i for i in range(0, rank_effect_max + 1)])
+    ax.xaxis.label.set_size(15)
+    ax.yaxis.label.set_size(15)
 
 if __name__ == "__main__":
     results_dir = os.path.join(os.pardir, "results")
@@ -79,7 +81,7 @@ if __name__ == "__main__":
         fig_title = (
             f"node_degree_vs_rank_effect__{analysis_type}__{program}__{graph_name}"
         )
-        fig.suptitle(fig_title, fontsize=10)
+        fig.suptitle(fig_title, fontsize=15)
         plot_node_degree_vs_rank_effect(df, ax)
 
         fig.savefig(

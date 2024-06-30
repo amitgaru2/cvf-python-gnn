@@ -25,6 +25,6 @@ for gname in graph_names:
     else:
         nx.draw_networkx(G, node_color="white", ax=fig.add_subplot())
 
-    fig.suptitle(f"Graph {gname}", fontsize=10)
+    fig.suptitle(f"Graph {gname}", fontsize=15)
     fig.savefig(f"graph_images/{gname}.png")
     # plt.show()

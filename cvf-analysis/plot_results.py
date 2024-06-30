@@ -48,6 +48,8 @@ def plot_node_rank_effect(node, df, ax):
     df = df.loc[df["CVF (Avg)"] > 0]
     sns.lineplot(data=df, x="Rank Effect", y="CVF (Avg)", ax=ax)
     ax.set(xlabel=f"Rank Effect of Node: {node}", ylabel="Count")
+    ax.xaxis.label.set_size(15)
+    ax.yaxis.label.set_size(15)
     ax.set_title("CVF Avg")
     if df.shape[0] > 0:
         ax.set_yscale("log")
@@ -107,7 +109,7 @@ for graph_name in graph_names:
         else:
             node_id = f"{node_id}"
         fig_title = f"rank_effect_by_node__{analysis_type}__{program}__{graph_name}__node_{node_id}"
-        fig.suptitle(fig_title, fontsize=10)
+        fig.suptitle(fig_title, fontsize=15)
         plot_node_rank_effect(index[0], grp, axs)
         fig.savefig(
             os.path.join(
