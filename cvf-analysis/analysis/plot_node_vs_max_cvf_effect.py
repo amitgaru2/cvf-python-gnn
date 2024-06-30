@@ -6,6 +6,9 @@ import seaborn as sns
 from matplotlib import pyplot as plt
 
 
+from plot_config import *
+
+
 def get_df(graph_name):
     full_path = os.path.join(
         results_dir,
@@ -34,26 +37,26 @@ def plot_node_vs_max_rank_effect(df, ax, y_max):
 
 
 if __name__ == "__main__":
-    results_dir = os.path.join(os.pardir, "results")
-    graphs_dir = os.path.join(os.pardir, "graphs")
-    program = "dijkstra_token_ring"  # coloring, dijkstra_token_ring, maximal_matching, maximal_independent_set
-    program_label_map = {"dijkstra_token_ring": "dijkstra_tr"}
-    program_label = program_label_map.get(program, program)
-    analysis_type = "full"  # full, partial
-    fontsize = 15
-    graph_names = [
-        "graph_1",
-        "graph_2",
-        "graph_3",
-        "graph_6",
-        "graph_6b",
-    ]
-    graph_names = [
-        "implicit_graph_n10",
-        "implicit_graph_n11",
-        "implicit_graph_n12",
-        "implicit_graph_n13",
-    ]
+    # results_dir = os.path.join(os.pardir, "results")
+    # graphs_dir = os.path.join(os.pardir, "graphs")
+    # program = "dijkstra_token_ring"  # coloring, dijkstra_token_ring, maximal_matching, maximal_independent_set
+    # program_label_map = {"dijkstra_token_ring": "dijkstra_tr"}
+    # program_label = program_label_map.get(program, program)
+    # analysis_type = "full"  # full, partial
+    # fontsize = 15
+    # graph_names = [
+    #     "graph_1",
+    #     "graph_2",
+    #     "graph_3",
+    #     "graph_6",
+    #     "graph_6b",
+    # ]
+    # graph_names = [
+    #     "implicit_graph_n10",
+    #     "implicit_graph_n11",
+    #     "implicit_graph_n12",
+    #     "implicit_graph_n13",
+    # ]
     plots_dir = os.path.join("plots", program, "node_vs_max_cvf_effect")
 
     create_plots_dir_if_not_exists()
@@ -82,3 +85,5 @@ if __name__ == "__main__":
                 f"{file_name}.png",
             )
         )
+
+        print(f"Saved plot for {graph_name}")
