@@ -30,15 +30,18 @@ def create_plots_dir_if_not_exists():
 def plot_node_vs_accumulated_cvf_effect(df, ax, y_max):
     sns.barplot(data=df, x="Node", y="Accumulated Severe CVF Effect (Avg)", ax=ax)
     ax.set_ylim(bottom=0, top=math.ceil(y_max * 1.1))
-    ax.xaxis.label.set_size(15)
-    ax.yaxis.label.set_size(15)
+    ax.xaxis.label.set_size(fontsize)
+    ax.yaxis.label.set_size(fontsize)
 
 
 if __name__ == "__main__":
     results_dir = os.path.join(os.pardir, "results")
     graphs_dir = os.path.join(os.pardir, "graphs")
     program = "dijkstra_token_ring"  # coloring, dijkstra_token_ring, maximal_matching, maximal_independent_set
+    program_label_map = {"dijkstra_token_ring": "dijkstra_tr"}
+    program_label = program_label_map.get(program, program)
     analysis_type = "full"  # full, partial
+    fontsize = 15
     # cut_off = [40, 40, 50, 60]
     cut_off = [20, 10, 15, 10, 10]
     graph_names = [
@@ -87,8 +90,9 @@ if __name__ == "__main__":
                 node_vs_accumulated_cvf_effect.loc[grp] = 0
 
             file_name_substr = f"{c_off}" if len(str(c_off)) > 1 else f"0{c_off}"
-            fig_title = f"node__vs__accumulated_severe_cvf_effect_gte_{file_name_substr}__{analysis_type}__{program}__{graph_name}"
-            fig.suptitle(fig_title, fontsize=15)
+            file_name = f"node__vs__accumulated_severe_cvf_effect_gte_{file_name_substr}__{analysis_type}__{program}__{graph_name}"
+            fig_title = f"node_vs_accumulated_severe_cvf_gte_{file_name_substr}__{program_label}__{graph_name}"
+            fig.suptitle(fig_title, fontsize=fontsize)
             plot_node_vs_accumulated_cvf_effect(
                 node_vs_accumulated_cvf_effect,
                 ax,
@@ -99,6 +103,6 @@ if __name__ == "__main__":
             fig.savefig(
                 os.path.join(
                     plots_dir,
-                    f"{fig_title}.png",
+                    f"{file_name}.png",
                 )
             )

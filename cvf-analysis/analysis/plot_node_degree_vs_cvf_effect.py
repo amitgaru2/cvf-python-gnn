@@ -47,14 +47,18 @@ def plot_node_degree_vs_rank_effect(df, ax):
     sns.scatterplot(data=df, x="Node Degree", y="Rank Effect", ax=ax, s=500)
     rank_effect_max = df["Rank Effect"].max()
     ax.set_yticks([i for i in range(0, rank_effect_max + 1)])
-    ax.xaxis.label.set_size(15)
-    ax.yaxis.label.set_size(15)
+    ax.xaxis.label.set_size(fontsize)
+    ax.yaxis.label.set_size(fontsize)
+
 
 if __name__ == "__main__":
     results_dir = os.path.join(os.pardir, "results")
     graphs_dir = os.path.join(os.pardir, "graphs")
     program = "coloring"  # coloring, dijkstra_token_ring, maximal_matching, maximal_independent_set
+    program_label_map = {"dijkstra_token_ring": "dijkstra_tr"}
+    program_label = program_label_map.get(program, program)
     analysis_type = "full"  # full, partial
+    fontsize = 15
     graph_names = [
         "graph_1",
         "graph_2",
@@ -78,15 +82,16 @@ if __name__ == "__main__":
         df = pd.DataFrame(data, columns=["Node Degree", "Rank Effect"])
         df["Node Degree"] = df["Node Degree"].astype("str")
         fig, ax = plt.subplots(1, figsize=(10, 5), constrained_layout=True)
-        fig_title = (
+        file_name = (
             f"node_degree_vs_rank_effect__{analysis_type}__{program}__{graph_name}"
         )
-        fig.suptitle(fig_title, fontsize=15)
+        fig_title = f"node_degree_vs_rank_effect__{program}__{graph_name}"
+        fig.suptitle(fig_title, fontsize=fontsize)
         plot_node_degree_vs_rank_effect(df, ax)
 
         fig.savefig(
             os.path.join(
                 plots_dir,
-                f"{fig_title}.png",
+                f"{file_name}.png",
             )
         )
