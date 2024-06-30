@@ -22,9 +22,9 @@ for gname in graph_names:
     fig = plt.figure(figsize=(10, 5), constrained_layout=True)
     if planar:
         pos = nx.planar_layout(G)
-        nx.draw_networkx(G, pos=pos, node_color="white", ax=fig.add_subplot())
+        nx.draw_networkx(G, pos=pos, node_color="white", ax=fig.add_subplot(), font_size=25)
     else:
-        nx.draw_networkx(G, node_color="white", ax=fig.add_subplot())
+        nx.draw_networkx(G, node_color="white", ax=fig.add_subplot(), font_size=25)
 
     fig.suptitle(f"Graph {gname}", fontsize=fontsize)
     fig.savefig(f"graph_images/{gname}.png")
