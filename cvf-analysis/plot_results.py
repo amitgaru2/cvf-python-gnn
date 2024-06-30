@@ -1,32 +1,56 @@
 import os
+import sys
 import pandas as pd
 import seaborn as sns
 
 from matplotlib import pyplot as plt
 
+
+COLORING_PROGRAM = "coloring"
+DIJKSTRA_PROGRAM = "dijkstra_token_ring"
+MAX_MATCHING_PROGRAM = "maximal_matching"
+
 results_dir = "results"
 program = "dijkstra_token_ring"  # coloring, dijkstra_token_ring, maximal_matching, maximal_independent_set
+program = sys.argv[1]
+programs = {DIJKSTRA_PROGRAM, COLORING_PROGRAM, MAX_MATCHING_PROGRAM}
+if program not in programs:
+    print(f"Program {program} not found.")
+    exit(1)
+
 program_label_map = {"dijkstra_token_ring": "dijkstra_tr"}
 program_label = program_label_map.get(program, program)
+
 analysis_type = "full"  # full, partial
-fontsize = 15
-graph_names = [
-    "graph_1",
-    "graph_2",
-    "graph_3",
-    "graph_4",
-    "graph_5",
-    "graph_6",
-    "graph_6b",
-    "graph_7",
-    "graph_8",
-]
-graph_names = [
-    "implicit_graph_n10",
-    "implicit_graph_n11",
-    "implicit_graph_n12",
-    "implicit_graph_n13",
-]
+
+fontsize = 20
+
+graph_names_map = {
+    COLORING_PROGRAM: {
+        "graph_1",
+        "graph_2",
+        "graph_3",
+        "graph_6",
+        "graph_6b",
+        "graph_7",
+    },
+    DIJKSTRA_PROGRAM: {
+        "implicit_graph_n10",
+        "implicit_graph_n11",
+        "implicit_graph_n12",
+        "implicit_graph_n13",
+    },
+    MAX_MATCHING_PROGRAM: {
+        "graph_1",
+        "graph_2",
+        "graph_3",
+        "graph_6",
+        "graph_6b",
+    },
+}
+
+graph_names = graph_names_map[program]
+
 plots_dir = os.path.join("plots", program)
 
 
@@ -103,3 +127,4 @@ for graph_name in graph_names:
             )
         )
         plt.close()
+    print(f"Saved plot(s) for {graph_name}.")
