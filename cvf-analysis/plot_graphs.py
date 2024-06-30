@@ -15,7 +15,7 @@ graph_names = [
 ]
 
 planar = False
-fontsize = 15
+fontsize = 20
 
 for gname in graph_names:
     G = nx.read_adjlist(f"graphs/{gname}.txt")
