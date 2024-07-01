@@ -126,6 +126,7 @@ for graph_name in graph_names:
         )
         fig.suptitle(fig_title, fontsize=fontsize)
         plot_node_rank_effect(index[0], grp, axs)
+        plt.rc('font', size=20)
         fig.savefig(
             os.path.join(
                 plots_dir,
