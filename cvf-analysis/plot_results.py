@@ -18,7 +18,7 @@ if program not in programs:
     print(f"Program {program} not found.")
     exit(1)
 
-program_label_map = {"dijkstra_token_ring": "dijkstra_tr"}
+program_label_map = {"dijkstra_token_ring": "dijkstra", "coloring": "graph coloring", "maximal_matching": "maximal matching"}
 program_label = program_label_map.get(program, program)
 
 analysis_type = "full"  # full, partial
@@ -74,6 +74,8 @@ def plot_node_rank_effect(node, df, ax):
     df = df.loc[df["CVF (Avg)"] > 0]
     sns.lineplot(data=df, x="Rank Effect", y="CVF (Avg)", ax=ax)
     ax.set(xlabel=f"Rank Effect of Node: {node}", ylabel="Count")
+    ax.tick_params(axis='x', labelsize=20)
+    ax.tick_params(axis='y', labelsize=20)
     ax.xaxis.label.set_size(fontsize)
     ax.yaxis.label.set_size(fontsize)
     ax.set_title("CVF Avg")
@@ -116,7 +118,7 @@ for graph_name in graph_names:
             node_id = f"{node_id}"
         file_name = f"rank_effect_by_node__{analysis_type}__{program}__{graph_name}__node_{node_id}"
         fig_title = (
-            f"rank_effect_by_node__{program_label}__{graph_name}__node_{node_id}"
+            f"Distribution of rank effects at node {node_id} in {program_label} problem"
         )
         fig.suptitle(fig_title, fontsize=fontsize)
         plot_node_rank_effect(index[0], grp, axs)
