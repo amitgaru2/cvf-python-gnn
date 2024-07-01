@@ -14,7 +14,11 @@ if program not in programs:
     print(f"Program {program} not found.")
     exit(1)
 
-program_label_map = {"dijkstra_token_ring": "dijkstra_tr"}
+program_label_map = {
+    "dijkstra_token_ring": "dijkstra",
+    "coloring": "graph coloring",
+    "maximal_matching": "maximal matching",
+}
 program_label = program_label_map.get(program, program)
 
 analysis_type = "full"  # full, partial

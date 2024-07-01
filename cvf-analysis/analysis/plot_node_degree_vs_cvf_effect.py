@@ -50,24 +50,12 @@ def plot_node_degree_vs_rank_effect(df, ax):
     ax.set_yticks([i for i in range(0, rank_effect_max + 1)])
     ax.xaxis.label.set_size(fontsize)
     ax.yaxis.label.set_size(fontsize)
+    ax.tick_params(axis='x', labelsize=20)
+    ax.tick_params(axis='y', labelsize=20)
 
 
 if __name__ == "__main__":
-    # results_dir = os.path.join(os.pardir, "results")
     graphs_dir = os.path.join(os.pardir, "graphs")
-    # program = "coloring"  # coloring, dijkstra_token_ring, maximal_matching, maximal_independent_set
-    # program_label_map = {"dijkstra_token_ring": "dijkstra_tr"}
-    # program_label = program_label_map.get(program, program)
-    # analysis_type = "full"  # full, partial
-    # fontsize = 15
-    # graph_names = [
-    #     "graph_1",
-    #     "graph_2",
-    #     "graph_3",
-    #     "graph_6",
-    #     "graph_6b",
-    #     "graph_7",
-    # ]
 
     plots_dir = os.path.join("plots", program, "node_degree_vs_cvf_effect")
 
@@ -87,7 +75,7 @@ if __name__ == "__main__":
         file_name = (
             f"node_degree_vs_rank_effect__{analysis_type}__{program}__{graph_name}"
         )
-        fig_title = f"node_degree_vs_rank_effect__{program}__{graph_name}"
+        fig_title = f"Node degree vs CVF effect for program {program_label}"
         fig.suptitle(fig_title, fontsize=fontsize)
         plot_node_degree_vs_rank_effect(df, ax)
 

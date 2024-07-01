@@ -39,42 +39,14 @@ def plot_node_vs_rank_effect(df, ax, node_id_max, c_off):
     ax.set_xticks([i for i in range(0, node_id_max + 1)])
     ax.xaxis.label.set_size(fontsize)
     ax.yaxis.label.set_size(fontsize)
+    ax.yaxis.offsetText.set_fontsize(fontsize)
+    ax.tick_params(axis="x", labelsize=20)
+    ax.tick_params(axis="y", labelsize=20)
     if program == "coloring" or program == "maximal_matching":
         ax.set_yticks([i for i in range(c_off, rank_effect_max + 1)])
 
 
 if __name__ == "__main__":
-    # results_dir = os.path.join(os.pardir, "results")
-    # graphs_dir = os.path.join(os.pardir, "graphs")
-    # program = "dijkstra_token_ring"  # coloring, dijkstra_token_ring, maximal_matching, maximal_independent_set
-    # program_label_map = {"dijkstra_token_ring": "dijkstra_tr"}
-    # program_label = program_label_map.get(program, program)
-    # analysis_type = "full"  # full, partial
-    # fontsize = 15
-    # cut_off = [0, 0, 0, 0, 0, 0]
-    # graph_names = [
-    #     "graph_1",
-    #     "graph_2",
-    #     "graph_3",
-    #     "graph_6",
-    #     "graph_6b",
-    #     "graph_7",
-    # ]
-    # cut_off = [20, 10, 15, 10, 10]
-    # graph_names = [
-    #     "graph_1",
-    #     "graph_2",
-    #     "graph_3",
-    #     "graph_6",
-    #     "graph_6b",
-    # ]
-    # cut_off = [40, 40, 50, 60]
-    # graph_names = [
-    #     "implicit_graph_n10",
-    #     "implicit_graph_n11",
-    #     "implicit_graph_n12",
-    #     "implicit_graph_n13",
-    # ]
 
     plots_dir = os.path.join("plots", program, "node_vs_cvf_effect")
 
@@ -93,7 +65,7 @@ if __name__ == "__main__":
         df = pd.DataFrame(data, columns=["Node", "Rank Effect"])
         fig, ax = plt.subplots(1, figsize=(10, 5), constrained_layout=True)
         file_name = f"node__vs__rank_effect_gte_{cut_off}__{analysis_type}__{program}__{graph_name}"
-        fig_title = f"node_vs_rank_effect_gte_{cut_off}__{program_label}__{graph_name}"
+        fig_title = f"Node vs Rank_effect >= {cut_off} for program {program_label}"
         fig.suptitle(fig_title, fontsize=fontsize)
         plot_node_vs_rank_effect(df, ax, node_id_max, cut_off)
 
