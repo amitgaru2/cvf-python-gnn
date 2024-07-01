@@ -31,14 +31,16 @@ def create_plots_dir_if_not_exists():
 
 
 def plot_node_vs_accumulated_cvf_effect(df, ax, y_max):
-    sns.barplot(data=df, x="Node", y="Accumulated Severe CVF Effect (Avg)", ax=ax, width=.4)
+    sns.barplot(
+        data=df, x="Node", y="Accumulated Severe CVF Effect (Avg)", ax=ax, width=0.4
+    )
     ax.set_ylabel("Accumulated Severe CVF Effect")
     ax.set_ylim(bottom=0, top=math.ceil(y_max * 1.1))
     ax.xaxis.label.set_size(fontsize)
     ax.yaxis.label.set_size(fontsize)
     ax.yaxis.offsetText.set_fontsize(fontsize)
-    ax.tick_params(axis='x', labelsize=20)
-    ax.tick_params(axis='y', labelsize=20)
+    ax.tick_params(axis="x", labelsize=20)
+    ax.tick_params(axis="y", labelsize=20)
     ax.set_xlabel("Node ID")
 
 
@@ -78,7 +80,9 @@ if __name__ == "__main__":
 
             file_name_substr = f"{c_off}" if len(str(c_off)) > 1 else f"0{c_off}"
             file_name = f"node__vs__accumulated_severe_cvf_effect_gte_{file_name_substr}__{analysis_type}__{program}__{graph_name}"
-            fig_title = f"Node vs Accumulated CVF >= {c_off} for {program_label} program"
+            fig_title = (
+                f"Node vs Accumulated CVF >= {c_off} for {program_label} program"
+            )
             fig.suptitle(fig_title, fontsize=fontsize)
             plot_node_vs_accumulated_cvf_effect(
                 node_vs_accumulated_cvf_effect,
@@ -93,5 +97,6 @@ if __name__ == "__main__":
                     f"{file_name}.png",
                 )
             )
+            plt.close()
 
         print(f"Saved plot for {graph_name}")
