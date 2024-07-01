@@ -4,10 +4,16 @@ import sys
 COLORING_PROGRAM = "coloring"
 DIJKSTRA_PROGRAM = "dijkstra_token_ring"
 MAX_MATCHING_PROGRAM = "maximal_matching"
+MAX_INDEPENDENT_SET_PROGRAM = "maximal_independent_set"
 
 results_dir = os.path.join(os.pardir, "results")
 
-programs = {DIJKSTRA_PROGRAM, COLORING_PROGRAM, MAX_MATCHING_PROGRAM}
+programs = {
+    DIJKSTRA_PROGRAM,
+    COLORING_PROGRAM,
+    MAX_MATCHING_PROGRAM,
+    MAX_INDEPENDENT_SET_PROGRAM,
+}
 # coloring, dijkstra_token_ring, maximal_matching, maximal_independent_set
 program = sys.argv[1]
 if program not in programs:
@@ -18,6 +24,7 @@ program_label_map = {
     "dijkstra_token_ring": "dijkstra",
     "coloring": "graph coloring",
     "maximal_matching": "maximal matching",
+    "maximal_independent_set": "maximal indp. set",
 }
 program_label = program_label_map.get(program, program)
 
@@ -46,6 +53,17 @@ graph_names_map = {
         "graph_3": {"cut_off": 15},
         "graph_6": {"cut_off": 10},
         "graph_6b": {"cut_off": 10},
+    },
+    MAX_INDEPENDENT_SET_PROGRAM: {
+        "graph_1",
+        "graph_2",
+        "graph_3",
+        "graph_4",
+        "graph_5",
+        "graph_6",
+        "graph_6b",
+        "graph_7",
+        "graph_8",
     },
 }
 
