@@ -9,11 +9,17 @@ from matplotlib import pyplot as plt
 COLORING_PROGRAM = "coloring"
 DIJKSTRA_PROGRAM = "dijkstra_token_ring"
 MAX_MATCHING_PROGRAM = "maximal_matching"
+MAX_INDEPENDENT_SET_PROGRAM = "maximal_independent_set"
 
 results_dir = "results"
 program = "dijkstra_token_ring"  # coloring, dijkstra_token_ring, maximal_matching, maximal_independent_set
 program = sys.argv[1]
-programs = {DIJKSTRA_PROGRAM, COLORING_PROGRAM, MAX_MATCHING_PROGRAM}
+programs = {
+    DIJKSTRA_PROGRAM,
+    COLORING_PROGRAM,
+    MAX_MATCHING_PROGRAM,
+    MAX_INDEPENDENT_SET_PROGRAM,
+}
 if program not in programs:
     print(f"Program {program} not found.")
     exit(1)
@@ -51,6 +57,7 @@ graph_names_map = {
         "graph_6",
         "graph_6b",
     },
+    MAX_INDEPENDENT_SET_PROGRAM: {"graph_6"},
 }
 
 graph_names = graph_names_map[program]
@@ -121,12 +128,10 @@ for graph_name in graph_names:
         else:
             node_id = f"{node_id}"
         file_name = f"rank_effect_by_node__{analysis_type}__{program}__{graph_name}__node_{node_id}"
-        fig_title = (
-            f"Distribution of rank effects at node {index[0]} in {program_label} problem"
-        )
+        fig_title = f"Distribution of rank effects at node {index[0]} in {program_label} problem"
         fig.suptitle(fig_title, fontsize=fontsize)
         plot_node_rank_effect(index[0], grp, axs)
-        plt.rc('font', size=20)
+        plt.rc("font", size=20)
         fig.savefig(
             os.path.join(
                 plots_dir,

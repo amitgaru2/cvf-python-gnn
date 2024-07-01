@@ -68,11 +68,22 @@ class MaximalSetIndependenceFullAnalysis(CVFAnalysis):
             if config.val == self.IN and not self._I_lte_v_null(position, state):
                 return False
 
+    def _check_invariant(self, state):
+        for position, config in enumerate(state):
+            if config.val == self.OUT and not any(
+                state[nbr].val == self.IN for nbr in self.graph[position]
+            ):
+                return False
+            if config.val == self.IN and not all(
+                state[nbr].val == self.OUT for nbr in self.graph[position]
+            ):
+                return False
+
         return True
 
     def _find_invariants(self):
         for state in self.configurations:
-            if self._check_if_none_eligible_process(state):
+            if self._check_invariant(state):
                 self.invariants.add(state)
 
         logger.info("No. of Invariants: %s", len(self.invariants))
