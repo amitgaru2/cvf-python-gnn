@@ -39,6 +39,7 @@ def plot_node_vs_accumulated_cvf_effect(df, ax, y_max):
     ax.yaxis.offsetText.set_fontsize(fontsize)
     ax.tick_params(axis='x', labelsize=20)
     ax.tick_params(axis='y', labelsize=20)
+    ax.set_xlabel("Node ID")
 
 
 if __name__ == "__main__":
