@@ -28,6 +28,7 @@ program_label_map = {
     "dijkstra_token_ring": "dijkstra",
     "coloring": "graph coloring",
     "maximal_matching": "maximal matching",
+    "maximal_independent_set": "maximal indp. set",
 }
 program_label = program_label_map.get(program, program)
 
