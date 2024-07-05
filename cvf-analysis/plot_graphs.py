@@ -7,14 +7,14 @@ graph_names = [
     # "graph_2",
     # "graph_3",
     # "graph_6",
-    # "graph_6b",
+    "graph_6b",
     # "graph_7",
     # "graph_8",
-    "graph_4",
-    "graph_5",
+    # "graph_4",
+    # "graph_5",
 ]
 
-planar = True
+planar = False
 fontsize = 20
 
 for gname in graph_names:
