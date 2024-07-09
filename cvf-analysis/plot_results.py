@@ -94,7 +94,7 @@ def get_df(graph_name):
 
 def plot_node_rank_effect(node, df, ax):
     df = df.loc[df["CVF (Avg)"] > 0]
-    sns.lineplot(data=df, x="Rank Effect", y="CVF (Avg)", ax=ax)
+    sns.lineplot(data=df, x="Rank Effect", y="CVF (Avg)", ax=ax, marker='o')
     ax.set(xlabel=f"Rank Effect of Node: {node}", ylabel="Count")
     ax.tick_params(axis="x", labelsize=20)
     ax.tick_params(axis="y", labelsize=20)
