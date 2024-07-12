@@ -30,8 +30,8 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
     def _start(self):
         self._gen_configurations()
         self._find_invariants()
-        # self._init_pts_rank()
-        # self._find_program_transitions_n_cvfs()
+        self._init_pts_rank()
+        self._find_program_transitions_n_cvfs()
         # self._rank_all_states()
         # self._gen_save_rank_count()
         # self._calculate_pts_rank_effect()
@@ -85,4 +85,67 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
                 self.invariants.add(state)
 
         logger.info("No. of Invariants: %s", len(self.invariants))
-        print(self.invariants)
+
+    def __forward(X, params):
+        return [params["m"] * i + params["c"] for i in X]
+
+    def __loss_fn(y, y_pred):
+        N = len(y)
+        return (1 / N) * sum((y[i] - y_pred[i]) ** 2 for i in range(N))
+
+    def __r2_score(y, y_mean, y_pred):
+        N = len(y)
+        rss = sum((y[i] - y_pred[i]) ** 2 for i in range(N))
+        tss = sum((y[i] - y_mean) ** 2 for i in range(N))
+        r2 = 1 - rss / tss
+        return r2
+
+    def __gradient_m(X, y, y_pred):
+        N = len(y)
+        return (-2 / N) * sum((X[i] * (y[i] - y_pred[i])) for i in range(N))
+
+    def __gradient_c(y, y_pred):
+        N = len(y)
+        return (-2 / N) * sum((y[i] - y_pred[i]) for i in range(N))
+
+    def _is_program_transition(self, perturb_pos, start_state, dest_state) -> bool:
+        perturbed_m = dest_state[perturb_pos]
+        original_m = start_state[perturb_pos]
+
+        if abs(original_m - self.actual_slope) >= abs(perturbed_m - self.actual_slope):
+            return True
+
+        return False
+
+    def _get_program_transitions(self, start_state):
+        program_transitions = set()
+        all_slope_values = set(
+            np.arange(self.min_slope, self.max_slope + self.slope_step, self.slope_step)
+        )
+        for position, val in enumerate(start_state):
+            possible_slope_values = all_slope_values - {val}
+            for perturb_val in possible_slope_values:
+                perturb_state = list(start_state)
+                perturb_state[position] = perturb_val
+                perturb_state = tuple(perturb_state)
+                if self._is_program_transition(position, start_state, perturb_state):
+                    program_transitions.add(perturb_state)
+
+        return program_transitions
+
+    def _get_cvfs(self, start_state):
+        cvfs = dict()
+        all_slope_values = set(
+            np.arange(self.min_slope, self.max_slope + self.slope_step, self.slope_step)
+        )
+        for position, val in enumerate(start_state):
+            possible_slope_values = all_slope_values - {val}
+            for perturb_val in possible_slope_values:
+                perturb_state = list(start_state)
+                perturb_state[position] = perturb_val
+                perturb_state = tuple(perturb_state)
+                cvfs[perturb_state] = (
+                    position  # track the nodes to calculate its overall rank effect
+                )
+
+        return cvfs
