@@ -12,6 +12,8 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
     results_prefix = "linear_regression"
     results_dir = os.path.join("results", results_prefix)
 
+    learning_rate = 0.001
+
     slope_step = 0.5
     min_slope = 0
     max_slope = 4
@@ -111,6 +113,10 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
     def _is_program_transition(self, perturb_pos, start_state, dest_state) -> bool:
         perturbed_m = dest_state[perturb_pos]
         original_m = start_state[perturb_pos]
+
+        # grad_m = self.__gradient_m(X_node, y_node, y_node_pred)
+        doubly_st_mt = self.doubly_stochastic_matrix_config[perturb_pos]
+        # update_m = sum( frac*original_m[i]["m"] for i, frac in enumerate(doubly_st_mt) ) - self.learning_rate * grad_m
 
         if abs(original_m - self.actual_slope) >= abs(perturbed_m - self.actual_slope):
             return True
