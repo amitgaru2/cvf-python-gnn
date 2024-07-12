@@ -1,6 +1,13 @@
 import os
 import argparse
 
+from cvf_analysis import (
+    CVFAnalysis,
+    logger,
+    PartialAnalysisType,
+    FullAnalysisType,
+    PartialCVFAnalysisMixin,
+)
 from graph_coloring import GraphColoringFullAnalysis, GraphColoringPartialAnalysis
 from maximal_matching import MaximalMatchingFullAnalysis, MaximalMatchingPartialAnalysis
 from dijkstra_token_ring import (
@@ -11,18 +18,14 @@ from maximal_independent_set import (
     MaximalSetIndependenceFullAnalysis,
     MaximalSetIndependencePartialAnalysis,
 )
-from cvf_analysis import (
-    CVFAnalysis,
-    logger,
-    PartialAnalysisType,
-    FullAnalysisType,
-    PartialCVFAnalysisMixin,
-)
+from linear_regression import LinearRegressionFullAnalysis
+
 
 ColoringProgram = "graph_coloring"
 DijkstraProgram = "dijkstra_token_ring"
 MaxMatchingProgram = "maximal_matching"
 MaxIndependentSetProgram = "maximal_independent_set"
+LinearRegressionProgram = "linear_regression"
 
 AnalysisMap = {
     ColoringProgram: {
@@ -41,6 +44,7 @@ AnalysisMap = {
         FullAnalysisType: MaximalSetIndependenceFullAnalysis,
         PartialAnalysisType: MaximalSetIndependencePartialAnalysis,
     },
+    LinearRegressionProgram: {FullAnalysisType: LinearRegressionFullAnalysis},
 }
 
 
@@ -78,6 +82,7 @@ def main():
             DijkstraProgram,
             MaxMatchingProgram,
             MaxIndependentSetProgram,
+            LinearRegressionProgram,
         ],
         required=True,
     )  # coloring, dijkstra, max_matching
