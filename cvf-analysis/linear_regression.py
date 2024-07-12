@@ -14,7 +14,9 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
 
     slope_step = 0.5
     min_slope = 0
-    max_slope = 3
+    max_slope = 4
+
+    actual_slope = 3
 
     def __init__(self, graph_name, graph) -> None:
         super().__init__(graph_name, graph)
@@ -27,7 +29,7 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
 
     def _start(self):
         self._gen_configurations()
-        # self._find_invariants()
+        self._find_invariants()
         # self._init_pts_rank()
         # self._find_program_transitions_n_cvfs()
         # self._rank_all_states()
@@ -53,3 +55,34 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
                     self.configurations.add(tuple(cc))
 
         logger.info("No. of Configurations: %s", len(self.configurations))
+
+    # def _get_adjusted_value(self, value):
+    #     if value / self.slope_step == 0:
+    #         return value
+
+    #     temp = (value // self.slope_step) * self.slope_step
+
+    #     result = temp
+    #     if (value - temp) > self.slope_step / 2:
+    #         result = temp + self.slope_step
+
+    #     if result > self.max_slope:
+    #         return self.max_slope
+
+    #     if result < self.min_slope:
+    #         return self.min_slope
+
+    def _find_invariants(self):
+        for state in self.configurations:
+            for m in state:
+                if not (
+                    self.actual_slope - self.slope_step / 2
+                    < m
+                    <= self.actual_slope + self.slope_step / 2
+                ):
+                    break
+            else:
+                self.invariants.add(state)
+
+        logger.info("No. of Invariants: %s", len(self.invariants))
+        print(self.invariants)
