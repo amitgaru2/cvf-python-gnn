@@ -2,32 +2,53 @@ import os
 import copy
 
 import numpy as np
+import pandas as pd
 
-from itertools import combinations
-
-from cvf_analysis import CVFAnalysis, PartialCVFAnalysisMixin, logger
+from cvf_analysis import CVFAnalysis, logger
 
 
 class LinearRegressionFullAnalysis(CVFAnalysis):
     results_prefix = "linear_regression"
     results_dir = os.path.join("results", results_prefix)
 
-    learning_rate = 0.001
-
-    slope_step = 0.5
-    min_slope = 0
-    max_slope = 4
-
-    actual_slope = 3
-
     def __init__(self, graph_name, graph) -> None:
         super().__init__(graph_name, graph)
+        self.learning_rate = 0.001
+        self.slope_step = 0.5
+        self.min_slope = 0
+        self.max_slope = 4
+        self.actual_slope = 3
+        self.no_of_nodes = 4
+        self.df = pd.read_csv(
+            "/home/agaru/research/cvf-python/linear_regression/SOCR-HeightWeight.csv"
+        )
+        self.df.rename(
+            columns={"Height(Inches)": "X", "Weight(Pounds)": "y"}, inplace=True
+        )
         self.doubly_stochastic_matrix_config = [
             [1 / 3, 1 / 6, 1 / 6, 1 / 3],
             [1 / 6, 1 / 6, 1 / 3, 1 / 3],
             [1 / 6, 1 / 3, 1 / 3, 1 / 6],
             [1 / 3, 1 / 3, 1 / 6, 1 / 6],
         ]
+        self.node_data_partitions = np.array_split(self.df, self.no_of_nodes)
+        for i, node_data in enumerate(self.node_data_partitions):
+            self.df.loc[node_data.index, "node"] = i
+
+        self.df["partition"] = -1
+        for i in range(self.no_of_nodes):
+            node_filter = self.df["node"] == i
+            node_df = self.df[node_filter]
+            partitions = self.__gen_test_data_partition_frm_df(
+                self.no_of_nodes, node_df
+            )
+            for i, p in enumerate(partitions):
+                self.df.loc[self.df.index.isin(p.index.values), "partition"] = i
+
+    def __gen_test_data_partition_frm_df(self, partitions):
+        shuffled = self.df.sample(frac=1)
+        result = np.array_split(shuffled, partitions)
+        return result
 
     def _start(self):
         self._gen_configurations()
@@ -116,10 +137,7 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
 
         # grad_m = self.__gradient_m(X_node, y_node, y_node_pred)
         doubly_st_mt = self.doubly_stochastic_matrix_config[perturb_pos]
-        # update_m = sum( frac*original_m[i]["m"] for i, frac in enumerate(doubly_st_mt) ) - self.learning_rate * grad_m
-
-        if abs(original_m - self.actual_slope) >= abs(perturbed_m - self.actual_slope):
-            return True
+        # update_m = sum( frac*original_m[i]["m"] for i, frac in enumerate(doubly_st_mt) ) - self.learning_rate * __gradient_m()
 
         return False
 
