@@ -96,20 +96,19 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         logger.info("No. of Configurations: %s", len(self.configurations))
 
     def __get_adjusted_value(self, value):
-        if value / self.slope_step == 0:
-            return value
-
-        temp = (value // self.slope_step) * self.slope_step
-
-        result = temp
-        if (value - temp) > self.slope_step / 2:
-            result = temp + self.slope_step
-
-        if result > self.max_slope:
+        if value > self.max_slope:
             return self.max_slope
 
-        if result < self.min_slope:
+        if value < self.min_slope:
             return self.min_slope
+
+        result = value
+
+        if value / self.slope_step != 0:
+            result = (value // self.slope_step) * self.slope_step
+
+        if (value - result) > self.slope_step / 2:
+            result = result + self.slope_step
 
         return result
 
@@ -129,7 +128,6 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
 
     def __forward(self, X, params):
         return params["m"] * X + params["c"]
-        # return [params["m"] * i + params["c"] for i in X]
 
     # def __loss_fn(y, y_pred):
     #     N = len(y)
@@ -185,6 +183,7 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
                 1,
             )
         )
+        print("start state", start_state)
         for position, val in enumerate(start_state):
             possible_slope_values = all_slope_values - {val}
             for perturb_val in possible_slope_values:
