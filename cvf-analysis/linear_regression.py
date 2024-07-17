@@ -14,7 +14,7 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
     def __init__(self, graph_name, graph) -> None:
         super().__init__(graph_name, graph)
         self.learning_rate = 0.001
-        self.slope_step = 0.0001
+        self.slope_step = 0.01
         self.min_slope = 0
         # self.max_slope = 4
         # self.actual_m = 3.0834764453827943
