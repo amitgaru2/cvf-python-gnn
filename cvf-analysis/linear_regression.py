@@ -170,7 +170,7 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
             sum(frac * start_state[i] for i, frac in enumerate(doubly_st_mt))
             - self.learning_rate * grad_m
         )
-        ad_new_m = self.__get_adjusted_value(new_m)
+        ad_new_m = np.round(self.__get_adjusted_value(new_m), 1)
         return ad_new_m == perturbed_m
 
     def _get_program_transitions(self, start_state):
@@ -183,7 +183,6 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
                 1,
             )
         )
-        print("start state", start_state)
         for position, val in enumerate(start_state):
             possible_slope_values = all_slope_values - {val}
             for perturb_val in possible_slope_values:
