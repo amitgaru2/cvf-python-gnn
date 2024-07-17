@@ -1,9 +1,9 @@
 import os
 import copy
-
 import numpy as np
 import pandas as pd
 
+from functools import lru_cache
 from cvf_analysis import CVFAnalysis, logger
 
 
@@ -14,22 +14,35 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
     def __init__(self, graph_name, graph) -> None:
         super().__init__(graph_name, graph)
         self.learning_rate = 0.001
-        self.slope_step = 0.5
+        self.slope_step = 0.1
         self.min_slope = 0
-        self.max_slope = 4
-        self.actual_slope = 3
-        self.no_of_nodes = 4
+        # self.max_slope = 4
+        # self.actual_m = 3.0834764453827943
+        # self.actual_b = -82.57574306316957
+        # self.no_of_nodes = 4
+        # self.df = pd.read_csv(
+        #     "/home/agaru/research/cvf-python/linear_regression/SOCR-HeightWeight.csv"
+        # )
+        # self.df.rename(
+        #     columns={"Height(Inches)": "X", "Weight(Pounds)": "y"}, inplace=True
+        # )
+        # self.doubly_stochastic_matrix_config = [
+        #     [1 / 3, 1 / 6, 1 / 6, 1 / 3],
+        #     [1 / 6, 1 / 6, 1 / 3, 1 / 3],
+        #     [1 / 6, 1 / 3, 1 / 3, 1 / 6],
+        #     [1 / 3, 1 / 3, 1 / 6, 1 / 6],
+        # ]
+        self.max_slope = 1.2
+        self.actual_m = 0.9
+        self.actual_b = 0.3529411764705883
+        self.no_of_nodes = 3
         self.df = pd.read_csv(
-            "/home/agaru/research/cvf-python/linear_regression/SOCR-HeightWeight.csv"
-        )
-        self.df.rename(
-            columns={"Height(Inches)": "X", "Weight(Pounds)": "y"}, inplace=True
+            "/home/agaru/research/cvf-python/linear_regression/random-data.csv"
         )
         self.doubly_stochastic_matrix_config = [
-            [1 / 3, 1 / 6, 1 / 6, 1 / 3],
-            [1 / 6, 1 / 6, 1 / 3, 1 / 3],
-            [1 / 6, 1 / 3, 1 / 3, 1 / 6],
-            [1 / 3, 1 / 3, 1 / 6, 1 / 6],
+            [2 / 3, 1 / 6, 1 / 6],
+            [1 / 6, 1 / 6, 2 / 3],
+            [1 / 6, 2 / 3, 1 / 6],
         ]
         self.node_data_partitions = np.array_split(self.df, self.no_of_nodes)
         for i, node_data in enumerate(self.node_data_partitions):
@@ -50,27 +63,30 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         result = np.array_split(shuffled, partitions)
         return result
 
-    # def _start(self):
-    #     self._gen_configurations()
-    #     self._find_invariants()
-    #     self._init_pts_rank()
-    #     self._find_program_transitions_n_cvfs()
-    #     # self._rank_all_states()
-    #     # self._gen_save_rank_count()
-    #     # self._calculate_pts_rank_effect()
-    #     # self._calculate_cvfs_rank_effect()
-    #     # self._gen_save_rank_effect_count()
-    #     # self._gen_save_rank_effect_by_node_count()
+    def _start(self):
+        self._gen_configurations()
+        self._find_invariants()
+        self._init_pts_rank()
+        self._find_program_transitions_n_cvfs()
+        # self._rank_all_states()
+        # self._gen_save_rank_count()
+        # self._calculate_pts_rank_effect()
+        # self._calculate_cvfs_rank_effect()
+        # self._gen_save_rank_effect_count()
+        # self._gen_save_rank_effect_by_node_count()
 
     def _gen_configurations(self):
         self.configurations = {tuple([self.min_slope for _ in range(len(self.nodes))])}
         # perturb each state at a time for all states in configurations and accumulate the same in the configurations for next state to perturb
         for node_pos in self.nodes:
             config_copy = copy.deepcopy(self.configurations)
-            for i in np.arange(
-                self.min_slope + self.slope_step,
-                self.max_slope + self.slope_step,
-                self.slope_step,
+            for i in np.round(
+                np.arange(
+                    self.min_slope + self.slope_step,
+                    self.max_slope + self.slope_step,
+                    self.slope_step,
+                ),
+                1,
             ):
                 for cc in config_copy:
                     cc = list(cc)
@@ -101,9 +117,9 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         for state in self.configurations:
             for m in state:
                 if not (
-                    self.actual_slope - self.slope_step / 2
+                    self.actual_m - self.slope_step / 2
                     < m
-                    <= self.actual_slope + self.slope_step / 2
+                    <= self.actual_m + self.slope_step / 2
                 ):
                     break
             else:
@@ -112,7 +128,8 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         logger.info("No. of Invariants: %s", len(self.invariants))
 
     def __forward(self, X, params):
-        return [params["m"] * i + params["c"] for i in X]
+        return params["m"] * X + params["c"]
+        # return [params["m"] * i + params["c"] for i in X]
 
     # def __loss_fn(y, y_pred):
     #     N = len(y)
@@ -127,7 +144,8 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
 
     def __gradient_m(self, X, y, y_pred):
         N = len(y)
-        return (-2 / N) * sum((X[i] * (y[i] - y_pred[i])) for i in range(N))
+        # return (-2 / N) * sum((X[i] * (y[i] - y_pred[i])) for i in range(N))
+        return (-2 / N) * np.sum(X * (y - y_pred))
 
     # def __gradient_c(y, y_pred):
     #     N = len(y)
@@ -154,13 +172,18 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
             sum(frac * start_state[i] for i, frac in enumerate(doubly_st_mt))
             - self.learning_rate * grad_m
         )
-        new_m = self.__get_adjusted_value(new_m)
-        return new_m == perturbed_m
+        ad_new_m = self.__get_adjusted_value(new_m)
+        return ad_new_m == perturbed_m
 
     def _get_program_transitions(self, start_state):
         program_transitions = set()
         all_slope_values = set(
-            np.arange(self.min_slope, self.max_slope + self.slope_step, self.slope_step)
+            np.round(
+                np.arange(
+                    self.min_slope, self.max_slope + self.slope_step, self.slope_step
+                ),
+                1,
+            )
         )
         for position, val in enumerate(start_state):
             possible_slope_values = all_slope_values - {val}
@@ -170,6 +193,12 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
                 perturb_state = tuple(perturb_state)
                 if self._is_program_transition(position, start_state, perturb_state):
                     program_transitions.add(perturb_state)
+
+        if not program_transitions:
+            print("program transitions not found for", start_state)
+            # input()
+        elif list(self.invariants)[0] in program_transitions:
+            print("path found to invariant from", start_state)
 
         return program_transitions
 
