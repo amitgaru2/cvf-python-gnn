@@ -14,7 +14,7 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
     def __init__(self, graph_name, graph) -> None:
         super().__init__(graph_name, graph)
         self.learning_rate = 0.001
-        self.slope_step = 0.1
+        self.slope_step = 0.01
         self.min_slope = 0
         # self.max_slope = 4
         # self.actual_m = 3.0834764453827943
@@ -86,7 +86,7 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
                     self.max_slope + self.slope_step,
                     self.slope_step,
                 ),
-                1,
+                2,
             ):
                 for cc in config_copy:
                     cc = list(cc)
@@ -170,7 +170,7 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
             sum(frac * start_state[i] for i, frac in enumerate(doubly_st_mt))
             - self.learning_rate * grad_m
         )
-        ad_new_m = np.round(self.__get_adjusted_value(new_m), 1)
+        ad_new_m = np.round(self.__get_adjusted_value(new_m), 2)
         return ad_new_m == perturbed_m
 
     def _get_program_transitions(self, start_state):
@@ -180,7 +180,7 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
                 np.arange(
                     self.min_slope, self.max_slope + self.slope_step, self.slope_step
                 ),
-                1,
+                2,
             )
         )
         for position, val in enumerate(start_state):
@@ -195,8 +195,8 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         if not program_transitions:
             print("program transitions not found for", start_state)
             # input()
-        elif list(self.invariants)[0] in program_transitions:
-            print("path found to invariant from", start_state)
+        # elif list(self.invariants)[0] in program_transitions:
+        #     print("path found to invariant from", start_state)
 
         return program_transitions
 
