@@ -33,8 +33,8 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         #     [1 / 3, 1 / 3, 1 / 6, 1 / 6],
         # ]
         self.max_slope = 1.0
-        self.actual_m = 0.9
-        self.actual_b = 0.3529411764705883
+        self.actual_m = 1.1204590846513611
+        self.actual_b = -0.11847322643445737
         self.no_of_nodes = 3
         self.df = pd.read_csv(
             "/home/agaru/research/cvf-python/linear_regression/random-data.csv"
@@ -129,31 +129,12 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
     def __forward(self, X, params):
         return params["m"] * X + params["c"]
 
-    # def __loss_fn(y, y_pred):
-    #     N = len(y)
-    #     return (1 / N) * sum((y[i] - y_pred[i]) ** 2 for i in range(N))
-
-    # def __r2_score(y, y_mean, y_pred):
-    #     N = len(y)
-    #     rss = sum((y[i] - y_pred[i]) ** 2 for i in range(N))
-    #     tss = sum((y[i] - y_mean) ** 2 for i in range(N))
-    #     r2 = 1 - rss / tss
-    #     return r2
-
     def __gradient_m(self, X, y, y_pred):
         N = len(y)
-        # return (-2 / N) * sum((X[i] * (y[i] - y_pred[i])) for i in range(N))
         return (-2 / N) * np.sum(X * (y - y_pred))
-
-    # def __gradient_c(y, y_pred):
-    #     N = len(y)
-    #     return (-2 / N) * sum((y[i] - y_pred[i]) for i in range(N))
 
     def __get_node_data_df(self, node_id):
         return self.df[self.df["node"] == node_id]
-
-    # def __get_node_test_data_df(self, node_id):
-    #     return self.df[self.df["partition"] == node_id]
 
     def _is_program_transition(self, perturb_pos, start_state, dest_state) -> bool:
         perturbed_m = dest_state[perturb_pos]
@@ -194,9 +175,6 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
 
         if not program_transitions:
             print("program transitions not found for", start_state)
-            # input()
-        # elif list(self.invariants)[0] in program_transitions:
-        #     print("path found to invariant from", start_state)
 
         return program_transitions
 
