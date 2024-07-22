@@ -43,6 +43,7 @@ def get_iteration_vs_accuracy_data(
 
     steps_data = []
     accuracy_data = []
+    grad_m_data = []
 
     for i in range(1, iterations + 1):
         steps_data.append(i)
@@ -55,9 +56,11 @@ def get_iteration_vs_accuracy_data(
         grad_m = gradient_m(X, y, y_pred)
         grad_c = gradient_c(y, y_pred)
 
+        grad_m_data.append(grad_m)
+
         m = m - L * grad_m
         c = c - L * grad_c
 
         params = {"m": m, "c": c}
 
-    return steps_data, accuracy_data
+    return steps_data, accuracy_data, grad_m_data

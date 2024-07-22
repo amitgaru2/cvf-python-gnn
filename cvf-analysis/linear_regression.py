@@ -174,6 +174,8 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
                     program_transitions.add(perturb_state)
 
         if not program_transitions:
+            # case 1 : remove the configuration from global configurations and all the paths that leads to this configuration
+            
             print("program transitions not found for", start_state)
 
         return program_transitions
