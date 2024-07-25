@@ -137,10 +137,12 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
     def __get_node_data_df(self, node_id):
         return self.df[self.df["node"] == node_id]
 
-    def __get_next_near_convergence_value(self, original_value, calculated_value):
+    def __get_next_near_convergence_value(self, original_value, calculated_value, adjusted_value):
         if calculated_value > original_value:
-            return original_value + self.slope_step_decimals
-        return original_value - self.slope_step_decimals
+            return original_value + self.slope_step
+        elif calculated_value < original_value:
+            return original_value - self.slope_step
+        return adjusted_value
 
     def _is_program_transition(self, perturb_pos, start_state, dest_state) -> bool:
         perturbed_m = dest_state[perturb_pos]
@@ -161,7 +163,7 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         ad_new_m = self.__get_adjusted_value(new_m)
         ad_new_m = np.round(ad_new_m, self.slope_step_decimals)
         if ad_new_m == original_m:
-            ad_new_m = self.__get_next_near_convergence_value(original_m, new_m)
+            ad_new_m = self.__get_next_near_convergence_value(original_m, new_m, ad_new_m)
         return ad_new_m == perturbed_m
 
     def _get_program_transitions(self, start_state):
