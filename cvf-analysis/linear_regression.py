@@ -34,7 +34,7 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         #     [1 / 3, 1 / 3, 1 / 6, 1 / 6],
         # ]
         self.max_slope = 1.0
-        self.actual_m = 1.1204590846513611
+        self.actual_m = 0.9
         self.actual_b = -0.11847322643445737
         self.no_of_nodes = 3
         self.df = pd.read_csv(
@@ -69,7 +69,7 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         self._find_invariants()
         self._init_pts_rank()
         self._find_program_transitions_n_cvfs()
-        # self._rank_all_states()
+        self._rank_all_states()
         # self._gen_save_rank_count()
         # self._calculate_pts_rank_effect()
         # self._calculate_cvfs_rank_effect()
