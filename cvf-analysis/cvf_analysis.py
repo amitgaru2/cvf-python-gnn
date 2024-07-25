@@ -129,7 +129,6 @@ class CVFAnalysis:
                     total_paths += path_count
                     remove_from_unranked_states.add(state)
             unranked_states -= remove_from_unranked_states
-            print("Unranked states: ", len(unranked_states))
 
         print("Total paths:", total_paths)
         print("Total computation paths:", total_computation_paths)
