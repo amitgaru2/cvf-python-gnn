@@ -139,10 +139,20 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
 
     def __get_next_near_convergence_value(self, original_value, calculated_value, adjusted_value):
         if calculated_value > original_value:
-            return original_value + self.slope_step
+            result = original_value + self.slope_step
         elif calculated_value < original_value:
-            return original_value - self.slope_step
-        return adjusted_value
+            result = original_value - self.slope_step
+        else:
+            result = adjusted_value
+        
+        if result > self.max_slope:
+            return self.max_slope
+
+        if result < self.min_slope:
+            return self.min_slope
+        
+        return result
+
 
     def _is_program_transition(self, perturb_pos, start_state, dest_state) -> bool:
         perturbed_m = dest_state[perturb_pos]
