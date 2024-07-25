@@ -14,7 +14,8 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
     def __init__(self, graph_name, graph) -> None:
         super().__init__(graph_name, graph)
         self.learning_rate = 0.001
-        self.slope_step = 0.01
+        self.slope_step_decimals = 1
+        self.slope_step = 1 / (10**self.slope_step_decimals)
         self.min_slope = 0
         # self.max_slope = 4
         # self.actual_m = 3.0834764453827943
@@ -136,6 +137,11 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
     def __get_node_data_df(self, node_id):
         return self.df[self.df["node"] == node_id]
 
+    def __get_next_near_convergence_value(self, original_value, calculated_value):
+        if calculated_value > original_value:
+            return original_value + self.slope_step_decimals
+        return original_value - self.slope_step_decimals
+
     def _is_program_transition(self, perturb_pos, start_state, dest_state) -> bool:
         perturbed_m = dest_state[perturb_pos]
         original_m = start_state[perturb_pos]
@@ -152,7 +158,10 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
             sum(frac * start_state[i] for i, frac in enumerate(doubly_st_mt))
             - self.learning_rate * grad_m
         )
-        ad_new_m = np.round(self.__get_adjusted_value(new_m), 2)
+        ad_new_m = self.__get_adjusted_value(new_m)
+        ad_new_m = np.round(ad_new_m, self.slope_step_decimals)
+        if ad_new_m == original_m:
+            ad_new_m = self.__get_next_near_convergence_value(original_m, new_m)
         return ad_new_m == perturbed_m
 
     def _get_program_transitions(self, start_state):
