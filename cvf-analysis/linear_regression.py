@@ -38,7 +38,7 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         self.actual_b = -0.11847322643445737
         self.no_of_nodes = 3
         self.df = pd.read_csv(
-            "/home/agaru/research/cvf-python/linear_regression/random-data.csv"
+            "/home/amitgaru2/research/cvf-python/linear_regression/random-data.csv"
         )
         self.doubly_stochastic_matrix_config = [
             [2 / 3, 1 / 6, 1 / 6],
@@ -201,6 +201,8 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
 
         if not program_transitions:
             print("program transitions not found for", start_state)
+        
+        # print(start_state, program_transitions)
 
         return program_transitions
 
