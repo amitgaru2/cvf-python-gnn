@@ -1,5 +1,7 @@
 import os
 import copy
+import json
+
 import numpy as np
 import pandas as pd
 
@@ -38,7 +40,7 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         self.actual_b = -0.11847322643445737
         self.no_of_nodes = 3
         self.df = pd.read_csv(
-            "/home/amitgaru2/research/cvf-python/linear_regression/random-data.csv"
+            "/home/agaru/research/cvf-python/linear_regression/random-data.csv"
         )
         self.doubly_stochastic_matrix_config = [
             [2 / 3, 1 / 6, 1 / 6],
@@ -69,7 +71,8 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         self._find_invariants()
         self._init_pts_rank()
         self._find_program_transitions_n_cvfs()
-        self._rank_all_states()
+        # self.__save_pts_to_file()
+        # self._rank_all_states()
         # self._gen_save_rank_count()
         # self._calculate_pts_rank_effect()
         # self._calculate_cvfs_rank_effect()
@@ -201,7 +204,7 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
 
         if not program_transitions:
             print("program transitions not found for", start_state)
-        
+
         # print(start_state, program_transitions)
 
         return program_transitions
@@ -222,3 +225,15 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
                 )
 
         return cvfs
+
+    def __save_pts_to_file(self):
+        def _map_key(state):
+            return json.dumps([float(k) for k in state])
+
+        pts = {
+            _map_key(state): list(pts["program_transitions"])
+            for state, pts in self.pts_n_cvfs.items()
+        }
+
+
+        json.dump(pts, open("output.json", "w"))
