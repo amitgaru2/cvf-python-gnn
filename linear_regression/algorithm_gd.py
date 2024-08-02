@@ -63,4 +63,5 @@ def get_iteration_vs_accuracy_data(
 
         params = {"m": m, "c": c}
 
+    print(params)
     return steps_data, accuracy_data, grad_m_data
