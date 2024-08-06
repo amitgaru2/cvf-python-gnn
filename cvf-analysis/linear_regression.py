@@ -108,8 +108,8 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
 
         result = value
 
-        if value / self.slope_step != 0:
-            result = (value // self.slope_step) * self.slope_step
+        if result / self.slope_step != 0:
+            result = (result // self.slope_step) * self.slope_step
 
         if (value - result) > self.slope_step / 2:
             result = result + self.slope_step
@@ -159,17 +159,10 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
 
         return result
 
-    def _is_program_transition(self, perturb_pos, start_state, dest_state) -> bool:
+    def _is_program_transition(
+        self, perturb_pos, start_state, dest_state, grad_m
+    ) -> bool:
         perturbed_m = dest_state[perturb_pos]
-        original_m = start_state[perturb_pos]
-
-        node_df = self.__get_node_data_df(perturb_pos)
-        X_node = node_df["X"].array
-        y_node = node_df["y"].array
-        params = {"m": original_m, "c": 0}
-        y_node_pred = self.__forward(X_node, params)
-        grad_m = self.__gradient_m(X_node, y_node, y_node_pred)
-        grad_m = np.round(grad_m, decimals=1)  # round off to 1
         doubly_st_mt = self.doubly_stochastic_matrix_config[perturb_pos]
         new_m = (
             sum(frac * start_state[i] for i, frac in enumerate(doubly_st_mt))
@@ -177,10 +170,6 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         )
         ad_new_m = self.__get_adjusted_value(new_m)
         ad_new_m = np.round(ad_new_m, self.slope_step_decimals)
-        if ad_new_m == original_m:
-            ad_new_m = self.__get_next_near_convergence_value(
-                original_m, new_m, ad_new_m
-            )
         return ad_new_m == perturbed_m
 
     def _get_program_transitions(self, start_state):
@@ -194,16 +183,29 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
             )
         )
         for position, val in enumerate(start_state):
+
+            node_df = self.__get_node_data_df(position)
+            X_node = node_df["X"].array
+            y_node = node_df["y"].array
+            params = {"m": val, "c": 0}
+            y_node_pred = self.__forward(X_node, params)
+            grad_m = self.__gradient_m(X_node, y_node, y_node_pred)
+
+            print(position, start_state, grad_m)
+
             possible_slope_values = all_slope_values - {val}
             for perturb_val in possible_slope_values:
                 perturb_state = list(start_state)
                 perturb_state[position] = perturb_val
                 perturb_state = tuple(perturb_state)
-                if self._is_program_transition(position, start_state, perturb_state):
+                if self._is_program_transition(
+                    position, start_state, perturb_state, grad_m
+                ):
                     program_transitions.add(perturb_state)
 
         if not program_transitions:
             print("program transitions not found for", start_state)
+            input()
 
         # print(start_state, program_transitions)
 
@@ -234,6 +236,5 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
             _map_key(state): list(pts["program_transitions"])
             for state, pts in self.pts_n_cvfs.items()
         }
-
 
         json.dump(pts, open("output.json", "w"))
