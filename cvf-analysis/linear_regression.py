@@ -144,11 +144,9 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
             # else:
             #     self.invariants.add(state)
 
-        print(min_loss_sum)
         self.invariants.add(min_loss_sum_state)
         print("Invariants", self.invariants)
         logger.info("No. of Invariants: %s", len(self.invariants))
-        input()
 
     def __forward(self, X, params):
         return params["m"] * X + params["c"]
