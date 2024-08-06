@@ -117,22 +117,45 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         return result
 
     def _find_invariants(self):
+        min_loss_sum = 1000000
+        min_loss_sum_state = None
         for state in self.configurations:
-            for m in state:
-                if not (
-                    self.actual_m - self.slope_step / 2
-                    < m
-                    <= self.actual_m + self.slope_step / 2
-                ):
-                    break
-            else:
-                self.invariants.add(state)
+            temp = 0
+            for node, m in enumerate(state):
+                node_df = self.__get_node_data_df(node)
+                X_node = node_df["X"].array
+                y_node = node_df["y"].array
+                params = {"m": m, "c": 0}
+                y_node_pred = self.__forward(X_node, params)
+                loss = self.__loss_fn(y_node, y_node_pred)
+                temp += loss
 
+            if abs(temp) < min_loss_sum:
+                min_loss_sum = abs(temp)
+                min_loss_sum_state = state
+
+            # for m in state:
+            #     if not (
+            #         self.actual_m - self.slope_step / 2
+            #         < m
+            #         <= self.actual_m + self.slope_step / 2
+            #     ):
+            #         break
+            # else:
+            #     self.invariants.add(state)
+
+        print(min_loss_sum)
+        self.invariants.add(min_loss_sum_state)
         print("Invariants", self.invariants)
         logger.info("No. of Invariants: %s", len(self.invariants))
+        input()
 
     def __forward(self, X, params):
         return params["m"] * X + params["c"]
+
+    def __loss_fn(self, y, y_pred):
+        N = len(y)
+        return (1 / N) * sum((y[i] - y_pred[i]) ** 2 for i in range(N))
 
     def __gradient_m(self, X, y, y_pred):
         N = len(y)
