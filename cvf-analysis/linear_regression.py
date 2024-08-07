@@ -162,24 +162,6 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
     def __get_node_data_df(self, node_id):
         return self.df[self.df["node"] == node_id]
 
-    def __get_next_near_convergence_value(
-        self, original_value, calculated_value, adjusted_value
-    ):
-        if calculated_value > original_value:
-            result = original_value + self.slope_step
-        elif calculated_value < original_value:
-            result = original_value - self.slope_step
-        else:
-            result = adjusted_value
-
-        if result > self.max_slope:
-            return self.max_slope
-
-        if result < self.min_slope:
-            return self.min_slope
-
-        return result
-
     def _is_program_transition(
         self, perturb_pos, start_state, dest_state, grad_m
     ) -> bool:
@@ -189,9 +171,10 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
             sum(frac * start_state[i] for i, frac in enumerate(doubly_st_mt))
             - self.learning_rate * grad_m
         )
+        delta = new_m - start_state[perturb_pos]
         ad_new_m = self.__get_adjusted_value(new_m)
         ad_new_m = np.round(ad_new_m, self.slope_step_decimals)
-        return ad_new_m == perturbed_m
+        return delta, ad_new_m == perturbed_m
 
     def _get_program_transitions(self, start_state):
         program_transitions = set()
@@ -203,30 +186,47 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
                 2,
             )
         )
-        for position, val in enumerate(start_state):
 
+        deltas = {}
+        for position, val in enumerate(start_state):
             node_df = self.__get_node_data_df(position)
             X_node = node_df["X"].array
             y_node = node_df["y"].array
             params = {"m": val, "c": 0}
             y_node_pred = self.__forward(X_node, params)
             grad_m = self.__gradient_m(X_node, y_node, y_node_pred)
-
-            print(position, start_state, grad_m)
+            print(position, start_state)
+            deltas[position] = {}
 
             possible_slope_values = all_slope_values - {val}
             for perturb_val in possible_slope_values:
                 perturb_state = list(start_state)
                 perturb_state[position] = perturb_val
                 perturb_state = tuple(perturb_state)
-                if self._is_program_transition(
+                delta, is_pt = self._is_program_transition(
                     position, start_state, perturb_state, grad_m
-                ):
+                )
+                if is_pt:
                     program_transitions.add(perturb_state)
+                else:
+                    if (
+                        np.round(abs(perturb_val - val), self.slope_step_decimals)
+                        <= self.slope_step
+                    ):
+                        deltas[position][perturb_state] = delta
 
         if not program_transitions:
-            print("program transitions not found for", start_state)
-            input()
+            if start_state in self.invariants:
+                # invariants might have no program transition and that is fine
+                pass
+            else:
+                # deltas_abs = [abs(d) for d in deltas]
+                # max_delta = max(deltas_abs)
+                # max_delta_pos = [i for i, d in enumerate(deltas_abs) if d == max_delta]
+                print("program transitions not found for", start_state)
+                # print("max delta", max_delta, "max delta pos", max_delta_pos)
+                print("deltas", deltas)
+                input()
 
         # print(start_state, program_transitions)
 
