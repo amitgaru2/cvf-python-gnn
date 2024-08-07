@@ -232,6 +232,27 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
 
         return program_transitions
 
+    def __newton_raphson_L(self, L0, m_pred, m, grad_m):
+        def f_L(L):
+            return m_pred - m + L * grad_m
+
+        def f_L_der(L):
+            return grad_m
+
+        numerator = f_L(L0)
+        denominator = f_L_der(L0)
+
+        while numerator != 0:
+            new_L0 = L0 - numerator / denominator
+            numerator = f_L(new_L0)
+            denominator = f_L_der(new_L0)
+            if abs(new_L0 - L0) <= 0.00001:
+                L0 = new_L0
+                break
+            L0 = new_L0
+
+        return L0
+
     def _get_cvfs(self, start_state):
         cvfs = dict()
         all_slope_values = set(
