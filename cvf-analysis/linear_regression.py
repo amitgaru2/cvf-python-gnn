@@ -18,6 +18,17 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         self.slope_step_decimals = 1
         self.slope_step = 1 / (10**self.slope_step_decimals)
         self.min_slope = 0
+        self.max_slope = 1.0
+        self.no_of_nodes = 3
+        self.df = pd.read_csv(
+            "/home/agaru/research/cvf-python/linear_regression/random-data.csv"
+        )
+        self.doubly_stochastic_matrix_config = [
+            [2 / 3, 1 / 6, 1 / 6],
+            [1 / 6, 1 / 6, 2 / 3],
+            [1 / 6, 2 / 3, 1 / 6],
+        ]
+        # self.min_slope = 0
         # self.max_slope = 4
         # self.actual_m = 3.0834764453827943
         # self.actual_b = -82.57574306316957
@@ -34,18 +45,10 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         #     [1 / 6, 1 / 3, 1 / 3, 1 / 6],
         #     [1 / 3, 1 / 3, 1 / 6, 1 / 6],
         # ]
-        self.max_slope = 1.0
+
         # self.actual_m = 0.9
         # self.actual_b = -0.11847322643445737
-        self.no_of_nodes = 3
-        self.df = pd.read_csv(
-            "/home/agaru/research/cvf-python/linear_regression/random-data.csv"
-        )
-        self.doubly_stochastic_matrix_config = [
-            [2 / 3, 1 / 6, 1 / 6],
-            [1 / 6, 1 / 6, 2 / 3],
-            [1 / 6, 2 / 3, 1 / 6],
-        ]
+
         self.node_data_partitions = np.array_split(self.df, self.no_of_nodes)
         for i, node_data in enumerate(self.node_data_partitions):
             self.df.loc[node_data.index, "node"] = i

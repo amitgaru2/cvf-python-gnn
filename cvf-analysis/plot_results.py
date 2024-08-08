@@ -10,6 +10,8 @@ COLORING_PROGRAM = "coloring"
 DIJKSTRA_PROGRAM = "dijkstra_token_ring"
 MAX_MATCHING_PROGRAM = "maximal_matching"
 MAX_INDEPENDENT_SET_PROGRAM = "maximal_independent_set"
+LINEAR_REGRESSION_PROGRAM = "linear_regression"
+
 
 results_dir = "results"
 program = "dijkstra_token_ring"  # coloring, dijkstra_token_ring, maximal_matching, maximal_independent_set
@@ -19,6 +21,7 @@ programs = {
     COLORING_PROGRAM,
     MAX_MATCHING_PROGRAM,
     MAX_INDEPENDENT_SET_PROGRAM,
+    LINEAR_REGRESSION_PROGRAM,
 }
 if program not in programs:
     print(f"Program {program} not found.")
@@ -29,6 +32,7 @@ program_label_map = {
     "coloring": "graph coloring",
     "maximal_matching": "maximal matching",
     "maximal_independent_set": "maximal indp. set",
+    "linear_regression": "linear regression",
 }
 program_label = program_label_map.get(program, program)
 
@@ -69,6 +73,7 @@ graph_names_map = {
         "graph_7",
         "graph_8",
     },
+    LINEAR_REGRESSION_PROGRAM: {"test_lr_graph_2"},
 }
 
 graph_names = graph_names_map[program]
@@ -94,7 +99,7 @@ def get_df(graph_name):
 
 def plot_node_rank_effect(node, df, ax):
     df = df.loc[df["CVF (Avg)"] > 0]
-    sns.lineplot(data=df, x="Rank Effect", y="CVF (Avg)", ax=ax, marker='o')
+    sns.lineplot(data=df, x="Rank Effect", y="CVF (Avg)", ax=ax, marker="o")
     ax.set(xlabel=f"Rank Effect of Node: {node}", ylabel="Count")
     ax.tick_params(axis="x", labelsize=20)
     ax.tick_params(axis="y", labelsize=20)
