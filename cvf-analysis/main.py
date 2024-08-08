@@ -1,4 +1,5 @@
 import os
+import logging
 import argparse
 
 from cvf_analysis import (
@@ -95,7 +96,17 @@ def main():
         help="list of graph names in the 'graphs_dir' or list of number of nodes for implict graphs (if implicit program)",
         required=True,
     )
+    parser.add_argument(
+        "--logging",
+        choices=[
+            "INFO",
+            "DEBUG",
+        ],
+        required=False,
+    )
     args = parser.parse_args()
+    if args.logging:
+        logger.setLevel(getattr(logging, args.logging, "INFO"))
     # print(args.program, args.full_analysis, args.graph_names, args.sample_size)
 
     analysis_type = FullAnalysisType if args.full_analysis else PartialAnalysisType

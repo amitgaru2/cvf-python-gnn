@@ -70,13 +70,13 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         self._find_invariants()
         self._init_pts_rank()
         self._find_program_transitions_n_cvfs()
-        self.__save_pts_to_file()
+        # self.__save_pts_to_file()
         self._rank_all_states()
-        # self._gen_save_rank_count()
-        # self._calculate_pts_rank_effect()
-        # self._calculate_cvfs_rank_effect()
-        # self._gen_save_rank_effect_count()
-        # self._gen_save_rank_effect_by_node_count()
+        self._gen_save_rank_count()
+        self._calculate_pts_rank_effect()
+        self._calculate_cvfs_rank_effect()
+        self._gen_save_rank_effect_count()
+        self._gen_save_rank_effect_by_node_count()
 
     def _gen_configurations(self):
         self.configurations = {tuple([self.min_slope for _ in range(len(self.nodes))])}
@@ -278,7 +278,12 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
     def _get_cvfs(self, start_state):
         cvfs = dict()
         all_slope_values = set(
-            np.arange(self.min_slope, self.max_slope + self.slope_step, self.slope_step)
+            np.round(
+                np.arange(
+                    self.min_slope, self.max_slope + self.slope_step, self.slope_step
+                ),
+                self.slope_step_decimals,
+            )
         )
         for position, val in enumerate(start_state):
             possible_slope_values = all_slope_values - {val}
