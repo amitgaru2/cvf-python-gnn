@@ -42,10 +42,10 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
             columns={"Height(Inches)": "X", "Weight(Pounds)": "y"}, inplace=True
         )
         self.doubly_stochastic_matrix_config = [
-            [1 / 3, 1 / 6, 1 / 6, 1 / 3],
-            [1 / 6, 1 / 6, 1 / 3, 1 / 3],
-            [1 / 6, 1 / 3, 1 / 3, 1 / 6],
-            [1 / 3, 1 / 3, 1 / 6, 1 / 6],
+            [1 / 4, 1 / 4, 1 / 4, 1 / 4],
+            [1 / 4, 3 / 4, 0, 0],
+            [1 / 4, 0, 3 / 4, 0],
+            [1 / 4, 0, 0, 3 / 4],
         ]
         # self.actual_m = 3.08
 
@@ -150,6 +150,7 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
             #     self.invariants.add(state)
 
         self.invariants.add(min_loss_sum_state)
+        print("min loss sum", min_loss_sum)
         print("Invariants", self.invariants)
         logger.info("No. of Invariants: %s", len(self.invariants))
 

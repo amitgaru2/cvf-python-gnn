@@ -73,7 +73,10 @@ graph_names_map = {
         "graph_7",
         "graph_8",
     },
-    LINEAR_REGRESSION_PROGRAM: {"test_lr_graph_2"},
+    LINEAR_REGRESSION_PROGRAM: {
+        "test_lr_graph_1",
+        "test_lr_graph_2",
+    },
 }
 
 graph_names = graph_names_map[program]
