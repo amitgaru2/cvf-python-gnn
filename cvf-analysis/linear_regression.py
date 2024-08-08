@@ -14,41 +14,44 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
 
     def __init__(self, graph_name, graph) -> None:
         super().__init__(graph_name, graph)
-        self.learning_rate = 0.001
-        self.slope_step_decimals = 1
-        self.slope_step = 1 / (10**self.slope_step_decimals)
-        self.min_slope = 0
-        self.max_slope = 1.0
-        self.no_of_nodes = 3
-        self.df = pd.read_csv(
-            "/home/agaru/research/cvf-python/linear_regression/random-data.csv"
-        )
-        self.doubly_stochastic_matrix_config = [
-            [2 / 3, 1 / 6, 1 / 6],
-            [1 / 6, 1 / 6, 2 / 3],
-            [1 / 6, 2 / 3, 1 / 6],
-        ]
+        # self.learning_rate = 0.001
+
+        # self.slope_step_decimals = 1
         # self.min_slope = 0
-        # self.max_slope = 4
-        # self.actual_m = 3.0834764453827943
-        # self.actual_b = -82.57574306316957
-        # self.no_of_nodes = 4
+        # self.max_slope = 1.0
+        # self.no_of_nodes = 3
         # self.df = pd.read_csv(
-        #     "/home/agaru/research/cvf-python/linear_regression/SOCR-HeightWeight.csv"
-        # )
-        # self.df.rename(
-        #     columns={"Height(Inches)": "X", "Weight(Pounds)": "y"}, inplace=True
+        #     "/home/agaru/research/cvf-python/linear_regression/random-data.csv"
         # )
         # self.doubly_stochastic_matrix_config = [
-        #     [1 / 3, 1 / 6, 1 / 6, 1 / 3],
-        #     [1 / 6, 1 / 6, 1 / 3, 1 / 3],
-        #     [1 / 6, 1 / 3, 1 / 3, 1 / 6],
-        #     [1 / 3, 1 / 3, 1 / 6, 1 / 6],
+        #     [1 / 3, 1 / 3, 1 / 3],
+        #     [1 / 3, 2 / 3, 0],
+        #     [1 / 3, 0, 2 / 3],
         # ]
-
         # self.actual_m = 0.9
         # self.actual_b = -0.11847322643445737
 
+        self.slope_step_decimals = 1
+        self.min_slope = 2.5
+        self.max_slope = 3.5
+        self.no_of_nodes = 4
+        self.df = pd.read_csv(
+            "/home/agaru/research/cvf-python/linear_regression/SOCR-HeightWeight.csv"
+        )
+        self.df.rename(
+            columns={"Height(Inches)": "X", "Weight(Pounds)": "y"}, inplace=True
+        )
+        self.doubly_stochastic_matrix_config = [
+            [1 / 3, 1 / 6, 1 / 6, 1 / 3],
+            [1 / 6, 1 / 6, 1 / 3, 1 / 3],
+            [1 / 6, 1 / 3, 1 / 3, 1 / 6],
+            [1 / 3, 1 / 3, 1 / 6, 1 / 6],
+        ]
+        # self.actual_m = 3.08
+
+        self.slope_step = 1 / (10**self.slope_step_decimals)
+
+        # self.df = self.df.sample(frac=1).reset_index(drop=True)
         self.node_data_partitions = np.array_split(self.df, self.no_of_nodes)
         for i, node_data in enumerate(self.node_data_partitions):
             self.df.loc[node_data.index, "node"] = i
@@ -101,22 +104,22 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
 
         logger.info("No. of Configurations: %s", len(self.configurations))
 
-    def __get_adjusted_value(self, value):
-        if value > self.max_slope:
-            return self.max_slope
+    # def __get_adjusted_value(self, value):
+    #     if value > self.max_slope:
+    #         return self.max_slope
 
-        if value < self.min_slope:
-            return self.min_slope
+    #     if value < self.min_slope:
+    #         return self.min_slope
 
-        result = value
+    #     result = value
 
-        if result / self.slope_step != 0:
-            result = (result // self.slope_step) * self.slope_step
+    #     if result / self.slope_step != 0:
+    #         result = (result // self.slope_step) * self.slope_step
 
-        if (value - result) > self.slope_step / 2:
-            result = result + self.slope_step
+    #     if (value - result) > self.slope_step / 2:
+    #         result = result + self.slope_step
 
-        return result
+    #     return result
 
     def _find_invariants(self):
         min_loss_sum = 1000000
@@ -164,19 +167,19 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
     def __get_node_data_df(self, node_id):
         return self.df[self.df["node"] == node_id]
 
-    def _is_program_transition(
-        self, perturb_pos, start_state, dest_state, grad_m
-    ) -> bool:
-        perturbed_m = dest_state[perturb_pos]
-        doubly_st_mt = self.doubly_stochastic_matrix_config[perturb_pos]
-        new_m = (
-            sum(frac * start_state[i] for i, frac in enumerate(doubly_st_mt))
-            - self.learning_rate * grad_m
-        )
-        delta = new_m - start_state[perturb_pos]
-        ad_new_m = self.__get_adjusted_value(new_m)
-        ad_new_m = np.round(ad_new_m, self.slope_step_decimals)
-        return delta, ad_new_m == perturbed_m
+    # def _is_program_transition(
+    #     self, perturb_pos, start_state, dest_state, grad_m
+    # ) -> bool:
+    #     perturbed_m = dest_state[perturb_pos]
+    #     doubly_st_mt = self.doubly_stochastic_matrix_config[perturb_pos]
+    #     new_m = (
+    #         sum(frac * start_state[i] for i, frac in enumerate(doubly_st_mt))
+    #         - self.learning_rate * grad_m
+    #     )
+    #     delta = new_m - start_state[perturb_pos]
+    #     ad_new_m = self.__get_adjusted_value(new_m)
+    #     ad_new_m = np.round(ad_new_m, self.slope_step_decimals)
+    #     return delta, ad_new_m == perturbed_m
 
     def _get_program_transitions(self, start_state):
         program_transitions = set()
