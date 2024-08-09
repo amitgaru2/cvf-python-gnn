@@ -32,20 +32,20 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         # self.actual_b = -0.11847322643445737
 
         self.slope_step_decimals = 1
-        self.min_slope = 2.5
-        self.max_slope = 3.5
+        self.min_slope = 1.7
+        self.max_slope = 2.3
         self.no_of_nodes = 4
         self.df = pd.read_csv(
-            "/home/agaru/research/cvf-python/linear_regression/SOCR-HeightWeight.csv"
+            "/home/amitgaru2/research/cvf-python/linear_regression/SOCR-HeightWeight.csv"
         )
         self.df.rename(
             columns={"Height(Inches)": "X", "Weight(Pounds)": "y"}, inplace=True
         )
         self.doubly_stochastic_matrix_config = [
-            [1 / 4, 1 / 4, 1 / 4, 1 / 4],
+            [1 / 2, 1 / 4, 1 / 8, 1 / 8],
             [1 / 4, 3 / 4, 0, 0],
-            [1 / 4, 0, 3 / 4, 0],
-            [1 / 4, 0, 0, 3 / 4],
+            [1 / 8, 0, 7 / 8, 0],
+            [1 / 8, 0, 0, 7 / 8],
         ]
         # self.actual_m = 3.08
 
@@ -150,8 +150,7 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
             #     self.invariants.add(state)
 
         self.invariants.add(min_loss_sum_state)
-        print("min loss sum", min_loss_sum)
-        print("Invariants", self.invariants)
+        print("Invariants", self.invariants, "min loss sum", min_loss_sum)
         logger.info("No. of Invariants: %s", len(self.invariants))
 
     def __forward(self, X, params):
