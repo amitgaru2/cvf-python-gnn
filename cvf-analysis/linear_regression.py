@@ -234,10 +234,12 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         actual_program_transitions = []
         left_tobe_searched_node_params = program_transitions.keys() - searched_states
         while left_tobe_searched_node_params:
-            node_params = list(left_tobe_searched_node_params)[0]
-            for i in range(1, 10 + 1):
+            actual_node_params = list(left_tobe_searched_node_params)[0]
+            for i in range(1, 100 + 1):
+                node_params = list(actual_node_params)
+                prev_node_params = node_params.copy()
                 for node_id in range(self.no_of_nodes):
-                    m_node = node_params[node_id]
+                    m_node = prev_node_params[node_id]
 
                     node_df = self.__get_node_data_df(node_id)
                     X_node = node_df["X"].array
@@ -250,7 +252,7 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
 
                     new_slope = (
                         sum(
-                            frac * node_params[i]
+                            frac * prev_node_params[i]
                             for i, frac in enumerate(doubly_st_mt)
                         )
                         - self.learning_rate * grad_m
@@ -261,22 +263,26 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
                     if new_slope_cleaned != node_params[node_id]:
                         new_node_params = tuple(
                             self.__copy_replace_indx_value(
-                                list(node_params), node_id, new_slope_cleaned
+                                prev_node_params, node_id, new_slope_cleaned
                             )
                         )
                         actual_program_transitions.append(new_node_params)
+                    else:
+                        node_params[node_id] = new_slope
 
                 if actual_program_transitions:
-                    program_transitions[node_params].extend(actual_program_transitions)
+                    program_transitions[actual_node_params].extend(
+                        actual_program_transitions
+                    )
                     for pt in actual_program_transitions:
                         if pt not in program_transitions:
                             program_transitions[pt] = []
                     actual_program_transitions = []
                     break
             else:
-                print("No program transition found for", node_params)
+                print("No program transition found for", actual_node_params)
 
-            searched_states.add(node_params)
+            searched_states.add(actual_node_params)
             left_tobe_searched_node_params = (
                 program_transitions.keys() - searched_states
             )
