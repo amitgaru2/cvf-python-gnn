@@ -1,6 +1,7 @@
 import os
 import copy
 import json
+import pprint
 
 import numpy as np
 import pandas as pd
@@ -14,39 +15,39 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
 
     def __init__(self, graph_name, graph) -> None:
         super().__init__(graph_name, graph)
-        # self.learning_rate = 0.001
-
-        # self.slope_step_decimals = 1
-        # self.min_slope = 0
-        # self.max_slope = 1.0
-        # self.no_of_nodes = 3
-        # self.df = pd.read_csv(
-        #     "/home/agaru/research/cvf-python/linear_regression/random-data.csv"
-        # )
-        # self.doubly_stochastic_matrix_config = [
-        #     [1 / 3, 1 / 3, 1 / 3],
-        #     [1 / 3, 2 / 3, 0],
-        #     [1 / 3, 0, 2 / 3],
-        # ]
-        # self.actual_m = 0.9
-        # self.actual_b = -0.11847322643445737
+        self.learning_rate = 0.001
 
         self.slope_step_decimals = 1
-        self.min_slope = 1.7
-        self.max_slope = 2.3
-        self.no_of_nodes = 4
+        self.min_slope = 0
+        self.max_slope = 1.1
+        self.no_of_nodes = 3
         self.df = pd.read_csv(
-            "/home/amitgaru2/research/cvf-python/linear_regression/SOCR-HeightWeight.csv"
-        )
-        self.df.rename(
-            columns={"Height(Inches)": "X", "Weight(Pounds)": "y"}, inplace=True
+            "/home/amitgaru2/research/cvf-python/linear_regression/random-data.csv"
         )
         self.doubly_stochastic_matrix_config = [
-            [1 / 2, 1 / 4, 1 / 8, 1 / 8],
-            [1 / 4, 3 / 4, 0, 0],
-            [1 / 8, 0, 7 / 8, 0],
-            [1 / 8, 0, 0, 7 / 8],
+            [1 / 3, 1 / 3, 1 / 3],
+            [1 / 3, 2 / 3, 0],
+            [1 / 3, 0, 2 / 3],
         ]
+        self.actual_m = 0.9
+        self.actual_b = -0.11847322643445737
+
+        # self.slope_step_decimals = 1
+        # self.min_slope = 1.7
+        # self.max_slope = 2.3
+        # self.no_of_nodes = 4
+        # self.df = pd.read_csv(
+        #     "/home/amitgaru2/research/cvf-python/linear_regression/SOCR-HeightWeight.csv"
+        # )
+        # self.df.rename(
+        #     columns={"Height(Inches)": "X", "Weight(Pounds)": "y"}, inplace=True
+        # )
+        # self.doubly_stochastic_matrix_config = [
+        #     [1 / 2, 1 / 4, 1 / 8, 1 / 8],
+        #     [1 / 4, 3 / 4, 0, 0],
+        #     [1 / 8, 0, 7 / 8, 0],
+        #     [1 / 8, 0, 0, 7 / 8],
+        # ]
         # self.actual_m = 3.08
 
         self.slope_step = 1 / (10**self.slope_step_decimals)
@@ -73,14 +74,15 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         self._gen_configurations()
         self._find_invariants()
         self._init_pts_rank()
-        self._find_program_transitions_n_cvfs()
+        self._find_program_transitions()
+        # self._find_program_transitions_n_cvfs()
         # self.__save_pts_to_file()
-        self._rank_all_states()
-        self._gen_save_rank_count()
-        self._calculate_pts_rank_effect()
-        self._calculate_cvfs_rank_effect()
-        self._gen_save_rank_effect_count()
-        self._gen_save_rank_effect_by_node_count()
+        # self._rank_all_states()
+        # self._gen_save_rank_count()
+        # self._calculate_pts_rank_effect()
+        # self._calculate_cvfs_rank_effect()
+        # self._gen_save_rank_effect_count()
+        # self._gen_save_rank_effect_by_node_count()
 
     def _gen_configurations(self):
         self.configurations = {tuple([self.min_slope for _ in range(len(self.nodes))])}
@@ -179,6 +181,35 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
     #     ad_new_m = np.round(ad_new_m, self.slope_step_decimals)
     #     return delta, ad_new_m == perturbed_m
 
+    def _find_program_transitions(self):
+        node_params = [self.min_slope for i in range(self.no_of_nodes)]
+        program_transitions = []
+        for i in range(1, 500 + 1):
+            prev_node_params = node_params.copy()
+            for node_id in range(self.no_of_nodes):
+                m_node = node_params[node_id]
+
+                node_df = self.__get_node_data_df(node_id)
+                X_node = node_df["X"].array
+                y_node = node_df["y"].array
+
+                y_node_pred = self.__forward(X_node, {"m": m_node, "c": 0})
+                grad_m = self.__gradient_m(X_node, y_node, y_node_pred)
+
+                doubly_st_mt = self.doubly_stochastic_matrix_config[node_id]
+
+                node_params[node_id] = (
+                    sum(
+                        frac * prev_node_params[i]
+                        for i, frac in enumerate(doubly_st_mt)
+                    )
+                    - self.learning_rate * grad_m
+                )
+
+            program_transitions.append(prev_node_params)
+
+        pprint.pprint(program_transitions)
+
     def _get_program_transitions(self, start_state):
         program_transitions = set()
         # all_slope_values = set(
@@ -205,32 +236,32 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
             y_node_pred = self.__forward(X_node, params)
             grad_m = self.__gradient_m(X_node, y_node, y_node_pred)
 
-            m_pred_add = np.round(val + self.slope_step, self.slope_step_decimals)
-            L_add = self.__newton_raphson_L(0, m_pred_add, val, grad_m)
+            # m_pred_add = np.round(val + self.slope_step, self.slope_step_decimals)
+            # L_add = self.__newton_raphson_L(0, m_pred_add, val, grad_m)
 
-            m_pred_sub = np.round(val - self.slope_step, self.slope_step_decimals)
-            L_sub = self.__newton_raphson_L(0, m_pred_sub, val, grad_m)
+            # m_pred_sub = np.round(val - self.slope_step, self.slope_step_decimals)
+            # L_sub = self.__newton_raphson_L(0, m_pred_sub, val, grad_m)
 
-            perturb_state = list(start_state)
-            perturb_val = None
-            if L_add <= 0 and L_sub <= 0:
-                # no program transition
-                pass
-            elif L_add >= 0 and L_sub >= 0:
-                min_L = min(L_add, L_sub)
-                perturb_val = m_pred_add if min_L == L_add else m_pred_sub
-            elif L_add <= 0:
-                # program transition to negative step
-                perturb_val = m_pred_sub
-            else:
-                # program transition to positive step
-                perturb_val = m_pred_add
+            # perturb_state = list(start_state)
+            # perturb_val = None
+            # if L_add <= 0 and L_sub <= 0:
+            #     # no program transition
+            #     pass
+            # elif L_add >= 0 and L_sub >= 0:
+            #     min_L = min(L_add, L_sub)
+            #     perturb_val = m_pred_add if min_L == L_add else m_pred_sub
+            # elif L_add <= 0:
+            #     # program transition to negative step
+            #     perturb_val = m_pred_sub
+            # else:
+            #     # program transition to positive step
+            #     perturb_val = m_pred_add
 
-            if perturb_val is not None:
-                # print("position =", position, "perturb_val =", perturb_val)
-                perturb_state[position] = perturb_val
-                perturb_state = tuple(perturb_state)
-                program_transitions.add(perturb_state)
+            # if perturb_val is not None:
+            #     # print("position =", position, "perturb_val =", perturb_val)
+            #     perturb_state[position] = perturb_val
+            #     perturb_state = tuple(perturb_state)
+            #     program_transitions.add(perturb_state)
 
             # possible_slope_values = all_slope_values - {val}
             # for perturb_val in possible_slope_values:
@@ -249,9 +280,9 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
             #         ):
             #             deltas[position][perturb_state] = delta
 
-        if not program_transitions:
-            print("program transitions not found for", start_state)
-            input()
+        # if not program_transitions:
+        #     print("program transitions not found for", start_state)
+        #     input()
         # else:
         #     if self.invariants & program_transitions:
         #         program_transitions = self.invariants & program_transitions
