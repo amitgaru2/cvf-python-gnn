@@ -16,6 +16,8 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
     def __init__(self, graph_name, graph) -> None:
         super().__init__(graph_name, graph)
 
+        self._temp_program_transitions = {}
+
         self.learning_rate = 0.001
         self.iterations = 100
 
@@ -77,8 +79,8 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         self._find_invariants()
         self._init_pts_rank()
         # self._find_program_transitions()
-        self._find_program_transitions_v2()
-        # self._find_program_transitions_n_cvfs()
+        # self._find_program_transitions_v2()
+        self._find_program_transitions_n_cvfs()
         # self.__save_pts_to_file()
         # self._rank_all_states()
         # self._gen_save_rank_count()
@@ -236,7 +238,7 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         while left_tobe_searched_node_params:
             actual_node_params = list(left_tobe_searched_node_params)[0]
             node_params = list(actual_node_params)
-            for i in range(1, 10 + 1):
+            for i in range(1, self.iterations + 1):
                 prev_node_params = node_params.copy()
                 for node_id in range(self.no_of_nodes):
                     m_node = prev_node_params[node_id]
@@ -283,91 +285,58 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
                     actual_program_transitions = []
                     break
             else:
-                print("No program transition found for", actual_node_params)
+                logger.debug("No program transition found for %s !", actual_node_params)
 
             searched_states.add(actual_node_params)
             left_tobe_searched_node_params = (
                 program_transitions.keys() - searched_states
             )
 
-        pprint.pprint(program_transitions)
+        self._temp_program_transitions = program_transitions
 
     def _get_program_transitions(self, start_state):
         program_transitions = set()
-        all_slope_values = set(
-            np.round(
-                np.arange(
-                    self.min_slope, self.max_slope + self.slope_step, self.slope_step
-                ),
-                2,
-            )
-        )
 
-        if start_state in self.invariants:
-            return program_transitions
+        node_params = list(start_state)
+        for i in range(1, self.iterations + 1):
+            prev_node_params = node_params.copy()
+            for node_id in range(self.no_of_nodes):
+                m_node = prev_node_params[node_id]
 
-        invariant = list(self.invariants)[0]
+                node_df = self.__get_node_data_df(node_id)
+                X_node = node_df["X"].array
+                y_node = node_df["y"].array
 
-        for position, val in enumerate(start_state):
-            if val == invariant[position]:
-                continue
-            node_df = self.__get_node_data_df(position)
-            X_node = node_df["X"].array
-            y_node = node_df["y"].array
-            params = {"m": val, "c": 0}
-            y_node_pred = self.__forward(X_node, params)
-            grad_m = self.__gradient_m(X_node, y_node, y_node_pred)
+                y_node_pred = self.__forward(X_node, {"m": m_node, "c": 0})
+                grad_m = self.__gradient_m(X_node, y_node, y_node_pred)
 
-            # m_pred_add = np.round(val + self.slope_step, self.slope_step_decimals)
-            # L_add = self.__newton_raphson_L(0, m_pred_add, val, grad_m)
+                doubly_st_mt = self.doubly_stochastic_matrix_config[node_id]
 
-            # m_pred_sub = np.round(val - self.slope_step, self.slope_step_decimals)
-            # L_sub = self.__newton_raphson_L(0, m_pred_sub, val, grad_m)
+                new_slope = (
+                    sum(
+                        frac * prev_node_params[j]
+                        for j, frac in enumerate(doubly_st_mt)
+                    )
+                    - self.learning_rate * grad_m
+                )
+                new_slope_cleaned = self.__clean_float_to_step_size_single(new_slope)
+                if new_slope_cleaned != self.__clean_float_to_step_size_single(
+                    node_params[node_id]
+                ):
+                    new_node_params = self.__copy_replace_indx_value(
+                        prev_node_params, node_id, new_slope_cleaned
+                    )
+                    new_node_params = tuple(
+                        self.__clean_float_to_step_size(new_node_params)
+                    )
+                    program_transitions.add(new_node_params)
+                else:
+                    node_params[node_id] = new_slope
 
-            # perturb_state = list(start_state)
-            # perturb_val = None
-            # if L_add <= 0 and L_sub <= 0:
-            #     # no program transition
-            #     pass
-            # elif L_add >= 0 and L_sub >= 0:
-            #     min_L = min(L_add, L_sub)
-            #     perturb_val = m_pred_add if min_L == L_add else m_pred_sub
-            # elif L_add <= 0:
-            #     # program transition to negative step
-            #     perturb_val = m_pred_sub
-            # else:
-            #     # program transition to positive step
-            #     perturb_val = m_pred_add
-
-            # if perturb_val is not None:
-            #     # print("position =", position, "perturb_val =", perturb_val)
-            #     perturb_state[position] = perturb_val
-            #     perturb_state = tuple(perturb_state)
-            #     program_transitions.add(perturb_state)
-
-            # possible_slope_values = all_slope_values - {val}
-            # for perturb_val in possible_slope_values:
-            #     perturb_state = list(start_state)
-            #     perturb_state[position] = perturb_val
-            #     perturb_state = tuple(perturb_state)
-            #     delta, is_pt = self._is_program_transition(
-            #         position, start_state, perturb_state, grad_m
-            #     )
-            #     if is_pt:
-            #         program_transitions.add(perturb_state)
-            #     else:
-            #         if (
-            #             np.round(abs(perturb_val - val), self.slope_step_decimals)
-            #             <= self.slope_step
-            #         ):
-            #             deltas[position][perturb_state] = delta
-
-        # if not program_transitions:
-        #     print("program transitions not found for", start_state)
-        #     input()
+        if not program_transitions:
+            logger.debug("No program transition found for %s !", start_state)
         # else:
-        #     if self.invariants & program_transitions:
-        #         program_transitions = self.invariants & program_transitions
+        # logger.debug("%s : %s", start_state, program_transitions)
 
         return program_transitions
 
