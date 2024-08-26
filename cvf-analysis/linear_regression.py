@@ -76,7 +76,8 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         self._gen_configurations()
         self._find_invariants()
         self._init_pts_rank()
-        self._find_program_transitions()
+        # self._find_program_transitions()
+        self._find_program_transitions_v2()
         # self._find_program_transitions_n_cvfs()
         # self.__save_pts_to_file()
         # self._rank_all_states()
@@ -169,12 +170,20 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
     def __get_node_data_df(self, node_id):
         return self.df[self.df["node"] == node_id]
 
+    def __clean_float_to_step_size_single(self, slope):
+        return np.round(slope, self.slope_step_decimals)
+
     def __clean_float_to_step_size(self, node_slopes):
         result = []
         for slope in node_slopes:
-            result.append(np.round(slope, self.slope_step_decimals))
+            result.append(self.__clean_float_to_step_size_single(slope))
 
         return result
+
+    def __copy_replace_indx_value(self, lst, indx, value):
+        lst_copy = lst.copy()
+        lst_copy[indx] = value
+        return lst_copy
 
     def _find_program_transitions(self):
         node_params = [self.min_slope for i in range(self.no_of_nodes)]
@@ -216,6 +225,59 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
 
         pprint.pprint(actual_program_transitions)
         print(len(actual_program_transitions))
+
+    def _find_program_transitions_v2(self):
+        searched_states = set()
+        program_transitions = {
+            tuple([self.min_slope for i in range(self.no_of_nodes)]): []
+        }
+        actual_program_transitions = []
+        left_tobe_searched_node_params = program_transitions.keys() - searched_states
+        while left_tobe_searched_node_params:
+            node_params = list(left_tobe_searched_node_params)[0]
+            prev_node_params = node_params.copy()
+            for i in range(1, 10 + 1):
+                for node_id in range(self.no_of_nodes):
+                    m_node = node_params[node_id]
+
+                    node_df = self.__get_node_data_df(node_id)
+                    X_node = node_df["X"].array
+                    y_node = node_df["y"].array
+
+                    y_node_pred = self.__forward(X_node, {"m": m_node, "c": 0})
+                    grad_m = self.__gradient_m(X_node, y_node, y_node_pred)
+
+                    doubly_st_mt = self.doubly_stochastic_matrix_config[node_id]
+
+                    new_slope = (
+                        sum(
+                            frac * prev_node_params[i]
+                            for i, frac in enumerate(doubly_st_mt)
+                        )
+                        - self.learning_rate * grad_m
+                    )
+                    new_slope_cleaned = self.__clean_float_to_step_size_single(
+                        new_slope
+                    )
+                    if new_slope_cleaned != prev_node_params[node_id]:
+                        new_node_params = tuple(
+                            self.__copy_replace_indx_value(
+                                prev_node_params, node_id, new_slope_cleaned
+                            )
+                        )
+                        actual_program_transitions.append(new_node_params)
+
+                if actual_program_transitions:
+                    program_transitions[node_params].extend(actual_program_transitions)
+                    actual_program_transitions = []
+                    break
+            else:
+                print("No program transition found for", node_params)
+
+            searched_states.add(node_params)
+            left_tobe_searched_node_params = (
+                program_transitions.keys() - searched_states
+            )
 
     def _get_program_transitions(self, start_state):
         program_transitions = set()
