@@ -82,13 +82,13 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         # self._find_program_transitions_v2()
         self._find_program_transitions_n_cvfs()
         self._init_pts_rank()
-        # self.__save_pts_to_file()
+        self.__save_pts_to_file()
         self._rank_all_states()
-        # self._gen_save_rank_count()
-        # self._calculate_pts_rank_effect()
-        # self._calculate_cvfs_rank_effect()
-        # self._gen_save_rank_effect_count()
-        # self._gen_save_rank_effect_by_node_count()
+        self._gen_save_rank_count()
+        self._calculate_pts_rank_effect()
+        self._calculate_cvfs_rank_effect()
+        self._gen_save_rank_effect_count()
+        self._gen_save_rank_effect_by_node_count()
 
     def _gen_configurations(self):
         self.configurations = {tuple([self.min_slope for _ in range(len(self.nodes))])}
@@ -109,23 +109,6 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
                     self.configurations.add(tuple(cc))
 
         logger.info("No. of Configurations: %s", len(self.configurations))
-
-    # def __get_adjusted_value(self, value):
-    #     if value > self.max_slope:
-    #         return self.max_slope
-
-    #     if value < self.min_slope:
-    #         return self.min_slope
-
-    #     result = value
-
-    #     if result / self.slope_step != 0:
-    #         result = (result // self.slope_step) * self.slope_step
-
-    #     if (value - result) > self.slope_step / 2:
-    #         result = result + self.slope_step
-
-    #     return result
 
     def _find_invariants(self):
         # min_loss_sum = 1000000
@@ -371,7 +354,11 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         all_slope_values = set(
             np.round(
                 np.arange(
-                    self.min_slope, self.max_slope + self.slope_step, self.slope_step
+                    self.min_slope,
+                    np.round(
+                        self.max_slope + self.slope_step, self.slope_step_decimals
+                    ),
+                    self.slope_step,
                 ),
                 self.slope_step_decimals,
             )
