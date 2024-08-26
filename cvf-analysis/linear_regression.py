@@ -235,8 +235,8 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         left_tobe_searched_node_params = program_transitions.keys() - searched_states
         while left_tobe_searched_node_params:
             actual_node_params = list(left_tobe_searched_node_params)[0]
-            for i in range(1, 100 + 1):
-                node_params = list(actual_node_params)
+            node_params = list(actual_node_params)
+            for i in range(1, 10 + 1):
                 prev_node_params = node_params.copy()
                 for node_id in range(self.no_of_nodes):
                     m_node = prev_node_params[node_id]
