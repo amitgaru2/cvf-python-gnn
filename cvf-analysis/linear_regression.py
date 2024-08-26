@@ -37,11 +37,11 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         self.actual_b = -0.11847322643445737
 
         # self.slope_step_decimals = 1
-        # self.min_slope = 1.7
-        # self.max_slope = 2.3
+        # self.min_slope = np.float64(0.0)
+        # self.max_slope = np.float64(3.5)
         # self.no_of_nodes = 4
         # self.df = pd.read_csv(
-        #     "/home/amitgaru2/research/cvf-python/linear_regression/SOCR-HeightWeight.csv"
+        #     "/home/agaru/research/cvf-python/linear_regression/SOCR-HeightWeight.csv"
         # )
         # self.df.rename(
         #     columns={"Height(Inches)": "X", "Weight(Pounds)": "y"}, inplace=True
