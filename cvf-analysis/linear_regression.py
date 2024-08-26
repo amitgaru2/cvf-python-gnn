@@ -235,8 +235,8 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         left_tobe_searched_node_params = program_transitions.keys() - searched_states
         while left_tobe_searched_node_params:
             node_params = list(left_tobe_searched_node_params)[0]
-            prev_node_params = node_params.copy()
-            for i in range(1, 10 + 1):
+            prev_node_params = list(node_params).copy()
+            for i in range(1, 1000 + 1):
                 for node_id in range(self.no_of_nodes):
                     m_node = node_params[node_id]
 
@@ -269,6 +269,9 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
 
                 if actual_program_transitions:
                     program_transitions[node_params].extend(actual_program_transitions)
+                    for pt in actual_program_transitions:
+                        if pt not in program_transitions:
+                            program_transitions[pt] = []
                     actual_program_transitions = []
                     break
             else:
@@ -278,6 +281,8 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
             left_tobe_searched_node_params = (
                 program_transitions.keys() - searched_states
             )
+
+        pprint.pprint(program_transitions)
 
     def _get_program_transitions(self, start_state):
         program_transitions = set()
