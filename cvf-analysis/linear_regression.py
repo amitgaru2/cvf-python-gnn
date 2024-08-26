@@ -81,7 +81,7 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         # self._find_program_transitions()
         # self._find_program_transitions_v2()
         self._find_program_transitions_n_cvfs()
-        self._init_pts_rank()
+        # self._init_pts_rank()
         self.__save_pts_to_file()
         self._rank_all_states()
         self._gen_save_rank_count()
