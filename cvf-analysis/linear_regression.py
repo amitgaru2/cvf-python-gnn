@@ -81,8 +81,9 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         # self._find_program_transitions()
         # self._find_program_transitions_v2()
         self._find_program_transitions_n_cvfs()
+        self._init_pts_rank()
         # self.__save_pts_to_file()
-        # self._rank_all_states()
+        self._rank_all_states()
         # self._gen_save_rank_count()
         # self._calculate_pts_rank_effect()
         # self._calculate_cvfs_rank_effect()
@@ -127,35 +128,35 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
     #     return result
 
     def _find_invariants(self):
-        min_loss_sum = 1000000
-        min_loss_sum_state = None
-        for state in self.configurations:
-            temp = 0
-            for node, m in enumerate(state):
-                node_df = self.__get_node_data_df(node)
-                X_node = node_df["X"].array
-                y_node = node_df["y"].array
-                params = {"m": m, "c": 0}
-                y_node_pred = self.__forward(X_node, params)
-                loss = self.__loss_fn(y_node, y_node_pred)
-                temp += loss
+        # min_loss_sum = 1000000
+        # min_loss_sum_state = None
+        # for state in self.configurations:
+        #     temp = 0
+        #     for node, m in enumerate(state):
+        #         node_df = self.__get_node_data_df(node)
+        #         X_node = node_df["X"].array
+        #         y_node = node_df["y"].array
+        #         params = {"m": m, "c": 0}
+        #         y_node_pred = self.__forward(X_node, params)
+        #         loss = self.__loss_fn(y_node, y_node_pred)
+        #         temp += loss
 
-            if abs(temp) < min_loss_sum:
-                min_loss_sum = abs(temp)
-                min_loss_sum_state = state
+        #     if abs(temp) < min_loss_sum:
+        #         min_loss_sum = abs(temp)
+        #         min_loss_sum_state = state
 
-            # for m in state:
-            #     if not (
-            #         self.actual_m - self.slope_step / 2
-            #         < m
-            #         <= self.actual_m + self.slope_step / 2
-            #     ):
-            #         break
-            # else:
-            #     self.invariants.add(state)
+        #     # for m in state:
+        #     #     if not (
+        #     #         self.actual_m - self.slope_step / 2
+        #     #         < m
+        #     #         <= self.actual_m + self.slope_step / 2
+        #     #     ):
+        #     #         break
+        #     # else:
+        #     #     self.invariants.add(state)
 
-        self.invariants.add(min_loss_sum_state)
-        print("Invariants", self.invariants, "min loss sum", min_loss_sum)
+        # self.invariants.add(min_loss_sum_state)
+        # print("Invariants", self.invariants, "min loss sum", min_loss_sum)
         logger.info("No. of Invariants: %s", len(self.invariants))
 
     def __forward(self, X, params):
@@ -333,7 +334,11 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
                 else:
                     node_params[node_id] = new_slope
 
+            if program_transitions:
+                break
+
         if not program_transitions:
+            self.invariants.add(start_state)
             logger.debug("No program transition found for %s !", start_state)
         # else:
         # logger.debug("%s : %s", start_state, program_transitions)
