@@ -235,8 +235,7 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         left_tobe_searched_node_params = program_transitions.keys() - searched_states
         while left_tobe_searched_node_params:
             node_params = list(left_tobe_searched_node_params)[0]
-            prev_node_params = list(node_params).copy()
-            for i in range(1, 1000 + 1):
+            for i in range(1, 10 + 1):
                 for node_id in range(self.no_of_nodes):
                     m_node = node_params[node_id]
 
@@ -251,7 +250,7 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
 
                     new_slope = (
                         sum(
-                            frac * prev_node_params[i]
+                            frac * node_params[i]
                             for i, frac in enumerate(doubly_st_mt)
                         )
                         - self.learning_rate * grad_m
@@ -259,10 +258,10 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
                     new_slope_cleaned = self.__clean_float_to_step_size_single(
                         new_slope
                     )
-                    if new_slope_cleaned != prev_node_params[node_id]:
+                    if new_slope_cleaned != node_params[node_id]:
                         new_node_params = tuple(
                             self.__copy_replace_indx_value(
-                                prev_node_params, node_id, new_slope_cleaned
+                                list(node_params), node_id, new_slope_cleaned
                             )
                         )
                         actual_program_transitions.append(new_node_params)
