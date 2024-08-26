@@ -260,11 +260,14 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
                     new_slope_cleaned = self.__clean_float_to_step_size_single(
                         new_slope
                     )
-                    if new_slope_cleaned != node_params[node_id]:
+                    if new_slope_cleaned != self.__clean_float_to_step_size_single(
+                        node_params[node_id]
+                    ):
+                        new_node_params = self.__copy_replace_indx_value(
+                            prev_node_params, node_id, new_slope_cleaned
+                        )
                         new_node_params = tuple(
-                            self.__copy_replace_indx_value(
-                                prev_node_params, node_id, new_slope_cleaned
-                            )
+                            self.__clean_float_to_step_size(new_node_params)
                         )
                         actual_program_transitions.append(new_node_params)
                     else:
