@@ -206,12 +206,12 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         # find step by given self.slope_step; remove redundant state transitions
         actual_program_transitions = []
         prev_trans = program_transitions[0]
-        actual_program_transitions.append(prev_trans)
         prev_trans_cleaned = self.__clean_float_to_step_size(prev_trans)
+        actual_program_transitions.append(prev_trans_cleaned)
         for trans in program_transitions[1:]:
             trans_cleaned = self.__clean_float_to_step_size(trans)
             if prev_trans_cleaned != trans_cleaned:
-                actual_program_transitions.append(trans)
+                actual_program_transitions.append(trans_cleaned)
             prev_trans_cleaned = trans_cleaned
 
         pprint.pprint(actual_program_transitions)
