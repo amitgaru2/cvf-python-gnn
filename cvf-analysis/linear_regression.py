@@ -15,14 +15,16 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
 
     def __init__(self, graph_name, graph) -> None:
         super().__init__(graph_name, graph)
+
         self.learning_rate = 0.001
+        self.iterations = 100
 
         self.slope_step_decimals = 1
-        self.min_slope = 0
-        self.max_slope = 1.1
+        self.min_slope = np.float64(0.0)
+        self.max_slope = np.float64(1.1)
         self.no_of_nodes = 3
         self.df = pd.read_csv(
-            "/home/amitgaru2/research/cvf-python/linear_regression/random-data.csv"
+            "/home/agaru/research/cvf-python/linear_regression/random-data.csv"
         )
         self.doubly_stochastic_matrix_config = [
             [1 / 3, 1 / 3, 1 / 3],
@@ -167,24 +169,17 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
     def __get_node_data_df(self, node_id):
         return self.df[self.df["node"] == node_id]
 
-    # def _is_program_transition(
-    #     self, perturb_pos, start_state, dest_state, grad_m
-    # ) -> bool:
-    #     perturbed_m = dest_state[perturb_pos]
-    #     doubly_st_mt = self.doubly_stochastic_matrix_config[perturb_pos]
-    #     new_m = (
-    #         sum(frac * start_state[i] for i, frac in enumerate(doubly_st_mt))
-    #         - self.learning_rate * grad_m
-    #     )
-    #     delta = new_m - start_state[perturb_pos]
-    #     ad_new_m = self.__get_adjusted_value(new_m)
-    #     ad_new_m = np.round(ad_new_m, self.slope_step_decimals)
-    #     return delta, ad_new_m == perturbed_m
+    def __clean_float_to_step_size(self, node_slopes):
+        result = []
+        for slope in node_slopes:
+            result.append(np.round(slope, self.slope_step_decimals))
+
+        return result
 
     def _find_program_transitions(self):
         node_params = [self.min_slope for i in range(self.no_of_nodes)]
         program_transitions = []
-        for i in range(1, 500 + 1):
+        for i in range(1, self.iterations + 1):
             prev_node_params = node_params.copy()
             for node_id in range(self.no_of_nodes):
                 m_node = node_params[node_id]
@@ -208,18 +203,30 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
 
             program_transitions.append(prev_node_params)
 
-        pprint.pprint(program_transitions)
+        # find step by given self.slope_step; remove redundant state transitions
+        actual_program_transitions = []
+        prev_trans = program_transitions[0]
+        actual_program_transitions.append(prev_trans)
+        prev_trans_cleaned = self.__clean_float_to_step_size(prev_trans)
+        for trans in program_transitions[1:]:
+            trans_cleaned = self.__clean_float_to_step_size(trans)
+            if prev_trans_cleaned != trans_cleaned:
+                actual_program_transitions.append(trans)
+            prev_trans_cleaned = trans_cleaned
+
+        pprint.pprint(actual_program_transitions)
+        print(len(actual_program_transitions))
 
     def _get_program_transitions(self, start_state):
         program_transitions = set()
-        # all_slope_values = set(
-        #     np.round(
-        #         np.arange(
-        #             self.min_slope, self.max_slope + self.slope_step, self.slope_step
-        #         ),
-        #         2,
-        #     )
-        # )
+        all_slope_values = set(
+            np.round(
+                np.arange(
+                    self.min_slope, self.max_slope + self.slope_step, self.slope_step
+                ),
+                2,
+            )
+        )
 
         if start_state in self.invariants:
             return program_transitions
