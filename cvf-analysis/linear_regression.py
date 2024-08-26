@@ -252,8 +252,8 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
 
                     new_slope = (
                         sum(
-                            frac * prev_node_params[i]
-                            for i, frac in enumerate(doubly_st_mt)
+                            frac * prev_node_params[j]
+                            for j, frac in enumerate(doubly_st_mt)
                         )
                         - self.learning_rate * grad_m
                     )
