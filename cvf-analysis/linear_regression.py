@@ -18,40 +18,41 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
 
         self._temp_program_transitions = {}
 
-        self.learning_rate = 0.001
-        self.iterations = 100
+        self.iterations = 10
 
-        self.slope_step_decimals = 1
-        self.min_slope = np.float64(0.0)
-        self.max_slope = np.float64(1.1)
-        self.no_of_nodes = 3
-        self.df = pd.read_csv(
-            "/home/agaru/research/cvf-python/linear_regression/random-data.csv"
-        )
-        self.doubly_stochastic_matrix_config = [
-            [1 / 3, 1 / 3, 1 / 3],
-            [1 / 3, 2 / 3, 0],
-            [1 / 3, 0, 2 / 3],
-        ]
-        self.actual_m = 0.9
-        self.actual_b = -0.11847322643445737
-
+        # self.learning_rate = 0.001
         # self.slope_step_decimals = 1
         # self.min_slope = np.float64(0.0)
-        # self.max_slope = np.float64(3.5)
-        # self.no_of_nodes = 4
+        # self.max_slope = np.float64(1.1)
+        # self.no_of_nodes = 3
         # self.df = pd.read_csv(
-        #     "/home/agaru/research/cvf-python/linear_regression/SOCR-HeightWeight.csv"
-        # )
-        # self.df.rename(
-        #     columns={"Height(Inches)": "X", "Weight(Pounds)": "y"}, inplace=True
+        #     "/home/agaru/research/cvf-python/linear_regression/random-data.csv"
         # )
         # self.doubly_stochastic_matrix_config = [
-        #     [1 / 2, 1 / 4, 1 / 8, 1 / 8],
-        #     [1 / 4, 3 / 4, 0, 0],
-        #     [1 / 8, 0, 7 / 8, 0],
-        #     [1 / 8, 0, 0, 7 / 8],
+        #     [1 / 3, 1 / 3, 1 / 3],
+        #     [1 / 3, 2 / 3, 0],
+        #     [1 / 3, 0, 2 / 3],
         # ]
+        # self.actual_m = 0.9
+        # self.actual_b = -0.11847322643445737
+
+        self.learning_rate = 0.0001
+        self.slope_step_decimals = 1
+        self.min_slope = np.float64(0.0)
+        self.max_slope = np.float64(2.0)
+        self.no_of_nodes = 4
+        self.df = pd.read_csv(
+            "/home/amitgaru2/research/cvf-python/linear_regression/SOCR-HeightWeight.csv"
+        )
+        self.df.rename(
+            columns={"Height(Inches)": "X", "Weight(Pounds)": "y"}, inplace=True
+        )
+        self.doubly_stochastic_matrix_config = [
+            [1 / 2, 1 / 4, 1 / 8, 1 / 8],
+            [1 / 4, 3 / 4, 0, 0],
+            [1 / 8, 0, 7 / 8, 0],
+            [1 / 8, 0, 0, 7 / 8],
+        ]
         # self.actual_m = 3.08
 
         self.slope_step = 1 / (10**self.slope_step_decimals)
@@ -81,7 +82,7 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         # self._find_program_transitions()
         # self._find_program_transitions_v2()
         self._find_program_transitions_n_cvfs()
-        # self._init_pts_rank()
+        self._init_pts_rank()
         self.__save_pts_to_file()
         self._rank_all_states()
         self._gen_save_rank_count()
@@ -303,6 +304,10 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
                     )
                     - self.learning_rate * grad_m
                 )
+
+                # if new_slope < self.min_slope:
+                #     new_slope = self.min_slope
+
                 new_slope_cleaned = self.__clean_float_to_step_size_single(new_slope)
                 if new_slope_cleaned != self.__clean_float_to_step_size_single(
                     node_params[node_id]
