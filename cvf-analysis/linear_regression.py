@@ -47,12 +47,12 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         # self.df.rename(
         #     columns={"Height(Inches)": "X", "Weight(Pounds)": "y"}, inplace=True
         # )
-        # self.doubly_stochastic_matrix_config = [
-        #     [1 / 2, 1 / 4, 1 / 8, 1 / 8],
-        #     [1 / 4, 3 / 4, 0, 0],
-        #     [1 / 8, 0, 7 / 8, 0],
-        #     [1 / 8, 0, 0, 7 / 8],
-        # ]
+        self.doubly_stochastic_matrix_config = [
+            [1 / 2, 1 / 4, 1 / 8, 1 / 8],
+            [1 / 4, 3 / 4, 0, 0],
+            [1 / 8, 0, 7 / 8, 0],
+            [1 / 8, 0, 0, 7 / 8],
+        ]
         # self.actual_m = 3.08
 
         self.slope_step = 1 / (10**self.slope_step_decimals)
