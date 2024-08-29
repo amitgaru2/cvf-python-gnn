@@ -20,33 +20,33 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
 
         self.iterations = 10
 
-        self.learning_rate = 0.001
-        self.slope_step_decimals = 1
-        self.min_slope = np.float64(0.0)
-        self.max_slope = np.float64(1.1)
-        self.no_of_nodes = 3
-        self.df = pd.read_csv(
-            "/home/agaru/research/cvf-python/linear_regression/random-data.csv"
-        )
-        self.doubly_stochastic_matrix_config = [
-            [1 / 3, 1 / 3, 1 / 3],
-            [1 / 3, 2 / 3, 0],
-            [1 / 3, 0, 2 / 3],
-        ]
+        # self.learning_rate = 0.001
+        # self.slope_step_decimals = 1
+        # self.min_slope = np.float64(0.0)
+        # self.max_slope = np.float64(1.1)
+        # self.no_of_nodes = 3
+        # self.df = pd.read_csv(
+        #     "/home/agaru/research/cvf-python/linear_regression/random-data.csv"
+        # )
+        # self.doubly_stochastic_matrix_config = [
+        #     [1 / 3, 1 / 3, 1 / 3],
+        #     [1 / 3, 2 / 3, 0],
+        #     [1 / 3, 0, 2 / 3],
+        # ]
         # self.actual_m = 0.9
         # self.actual_b = -0.11847322643445737
 
-        # self.learning_rate = 0.0001
-        # self.slope_step_decimals = 1
-        # self.min_slope = np.float64(1.0)
-        # self.max_slope = np.float64(2.0)
-        # self.no_of_nodes = 4
-        # self.df = pd.read_csv(
-        #     "/home/agaru/research/cvf-python/linear_regression/SOCR-HeightWeight.csv"
-        # )
-        # self.df.rename(
-        #     columns={"Height(Inches)": "X", "Weight(Pounds)": "y"}, inplace=True
-        # )
+        self.learning_rate = 0.0001
+        self.slope_step_decimals = 1
+        self.min_slope = np.float64(1.0)
+        self.max_slope = np.float64(2.0)
+        self.no_of_nodes = 4
+        self.df = pd.read_csv(
+            "/home/agaru/research/cvf-python/linear_regression/SOCR-HeightWeight.csv"
+        )
+        self.df.rename(
+            columns={"Height(Inches)": "X", "Weight(Pounds)": "y"}, inplace=True
+        )
         self.doubly_stochastic_matrix_config = [
             [1 / 2, 1 / 4, 1 / 8, 1 / 8],
             [1 / 4, 3 / 4, 0, 0],
