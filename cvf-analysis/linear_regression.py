@@ -42,7 +42,7 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         self.max_slope = np.float64(2.0)
         self.no_of_nodes = 4
         self.df = pd.read_csv(
-            "/home/amitgaru2/research/cvf-python/linear_regression/SOCR-HeightWeight.csv"
+            "/home/agaru/research/cvf-python/linear_regression/SOCR-HeightWeight.csv"
         )
         self.df.rename(
             columns={"Height(Inches)": "X", "Weight(Pounds)": "y"}, inplace=True
@@ -158,7 +158,8 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         return self.df[self.df["node"] == node_id]
 
     def __clean_float_to_step_size_single(self, slope):
-        return np.round(slope, self.slope_step_decimals)
+        return np.trunc(slope*10**self.slope_step_decimals)/(10**self.slope_step_decimals)
+        # return np.round(slope, self.slope_step_decimals)
 
     def __clean_float_to_step_size(self, node_slopes):
         result = []
