@@ -18,7 +18,7 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
 
         self._temp_program_transitions = {}
 
-        self.iterations = 10
+        self.iterations = 5
 
         # self.learning_rate = 0.001
         # self.slope_step_decimals = 1
@@ -37,9 +37,9 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         # self.actual_b = -0.11847322643445737
 
         self.learning_rate = 0.0001
-        self.slope_step = np.float64(0.025)
+        self.slope_step = np.float64(0.05)
         self.slope_step_decimals = 2
-        self.min_slope = np.float64(1.50)
+        self.min_slope = np.float64(1.00)
         self.max_slope = np.float64(1.95)
         self.no_of_nodes = 4
         self.df = pd.read_csv(
@@ -85,7 +85,7 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         self._find_program_transitions_n_cvfs()
         self._init_pts_rank()
         self.__save_pts_to_file()
-        self._rank_all_states()
+        # self._rank_all_states()
         # self._gen_save_rank_count()
         # self._calculate_pts_rank_effect()
         # self._calculate_cvfs_rank_effect()
@@ -167,10 +167,10 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         #     10**self.slope_step_decimals
         # )
         # 1.556 -> 1.50, 1.686 -> 1.60, 1.47 -> 1.45 { 0.05 }
-        quotient = slope // self.slope_step
-        if quotient == 0:
+        quotient = np.divide(slope, self.slope_step)
+        if quotient == int(quotient):
             return np.round(slope, self.slope_step_decimals)
-        return np.round(quotient * self.slope_step, self.slope_step_decimals)
+        return np.round(np.int64(quotient) * self.slope_step, self.slope_step_decimals)
 
     def __clean_float_to_step_size(self, node_slopes):
         result = []
@@ -217,6 +217,7 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
                     new_slope = self.max_slope
 
                 new_slope_cleaned = self.__clean_float_to_step_size_single(new_slope)
+                print(new_slope, new_slope_cleaned)
                 if new_slope_cleaned != self.__clean_float_to_step_size_single(
                     node_params[node_id]
                 ):
