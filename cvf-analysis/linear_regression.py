@@ -18,7 +18,7 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
 
         self._temp_program_transitions = {}
 
-        self.iterations = 5
+        self.iterations = 100
 
         # self.learning_rate = 0.001
         # self.slope_step_decimals = 1
@@ -37,10 +37,10 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         # self.actual_b = -0.11847322643445737
 
         self.learning_rate = 0.0001
-        self.slope_step = np.float64(0.05)
-        self.slope_step_decimals = 2
-        self.min_slope = np.float64(1.00)
-        self.max_slope = np.float64(1.95)
+        self.slope_step = np.float64(0.025)
+        self.slope_step_decimals = 3
+        self.min_slope = np.float64(1.700)
+        self.max_slope = np.float64(1.925)
         self.no_of_nodes = 4
         self.df = pd.read_csv(
             "/home/agaru/research/cvf-python/linear_regression/SOCR-HeightWeight.csv"
@@ -85,7 +85,7 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         self._find_program_transitions_n_cvfs()
         self._init_pts_rank()
         self.__save_pts_to_file()
-        # self._rank_all_states()
+        self._rank_all_states()
         # self._gen_save_rank_count()
         # self._calculate_pts_rank_effect()
         # self._calculate_cvfs_rank_effect()
@@ -188,8 +188,9 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         program_transitions = set()
 
         node_params = list(start_state)
+        node_params_progress = []
         for i in range(1, self.iterations + 1):
-            prev_node_params = node_params.copy()
+            prev_node_params = node_params[:]
             for node_id in range(self.no_of_nodes):
                 m_node = prev_node_params[node_id]
 
@@ -217,7 +218,7 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
                     new_slope = self.max_slope
 
                 new_slope_cleaned = self.__clean_float_to_step_size_single(new_slope)
-                print(new_slope, new_slope_cleaned)
+                # print(new_slope, new_slope_cleaned)
                 if new_slope_cleaned != self.__clean_float_to_step_size_single(
                     node_params[node_id]
                 ):
@@ -230,6 +231,7 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
                     program_transitions.add(new_node_params)
                 else:
                     node_params[node_id] = new_slope
+                    node_params_progress.append(node_params[:])
 
             if program_transitions:
                 break
@@ -237,6 +239,7 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         if not program_transitions:
             self.invariants.add(start_state)
             logger.debug("No program transition found for %s !", start_state)
+            # logger.debug("Node params progress %s !", node_params_progress)
         # else:
         # logger.debug("%s : %s", start_state, program_transitions)
 
