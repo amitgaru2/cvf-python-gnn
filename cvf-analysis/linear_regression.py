@@ -18,7 +18,7 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
 
         self._temp_program_transitions = {}
 
-        self.iterations = 10
+        self.iterations = 100
 
         # self.learning_rate = 0.001
         # self.slope_step_decimals = 1
@@ -37,6 +37,7 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         # self.actual_b = -0.11847322643445737
 
         self.learning_rate = 0.0001
+        self.stop_threshold = 0.0001
         self.slope_step = np.float64(0.025)
         self.slope_step_decimals = 3
         self.min_slope = np.float64(1.500)
@@ -85,12 +86,12 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         self._find_program_transitions_n_cvfs()
         self._init_pts_rank()
         self.__save_pts_to_file()
-        self._rank_all_states()
-        self._gen_save_rank_count()
-        self._calculate_pts_rank_effect()
-        self._calculate_cvfs_rank_effect()
-        self._gen_save_rank_effect_count()
-        self._gen_save_rank_effect_by_node_count()
+        # self._rank_all_states()
+        # self._gen_save_rank_count()
+        # self._calculate_pts_rank_effect()
+        # self._calculate_cvfs_rank_effect()
+        # self._gen_save_rank_effect_count()
+        # self._gen_save_rank_effect_by_node_count()
 
     def _gen_configurations(self):
         self.configurations = {tuple([self.min_slope for _ in range(len(self.nodes))])}
@@ -218,6 +219,16 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
                     new_slope = self.max_slope
 
                 node_params[node_id] = new_slope
+
+            no_progress = True
+            for node_id, new_slope in enumerate(node_params):
+                if abs(prev_node_params[node_id] - new_slope) > self.stop_threshold:
+                    no_progress = False
+                    break
+
+            if no_progress:
+                print("Stopping at iteration", i)
+                break
 
             #     new_slope_cleaned = self.__clean_float_to_step_size_single(new_slope)
             #     # print(new_slope, new_slope_cleaned)
