@@ -40,7 +40,7 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         self.stop_threshold = 0.0001
         self.slope_step = np.float64(0.025)
         self.slope_step_decimals = 3
-        self.min_slope = np.float64(1.500)
+        self.min_slope = np.float64(1.700)
         self.max_slope = np.float64(1.925)
         self.no_of_nodes = 4
         self.df = pd.read_csv(
@@ -86,12 +86,12 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         self._find_program_transitions_n_cvfs()
         self._init_pts_rank()
         self.__save_pts_to_file()
-        # self._rank_all_states()
-        # self._gen_save_rank_count()
-        # self._calculate_pts_rank_effect()
-        # self._calculate_cvfs_rank_effect()
-        # self._gen_save_rank_effect_count()
-        # self._gen_save_rank_effect_by_node_count()
+        self._rank_all_states()
+        self._gen_save_rank_count()
+        self._calculate_pts_rank_effect()
+        self._calculate_cvfs_rank_effect()
+        self._gen_save_rank_effect_count()
+        self._gen_save_rank_effect_by_node_count()
 
     def _gen_configurations(self):
         self.configurations = {tuple([self.min_slope for _ in range(len(self.nodes))])}
@@ -227,7 +227,7 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
                     break
 
             if no_progress:
-                print("Stopping at iteration", i)
+                # print("Stopping at iteration", i)
                 break
 
             #     new_slope_cleaned = self.__clean_float_to_step_size_single(new_slope)
