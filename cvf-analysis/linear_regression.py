@@ -85,7 +85,7 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         self._find_program_transitions_n_cvfs()
         self._init_pts_rank()
         self.__save_pts_to_file()
-        # self._rank_all_states()
+        self._rank_all_states()
         # self._gen_save_rank_count()
         # self._calculate_pts_rank_effect()
         # self._calculate_cvfs_rank_effect()
@@ -103,13 +103,13 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
                     self.max_slope + self.slope_step,
                     self.slope_step,
                 ),
-                2,
+                self.slope_step_decimals,
             ):
                 for cc in config_copy:
                     cc = list(cc)
                     cc[node_pos] = i
                     self.configurations.add(tuple(cc))
-
+    
         logger.info("No. of Configurations: %s", len(self.configurations))
 
     def _find_invariants(self):
