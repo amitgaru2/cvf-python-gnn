@@ -18,7 +18,7 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
 
         self._temp_program_transitions = {}
 
-        self.iterations = 100
+        self.iterations = 10
 
         # self.learning_rate = 0.001
         # self.slope_step_decimals = 1
@@ -37,7 +37,7 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         # self.actual_b = -0.11847322643445737
 
         self.learning_rate = 0.0001
-        self.slope_step = np.float64(0.025)
+        self.slope_step = np.float64(0.01)
         self.slope_step_decimals = 3
         self.min_slope = np.float64(1.700)
         self.max_slope = np.float64(1.925)
@@ -85,7 +85,7 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         self._find_program_transitions_n_cvfs()
         self._init_pts_rank()
         self.__save_pts_to_file()
-        self._rank_all_states()
+        # self._rank_all_states()
         # self._gen_save_rank_count()
         # self._calculate_pts_rank_effect()
         # self._calculate_cvfs_rank_effect()
