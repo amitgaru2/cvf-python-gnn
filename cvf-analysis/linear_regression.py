@@ -39,7 +39,7 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         self.learning_rate = 0.0001
         self.slope_step = np.float64(0.025)
         self.slope_step_decimals = 3
-        self.min_slope = np.float64(1.700)
+        self.min_slope = np.float64(1.500)
         self.max_slope = np.float64(1.925)
         self.no_of_nodes = 4
         self.df = pd.read_csv(
