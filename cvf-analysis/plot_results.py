@@ -74,7 +74,7 @@ graph_names_map = {
         "graph_8",
     },
     LINEAR_REGRESSION_PROGRAM: {
-        "test_lr_graph_2",
+        "test_lr_graph_1",
     },
 }
 

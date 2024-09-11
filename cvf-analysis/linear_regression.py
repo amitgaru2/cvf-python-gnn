@@ -79,18 +79,18 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
     def _start(self):
         self._gen_configurations()
         self._find_invariants()
-        self._init_pts_rank()
+        # self._init_pts_rank()
         # self._find_program_transitions()
         # self._find_program_transitions_v2()
         self._find_program_transitions_n_cvfs()
         self._init_pts_rank()
         self.__save_pts_to_file()
         self._rank_all_states()
-        # self._gen_save_rank_count()
-        # self._calculate_pts_rank_effect()
-        # self._calculate_cvfs_rank_effect()
-        # self._gen_save_rank_effect_count()
-        # self._gen_save_rank_effect_by_node_count()
+        self._gen_save_rank_count()
+        self._calculate_pts_rank_effect()
+        self._calculate_cvfs_rank_effect()
+        self._gen_save_rank_effect_count()
+        self._gen_save_rank_effect_by_node_count()
 
     def _gen_configurations(self):
         self.configurations = {tuple([self.min_slope for _ in range(len(self.nodes))])}
@@ -109,7 +109,7 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
                     cc = list(cc)
                     cc[node_pos] = i
                     self.configurations.add(tuple(cc))
-    
+
         logger.info("No. of Configurations: %s", len(self.configurations))
 
     def _find_invariants(self):
@@ -188,7 +188,7 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         program_transitions = set()
 
         node_params = list(start_state)
-        node_params_progress = []
+        # node_params_progress = []
         for i in range(1, self.iterations + 1):
             prev_node_params = node_params[:]
             for node_id in range(self.no_of_nodes):
@@ -217,24 +217,45 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
                 if new_slope > self.max_slope:
                     new_slope = self.max_slope
 
-                new_slope_cleaned = self.__clean_float_to_step_size_single(new_slope)
-                # print(new_slope, new_slope_cleaned)
-                if new_slope_cleaned != self.__clean_float_to_step_size_single(
-                    node_params[node_id]
-                ):
-                    new_node_params = self.__copy_replace_indx_value(
-                        prev_node_params, node_id, new_slope_cleaned
-                    )
-                    new_node_params = tuple(
-                        self.__clean_float_to_step_size(new_node_params)
-                    )
-                    program_transitions.add(new_node_params)
-                else:
-                    node_params[node_id] = new_slope
-                    node_params_progress.append(node_params[:])
+                node_params[node_id] = new_slope
 
-            if program_transitions:
-                break
+            #     new_slope_cleaned = self.__clean_float_to_step_size_single(new_slope)
+            #     # print(new_slope, new_slope_cleaned)
+            #     if new_slope_cleaned != self.__clean_float_to_step_size_single(
+            #         node_params[node_id]
+            #     ):
+            #         new_node_params = self.__copy_replace_indx_value(
+            #             prev_node_params, node_id, new_slope_cleaned
+            #         )
+            #         new_node_params = tuple(
+            #             self.__clean_float_to_step_size(new_node_params)
+            #         )
+            #         program_transitions.add(new_node_params)
+            #     else:
+            #         node_params[node_id] = new_slope
+            #         # node_params_progress.append(node_params[:])
+
+            # if program_transitions:
+            #     break
+
+        # if start_state == (1.85, 1.8, 1.8, 1.775):
+        #     import ipdb
+
+        #     ipdb.set_trace()
+
+        for node_id, new_slope in enumerate(node_params):
+            new_slope_cleaned = self.__clean_float_to_step_size_single(new_slope)
+            if new_slope_cleaned != self.__clean_float_to_step_size_single(
+                start_state[node_id]
+            ):
+                new_node_params = self.__copy_replace_indx_value(
+                    list(start_state), node_id, new_slope_cleaned
+                )
+                new_node_params = tuple(new_node_params)
+                # new_node_params = tuple(
+                #     self.__clean_float_to_step_size(new_node_params)
+                # )
+                program_transitions.add(new_node_params)
 
         if not program_transitions:
             self.invariants.add(start_state)
