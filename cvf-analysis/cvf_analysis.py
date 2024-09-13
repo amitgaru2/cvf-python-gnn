@@ -1,3 +1,4 @@
+import json
 import os
 import csv
 import math
@@ -98,6 +99,7 @@ class CVFAnalysis:
         unranked_states = set(self.pts_n_cvfs.keys()) - set(self.pts_rank.keys())
         logger.info("No. of Unranked states: %s", len(unranked_states))
 
+        count = 0
         # rank the states that has all the paths to the ranked one
         while unranked_states:
             ranked_states = set(self.pts_rank.keys())
@@ -128,6 +130,15 @@ class CVFAnalysis:
                     }
                     total_paths += path_count
                     remove_from_unranked_states.add(state)
+            
+            if not remove_from_unranked_states:
+                count += 1
+                if count % 10 == 0:
+                    json.dump(list(unranked_states), open("uranked_states.json", "w"))
+                    logger.error("Failed to rank states within 10 iterations.")
+                    exit(1)
+            else:
+                count = 0
             unranked_states -= remove_from_unranked_states
             logger.debug("No. of Unranked states: %s", len(unranked_states))
 

@@ -40,7 +40,7 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         self.stop_threshold = 0.0001
         self.slope_step = np.float64(0.025)
         self.slope_step_decimals = 3
-        self.min_slope = np.float64(1.000)
+        self.min_slope = np.float64(1.700)
         self.max_slope = np.float64(1.925)
         self.no_of_nodes = 4
         self.df = pd.read_csv(
@@ -220,10 +220,16 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
 
                 node_params[node_id] = new_slope
 
-            no_progress = True
+            # no_progress = True
+            # for node_id, new_slope in enumerate(node_params):
+            #     if abs(prev_node_params[node_id] - new_slope) > self.stop_threshold:
+            #         no_progress = False
+            #         break
+
+            no_progress = False
             for node_id, new_slope in enumerate(node_params):
-                if abs(prev_node_params[node_id] - new_slope) > self.stop_threshold:
-                    no_progress = False
+                if abs(prev_node_params[node_id] - new_slope) <= self.stop_threshold:
+                    no_progress = True
                     break
 
             if no_progress:
