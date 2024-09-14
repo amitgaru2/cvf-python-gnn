@@ -223,7 +223,8 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
                 if abs(prev_m - new_slope) <= self.stop_threshold:
                     # print("Stopping at iteration", i)
                     break
-
+            else:
+                logger.debug("Couldn't converge node %s for the state %s", node_id, start_state)
 
         for node_id, new_slope in enumerate(node_params):
             new_slope_cleaned = self.__clean_float_to_step_size_single(new_slope)
