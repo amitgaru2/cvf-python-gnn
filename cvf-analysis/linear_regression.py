@@ -189,24 +189,24 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         program_transitions = set()
 
         node_params = list(start_state)
-        # node_params_progress = []
-        for i in range(1, self.iterations + 1):
-            prev_node_params = node_params[:]
-            for node_id in range(self.no_of_nodes):
-                m_node = prev_node_params[node_id]
-
+        for node_id in range(self.no_of_nodes):
+            prev_m = node_params[node_id]
+            for i in range(1, self.iterations + 1):
                 node_df = self.__get_node_data_df(node_id)
                 X_node = node_df["X"].array
                 y_node = node_df["y"].array
 
-                y_node_pred = self.__forward(X_node, {"m": m_node, "c": 0})
+                y_node_pred = self.__forward(X_node, {"m": prev_m, "c": 0})
                 grad_m = self.__gradient_m(X_node, y_node, y_node_pred)
 
                 doubly_st_mt = self.doubly_stochastic_matrix_config[node_id]
 
+                start_state_cpy = list(start_state)
+                start_state_cpy[node_id] = prev_m
+
                 new_slope = (
                     sum(
-                        frac * prev_node_params[j]
+                        frac * start_state_cpy[j]
                         for j, frac in enumerate(doubly_st_mt)
                     )
                     - self.learning_rate * grad_m
@@ -220,45 +220,9 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
 
                 node_params[node_id] = new_slope
 
-            # no_progress = True
-            # for node_id, new_slope in enumerate(node_params):
-            #     if abs(prev_node_params[node_id] - new_slope) > self.stop_threshold:
-            #         no_progress = False
-            #         break
-
-            no_progress = False
-            for node_id, new_slope in enumerate(node_params):
-                if abs(prev_node_params[node_id] - new_slope) <= self.stop_threshold:
-                    no_progress = True
+                if abs(prev_m - new_slope) <= self.stop_threshold:
                     break
 
-            if no_progress:
-                # print("Stopping at iteration", i)
-                break
-
-            #     new_slope_cleaned = self.__clean_float_to_step_size_single(new_slope)
-            #     # print(new_slope, new_slope_cleaned)
-            #     if new_slope_cleaned != self.__clean_float_to_step_size_single(
-            #         node_params[node_id]
-            #     ):
-            #         new_node_params = self.__copy_replace_indx_value(
-            #             prev_node_params, node_id, new_slope_cleaned
-            #         )
-            #         new_node_params = tuple(
-            #             self.__clean_float_to_step_size(new_node_params)
-            #         )
-            #         program_transitions.add(new_node_params)
-            #     else:
-            #         node_params[node_id] = new_slope
-            #         # node_params_progress.append(node_params[:])
-
-            # if program_transitions:
-            #     break
-
-        # if start_state == (1.85, 1.8, 1.8, 1.775):
-        #     import ipdb
-
-        #     ipdb.set_trace()
 
         for node_id, new_slope in enumerate(node_params):
             new_slope_cleaned = self.__clean_float_to_step_size_single(new_slope)
@@ -269,9 +233,6 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
                     list(start_state), node_id, new_slope_cleaned
                 )
                 new_node_params = tuple(new_node_params)
-                # new_node_params = tuple(
-                #     self.__clean_float_to_step_size(new_node_params)
-                # )
                 program_transitions.add(new_node_params)
 
         if not program_transitions:
