@@ -190,8 +190,8 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
 
         node_params = list(start_state)
         for node_id in range(self.no_of_nodes):
-            prev_m = node_params[node_id]
             for i in range(1, self.iterations + 1):
+                prev_m = node_params[node_id]
                 node_df = self.__get_node_data_df(node_id)
                 X_node = node_df["X"].array
                 y_node = node_df["y"].array
@@ -219,8 +219,9 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
                     new_slope = self.max_slope
 
                 node_params[node_id] = new_slope
-
+                
                 if abs(prev_m - new_slope) <= self.stop_threshold:
+                    # print("Stopping at iteration", i)
                     break
 
 
