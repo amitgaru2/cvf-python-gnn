@@ -44,7 +44,7 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         self.max_slope = np.float64(1.925)
         self.no_of_nodes = 4
         self.df = pd.read_csv(
-            "/home/agaru/research/cvf-python/linear_regression/SOCR-HeightWeight.csv"
+            "/project/cvf-analysis/agaru/cvf-python/linear_regression/SOCR-HeightWeight.csv"
         )
         self.df.rename(
             columns={"Height(Inches)": "X", "Weight(Pounds)": "y"}, inplace=True
