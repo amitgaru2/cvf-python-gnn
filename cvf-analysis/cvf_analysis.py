@@ -134,7 +134,7 @@ class CVFAnalysis:
             if not remove_from_unranked_states:
                 count += 1
                 if count % 10 == 0:
-                    json.dump(list(unranked_states), open("uranked_states.json", "w"))
+                    json.dump(list(unranked_states), open("unranked_states.json", "w"))
                     logger.error("Failed to rank states within 10 iterations.")
                     exit(1)
             else:
