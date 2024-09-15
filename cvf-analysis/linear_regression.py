@@ -10,8 +10,14 @@ from cvf_analysis import CVFAnalysis, logger
 
 
 class LinearRegressionFullAnalysis(CVFAnalysis):
-    results_prefix = "linear_regression"
-    results_dir = os.path.join("results", results_prefix)
+
+    @property
+    def results_dir(self):
+        return os.path.join("results", "linear_regression")
+
+    @property
+    def results_prefix(self):
+        return f"linear_regression__{self.min_slope}_{self.max_slope}__{self.slope_step}"
 
     def __init__(self, graph_name, graph) -> None:
         super().__init__(graph_name, graph)
@@ -40,11 +46,11 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         self.stop_threshold = 0.0001
         self.slope_step = np.float64(0.025)
         self.slope_step_decimals = 3
-        self.min_slope = np.float64(1.000)
-        self.max_slope = np.float64(1.925)
+        self.min_slope = np.float64(1.800)
+        self.max_slope = np.float64(1.900)
         self.no_of_nodes = 4
         self.df = pd.read_csv(
-            "/project/cvf-analysis/agaru/cvf-python/linear_regression/SOCR-HeightWeight.csv"
+            "/home/agaru/research/cvf-python/linear_regression/SOCR-HeightWeight.csv"
         )
         self.df.rename(
             columns={"Height(Inches)": "X", "Weight(Pounds)": "y"}, inplace=True
