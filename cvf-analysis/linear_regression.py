@@ -137,13 +137,6 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
             return np.round(slope, self.slope_step_decimals)
         return np.round(np.int64(quotient) * self.slope_step, self.slope_step_decimals)
 
-    def __clean_float_to_step_size(self, node_slopes):
-        result = []
-        for slope in node_slopes:
-            result.append(self.__clean_float_to_step_size_single(slope))
-
-        return result
-
     def __copy_replace_indx_value(self, lst, indx, value):
         lst_copy = lst.copy()
         lst_copy[indx] = value
