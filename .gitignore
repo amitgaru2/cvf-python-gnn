@@ -1,0 +1,13 @@
+__pycache__/
+.ipynb_checkpoints/
+cvf_*.log
+
+venv
+
+cvf-analysis/plots
+cvf-analysis/analysis/plots
+cvf-analysis/temp
+
+
+cvf-analysis/unranked_states.json
+cvf-analysis/output.json
