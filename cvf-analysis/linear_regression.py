@@ -55,7 +55,6 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
             [1 / 8, 0, 7 / 8, 0],
             [1 / 8, 0, 0, 7 / 8],
         ]
-        # self.actual_m = 3.08
 
         # self.slope_step = 1 / (10**self.slope_step_decimals)
         self.node_data_partitions = np.array_split(self.df, self.no_of_nodes)
@@ -79,10 +78,7 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
 
     def _start(self):
         self._gen_configurations()
-        self._find_invariants()
-        # self._init_pts_rank()
-        # self._find_program_transitions()
-        # self._find_program_transitions_v2()
+        # self._find_invariants()
         self._find_program_transitions_n_cvfs()
         self._init_pts_rank()
         self.__save_pts_to_file()
@@ -114,35 +110,6 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         logger.info("No. of Configurations: %s", len(self.configurations))
 
     def _find_invariants(self):
-        # min_loss_sum = 1000000
-        # min_loss_sum_state = None
-        # for state in self.configurations:
-        #     temp = 0
-        #     for node, m in enumerate(state):
-        #         node_df = self.__get_node_data_df(node)
-        #         X_node = node_df["X"].array
-        #         y_node = node_df["y"].array
-        #         params = {"m": m, "c": 0}
-        #         y_node_pred = self.__forward(X_node, params)
-        #         loss = self.__loss_fn(y_node, y_node_pred)
-        #         temp += loss
-
-        #     if abs(temp) < min_loss_sum:
-        #         min_loss_sum = abs(temp)
-        #         min_loss_sum_state = state
-
-        #     # for m in state:
-        #     #     if not (
-        #     #         self.actual_m - self.slope_step / 2
-        #     #         < m
-        #     #         <= self.actual_m + self.slope_step / 2
-        #     #     ):
-        #     #         break
-        #     # else:
-        #     #     self.invariants.add(state)
-
-        # self.invariants.add(min_loss_sum_state)
-        # print("Invariants", self.invariants, "min loss sum", min_loss_sum)
         logger.info("No. of Invariants: %s", len(self.invariants))
 
     def __forward(self, X, params):
@@ -160,14 +127,6 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         return self.df[self.df["node"] == node_id]
 
     def __clean_float_to_step_size_single(self, slope):
-        # return np.trunc(slope*10**self.slope_step_decimals)/(10**self.slope_step_decimals)
-        # return np.round(slope, self.slope_step_decimals)
-        # if slope % np.int64(slope) >= 0.75:
-        #     return np.round(slope, self.slope_step_decimals)
-        # return np.trunc(slope * 10**self.slope_step_decimals) / (
-        #     10**self.slope_step_decimals
-        # )
-        # 1.556 -> 1.50, 1.686 -> 1.60, 1.47 -> 1.45 { 0.05 }
         quotient = np.divide(slope, self.slope_step)
         if quotient == int(quotient):
             return np.round(slope, self.slope_step_decimals)
@@ -187,8 +146,8 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
 
     def _get_program_transitions(self, start_state):
         program_transitions = set()
-
         node_params = list(start_state)
+
         for node_id in range(self.no_of_nodes):
             for i in range(1, self.iterations + 1):
                 prev_m = node_params[node_id]
@@ -221,7 +180,6 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
                 node_params[node_id] = new_slope
                 
                 if abs(prev_m - new_slope) <= self.stop_threshold:
-                    # print("Stopping at iteration", i)
                     break
             else:
                 logger.debug("Couldn't converge node %s for the state %s", node_id, start_state)
@@ -238,9 +196,6 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         if not program_transitions:
             self.invariants.add(start_state)
             logger.debug("No program transition found for %s !", start_state)
-            # logger.debug("Node params progress %s !", node_params_progress)
-        # else:
-        # logger.debug("%s : %s", start_state, program_transitions)
 
         return program_transitions
 
