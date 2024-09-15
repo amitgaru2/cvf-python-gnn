@@ -45,7 +45,7 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         self.stop_threshold = 0.0001
         self.slope_step = np.float64(0.025)
         self.slope_step_decimals = 3
-        self.min_slope = np.float64(1.800)
+        self.min_slope = np.float64(1.700)
         self.max_slope = np.float64(1.900)
         self.no_of_nodes = 4
         self.df = pd.read_csv(
@@ -88,7 +88,7 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         # self._find_invariants()
         self._find_program_transitions_n_cvfs()
         self._init_pts_rank()
-        # self.__save_pts_to_file()
+        self.__save_pts_to_file()
         self._rank_all_states()
         self._gen_save_rank_count()
         self._calculate_pts_rank_effect()
@@ -205,9 +205,7 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
             np.round(
                 np.arange(
                     self.min_slope,
-                    np.round(
-                        self.max_slope + self.slope_step, self.slope_step_decimals
-                    ),
+                    self.max_slope + self.slope_step,
                     self.slope_step,
                 ),
                 self.slope_step_decimals,
