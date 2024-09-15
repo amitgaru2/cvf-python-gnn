@@ -228,9 +228,7 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
 
         for node_id, new_slope in enumerate(node_params):
             new_slope_cleaned = self.__clean_float_to_step_size_single(new_slope)
-            if new_slope_cleaned != self.__clean_float_to_step_size_single(
-                start_state[node_id]
-            ):
+            if new_slope_cleaned != start_state[node_id]:
                 new_node_params = self.__copy_replace_indx_value(
                     list(start_state), node_id, new_slope_cleaned
                 )
