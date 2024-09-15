@@ -9,5 +9,5 @@ cvf-analysis/analysis/plots
 cvf-analysis/temp
 
 
-unranked_states.json
-output.json
+cvf-analysis/unranked_states.json
+cvf-analysis/output.json
