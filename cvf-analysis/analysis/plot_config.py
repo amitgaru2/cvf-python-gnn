@@ -5,6 +5,7 @@ COLORING_PROGRAM = "coloring"
 DIJKSTRA_PROGRAM = "dijkstra_token_ring"
 MAX_MATCHING_PROGRAM = "maximal_matching"
 MAX_INDEPENDENT_SET_PROGRAM = "maximal_independent_set"
+LINEAR_REGRESSION_PROGRAM = "linear_regression"
 
 results_dir = os.path.join(os.pardir, "results")
 
@@ -13,6 +14,7 @@ programs = {
     COLORING_PROGRAM,
     MAX_MATCHING_PROGRAM,
     MAX_INDEPENDENT_SET_PROGRAM,
+    LINEAR_REGRESSION_PROGRAM
 }
 # coloring, dijkstra_token_ring, maximal_matching, maximal_independent_set
 program = sys.argv[1]
@@ -25,6 +27,7 @@ program_label_map = {
     "coloring": "graph coloring",
     "maximal_matching": "maximal matching",
     "maximal_independent_set": "maximal indp. set",
+    "linear_regression": "linear regression",
 }
 program_label = program_label_map.get(program, program)
 
@@ -65,6 +68,9 @@ graph_names_map = {
         "graph_7": {"cut_off": 0},
         "graph_8": {"cut_off": 0},
     },
+    LINEAR_REGRESSION_PROGRAM: {
+        "0.8_1.9__0.025__test_lr_graph_1": {"cut_off": 0}
+    }
 }
 
 

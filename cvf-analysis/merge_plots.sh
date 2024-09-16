@@ -25,9 +25,11 @@ GRAPH_IMAGE_LOCATION="graph_images/${2}.png"
 NODE_EFFECT_PLOT_LOCATION="plots/${1}/rank_effect_by_node__full__${1}__${2}.png"
 # BASE_NODE_EFFECT_PLOT_SIZE=$(identify -ping -format '%[width]x%[height]' ${NODE_EFFECT_PLOT_LOCATION})
 
-GRAPH_IMAGE_LOCATION="graph_images/${2}.png"
 
+# if [[ "$1" != "linear_regression" ]];
+# then
 ls plots/${1}/rank_effect_by_node__full__${1}__${2}__node_*.png > "${NODE_EFFECTS_MERGE_PLOT_LIST}"
+# fi
 
 
 if [[ "$1" == "coloring" ]];
@@ -58,8 +60,10 @@ then
         exit 0
 fi
 
-
+if [[ "$1" != "linear_regression" ]];
+then
 ls -r ${NODE_VS_ACCUMULATED_CVF_PLOTS_LOCATION}/node__vs__accumulated_severe_cvf_effect_gte_*__full__${1}__${2}.png > "${NODE_VS_ACCUMULATED_CVF_PLOTS_MERGE_FILELIST}"
+fi
 # # horizontally append
 # convert $(cat $NODE_VS_ACCUMULATED_CVF_PLOTS_MERGE_FILELIST) +append ${NODE_VS_ACCUMULATED_CVF_PLOTS_MERGE_PLOT}
 
@@ -75,6 +79,13 @@ montage $(cat $NODE_EFFECTS_MERGE_PLOT_LIST) \
         ${NODE_VS_MAX_CVF_PLOTS_LOCATION}/node_vs_max_rank_effect__full__${1}__${2}.png \
         ${NODE_VS_CVF_PLOTS_LOCATION}/node__vs__rank_effect_gte_*__full__${1}__${2}.png \
         $(cat $NODE_VS_ACCUMULATED_CVF_PLOTS_MERGE_FILELIST) \
+        -tile 3x \
+        -geometry +10+10 \
+        merged_plots/${1}_merged_plot_${2}.png
+elif [[ "$1" == "linear_regression" ]];
+then
+montage $(cat $NODE_EFFECTS_MERGE_PLOT_LIST) \
+        "graph_images/test_lr_graph_1.png" \
         -tile 3x \
         -geometry +10+10 \
         merged_plots/${1}_merged_plot_${2}.png
