@@ -76,6 +76,7 @@ graph_names_map = {
     },
     LINEAR_REGRESSION_PROGRAM: {
         "0.8_1.9__0.025__test_lr_graph_1",
+        "0.9_1.9__0.025__test_lr_graph_1",
     },
 }
 
@@ -140,23 +141,24 @@ for graph_name in graph_names:
 
     # ipdb.set_trace()
     rank_effects = df["Rank Effect"].unique()
-    rank_effects = [-i for i in rank_effects if i <= 0]
+    # rank_effects = [-i for i in rank_effects if i <= 0]
     rank_effects.sort()
     df_preproc = pd.DataFrame({"Rank Effect": rank_effects})
-    df_preproc.set_index("Rank Effect", inplace=True)
     nodes = df["Node"].unique()
     nodes.sort()
     for node in nodes:
         col = f"Node {node}"
-        node_data = df.loc[(df["Node"] == node) & (df["Rank Effect"] <= 0)]["CVF (Avg)"]
+        node_data = df.loc[(df["Node"] == node)]["CVF (Avg)"]
         node_data = node_data[::-1]
         node_data = node_data.reset_index(drop=True)
         df_preproc.loc[:, col] = node_data
 
+    df_preproc.set_index("Rank Effect", inplace=True)
+
     # print(df_preproc.head())
     # dfl = pd.melt(df_preproc, ["Rank Effect"], value_name="count")
     ax = sns.lineplot(data=df_preproc[["Node 0", "Node 1", "Node 2", "Node 3"]])
-    ax.set_xlabel("Rank Effect (-ve)")
+    ax.set_xlabel("Rank Effect")
     # ax.set_xticklabels([str(-i) for i in rank_effects])
 
     # Set custom ticks and labels
