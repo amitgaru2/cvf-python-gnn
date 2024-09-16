@@ -16,7 +16,9 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
 
     @property
     def results_prefix(self):
-        return f"linear_regression__{self.min_slope}_{self.max_slope}__{self.slope_step}"
+        return (
+            f"linear_regression__{self.min_slope}_{self.max_slope}__{self.slope_step}"
+        )
 
     def __init__(self, graph_name, graph) -> None:
         super().__init__(graph_name, graph)
@@ -44,23 +46,39 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         self.stop_threshold = 0.0001
         self.slope_step = np.float64(0.025)
         self.slope_step_decimals = 3
-        self.min_slope = np.float64(0.900)
+        self.min_slope = np.float64(0.800)
         self.max_slope = np.float64(1.900)
         self.no_of_nodes = 4
         self.df = pd.read_csv(
             os.path.join(
-                os.getenv("CVF_CODE_ROOT", "/"), "linear_regression", "SOCR-HeightWeight.csv"
+                os.getenv("CVF_CODE_ROOT", "/"),
+                "linear_regression",
+                "SOCR-HeightWeight.csv",
             )
-        )   # /home/agaru/research/cvf-python/
+        )  # /home/agaru/research/cvf-python/
         self.df.rename(
             columns={"Height(Inches)": "X", "Weight(Pounds)": "y"}, inplace=True
         )
+        # self.doubly_stochastic_matrix_config = [
+        #     [1 / 2, 1 / 4, 1 / 8, 1 / 8],
+        #     [1 / 4, 3 / 4, 0, 0],
+        #     [1 / 8, 0, 7 / 8, 0],
+        #     [1 / 8, 0, 0, 7 / 8],
+        # ]
+
         self.doubly_stochastic_matrix_config = [
-            [1 / 2, 1 / 4, 1 / 8, 1 / 8],
-            [1 / 4, 3 / 4, 0, 0],
+            [5 / 8, 1 / 8, 1 / 8, 1 / 8],
+            [1 / 8, 7 / 8, 0, 0],
             [1 / 8, 0, 7 / 8, 0],
             [1 / 8, 0, 0, 7 / 8],
         ]
+
+        # self.doubly_stochastic_matrix_config = [
+        #     [1 / 4, 1 / 2, 1 / 8, 1 / 8],
+        #     [1 / 2, 1 / 2, 0, 0],
+        #     [1 / 8, 0, 7 / 8, 0],
+        #     [1 / 8, 0, 0, 7 / 8],
+        # ]
 
         # self.slope_step = 1 / (10**self.slope_step_decimals)
         self.node_data_partitions = np.array_split(self.df, self.no_of_nodes)
@@ -76,12 +94,12 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
             )
             for i, p in enumerate(partitions):
                 self.df.loc[self.df.index.isin(p.index.values), "partition"] = i
-        
+
         self._preprocessing()
 
     def _preprocessing(self):
-        self.df['X_2'] = self.df['X'].apply(lambda x: np.square(x))
-        self.df['Xy'] = self.df[['X', 'y']].apply(lambda row: row.X * row.y, axis=1)
+        self.df["X_2"] = self.df["X"].apply(lambda x: np.square(x))
+        self.df["Xy"] = self.df[["X", "y"]].apply(lambda row: row.X * row.y, axis=1)
 
     def __gen_test_data_partition_frm_df(self, partitions, df):
         shuffled = df.sample(frac=1)
@@ -133,9 +151,7 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
 
     def __get_f(self, state, node_id):
         doubly_st_mt = self.doubly_stochastic_matrix_config[node_id]
-        return sum(
-            frac * state[j] for j, frac in enumerate(doubly_st_mt)
-        )
+        return sum(frac * state[j] for j, frac in enumerate(doubly_st_mt))
 
     def __get_p(self, node_id):
         if node_id in self.cache["p"]:
@@ -151,7 +167,7 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
             return self.cache["q"][node_id]
 
         df = self.__get_node_data_df(node_id)
-        result = np.sum(df['Xy'])
+        result = np.sum(df["Xy"])
         self.cache["q"][node_id] = result
         return result
 
@@ -160,7 +176,7 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
             return self.cache["r"][node_id]
 
         df = self.__get_node_data_df(node_id)
-        result = np.sum(df['X_2'])
+        result = np.sum(df["X_2"])
         self.cache["r"][node_id] = result
         return result
 
@@ -209,8 +225,12 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
                 #     )
                 #     - self.learning_rate * grad_m
                 # )
-                
-                new_slope = self.__get_f(start_state_cpy, node_id) - self.learning_rate * self.__get_p(node_id) * (self.__get_q(node_id) - prev_m * self.__get_r(node_id))
+
+                new_slope = self.__get_f(
+                    start_state_cpy, node_id
+                ) - self.learning_rate * self.__get_p(node_id) * (
+                    self.__get_q(node_id) - prev_m * self.__get_r(node_id)
+                )
 
                 # if new_slope < self.min_slope:
                 #     new_slope = self.min_slope
@@ -219,11 +239,13 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
                     new_slope = self.max_slope
 
                 node_params[node_id] = new_slope
-                
+
                 if abs(prev_m - new_slope) <= self.stop_threshold:
                     break
             else:
-                logger.debug("Couldn't converge node %s for the state %s", node_id, start_state)
+                logger.debug(
+                    "Couldn't converge node %s for the state %s", node_id, start_state
+                )
 
         for node_id, new_slope in enumerate(node_params):
             new_slope_cleaned = self.__clean_float_to_step_size_single(new_slope)
