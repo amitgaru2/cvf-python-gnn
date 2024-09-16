@@ -129,19 +129,14 @@ def create_plots_dir_if_not_exists():
 
 
 create_plots_dir_if_not_exists()
-plt.figure(figsize=(10, 6))
+plt.figure(figsize=(18, 10))
 
 for graph_name in graph_names:
     df = get_df(graph_name)
     if df is None:
         continue
 
-    # print(df.head())
-    # import ipdb
-
-    # ipdb.set_trace()
     rank_effects = df["Rank Effect"].unique()
-    # rank_effects = [-i for i in rank_effects if i <= 0]
     rank_effects.sort()
     df_preproc = pd.DataFrame({"Rank Effect": rank_effects})
     nodes = df["Node"].unique()
@@ -149,17 +144,13 @@ for graph_name in graph_names:
     for node in nodes:
         col = f"Node {node}"
         node_data = df.loc[(df["Node"] == node)]["CVF (Avg)"]
-        # node_data = node_data[::-1]
         node_data = node_data.reset_index(drop=True)
         df_preproc.loc[:, col] = node_data
 
     df_preproc.set_index("Rank Effect", inplace=True)
 
-    # print(df_preproc.head())
-    # dfl = pd.melt(df_preproc, ["Rank Effect"], value_name="count")
     ax = sns.lineplot(data=df_preproc[["Node 0", "Node 1", "Node 2", "Node 3"]])
     ax.set_xlabel("Rank Effect")
-    # ax.set_xticklabels([str(-i) for i in rank_effects])
 
     # Set custom ticks and labels
     ax.set_yscale("log")
@@ -169,7 +160,6 @@ for graph_name in graph_names:
     #     f"Distribution of rank effects at node {index[0]} in {program_label} problem"
     # )
     # fig.suptitle(fig_title, fontsize=fontsize)
-    # plot_node_rank_effect(index[0], grp, axs)
     plt.rc("font", size=20)
     plt.savefig(
         os.path.join(
