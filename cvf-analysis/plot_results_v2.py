@@ -1,5 +1,6 @@
 import os
 import sys
+import numpy as np
 import pandas as pd
 import seaborn as sns
 
@@ -127,6 +128,7 @@ def create_plots_dir_if_not_exists():
 
 
 create_plots_dir_if_not_exists()
+plt.figure(figsize=(10, 6))
 
 for graph_name in graph_names:
     df = get_df(graph_name)
@@ -138,46 +140,28 @@ for graph_name in graph_names:
 
     # ipdb.set_trace()
     rank_effects = df["Rank Effect"].unique()
+    rank_effects = [-i for i in rank_effects if i <= 0]
     rank_effects.sort()
     df_preproc = pd.DataFrame({"Rank Effect": rank_effects})
+    df_preproc.set_index("Rank Effect", inplace=True)
     nodes = df["Node"].unique()
     nodes.sort()
     for node in nodes:
         col = f"Node {node}"
-        node_data = df.loc[(df["Node"] == node)]["CVF (Avg)"]
+        node_data = df.loc[(df["Node"] == node) & (df["Rank Effect"] <= 0)]["CVF (Avg)"]
+        node_data = node_data[::-1]
         node_data = node_data.reset_index(drop=True)
         df_preproc.loc[:, col] = node_data
 
     # print(df_preproc.head())
-    dfl = pd.melt(df_preproc, ["Rank Effect"])
-    sns.lineplot(data=dfl, x="Rank Effect", y="value", hue="variable")
-    # node_grps = df.groupby(["Node"])
-    # for i, (index, grp) in enumerate(node_grps):
-    #     fig, axs = plt.subplots(
-    #         1,
-    #         1,
-    #         figsize=(10, 5),
-    #         constrained_layout=True,
-    #     )
-    #     node_id = index[0]
-    #     if node_id < 10:
-    #         node_id = f"0{node_id}"
-    #     else:
-    #         node_id = f"{node_id}"
-    #     file_name = f"rank_effect_by_node__{analysis_type}__{program}__{graph_name}__node_{node_id}"
-    #     fig_title = f"Distribution of rank effects at node {index[0]} in {program_label} problem"
-    #     fig.suptitle(fig_title, fontsize=fontsize)
-    #     plot_node_rank_effect(index[0], grp, axs)
-    #     plt.rc("font", size=20)
-    #     fig.savefig(
-    #         os.path.join(
-    #             plots_dir,
-    #             f"{file_name}.png",
-    #         )
-    #     )
-    #     plt.close()
-    # print(f"Saved plot(s) for {graph_name}.")
+    # dfl = pd.melt(df_preproc, ["Rank Effect"], value_name="count")
+    ax = sns.lineplot(data=df_preproc[["Node 0", "Node 1", "Node 2", "Node 3"]])
+    ax.set_xlabel("Rank Effect (-ve)")
+    # ax.set_xticklabels([str(-i) for i in rank_effects])
 
+    # Set custom ticks and labels
+    ax.set_yscale("log")
+    ax.set_ylabel("Count", rotation=0, labelpad=20)
     file_name = f"rank_effect_by_node__{analysis_type}__{program}__{graph_name}"
     # fig_title = (
     #     f"Distribution of rank effects at node {index[0]} in {program_label} problem"

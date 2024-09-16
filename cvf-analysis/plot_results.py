@@ -74,7 +74,7 @@ graph_names_map = {
         "graph_8",
     },
     LINEAR_REGRESSION_PROGRAM: {
-        "1.8_1.9__0.025__test_lr_graph_1",
+        "0.8_1.9__0.025__test_lr_graph_1",
     },
 }
 
@@ -101,7 +101,7 @@ def get_df(graph_name):
 
 def plot_node_rank_effect(node, df, ax):
     df = df.loc[df["CVF (Avg)"] > 0]
-    sns.lineplot(data=df, x="Rank Effect", y="CVF (Avg)", ax=ax, marker="o")
+    sns.lineplot(data=df, x="Rank Effect", y="CVF (Avg)", ax=ax)
     ax.set(xlabel=f"Rank Effect of Node: {node}", ylabel="Count")
     ax.tick_params(axis="x", labelsize=20)
     ax.tick_params(axis="y", labelsize=20)
