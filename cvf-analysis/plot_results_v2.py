@@ -76,7 +76,7 @@ graph_names_map = {
     },
     LINEAR_REGRESSION_PROGRAM: {
         "0.8_1.9__0.025__test_lr_graph_1",
-        "0.9_1.9__0.025__test_lr_graph_1",
+        # "0.9_1.9__0.025__test_lr_graph_1",
     },
 }
 
@@ -149,7 +149,7 @@ for graph_name in graph_names:
     for node in nodes:
         col = f"Node {node}"
         node_data = df.loc[(df["Node"] == node)]["CVF (Avg)"]
-        node_data = node_data[::-1]
+        # node_data = node_data[::-1]
         node_data = node_data.reset_index(drop=True)
         df_preproc.loc[:, col] = node_data
 
