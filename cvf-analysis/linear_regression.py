@@ -23,105 +23,8 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
     def __init__(self, graph_name, graph, config_file) -> None:
         super().__init__(graph_name, graph)
         self.cache = {"p": {}, "q": {}, "r": {}}
-
         self.config = LRConfig.generate_config(config_file)
-
         self.nodes = list(range(self.config.no_of_nodes))
-
-        # self.iterations = 100
-
-        # self.learning_rate = 0.001
-        # self.config.slope_step_decimals = 1
-        # self.config.min_slope = np.float64(0.0)
-        # self.config.max_slope = np.float64(1.1)
-        # self.config.no_of_nodes = 3
-        # self.df = pd.read_csv(
-        #     "/home/agaru/research/cvf-python/linear_regression/random-data.csv"
-        # )
-        # self.doubly_stochastic_matrix_config = [
-        #     [1 / 3, 1 / 3, 1 / 3],
-        #     [1 / 3, 2 / 3, 0],
-        #     [1 / 3, 0, 2 / 3],
-        # ]
-        # self.actual_m = 0.9
-        # self.actual_b = -0.11847322643445737
-
-        # self.learning_rate = 0.0001
-        # self.stop_threshold = 0.0001
-        # self.config.slope_step = np.float64(0.025)
-        # self.config.slope_step_decimals = 3
-        # self.config.min_slope = np.float64(1.700)
-        # self.config.max_slope = np.float64(1.900)
-        # self.config.no_of_nodes = 4
-        # self.df = pd.read_csv(
-        #     os.path.join(
-        #         os.getenv("CVF_CODE_ROOT", "/"),
-        #         "linear_regression",
-        #         "SOCR-HeightWeight.csv",
-        #     )
-        # )  # /home/agaru/research/cvf-python/
-        # self.df.rename(
-        #     columns={"Height(Inches)": "X", "Weight(Pounds)": "y"}, inplace=True
-        # )
-        # self.df.drop("Index", axis=1, inplace=True)
-        # self.df.to_csv(
-        #     os.path.join(
-        #         os.getenv("CVF_CODE_ROOT", "/"),
-        #         "linear_regression",
-        #         "SOCR-HeightWeight-XY.csv",
-        #     )
-        # )
-        # # self.ds_matrix_config_id = 1
-        # self.doubly_stochastic_matrix_config = [
-        #     [1 / 2, 1 / 4, 1 / 8, 1 / 8],
-        #     [1 / 4, 3 / 4, 0, 0],
-        #     [1 / 8, 0, 7 / 8, 0],
-        #     [1 / 8, 0, 0, 7 / 8],
-        # ]
-
-        # self.ds_matrix_config_id = 2
-        # self.doubly_stochastic_matrix_config = [
-        #     [5 / 8, 1 / 8, 1 / 8, 1 / 8],
-        #     [1 / 8, 7 / 8, 0, 0],
-        #     [1 / 8, 0, 7 / 8, 0],
-        #     [1 / 8, 0, 0, 7 / 8],
-        # ]
-
-        # self.ds_matrix_config_id = 3
-        # self.doubly_stochastic_matrix_config = [
-        #     [1 / 4, 1 / 2, 1 / 8, 1 / 8],
-        #     [1 / 2, 1 / 2, 0, 0],
-        #     [1 / 8, 0, 7 / 8, 0],
-        #     [1 / 8, 0, 0, 7 / 8],
-        # ]
-
-        # self.ds_matrix_config_id = 4
-        # self.doubly_stochastic_matrix_config = [
-        #     [1 / 8, 1 / 8, 1 / 8, 1 / 8, 1 / 8, 1 / 8, 1 / 8, 1 / 8],
-        #     [1 / 8, 7 / 8, 0, 0, 0, 0, 0, 0],
-        #     [1 / 8, 0, 7 / 8, 0, 0, 0, 0, 0],
-        #     [1 / 8, 0, 0, 7 / 8, 0, 0, 0, 0],
-        #     [1 / 8, 0, 0, 0, 7 / 8, 0, 0, 0],
-        #     [1 / 8, 0, 0, 0, 0, 7 / 8, 0, 0],
-        #     [1 / 8, 0, 0, 0, 0, 0, 7 / 8, 0],
-        #     [1 / 8, 0, 0, 0, 0, 0, 0, 7 / 8],
-        # ]
-
-        # # self.config.slope_step = 1 / (10**self.config.slope_step_decimals)
-        # self.df = self.df.sample(frac=1, random_state=36).reset_index(drop=True)
-        # self.node_data_partitions = np.array_split(self.df, self.config.no_of_nodes)
-        # for i, node_data in enumerate(self.node_data_partitions):
-        #     self.df.loc[node_data.index, "node"] = i
-
-        # self.df["partition"] = -1
-        # for i in range(self.config.no_of_nodes):
-        #     node_filter = self.df["node"] == i
-        #     node_df = self.df[node_filter]
-        #     partitions = self.__gen_test_data_partition_frm_df(
-        #         self.config.no_of_nodes, node_df
-        #     )
-        #     for i, p in enumerate(partitions):
-        #         self.df.loc[self.df.index.isin(p.index.values), "partition"] = i
 
     # def __gen_test_data_partition_frm_df(self, partitions, df):
     #     shuffled = df.sample(frac=1)
@@ -130,7 +33,6 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
 
     def _start(self):
         self._gen_configurations()
-        # self._find_invariants()
         self._find_program_transitions_n_cvfs()
         self._init_pts_rank()
         # self.__save_pts_to_file()
@@ -212,7 +114,6 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
 
     def __get_node_data_df(self, node_id):
         return self.config.df[self.config.df["node"] == node_id]
-        # return self.df[self.df["node"] == 0]
 
     # def __get_node_test_data_df(self, node_id):
     #     return self.df[self.df["node"] == node_id]
