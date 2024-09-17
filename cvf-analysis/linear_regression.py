@@ -21,6 +21,9 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
 
     def __init__(self, graph_name, graph) -> None:
         super().__init__(graph_name, graph)
+        self.no_of_nodes = 8
+
+        self.nodes = list(range(self.no_of_nodes))
 
         self.iterations = 100
         self.cache = {"p": {}, "q": {}, "r": {}}
@@ -49,7 +52,7 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         self.slope_step_decimals = 3
         self.min_slope = np.float64(0.800)
         self.max_slope = np.float64(1.900)
-        self.no_of_nodes = 4
+        # self.no_of_nodes = 4
         self.df = pd.read_csv(
             os.path.join(
                 os.getenv("CVF_CODE_ROOT", "/"),
@@ -85,7 +88,6 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         #     [1 / 8, 0, 0, 7 / 8],
         # ]
 
-        self.no_of_nodes = 8
         self.ds_matrix_config_id = 4
         self.doubly_stochastic_matrix_config = [
             [1 / 8, 1 / 8, 1 / 8, 1 / 8, 1 / 8, 1 / 8, 1 / 8, 1 / 8],
@@ -139,9 +141,9 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         self._gen_save_rank_effect_by_node_count()
 
     def _gen_configurations(self):
-        self.configurations = {tuple([self.min_slope for _ in range(len(self.nodes))])}
+        self.configurations = {tuple([self.min_slope for _ in range(self.no_of_nodes)])}
         # perturb each state at a time for all states in configurations and accumulate the same in the configurations for next state to perturb
-        for node_pos in self.nodes:
+        for node_pos in range(self.no_of_nodes):
             config_copy = copy.deepcopy(self.configurations)
             for i in np.round(
                 np.arange(
