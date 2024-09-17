@@ -85,7 +85,7 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         ]
 
         # self.slope_step = 1 / (10**self.slope_step_decimals)
-        self.df = self.df.sample(frac=1, random_state=55).reset_index(drop=True)
+        self.df = self.df.sample(frac=1, random_state=36).reset_index(drop=True)
         self.node_data_partitions = np.array_split(self.df, self.no_of_nodes)
         for i, node_data in enumerate(self.node_data_partitions):
             self.df.loc[node_data.index, "node"] = i
