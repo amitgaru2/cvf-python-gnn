@@ -75,7 +75,8 @@ graph_names_map = {
         "graph_8",
     },
     LINEAR_REGRESSION_PROGRAM: {
-        "0.8_1.9__0.025__test_lr_graph_1",
+        # "0.8_1.9__0.025__test_lr_graph_1",
+        "0.7_1.9__0.025__test_lr_graph_1",
         # "0.9_1.9__0.025__test_lr_graph_1",
     },
 }
@@ -149,7 +150,7 @@ for graph_name in graph_names:
 
     df_preproc.set_index("Rank Effect", inplace=True)
 
-    ax = sns.lineplot(data=df_preproc[["Node 0", "Node 1", "Node 2", "Node 3"]])
+    ax = sns.lineplot(data=df_preproc[["Node 0", "Node 1", "Node 2", "Node 3"]], markers='.')
     ax.set_xlabel("Rank Effect")
 
     # Set custom ticks and labels
