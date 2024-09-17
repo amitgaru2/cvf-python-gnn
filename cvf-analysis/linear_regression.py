@@ -77,11 +77,18 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
 
         # self.ds_matrix_config_id = 3
         # self.doubly_stochastic_matrix_config = [
-        #     [1 / 4, 1 / 2, 1 / 8, 1 / 8],
-        #     [1 / 2, 1 / 2, 0, 0],
+        #     [5 / 8, 1 / 8, 1 / 8, 1 / 8],
+        #     [1 / 8, 7 / 8, 0, 0],
         #     [1 / 8, 0, 7 / 8, 0],
         #     [1 / 8, 0, 0, 7 / 8],
         # ]
+
+        self.doubly_stochastic_matrix_config = [
+            [1 / 4, 1 / 2, 1 / 8, 1 / 8],
+            [1 / 2, 1 / 2, 0, 0],
+            [1 / 8, 0, 7 / 8, 0],
+            [1 / 8, 0, 0, 7 / 8],
+        ]
 
         # self.slope_step = 1 / (10**self.slope_step_decimals)
         self.node_data_partitions = np.array_split(self.df, self.no_of_nodes)
