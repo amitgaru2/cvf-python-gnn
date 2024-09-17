@@ -46,7 +46,7 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         self.stop_threshold = 0.0001
         self.slope_step = np.float64(0.025)
         self.slope_step_decimals = 3
-        self.min_slope = np.float64(0.800)
+        self.min_slope = np.float64(1.700)
         self.max_slope = np.float64(1.900)
         self.no_of_nodes = 4
         self.df = pd.read_csv(
@@ -59,6 +59,7 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         self.df.rename(
             columns={"Height(Inches)": "X", "Weight(Pounds)": "y"}, inplace=True
         )
+        self.df.drop("Index", axis=1, inplace=True)
         # self.ds_matrix_config_id = 1
         # self.doubly_stochastic_matrix_config = [
         #     [1 / 2, 1 / 4, 1 / 8, 1 / 8],
@@ -85,7 +86,6 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
 
         # self.slope_step = 1 / (10**self.slope_step_decimals)
         self.df = self.df.sample(frac=1, random_state=55).reset_index(drop=True)
-        # self.df = np.array_split(shuffled_df, self.no_of_nodes)
         self.node_data_partitions = np.array_split(self.df, self.no_of_nodes)
         for i, node_data in enumerate(self.node_data_partitions):
             self.df.loc[node_data.index, "node"] = i
@@ -163,7 +163,8 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
             return self.cache["p"][node_id]
 
         df = self.__get_node_data_df(node_id)
-        result = -2 / df.Index.count()
+        N = len(df)
+        result = -2 / N
         self.cache["p"][node_id] = result
         return result
 
@@ -185,9 +186,9 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         self.cache["r"][node_id] = result
         return result
 
-    def __gradient_m(self, X, y, y_pred):
-        N = len(y)
-        return (-2 / N) * np.sum(X * (y - y_pred))
+    # def __gradient_m(self, X, y, y_pred):
+    #     N = len(y)
+    #     return (-2 / N) * np.sum(X * (y - y_pred))
 
     def __get_node_data_df(self, node_id):
         return self.df[self.df["node"] == node_id]
