@@ -44,13 +44,12 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         # self.actual_m = 0.9
         # self.actual_b = -0.11847322643445737
 
-        # importlib.import_module(f"lr_configs.{graph_name}")
 
         self.learning_rate = 0.0001
         self.stop_threshold = 0.0001
         self.slope_step = np.float64(0.025)
         self.slope_step_decimals = 3
-        self.min_slope = np.float64(1.000)
+        self.min_slope = np.float64(1.700)
         self.max_slope = np.float64(1.900)
         # self.no_of_nodes = 4
         self.df = pd.read_csv(
@@ -65,12 +64,12 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         )
         self.df.drop("Index", axis=1, inplace=True)
         # self.ds_matrix_config_id = 1
-        # self.doubly_stochastic_matrix_config = [
-        #     [1 / 2, 1 / 4, 1 / 8, 1 / 8],
-        #     [1 / 4, 3 / 4, 0, 0],
-        #     [1 / 8, 0, 7 / 8, 0],
-        #     [1 / 8, 0, 0, 7 / 8],
-        # ]
+        self.doubly_stochastic_matrix_config = [
+            [1 / 2, 1 / 4, 1 / 8, 1 / 8],
+            [1 / 4, 3 / 4, 0, 0],
+            [1 / 8, 0, 7 / 8, 0],
+            [1 / 8, 0, 0, 7 / 8],
+        ]
 
         # self.ds_matrix_config_id = 2
         # self.doubly_stochastic_matrix_config = [
@@ -141,6 +140,7 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         self._gen_save_rank_effect_by_node_count()
 
     def _gen_configurations(self):
+        logger.debug("Generating configurations...")
         self.configurations = {tuple([self.min_slope for _ in range(self.no_of_nodes)])}
         # perturb each state at a time for all states in configurations and accumulate the same in the configurations for next state to perturb
         for node_pos in range(self.no_of_nodes):
