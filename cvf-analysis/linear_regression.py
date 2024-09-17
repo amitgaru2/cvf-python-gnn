@@ -84,19 +84,21 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         ]
 
         # self.slope_step = 1 / (10**self.slope_step_decimals)
+        self.df = self.df.sample(frac=1, random_state=55).reset_index(drop=True)
+        # self.df = np.array_split(shuffled_df, self.no_of_nodes)
         self.node_data_partitions = np.array_split(self.df, self.no_of_nodes)
         for i, node_data in enumerate(self.node_data_partitions):
             self.df.loc[node_data.index, "node"] = i
 
-        self.df["partition"] = -1
-        for i in range(self.no_of_nodes):
-            node_filter = self.df["node"] == i
-            node_df = self.df[node_filter]
-            partitions = self.__gen_test_data_partition_frm_df(
-                self.no_of_nodes, node_df
-            )
-            for i, p in enumerate(partitions):
-                self.df.loc[self.df.index.isin(p.index.values), "partition"] = i
+        # self.df["partition"] = -1
+        # for i in range(self.no_of_nodes):
+        #     node_filter = self.df["node"] == i
+        #     node_df = self.df[node_filter]
+        #     partitions = self.__gen_test_data_partition_frm_df(
+        #         self.no_of_nodes, node_df
+        #     )
+        #     for i, p in enumerate(partitions):
+        #         self.df.loc[self.df.index.isin(p.index.values), "partition"] = i
 
         self._preprocessing()
 
@@ -104,10 +106,10 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         self.df["X_2"] = self.df["X"].apply(lambda x: np.square(x))
         self.df["Xy"] = self.df[["X", "y"]].apply(lambda row: row.X * row.y, axis=1)
 
-    def __gen_test_data_partition_frm_df(self, partitions, df):
-        shuffled = df.sample(frac=1)
-        result = np.array_split(shuffled, partitions)
-        return result
+    # def __gen_test_data_partition_frm_df(self, partitions, df):
+    #     shuffled = df.sample(frac=1)
+    #     result = np.array_split(shuffled, partitions)
+    #     return result
 
     def _start(self):
         self._gen_configurations()
@@ -145,12 +147,12 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
     def _find_invariants(self):
         logger.info("No. of Invariants: %s", len(self.invariants))
 
-    def __forward(self, X, params):
-        return params["m"] * X + params["c"]
+    # def __forward(self, X, params):
+    #     return params["m"] * X + params["c"]
 
-    def __loss_fn(self, y, y_pred):
-        N = len(y)
-        return (1 / N) * sum((y[i] - y_pred[i]) ** 2 for i in range(N))
+    # def __loss_fn(self, y, y_pred):
+    #     N = len(y)
+    #     return (1 / N) * sum((y[i] - y_pred[i]) ** 2 for i in range(N))
 
     def __get_f(self, state, node_id):
         doubly_st_mt = self.doubly_stochastic_matrix_config[node_id]
@@ -189,6 +191,9 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
 
     def __get_node_data_df(self, node_id):
         return self.df[self.df["node"] == node_id]
+    
+    # def __get_node_test_data_df(self, node_id):
+    #     return self.df[self.df["node"] == node_id]
 
     def __clean_float_to_step_size_single(self, slope):
         quotient = np.divide(slope, self.slope_step)
