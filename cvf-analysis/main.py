@@ -104,6 +104,10 @@ def main():
         ],
         required=False,
     )
+    parser.add_argument(
+        "--config-file",
+        required=False,
+    )
     args = parser.parse_args()
     if args.logging:
         logger.setLevel(getattr(logging, args.logging, "INFO"))
@@ -118,6 +122,12 @@ def main():
             graph_name = f"implicit_graph_n{no_nodes}"
             logger.info('Started for Graph: "%s".', graph_name)
             graph = CVFAnalysisKlass.gen_implicit_graph(no_nodes)
+            analysis = CVFAnalysisKlass(graph_name, graph)
+            if analysis_type == PartialAnalysisType and args.sample_size:
+                set_sample_size(analysis, args.sample_size)
+            analysis.start()
+    elif args.program == LinearRegressionProgram:
+        for graph_name, graph in start(CVFAnalysisKlass.graphs_dir, args.graph_names):
             analysis = CVFAnalysisKlass(graph_name, graph)
             if analysis_type == PartialAnalysisType and args.sample_size:
                 set_sample_size(analysis, args.sample_size)

@@ -1,6 +1,7 @@
 import os
 import copy
 import json
+import importlib
 
 import numpy as np
 import pandas as pd
@@ -42,6 +43,8 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         # self.actual_m = 0.9
         # self.actual_b = -0.11847322643445737
 
+        # importlib.import_module(f"lr_configs.{graph_name}")
+
         self.learning_rate = 0.0001
         self.stop_threshold = 0.0001
         self.slope_step = np.float64(0.025)
@@ -60,28 +63,40 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
             columns={"Height(Inches)": "X", "Weight(Pounds)": "y"}, inplace=True
         )
         self.df.drop("Index", axis=1, inplace=True)
-        self.ds_matrix_config_id = 1
-        self.doubly_stochastic_matrix_config = [
-            [1 / 2, 1 / 4, 1 / 8, 1 / 8],
-            [1 / 4, 3 / 4, 0, 0],
-            [1 / 8, 0, 7 / 8, 0],
-            [1 / 8, 0, 0, 7 / 8],
-        ]
+        # self.ds_matrix_config_id = 1
+        # self.doubly_stochastic_matrix_config = [
+        #     [1 / 2, 1 / 4, 1 / 8, 1 / 8],
+        #     [1 / 4, 3 / 4, 0, 0],
+        #     [1 / 8, 0, 7 / 8, 0],
+        #     [1 / 8, 0, 0, 7 / 8],
+        # ]
 
         # self.ds_matrix_config_id = 2
-        self.doubly_stochastic_matrix_config = [
-            [5 / 8, 1 / 8, 1 / 8, 1 / 8],
-            [1 / 8, 7 / 8, 0, 0],
-            [1 / 8, 0, 7 / 8, 0],
-            [1 / 8, 0, 0, 7 / 8],
-        ]
+        # self.doubly_stochastic_matrix_config = [
+        #     [5 / 8, 1 / 8, 1 / 8, 1 / 8],
+        #     [1 / 8, 7 / 8, 0, 0],
+        #     [1 / 8, 0, 7 / 8, 0],
+        #     [1 / 8, 0, 0, 7 / 8],
+        # ]
 
         # self.ds_matrix_config_id = 3
-        self.doubly_stochastic_matrix_config = [
-            [1 / 4, 1 / 2, 1 / 8, 1 / 8],
-            [1 / 2, 1 / 2, 0, 0],
-            [1 / 8, 0, 7 / 8, 0],
-            [1 / 8, 0, 0, 7 / 8],
+        # self.doubly_stochastic_matrix_config = [
+        #     [1 / 4, 1 / 2, 1 / 8, 1 / 8],
+        #     [1 / 2, 1 / 2, 0, 0],
+        #     [1 / 8, 0, 7 / 8, 0],
+        #     [1 / 8, 0, 0, 7 / 8],
+        # ]
+
+        self.ds_matrix_config_id = 4
+        self.doubly_stochastic_matrix_config =  [
+            [1 / 8, 1/8, 1/8, 1/8, 1/8, 1 / 8, 1 / 8, 1 / 8],
+            [1 / 8, 7 / 8, 0, 0, 0, 0, 0, 0],
+            [1 / 8, 0, 7 / 8, 0, 0, 0, 0, 0],
+            [1 / 8, 0, 0, 7 / 8, 0, 0, 0, 0],
+            [1 / 8, 0, 0, 0, 7 / 8, 0, 0, 0],
+            [1 / 8, 0, 0, 0, 0, 7 / 8, 0, 0],
+            [1 / 8, 0, 0, 0, 0, 0,7 / 8, 0],
+            [1 / 8, 0, 0, 0, 0, 0, 0, 7 / 8],
         ]
 
         # self.slope_step = 1 / (10**self.slope_step_decimals)
