@@ -77,6 +77,8 @@ graph_names_map = {
     LINEAR_REGRESSION_PROGRAM: {
         # "0.8_1.9__0.025__test_lr_graph_1",
         # "0.8_1.9__0.025__2__test_lr_graph_1",
+        "0.8_1.9__0.025__1__test_lr_graph_1",
+        "0.8_1.9__0.025__2__test_lr_graph_1",
         "0.8_1.9__0.025__3__test_lr_graph_1",
         # "0.7_1.9__0.025__test_lr_graph_1",
         # "0.9_1.9__0.025__test_lr_graph_1",
