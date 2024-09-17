@@ -17,9 +17,7 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
 
     @property
     def results_prefix(self):
-        return (
-            f"linear_regression__{self.min_slope}_{self.max_slope}__{self.slope_step}__{self.ds_matrix_config_id}"
-        )
+        return f"linear_regression__{self.min_slope}_{self.max_slope}__{self.slope_step}__{self.ds_matrix_config_id}"
 
     def __init__(self, graph_name, graph) -> None:
         super().__init__(graph_name, graph)
@@ -88,14 +86,14 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         # ]
 
         self.ds_matrix_config_id = 4
-        self.doubly_stochastic_matrix_config =  [
-            [1 / 8, 1/8, 1/8, 1/8, 1/8, 1 / 8, 1 / 8, 1 / 8],
+        self.doubly_stochastic_matrix_config = [
+            [1 / 8, 1 / 8, 1 / 8, 1 / 8, 1 / 8, 1 / 8, 1 / 8, 1 / 8],
             [1 / 8, 7 / 8, 0, 0, 0, 0, 0, 0],
             [1 / 8, 0, 7 / 8, 0, 0, 0, 0, 0],
             [1 / 8, 0, 0, 7 / 8, 0, 0, 0, 0],
             [1 / 8, 0, 0, 0, 7 / 8, 0, 0, 0],
             [1 / 8, 0, 0, 0, 0, 7 / 8, 0, 0],
-            [1 / 8, 0, 0, 0, 0, 0,7 / 8, 0],
+            [1 / 8, 0, 0, 0, 0, 0, 7 / 8, 0],
             [1 / 8, 0, 0, 0, 0, 0, 0, 7 / 8],
         ]
 
@@ -208,7 +206,7 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
     def __get_node_data_df(self, node_id):
         return self.df[self.df["node"] == node_id]
         # return self.df[self.df["node"] == 0]
-    
+
     # def __get_node_test_data_df(self, node_id):
     #     return self.df[self.df["node"] == node_id]
 
