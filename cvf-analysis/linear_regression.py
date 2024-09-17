@@ -46,7 +46,7 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         self.stop_threshold = 0.0001
         self.slope_step = np.float64(0.025)
         self.slope_step_decimals = 3
-        self.min_slope = np.float64(1.700)
+        self.min_slope = np.float64(0.800)
         self.max_slope = np.float64(1.900)
         self.no_of_nodes = 4
         self.df = pd.read_csv(
