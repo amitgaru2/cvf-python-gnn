@@ -48,6 +48,7 @@ cd 'cvf-analysis'
 #python3 main.py --program maximal_matching --graph-names graph_6
 #python3 main.py --program maximal_matching --graph-names graph_7
 #python3 main.py --program maximal_matching --graph-names graph_8
-python3 main.py --program linear_regression -f --graph-names test_lr_graph_1 --logging DEBUG --config-file matrix_4
+#python3 main.py --program linear_regression -f --graph-names test_lr_graph_1 --logging DEBUG --config-file matrix_4
+python3 main.py --program linear_regression -f --graph-names test_lr_graph_1 --logging DEBUG --config-file matrix_5
 
 echo "Done!"
