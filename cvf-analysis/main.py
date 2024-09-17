@@ -127,8 +127,11 @@ def main():
                 set_sample_size(analysis, args.sample_size)
             analysis.start()
     elif args.program == LinearRegressionProgram:
+        if not args.config_file:
+            logger.error("You need to provide config file for Linear Regression!")
+            exit(1)
         for graph_name, graph in start(CVFAnalysisKlass.graphs_dir, args.graph_names):
-            analysis = CVFAnalysisKlass(graph_name, graph)
+            analysis = CVFAnalysisKlass(graph_name, graph, args.config_file)
             if analysis_type == PartialAnalysisType and args.sample_size:
                 set_sample_size(analysis, args.sample_size)
             analysis.start()
