@@ -69,20 +69,20 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         ]
 
         # self.ds_matrix_config_id = 2
-        # self.doubly_stochastic_matrix_config = [
-        #     [5 / 8, 1 / 8, 1 / 8, 1 / 8],
-        #     [1 / 8, 7 / 8, 0, 0],
-        #     [1 / 8, 0, 7 / 8, 0],
-        #     [1 / 8, 0, 0, 7 / 8],
-        # ]
+        self.doubly_stochastic_matrix_config = [
+            [5 / 8, 1 / 8, 1 / 8, 1 / 8],
+            [1 / 8, 7 / 8, 0, 0],
+            [1 / 8, 0, 7 / 8, 0],
+            [1 / 8, 0, 0, 7 / 8],
+        ]
 
         # self.ds_matrix_config_id = 3
-        # self.doubly_stochastic_matrix_config = [
-        #     [1 / 4, 1 / 2, 1 / 8, 1 / 8],
-        #     [1 / 2, 1 / 2, 0, 0],
-        #     [1 / 8, 0, 7 / 8, 0],
-        #     [1 / 8, 0, 0, 7 / 8],
-        # ]
+        self.doubly_stochastic_matrix_config = [
+            [1 / 4, 1 / 2, 1 / 8, 1 / 8],
+            [1 / 2, 1 / 2, 0, 0],
+            [1 / 8, 0, 7 / 8, 0],
+            [1 / 8, 0, 0, 7 / 8],
+        ]
 
         # self.slope_step = 1 / (10**self.slope_step_decimals)
         self.df = self.df.sample(frac=1, random_state=36).reset_index(drop=True)
@@ -191,8 +191,8 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
     #     return (-2 / N) * np.sum(X * (y - y_pred))
 
     def __get_node_data_df(self, node_id):
-        # return self.df[self.df["node"] == node_id]
-        return self.df[self.df["node"] == 0]
+        return self.df[self.df["node"] == node_id]
+        # return self.df[self.df["node"] == 0]
     
     # def __get_node_test_data_df(self, node_id):
     #     return self.df[self.df["node"] == node_id]
