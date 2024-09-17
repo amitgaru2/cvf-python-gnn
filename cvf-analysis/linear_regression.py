@@ -17,7 +17,7 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
     @property
     def results_prefix(self):
         return (
-            f"linear_regression__{self.min_slope}_{self.max_slope}__{self.slope_step}"
+            f"linear_regression__{self.min_slope}_{self.max_slope}__{self.slope_step}__{self.ds_matrix_config_id}"
         )
 
     def __init__(self, graph_name, graph) -> None:
@@ -59,6 +59,7 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         self.df.rename(
             columns={"Height(Inches)": "X", "Weight(Pounds)": "y"}, inplace=True
         )
+        # self.ds_matrix_config_id = 1
         # self.doubly_stochastic_matrix_config = [
         #     [1 / 2, 1 / 4, 1 / 8, 1 / 8],
         #     [1 / 4, 3 / 4, 0, 0],
@@ -66,6 +67,7 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         #     [1 / 8, 0, 0, 7 / 8],
         # ]
 
+        self.ds_matrix_config_id = 2
         self.doubly_stochastic_matrix_config = [
             [5 / 8, 1 / 8, 1 / 8, 1 / 8],
             [1 / 8, 7 / 8, 0, 0],
@@ -73,6 +75,7 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
             [1 / 8, 0, 0, 7 / 8],
         ]
 
+        # self.ds_matrix_config_id = 3
         # self.doubly_stochastic_matrix_config = [
         #     [1 / 4, 1 / 2, 1 / 8, 1 / 8],
         #     [1 / 2, 1 / 2, 0, 0],
