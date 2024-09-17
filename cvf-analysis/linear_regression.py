@@ -85,6 +85,7 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         #     [1 / 8, 0, 0, 7 / 8],
         # ]
 
+        self.no_of_nodes = 8
         self.ds_matrix_config_id = 4
         self.doubly_stochastic_matrix_config = [
             [1 / 8, 1 / 8, 1 / 8, 1 / 8, 1 / 8, 1 / 8, 1 / 8, 1 / 8],
