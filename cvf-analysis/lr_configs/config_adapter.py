@@ -5,6 +5,9 @@ import numpy as np
 import pandas as pd
 
 
+from custom_logger import logger
+
+
 class LRConfig:
 
     def __init__(
@@ -49,6 +52,7 @@ class LRConfig:
     @classmethod
     def generate_config(cls, config_file):
         config_module = importlib.import_module(f"lr_configs.{config_file}")
+        cls._check_doubly_stochastic_matrix(config_module.doubly_stochastic_matrix)
         return LRConfig(
             learning_rate=config_module.learning_rate,
             stop_threshold=config_module.stop_threshold,
@@ -66,3 +70,16 @@ class LRConfig:
     def _preprocessing(self):
         self.df["X_2"] = self.df["X"].apply(lambda x: np.square(x))
         self.df["Xy"] = self.df[["X", "y"]].apply(lambda row: row.X * row.y, axis=1)
+
+    @classmethod
+    def _check_doubly_stochastic_matrix(cls, doubly_stochastic_matrix):
+        arr = np.array(doubly_stochastic_matrix)
+        try:
+            for i, row in enumerate(arr):
+                assert np.sum(row) == 1, f"Row index {i}"
+                assert np.sum(arr[:, i]) == 1, f"Column index {i}"
+        except Exception as e:
+            logger.exception("Invalid doubly stochastic matrix!")
+            exit(1)
+
+        logger.info("Doubly stochastic matrix validated!")

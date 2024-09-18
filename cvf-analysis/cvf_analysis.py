@@ -4,13 +4,10 @@ import csv
 import math
 import time
 import random
-import logging
 
 import pandas as pd
 
-logger = logging.getLogger()
-logger.addHandler(logging.StreamHandler())
-logger.setLevel(logging.INFO)
+from custom_logger import logger
 
 FullAnalysisType = "full"
 PartialAnalysisType = "partial"
@@ -130,7 +127,7 @@ class CVFAnalysis:
                     }
                     total_paths += path_count
                     remove_from_unranked_states.add(state)
-            
+
             if not remove_from_unranked_states:
                 count += 1
                 if count % 10 == 0:
@@ -141,7 +138,6 @@ class CVFAnalysis:
                 count = 0
             unranked_states -= remove_from_unranked_states
             logger.debug("No. of Unranked states: %s", len(unranked_states))
-
 
         print("Total paths:", total_paths)
         print("Total computation paths:", total_computation_paths)
