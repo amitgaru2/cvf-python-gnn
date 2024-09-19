@@ -113,7 +113,8 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
     #     return (-2 / N) * np.sum(X * (y - y_pred))
 
     def __get_node_data_df(self, node_id):
-        return self.config.df[self.config.df["node"] == node_id]
+        # return self.config.df[self.config.df["node"] == node_id]
+        return self.config.df[self.config.df["node"] == 1]
 
     # def __get_node_test_data_df(self, node_id):
     #     return self.df[self.df["node"] == node_id]
