@@ -16,7 +16,7 @@ data_path = os.path.join(
 iterations = 100
 
 
-df_random_state = 36
+df_random_state = 60
 
 
 doubly_stochastic_matrix = [
