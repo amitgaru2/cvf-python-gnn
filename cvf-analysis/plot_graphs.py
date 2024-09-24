@@ -12,11 +12,11 @@ graph_names = [
     # "graph_8",
     # "graph_4",
     # "graph_5",
-    "test_lr_graph_1",
+    "test_lr_graph_6",
 ]
 
 planar = False
-fontsize = 20
+fontsize = 25
 
 for gname in graph_names:
     G = nx.read_adjlist(f"graphs/{gname}.txt")
@@ -27,6 +27,6 @@ for gname in graph_names:
     else:
         nx.draw_networkx(G, node_color="black", font_color="white", ax=fig.add_subplot(), font_size=30, node_size=1200)
 
-    fig.suptitle(f"Graph {gname.split("_")[1]}", fontsize=fontsize)
+    # fig.suptitle(f"Graph {gname.split("_")[1]}", fontsize=fontsize)
     fig.savefig(f"graph_images/{gname}.png")
     # plt.show()

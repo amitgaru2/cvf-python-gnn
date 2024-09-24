@@ -26,3 +26,9 @@ doubly_stochastic_matrix = [
     [1 / 8, 3 / 8, 0, 4 / 8, 0],
     [1 / 4, 0, 0, 0, 3 / 4],
 ]
+
+# 0: keeping 0.25 sharing 0.75
+# 1: keeping 0.5 sharing 0.5
+# 2: keeping 0.75 sharing 0.25
+# 3: keeping 0.5 sharing 0.5
+# 4: keeping 0.75 sharing 0.25
