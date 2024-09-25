@@ -34,7 +34,7 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
     def _start(self):
         self._gen_configurations()
         self._find_program_transitions_n_cvfs()
-        self._init_pts_rank()
+        # self._init_pts_rank()
         # self.__save_pts_to_file()
         self._rank_all_states()
         self._gen_save_rank_count()
@@ -191,7 +191,7 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
                 program_transitions.add(new_node_params)
 
         if not program_transitions:
-            self.invariants.add(start_state)
+            self._add_to_invariants(start_state)
             logger.debug("No program transition found for %s !", start_state)
 
         return program_transitions

@@ -67,6 +67,10 @@ class CVFAnalysis:
     def _find_invariants(self):
         raise NotImplemented
 
+    def _add_to_invariants(self, state):
+        self.invariants.add(state)
+        self.pts_rank[state] = {"L": 0, "C": 1, "A": 0, "Ar": 0, "M": 0}
+
     def _init_pts_rank(self):
         for inv in self.invariants:
             self.pts_rank[inv] = {"L": 0, "C": 1, "A": 0, "Ar": 0, "M": 0}
@@ -360,6 +364,8 @@ class PartialCVFAnalysisMixin:
             return self.pts_rank[state]
         else:
             successors = list(self._get_program_transitions(state))
+            if state in self.pts_rank:  # update due to LR
+                return self.pts_rank[state]
             random.shuffle(successors)
             share = probe_limit // len(successors)
             add_extra_to_nodes = probe_limit - share * len(successors)
@@ -412,14 +418,14 @@ class PartialCVFAnalysisMixin:
             key = "cvfs_in" if state in self.invariants else "cvfs_out"
             self.pts_n_cvfs[state][key] = self._get_cvfs(state)
 
-    def _start(self):
-        self._gen_configurations()
-        self._find_invariants()
-        self._init_pts_rank()
-        self._find_program_transitions_n_cvfs()  # this does ranking as well
-        # self._rank_all_states()
-        self._gen_save_rank_count()
-        self._calculate_pts_rank_effect()
-        self._calculate_cvfs_rank_effect()
-        self._gen_save_rank_effect_count()
-        self._gen_save_rank_effect_by_node_count()
+    # def _start(self):
+    #     self._gen_configurations()
+    #     self._find_invariants()
+    #     self._init_pts_rank()
+    #     self._find_program_transitions_n_cvfs()  # this does ranking as well
+    #     # self._rank_all_states()
+    #     self._gen_save_rank_count()
+    #     self._calculate_pts_rank_effect()
+    #     self._calculate_cvfs_rank_effect()
+    #     self._gen_save_rank_effect_count()
+    #     self._gen_save_rank_effect_by_node_count()
