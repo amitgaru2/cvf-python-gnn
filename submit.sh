@@ -51,6 +51,7 @@ cd 'cvf-analysis'
 #python3 main.py --program linear_regression -f --graph-names test_lr_graph_1 --logging DEBUG --config-file matrix_4
 #python3 main.py --program linear_regression -f --graph-names test_lr_graph_1 --logging DEBUG --config-file matrix_5
 # python3 main.py --program linear_regression -f --graph-names test_lr_graph_1 --logging DEBUG --config-file matrix_6
-python3 main.py --program linear_regression -f --graph-names test_lr_graph_1 --logging DEBUG --config-file matrix_7
+# python3 main.py --program linear_regression -f --graph-names test_lr_graph_1 --logging DEBUG --config-file matrix_7
+python3 main.py --program linear_regression -f --graph-names test_lr_graph_1 --logging DEBUG --config-file matrix_8
 
 echo "Done!"
