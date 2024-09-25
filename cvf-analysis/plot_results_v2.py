@@ -138,7 +138,7 @@ for graph_name in graph_names:
     df_preproc.set_index("Rank Effect", inplace=True)
 
     ax = sns.lineplot(
-        data=df_preproc[[f"Node {i}" for i in nodes]], linewidth=3, markersize=8
+        data=df_preproc[[f"Node {i}" for i in nodes]], linewidth=3, markersize=10
     )
 
     for i, line in enumerate(ax.lines):
