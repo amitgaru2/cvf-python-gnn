@@ -81,7 +81,8 @@ graph_names_map = {
         # "0.8_1.9__0.025__1__test_lr_graph_1",
         # "0.8_1.9__0.025__2__test_lr_graph_1",
         # "1.3_1.9__0.025__matrix_4__test_lr_graph_1",
-        "1.3_1.9__0.025__matrix_6__test_lr_graph_1",
+        "1.3_1.9__0.025__matrix_7__test_lr_graph_1",
+        # "1.3_1.9__0.025__matrix_8__test_lr_graph_1",
         # "0.7_1.9__0.025__test_lr_graph_1",
         # "0.9_1.9__0.025__test_lr_graph_1",
     },
@@ -108,7 +109,6 @@ def get_df(graph_name):
     return df
 
 
-
 def create_plots_dir_if_not_exists():
     if not os.path.exists(plots_dir):
         os.makedirs(plots_dir)
@@ -116,6 +116,8 @@ def create_plots_dir_if_not_exists():
 
 create_plots_dir_if_not_exists()
 plt.figure(figsize=(16, 8))
+
+markers = ["*", "o", "h", "v", "P", "s", "p", "x", "D", "8"]
 
 for graph_name in graph_names:
     df = get_df(graph_name)
@@ -139,20 +141,21 @@ for graph_name in graph_names:
         data=df_preproc[[f"Node {i}" for i in nodes]], linewidth=3, markersize=8
     )
 
-    ax.lines[0].set_marker('*')
-    ax.lines[1].set_marker('o')
-    ax.lines[2].set_marker('h')
-    ax.lines[3].set_marker('v')
-    ax.lines[4].set_marker('P')
+    for i, line in enumerate(ax.lines):
+        line.set_marker(markers[i % len(nodes)])
 
+    # ax.lines[0].set_marker('*')
+    # ax.lines[1].set_marker('o')
+    # ax.lines[2].set_marker('h')
+    # ax.lines[3].set_marker('v')
+    # ax.lines[4].set_marker('P')
 
-    ax.lines[5].set_marker('*')
-    ax.lines[6].set_marker('o')
-    ax.lines[7].set_marker('h')
-    ax.lines[8].set_marker('v')
-    ax.lines[9].set_marker('P')
+    # ax.lines[5].set_marker('*')
+    # ax.lines[6].set_marker('o')
+    # ax.lines[7].set_marker('h')
+    # ax.lines[8].set_marker('v')
+    # ax.lines[9].set_marker('P')
 
-    
     # ax.lines[5].set_marker('s')
     # ax.lines[6].set_marker('p')
     # ax.lines[7].set_marker('x')
@@ -169,10 +172,9 @@ for graph_name in graph_names:
     # ax.lines[18].set_marker('D')
     # ax.lines[19].set_marker('8')
     ax.set_xlabel("Rank Effect")
-    print(ax.lines)
 
     # Set custom ticks and labels
-    ax.set_xlim(-16, 16)
+    # ax.set_xlim(-16, 16)
     ax.set_yscale("log")
     ax.set_ylabel("Count")
     ax.tick_params(axis="x", labelsize=fontsize)
@@ -185,13 +187,13 @@ for graph_name in graph_names:
     # )
     # fig.suptitle(fig_title, fontsize=fontsize)
     plt.rc("font", size=fontsize)
-    plt.legend(fontsize=fontsize*0.9) # using a size in points
+    plt.legend(fontsize=fontsize * 0.9)  # using a size in points
     plt.savefig(
         os.path.join(
             plots_dir,
             f"{file_name}.png",
         ),
-        bbox_inches='tight'
+        bbox_inches="tight",
     )
     plt.close()
 
