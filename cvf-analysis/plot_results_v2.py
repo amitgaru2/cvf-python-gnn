@@ -144,33 +144,6 @@ for graph_name in graph_names:
     for i, line in enumerate(ax.lines):
         line.set_marker(markers[i % len(nodes)])
 
-    # ax.lines[0].set_marker('*')
-    # ax.lines[1].set_marker('o')
-    # ax.lines[2].set_marker('h')
-    # ax.lines[3].set_marker('v')
-    # ax.lines[4].set_marker('P')
-
-    # ax.lines[5].set_marker('*')
-    # ax.lines[6].set_marker('o')
-    # ax.lines[7].set_marker('h')
-    # ax.lines[8].set_marker('v')
-    # ax.lines[9].set_marker('P')
-
-    # ax.lines[5].set_marker('s')
-    # ax.lines[6].set_marker('p')
-    # ax.lines[7].set_marker('x')
-    # # ax.lines[8].set_marker('D')
-    # # ax.lines[9].set_marker('8')
-    # ax.lines[8].set_marker('*')
-    # ax.lines[9].set_marker('o')
-    # ax.lines[10].set_marker('h')
-    # ax.lines[11].set_marker('v')
-    # ax.lines[12].set_marker('P')
-    # ax.lines[13].set_marker('s')
-    # ax.lines[14].set_marker('p')
-    # ax.lines[15].set_marker('x')
-    # ax.lines[18].set_marker('D')
-    # ax.lines[19].set_marker('8')
     ax.set_xlabel("Rank Effect")
 
     # Set custom ticks and labels
@@ -182,10 +155,7 @@ for graph_name in graph_names:
     ax.xaxis.label.set_size(fontsize)
     ax.yaxis.label.set_size(fontsize)
     file_name = f"rank_effect_by_node__{analysis_type}__{program}__{graph_name}"
-    # fig_title = (
-    #     f"Distribution of rank effects at node {index[0]} in {program_label} problem"
-    # )
-    # fig.suptitle(fig_title, fontsize=fontsize)
+  
     plt.rc("font", size=fontsize)
     plt.legend(fontsize=fontsize * 0.9)  # using a size in points
     plt.savefig(
