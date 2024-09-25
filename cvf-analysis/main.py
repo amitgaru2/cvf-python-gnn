@@ -19,7 +19,10 @@ from maximal_independent_set import (
     MaximalSetIndependenceFullAnalysis,
     MaximalSetIndependencePartialAnalysis,
 )
-from linear_regression import LinearRegressionFullAnalysis
+from linear_regression import (
+    LinearRegressionFullAnalysis,
+    LinearRegressionPartialAnalysis,
+)
 
 
 ColoringProgram = "graph_coloring"
@@ -45,7 +48,10 @@ AnalysisMap = {
         FullAnalysisType: MaximalSetIndependenceFullAnalysis,
         PartialAnalysisType: MaximalSetIndependencePartialAnalysis,
     },
-    LinearRegressionProgram: {FullAnalysisType: LinearRegressionFullAnalysis},
+    LinearRegressionProgram: {
+        FullAnalysisType: LinearRegressionFullAnalysis,
+        PartialAnalysisType: LinearRegressionPartialAnalysis,
+    },
 }
 
 

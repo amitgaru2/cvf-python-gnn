@@ -5,7 +5,7 @@ import json
 import numpy as np
 import pandas as pd
 
-from cvf_analysis import CVFAnalysis, logger
+from cvf_analysis import CVFAnalysis, PartialCVFAnalysisMixin, logger
 
 from lr_configs.config_adapter import LRConfig
 
@@ -230,3 +230,9 @@ class LinearRegressionFullAnalysis(CVFAnalysis):
         }
 
         json.dump(pts, open("output.json", "w"))
+
+
+class LinearRegressionPartialAnalysis(
+    PartialCVFAnalysisMixin, LinearRegressionFullAnalysis
+):
+    pass
