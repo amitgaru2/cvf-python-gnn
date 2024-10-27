@@ -1,4 +1,5 @@
 import copy
+import math
 import os
 
 from pprint import pprint
@@ -22,6 +23,7 @@ class Rank:
 
 
 GlobalRankMap = {}  # config: Rank
+GlobalAvgRank = {}
 
 
 def create_record_in_global_rank(config):
@@ -223,13 +225,21 @@ class GraphColoring:
             indx = self.config_to_indx(config)
             self.dfs([ConfigurationNode(indx)])
 
+        for _, rank in GlobalRankMap.items():
+            avg_rank = math.ceil(rank.L / rank.C)
+            if avg_rank in GlobalAvgRank:
+                GlobalAvgRank[avg_rank] += 1
+            else:
+                GlobalAvgRank[avg_rank] = 1
+
 
 def main():
     coloring = GraphColoring()
     coloring.start()
     # pprint(GlobalRankMap)
-    print(len(GlobalRankMap))
+    # print(len(GlobalRankMap))
     # coloring.initial_state.traverse()
+    pprint(GlobalAvgRank)
 
 
 if __name__ == "__main__":
