@@ -1,5 +1,7 @@
 import os
 
+from pprint import pprint
+
 
 class Rank:
     def __init__(self, L, C, M):
@@ -18,11 +20,18 @@ class Rank:
     __repr__ = __str__
 
 
+GlobalRankMap = {}  # config: Rank
+
+
+def create_record_in_global_rank(config):
+    GlobalRankMap[config] = Rank(0, 0, 0)
+
+
 class ConfigurationNode:
     def __init__(self, config, children: set["ConfigurationNode"] = set()) -> None:
         self.config = config
         self.children = children  # program transitions
-        self.cost = Rank(0, 0, 0)
+        # self.cost = Rank(0, 0, 0)
 
     def traverse(self):
         queue = [self]
@@ -33,7 +42,7 @@ class ConfigurationNode:
                 queue.append(child)
 
     def __str__(self) -> str:
-        return f"{self.config} : {self.cost}"
+        return f"{self.config}"
 
     __repr__ = __str__
 
@@ -75,7 +84,6 @@ class GraphColoring:
         self.possible_values_indx_str = {
             v: str(i) for i, v in enumerate(self.possible_values)
         }
-        self.initial_state = ConfigurationNode(tuple([0 for i in self.nodes]))
 
     def base_n_to_decimal(self, base_n_str):
         decimal_value = 0
@@ -140,7 +148,9 @@ class GraphColoring:
 
     def backtrack_path(self, path: list[ConfigurationNode]):
         for i, node in enumerate(path):
-            node.cost.add_cost(i)
+            if node not in GlobalRankMap:
+                create_record_in_global_rank(node)
+            GlobalRankMap[node].add_cost(i)
 
     def dfs(self, path):
         state = path[-1]
@@ -156,14 +166,22 @@ class GraphColoring:
             path_copy.append(node)
             self.dfs(path_copy)
 
+    def _generate_configurations(self):
+        config = ConfigurationNode(tuple([0 for _ in self.nodes]))
+        yield config
+
     def find_rank(self):
-        self.dfs([self.initial_state])
+        configurations = self._generate_configurations()
+        for config in configurations:
+            self.dfs([config])
 
 
 def main():
     coloring = GraphColoring()
     coloring.start()
-    coloring.initial_state.traverse()
+    pprint(GlobalRankMap)
+    print(len(GlobalRankMap))
+    # coloring.initial_state.traverse()
 
 
 if __name__ == "__main__":
