@@ -220,7 +220,6 @@ class GraphColoring:
     def find_rank(self):
         configurations = self._generate_configurations()
         for config in configurations:
-            # self.config_to_indx(config)
             indx = self.config_to_indx(config)
             self.dfs([ConfigurationNode(indx)])
 
@@ -228,7 +227,7 @@ class GraphColoring:
 def main():
     coloring = GraphColoring()
     coloring.start()
-    pprint(GlobalRankMap)
+    # pprint(GlobalRankMap)
     print(len(GlobalRankMap))
     # coloring.initial_state.traverse()
 
