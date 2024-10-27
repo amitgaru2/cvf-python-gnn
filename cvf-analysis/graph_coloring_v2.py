@@ -80,8 +80,11 @@ class GraphColoring:
         # self.possible_values = set(
         #     range(self.degree_of_nodes[self.nodes[position]] + 1)
         # )
-        self.possible_values = []
-        self.possible_values_indx = {v: i for i, v in enumerate(self.possible_values)}
+        self.possible_node_values = [
+            [i for i in range(self.degree_of_nodes[node]+1)] for node in self.nodes
+        ]
+        self.possible_values = set([j for i in self.possible_node_values for j in i])
+        # self.possible_values_indx = {v: i for i, v in enumerate(self.possible_values)}
         self.possible_values_indx_str = {
             v: str(i) for i, v in enumerate(self.possible_values)
         }
@@ -92,13 +95,15 @@ class GraphColoring:
 
         for i in range(length):
             digit = int(base_n_str[length - 1 - i])
-            decimal_value += digit * (len(self.possible_values) ** i)
+            decimal_value += digit * (len(self.possible_node_values[length-1-i]) ** i)
 
         return decimal_value  # base 10, not fractional value
 
     def config_to_indx(self, config):
         config_to_indx_str = "".join(self.possible_values_indx_str[i] for i in config)
-        return self.base_n_to_decimal(config_to_indx_str)
+        result = self.base_n_to_decimal(config_to_indx_str)
+        print(config, result)
+        return result
 
     def start(self):
         self.find_rank()
@@ -187,13 +192,14 @@ class GraphColoring:
     def find_rank(self):
         configurations = self._generate_configurations()
         for config in configurations:
-            self.dfs([ConfigurationNode(config)])
+            self.config_to_indx(config)
+            # self.dfs([ConfigurationNode(config)])
 
 
 def main():
     coloring = GraphColoring()
     coloring.start()
-    pprint(GlobalRankMap)
+    # pprint(GlobalRankMap)
     print(len(GlobalRankMap))
     # coloring.initial_state.traverse()
 
