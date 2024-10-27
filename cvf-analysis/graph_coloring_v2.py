@@ -77,27 +77,37 @@ class GraphColoring:
         self.graph = start(graphs_dir, graph_names[0])
         self.nodes = list(self.graph.keys())
         self.degree_of_nodes = {n: len(self.graph[n]) for n in self.nodes}
-        # self.possible_values = set(
-        #     range(self.degree_of_nodes[self.nodes[position]] + 1)
-        # )
+
         self.possible_node_values = [
-            [i for i in range(self.degree_of_nodes[node]+1)] for node in self.nodes
+            [i for i in range(self.degree_of_nodes[node] + 1)] for node in self.nodes
         ]
-        self.possible_values = set([j for i in self.possible_node_values for j in i])
-        # self.possible_values_indx = {v: i for i, v in enumerate(self.possible_values)}
+        self.possible_node_values_length = [len(i) for i in self.possible_node_values]
+        self.possible_values = list(
+            set([j for i in self.possible_node_values for j in i])
+        )
+        self.possible_values.sort()
         self.possible_values_indx_str = {
             v: str(i) for i, v in enumerate(self.possible_values)
-        }
+        }  # mapping from value to index
+
+        self.initialize_helpers()
+
+    def initialize_helpers(self):
+        possible_node_values_len_rev = self.possible_node_values_length[::-1]
+
+        self.base_n_to_decimal_multiplier = [1]
+        for x in possible_node_values_len_rev[:-1]:
+            self.base_n_to_decimal_multiplier.append(
+                self.base_n_to_decimal_multiplier[-1] * x
+            )
 
     def base_n_to_decimal(self, base_n_str):
-        decimal_value = 0
+        value = 0
         length = len(base_n_str)
-
         for i in range(length):
-            digit = int(base_n_str[length - 1 - i])
-            decimal_value += digit * (len(self.possible_node_values[length-1-i]) ** i)
-
-        return decimal_value  # base 10, not fractional value
+            digit = int(base_n_str[length - i - 1])
+            value = value + self.base_n_to_decimal_multiplier[i] * digit
+        return value  # base 10, not fractional value
 
     def config_to_indx(self, config):
         config_to_indx_str = "".join(self.possible_values_indx_str[i] for i in config)
