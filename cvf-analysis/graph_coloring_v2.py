@@ -1,3 +1,4 @@
+import copy
 import os
 
 from pprint import pprint
@@ -24,7 +25,7 @@ GlobalRankMap = {}  # config: Rank
 
 
 def create_record_in_global_rank(config):
-    GlobalRankMap[config] = Rank(0, 0, 0)
+    GlobalRankMap[config] = Rank(L=0, C=0, M=0)
 
 
 class ConfigurationNode:
@@ -167,13 +168,26 @@ class GraphColoring:
             self.dfs(path_copy)
 
     def _generate_configurations(self):
-        config = ConfigurationNode(tuple([0 for _ in self.nodes]))
+        config = tuple([0 for _ in self.nodes])
         yield config
+
+        configurations = {config}
+
+        # perturb each state at a time for all states in configurations and accumulate the same in the configurations for next state to perturb
+        for node_pos in self.nodes:
+            config_copy = copy.deepcopy(configurations)
+            for i in range(1, self.degree_of_nodes[node_pos] + 1):
+                for cc in config_copy:
+                    cc = list(cc)
+                    cc[node_pos] = i
+                    config = tuple(cc)
+                    yield config
+                    configurations.add(config)
 
     def find_rank(self):
         configurations = self._generate_configurations()
         for config in configurations:
-            self.dfs([config])
+            self.dfs([ConfigurationNode(config)])
 
 
 def main():
