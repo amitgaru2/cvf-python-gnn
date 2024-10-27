@@ -42,6 +42,12 @@ class ConfigurationNode:
             for child in operating_node.children:
                 queue.append(child)
 
+    def __hash__(self) -> int:
+        return self.config
+
+    def __eq__(self, other):
+        return self.config == other.config
+
     def __str__(self) -> str:
         return f"{self.config}"
 
@@ -79,7 +85,7 @@ class GraphColoring:
         self.degree_of_nodes = {n: len(self.graph[n]) for n in self.nodes}
 
         self.possible_node_values = [
-            [i for i in range(self.degree_of_nodes[node] + 1)] for node in self.nodes
+            set(range(self.degree_of_nodes[node] + 1)) for node in self.nodes
         ]
         self.possible_node_values_length = [len(i) for i in self.possible_node_values]
         self.possible_values = list(
@@ -101,6 +107,8 @@ class GraphColoring:
                 self.base_n_to_decimal_multiplier[-1] * x
             )
 
+        self.base_n_to_decimal_multiplier_rev = self.base_n_to_decimal_multiplier[::-1]
+
     def base_n_to_decimal(self, base_n_str):
         value = 0
         length = len(base_n_str)
@@ -112,8 +120,19 @@ class GraphColoring:
     def config_to_indx(self, config):
         config_to_indx_str = "".join(self.possible_values_indx_str[i] for i in config)
         result = self.base_n_to_decimal(config_to_indx_str)
-        print(config, result)
+        # print(config, result)
         return result
+
+    def indx_to_config(self, indx: int):
+        s = []
+        for multiplier in self.base_n_to_decimal_multiplier_rev:
+            if indx >= multiplier:
+                indx_val = indx // multiplier
+                s.append(indx_val)
+                indx -= indx_val * multiplier
+            else:
+                s.append(0)
+        return tuple(s)
 
     def start(self):
         self.find_rank()
@@ -142,20 +161,20 @@ class GraphColoring:
             #     continue
 
             # if the current node's color is not different among the neighbors => search for the program transitions possible
-            possible_node_colors = set(
-                range(self.degree_of_nodes[self.nodes[position]] + 1)
-            ) - {start_state[position]}
+            possible_node_colors = self.possible_node_values[position] - {
+                start_state[position]
+            }
             for perturb_val in possible_node_colors:
                 perturb_state = list(start_state)
                 perturb_state[position] = perturb_val
                 perturb_state = tuple(perturb_state)
                 if self._is_program_transition(position, start_state, perturb_state):
-                    program_transitions.add(perturb_state)
+                    indx = self.config_to_indx(perturb_state)
+                    program_transitions.add(ConfigurationNode(indx))
 
         return program_transitions
 
     def is_invariant(self, config):
-        # return False
         for node, color in enumerate(config):
             for dest_node in self.graph[node]:
                 if config[dest_node] == color:
@@ -170,13 +189,12 @@ class GraphColoring:
 
     def dfs(self, path):
         state = path[-1]
-        if self.is_invariant(state.config):
+        config = self.indx_to_config(state.config)
+        if self.is_invariant(config):
             self.backtrack_path(path[::-1])
             return
 
-        state.children = [
-            ConfigurationNode(i) for i in self._get_program_transitions(state.config)
-        ]
+        state.children = self._get_program_transitions(config)
         for node in state.children:
             path_copy = path[:]
             path_copy.append(node)
@@ -202,14 +220,15 @@ class GraphColoring:
     def find_rank(self):
         configurations = self._generate_configurations()
         for config in configurations:
-            self.config_to_indx(config)
-            # self.dfs([ConfigurationNode(config)])
+            # self.config_to_indx(config)
+            indx = self.config_to_indx(config)
+            self.dfs([ConfigurationNode(indx)])
 
 
 def main():
     coloring = GraphColoring()
     coloring.start()
-    # pprint(GlobalRankMap)
+    pprint(GlobalRankMap)
     print(len(GlobalRankMap))
     # coloring.initial_state.traverse()
 
