@@ -57,7 +57,7 @@ class ConfigurationNode:
 
 
 graphs_dir = "graphs"
-graph_names = ["small_graph_test"]
+graph_names = ["graph_1"]
 
 
 def start(graphs_dir, graph_name):
