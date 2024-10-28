@@ -1,4 +1,5 @@
 import copy
+from functools import reduce
 import math
 import os
 
@@ -90,6 +91,11 @@ class GraphColoring:
             set(range(self.degree_of_nodes[node] + 1)) for node in self.nodes
         ]
         self.possible_node_values_length = [len(i) for i in self.possible_node_values]
+        self.total_configs = reduce(
+            lambda x, y: x * y, self.possible_node_values_length
+        )
+        print("Total configs:", self.total_configs)
+
         self.possible_values = list(
             set([j for i in self.possible_node_values for j in i])
         )
@@ -203,21 +209,23 @@ class GraphColoring:
             self.dfs(path_copy)
 
     def _generate_configurations(self):
-        config = tuple([0 for _ in self.nodes])
-        yield config
+        # config = tuple([0 for _ in self.nodes])
+        # yield config
 
-        configurations = {config}
+        # configurations = {config}
 
-        # perturb each state at a time for all states in configurations and accumulate the same in the configurations for next state to perturb
-        for node_pos in self.nodes:
-            config_copy = copy.deepcopy(configurations)
-            for i in range(1, self.degree_of_nodes[node_pos] + 1):
-                for cc in config_copy:
-                    cc = list(cc)
-                    cc[node_pos] = i
-                    config = tuple(cc)
-                    yield config
-                    configurations.add(config)
+        # # perturb each state at a time for all states in configurations and accumulate the same in the configurations for next state to perturb
+        # for node_pos in self.nodes:
+        #     config_copy = copy.deepcopy(configurations)
+        #     for i in range(1, self.degree_of_nodes[node_pos] + 1):
+        #         for cc in config_copy:
+        #             cc = list(cc)
+        #             cc[node_pos] = i
+        #             config = tuple(cc)
+        #             yield config
+        #             configurations.add(config)
+        for i in range(self.total_configs):
+            yield self.indx_to_config(i)
 
     def find_rank(self):
         configurations = self._generate_configurations()
