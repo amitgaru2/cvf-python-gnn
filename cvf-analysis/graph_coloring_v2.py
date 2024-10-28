@@ -276,4 +276,6 @@ def main():
 
 
 if __name__ == "__main__":
+    start_time = time.time()
     main()
+    logger.info("Total time taken: %s seconds.", round(time.time() - start_time, 4))
