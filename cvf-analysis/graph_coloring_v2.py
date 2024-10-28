@@ -1,9 +1,9 @@
-import copy
-from functools import reduce
-import math
 import os
+import math
+import time
 
 from pprint import pprint
+from functools import reduce, wraps
 
 
 class Rank:
@@ -25,6 +25,23 @@ class Rank:
 
 GlobalRankMap = {}  # config: Rank
 GlobalAvgRank = {}
+
+GlobalTimeTrackFunction = {}
+
+
+def time_track(func):
+    @wraps(func)
+    def inner(*args, **kwargs):
+        start_time = time.time()
+        result = func(*args, **kwargs)
+        total_time = time.time() - start_time
+        if func.__name__ in GlobalTimeTrackFunction:
+            GlobalTimeTrackFunction[func.__name__] += total_time
+        else:
+            GlobalTimeTrackFunction[func.__name__] = total_time
+        return result
+
+    return inner
 
 
 def create_record_in_global_rank(config):
@@ -125,12 +142,14 @@ class GraphColoring:
             value = value + self.base_n_to_decimal_multiplier[i] * digit
         return value  # base 10, not fractional value
 
+    @time_track
     def config_to_indx(self, config):
         config_to_indx_str = "".join(self.possible_values_indx_str[i] for i in config)
         result = self.base_n_to_decimal(config_to_indx_str)
         # print(config, result)
         return result
 
+    @time_track
     def indx_to_config(self, indx: int):
         s = []
         for multiplier in self.base_n_to_decimal_multiplier_rev:
@@ -159,9 +178,10 @@ class GraphColoring:
 
         return dest_state[perturb_pos] == min_color
 
+    @time_track
     def _get_program_transitions(self, start_state):
         program_transitions = set()
-        for position, val in enumerate(start_state):
+        for position, _ in enumerate(start_state):
             # check if node already has different color among the neighbors => If yes => no need to perturb that node's value
             # neighbor_pos = [*self.graph[position]]
             # neighbor_colors = set(start_state[i] for i in neighbor_pos)
@@ -182,6 +202,7 @@ class GraphColoring:
 
         return program_transitions
 
+    @time_track
     def is_invariant(self, config):
         for node, color in enumerate(config):
             for dest_node in self.graph[node]:
@@ -189,6 +210,7 @@ class GraphColoring:
                     return False
         return True
 
+    @time_track
     def backtrack_path(self, path: list[ConfigurationNode]):
         for i, node in enumerate(path):
             if node not in GlobalRankMap:
@@ -248,6 +270,7 @@ def main():
     # print(len(GlobalRankMap))
     # coloring.initial_state.traverse()
     pprint(GlobalAvgRank)
+    pprint(GlobalTimeTrackFunction)
 
 
 if __name__ == "__main__":
