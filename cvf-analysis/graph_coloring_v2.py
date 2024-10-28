@@ -5,6 +5,8 @@ import time
 from pprint import pprint
 from functools import reduce, wraps
 
+from custom_logger import logger
+
 
 class Rank:
     def __init__(self, L, C, M):
@@ -111,7 +113,7 @@ class GraphColoring:
         self.total_configs = reduce(
             lambda x, y: x * y, self.possible_node_values_length
         )
-        print("Total configs:", self.total_configs)
+        logger.info("Total configs: %s", self.total_configs)
 
         self.possible_values = list(
             set([j for i in self.possible_node_values for j in i])
@@ -269,8 +271,8 @@ def main():
     # pprint(GlobalRankMap)
     # print(len(GlobalRankMap))
     # coloring.initial_state.traverse()
-    pprint(GlobalAvgRank)
-    pprint(GlobalTimeTrackFunction)
+    logger.info("%s", GlobalAvgRank)
+    logger.info("%s", GlobalTimeTrackFunction)
 
 
 if __name__ == "__main__":
