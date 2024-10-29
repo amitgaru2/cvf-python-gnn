@@ -37,7 +37,7 @@ def time_track(func):
     def inner(*args, **kwargs):
         start_time = time.time()
         result = func(*args, **kwargs)
-        total_time = round(time.time() - start_time, 2)
+        total_time = time.time() - start_time
         if func.__name__ in GlobalTimeTrackFunction:
             GlobalTimeTrackFunction[func.__name__] += total_time
         else:
@@ -231,15 +231,9 @@ class GraphColoring:
             path_copy.append(node)
             self.dfs(path_copy)
 
-    def _generate_configurations(self):
-        for i in range(self.total_configs):
-            yield self.indx_to_config(i)
-
     def find_rank(self):
-        configurations = self._generate_configurations()
-        for config in configurations:
-            indx = self.config_to_indx(config)
-            config_node = ConfigurationNode(indx)
+        for i in range(self.total_configs):
+            config_node = ConfigurationNode(i)
             if config_node in GlobalRankMap:
                 continue
             self.dfs([config_node])
