@@ -238,10 +238,11 @@ class GraphColoring:
     def find_rank(self):
         configurations = self._generate_configurations()
         for config in configurations:
-            if config in GlobalRankMap:
-                continue
             indx = self.config_to_indx(config)
-            self.dfs([ConfigurationNode(indx)])
+            config_node = ConfigurationNode(indx)
+            if config_node in GlobalRankMap:
+                continue
+            self.dfs([config_node])
 
         for _, rank in GlobalRankMap.items():
             avg_rank = math.ceil(rank.L / rank.C)
