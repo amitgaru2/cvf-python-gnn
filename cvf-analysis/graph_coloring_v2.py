@@ -27,7 +27,7 @@ class Rank:
 
 
 GlobalRankMap = defaultdict(lambda: Rank(L=0, C=0, M=0))
-GlobalAvgRank = {}
+GlobalAvgRank = defaultdict(lambda: 0)
 
 GlobalTimeTrackFunction = {}
 
@@ -195,10 +195,7 @@ class GraphColoring:
 
         for _, rank in GlobalRankMap.items():
             avg_rank = math.ceil(rank.L / rank.C)
-            if avg_rank in GlobalAvgRank:
-                GlobalAvgRank[avg_rank] += 1
-            else:
-                GlobalAvgRank[avg_rank] = 1
+            GlobalAvgRank[avg_rank] += 1
 
 
 def main():
