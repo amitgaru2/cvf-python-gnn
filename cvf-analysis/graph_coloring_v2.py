@@ -3,6 +3,7 @@ import math
 import time
 
 from pprint import pprint
+from collections import defaultdict
 from functools import reduce, wraps
 
 from custom_logger import logger
@@ -25,7 +26,7 @@ class Rank:
     __repr__ = __str__
 
 
-GlobalRankMap = {}  # config: Rank
+GlobalRankMap = defaultdict(lambda: Rank(L=0, C=0, M=0))
 GlobalAvgRank = {}
 
 GlobalTimeTrackFunction = {}
@@ -36,7 +37,7 @@ def time_track(func):
     def inner(*args, **kwargs):
         start_time = time.time()
         result = func(*args, **kwargs)
-        total_time = time.time() - start_time
+        total_time = round(time.time() - start_time, 4)
         if func.__name__ in GlobalTimeTrackFunction:
             GlobalTimeTrackFunction[func.__name__] += total_time
         else:
@@ -77,7 +78,7 @@ class ConfigurationNode:
 
 
 graphs_dir = "graphs"
-graph_names = ["graph_1"]
+graph_names = ["small_graph_test"]
 
 
 def start(graphs_dir, graph_name):
@@ -215,8 +216,8 @@ class GraphColoring:
     @time_track
     def backtrack_path(self, path: list[ConfigurationNode]):
         for i, node in enumerate(path):
-            if node not in GlobalRankMap:
-                create_record_in_global_rank(node)
+            # if node not in GlobalRankMap:
+            #     create_record_in_global_rank(node)
             GlobalRankMap[node].add_cost(i)
 
     def dfs(self, path):
