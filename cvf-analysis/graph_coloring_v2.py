@@ -216,8 +216,6 @@ class GraphColoring:
     @time_track
     def backtrack_path(self, path: list[ConfigurationNode]):
         for i, node in enumerate(path):
-            # if node not in GlobalRankMap:
-            #     create_record_in_global_rank(node)
             GlobalRankMap[node].add_cost(i)
 
     def dfs(self, path):
@@ -234,21 +232,6 @@ class GraphColoring:
             self.dfs(path_copy)
 
     def _generate_configurations(self):
-        # config = tuple([0 for _ in self.nodes])
-        # yield config
-
-        # configurations = {config}
-
-        # # perturb each state at a time for all states in configurations and accumulate the same in the configurations for next state to perturb
-        # for node_pos in self.nodes:
-        #     config_copy = copy.deepcopy(configurations)
-        #     for i in range(1, self.degree_of_nodes[node_pos] + 1):
-        #         for cc in config_copy:
-        #             cc = list(cc)
-        #             cc[node_pos] = i
-        #             config = tuple(cc)
-        #             yield config
-        #             configurations.add(config)
         for i in range(self.total_configs):
             yield self.indx_to_config(i)
 
@@ -269,9 +252,6 @@ class GraphColoring:
 def main():
     coloring = GraphColoring()
     coloring.start()
-    # pprint(GlobalRankMap)
-    # print(len(GlobalRankMap))
-    # coloring.initial_state.traverse()
     logger.info("%s", GlobalAvgRank)
     logger.info("%s", GlobalTimeTrackFunction)
 
