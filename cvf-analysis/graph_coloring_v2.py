@@ -189,9 +189,8 @@ class GraphColoring:
     def find_rank(self):
         for i in range(self.total_configs):
             # config_node = ConfigurationNode(i)
-            if i in GlobalRankMap:
-                continue
-            self.dfs([i])
+            if i not in GlobalRankMap:
+                self.dfs([i])
 
         for _, rank in GlobalRankMap.items():
             avg_rank = math.ceil(rank.L / rank.C)
