@@ -47,34 +47,25 @@ def time_track(func):
     return inner
 
 
-def create_record_in_global_rank(config):
-    GlobalRankMap[config] = Rank(L=0, C=0, M=0)
+# def create_record_in_global_rank(indx):
+#     GlobalRankMap[indx] = Rank(L=0, C=0, M=0)
 
 
-class ConfigurationNode:
-    def __init__(self, config, children: set["ConfigurationNode"] = set()) -> None:
-        self.config = config
-        self.children = children  # program transitions
-        # self.cost = Rank(0, 0, 0)
+# class ConfigurationNode:
+#     def __init__(self, config) -> None:
+#         self.config = config
+#         # self.children = children  # program transitions
 
-    def traverse(self):
-        queue = [self]
-        while queue:
-            operating_node = queue.pop(0)
-            print(operating_node)
-            for child in operating_node.children:
-                queue.append(child)
+#     def __hash__(self) -> int:
+#         return self.config
 
-    def __hash__(self) -> int:
-        return self.config
+#     def __eq__(self, other):
+#         return self.config == other.config
 
-    def __eq__(self, other):
-        return self.config == other.config
+#     def __str__(self) -> str:
+#         return f"{self.config}"
 
-    def __str__(self) -> str:
-        return f"{self.config}"
-
-    __repr__ = __str__
+#     __repr__ = __str__
 
 
 graphs_dir = "graphs"
@@ -174,7 +165,7 @@ class GraphColoring:
 
     @time_track
     def _get_program_transitions(self, start_state):
-        program_transitions = set()
+        program_transitions = []
         start_state = list(start_state)
         for position, color in enumerate(start_state):
             # check if node already has different color among the neighbors => If yes => no need to perturb that node's value
@@ -186,7 +177,7 @@ class GraphColoring:
                 perturb_state[position] = transition_color
                 perturb_state = tuple(perturb_state)
                 indx = self.config_to_indx(perturb_state)
-                program_transitions.add(ConfigurationNode(indx))
+                program_transitions.append(indx)
 
         return program_transitions
 
@@ -199,29 +190,27 @@ class GraphColoring:
         return True
 
     @time_track
-    def backtrack_path(self, path: list[ConfigurationNode]):
-        for i, node in enumerate(path):
-            GlobalRankMap[node].add_cost(i)
+    def backtrack_path(self, path: list[int]):
+        for i, indx in enumerate(path):
+            GlobalRankMap[indx].add_cost(i)
 
-    def dfs(self, path):
-        state = path[-1]
-        config = self.indx_to_config(state.config)
+    def dfs(self, path: list[int]):
+        indx = path[-1]
+        config = self.indx_to_config(indx)
         if self.is_invariant(config):
             self.backtrack_path(path[::-1])
             return
 
-        state.children = self._get_program_transitions(config)
-        for node in state.children:
-            path_copy = path[:]
-            path_copy.append(node)
-            self.dfs(path_copy)
+        children = self._get_program_transitions(config)
+        for indx in children:
+            self.dfs([*path, indx])
 
     def find_rank(self):
         for i in range(self.total_configs):
-            config_node = ConfigurationNode(i)
-            if config_node in GlobalRankMap:
+            # config_node = ConfigurationNode(i)
+            if i in GlobalRankMap:
                 continue
-            self.dfs([config_node])
+            self.dfs([i])
 
         for _, rank in GlobalRankMap.items():
             avg_rank = math.ceil(rank.L / rank.C)
