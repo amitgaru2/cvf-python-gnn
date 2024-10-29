@@ -37,7 +37,7 @@ def time_track(func):
     def inner(*args, **kwargs):
         start_time = time.time()
         result = func(*args, **kwargs)
-        total_time = round(time.time() - start_time, 4)
+        total_time = round(time.time() - start_time, 2)
         if func.__name__ in GlobalTimeTrackFunction:
             GlobalTimeTrackFunction[func.__name__] += total_time
         else:
@@ -78,7 +78,7 @@ class ConfigurationNode:
 
 
 graphs_dir = "graphs"
-graph_names = ["small_graph_test"]
+graph_names = ["graph_1"]
 
 
 def start(graphs_dir, graph_name):
@@ -142,14 +142,13 @@ class GraphColoring:
         length = len(base_n_str)
         for i in range(length):
             digit = int(base_n_str[length - i - 1])
-            value = value + self.base_n_to_decimal_multiplier[i] * digit
+            value += self.base_n_to_decimal_multiplier[i] * digit
         return value  # base 10, not fractional value
 
     @time_track
     def config_to_indx(self, config):
         config_to_indx_str = "".join(self.possible_values_indx_str[i] for i in config)
         result = self.base_n_to_decimal(config_to_indx_str)
-        # print(config, result)
         return result
 
     @time_track
@@ -175,7 +174,7 @@ class GraphColoring:
     def _is_program_transition(self, perturb_pos, start_state, dest_state):
         # if start_state in self.invariants and dest_state in self.invariants:
         #     return False
-        neighbor_pos = [*self.graph[perturb_pos]]
+        neighbor_pos = self.graph[perturb_pos]
         neighbor_colors = set(dest_state[i] for i in neighbor_pos)
         min_color = self._find_min_possible_color(neighbor_colors)
 
@@ -184,6 +183,7 @@ class GraphColoring:
     @time_track
     def _get_program_transitions(self, start_state):
         program_transitions = set()
+        start_state = list(start_state)
         for position, _ in enumerate(start_state):
             # check if node already has different color among the neighbors => If yes => no need to perturb that node's value
             # neighbor_pos = [*self.graph[position]]
@@ -196,7 +196,7 @@ class GraphColoring:
                 start_state[position]
             }
             for perturb_val in possible_node_colors:
-                perturb_state = list(start_state)
+                perturb_state = start_state[:]
                 perturb_state[position] = perturb_val
                 perturb_state = tuple(perturb_state)
                 if self._is_program_transition(position, start_state, perturb_state):
