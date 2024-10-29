@@ -47,7 +47,7 @@ def time_track(func):
 
 
 graphs_dir = "graphs"
-graph_names = ["small_graph_test"]
+graph_names = ["graph_1"]
 
 
 def start(graphs_dir, graph_name):
@@ -147,6 +147,8 @@ class GraphColoring:
         for position, color in enumerate(start_state):
             # check if node already has different color among the neighbors => If yes => no need to perturb that node's value
             neighbor_colors = set(start_state[i] for i in self.graph[position])
+            if color not in neighbor_colors:  # is different color
+                continue
             transition_color = self._find_min_possible_color(neighbor_colors)
             if color != transition_color:
                 perturb_state = tuple(
