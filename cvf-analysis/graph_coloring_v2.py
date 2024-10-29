@@ -47,27 +47,6 @@ def time_track(func):
     return inner
 
 
-# def create_record_in_global_rank(indx):
-#     GlobalRankMap[indx] = Rank(L=0, C=0, M=0)
-
-
-# class ConfigurationNode:
-#     def __init__(self, config) -> None:
-#         self.config = config
-#         # self.children = children  # program transitions
-
-#     def __hash__(self) -> int:
-#         return self.config
-
-#     def __eq__(self, other):
-#         return self.config == other.config
-
-#     def __str__(self) -> str:
-#         return f"{self.config}"
-
-#     __repr__ = __str__
-
-
 graphs_dir = "graphs"
 graph_names = ["graph_1"]
 
