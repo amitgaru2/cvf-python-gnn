@@ -166,19 +166,11 @@ class GraphColoring:
     def start(self):
         self.find_rank()
 
+    @time_track
     def _find_min_possible_color(self, colors):
         for i in range(len(colors) + 1):
             if i not in colors:
                 return i
-
-    def _is_program_transition(self, perturb_pos, start_state, dest_state):
-        # if start_state in self.invariants and dest_state in self.invariants:
-        #     return False
-        neighbor_pos = self.graph[perturb_pos]
-        neighbor_colors = set(dest_state[i] for i in neighbor_pos)
-        min_color = self._find_min_possible_color(neighbor_colors)
-
-        return dest_state[perturb_pos] == min_color
 
     @time_track
     def _get_program_transitions(self, start_state):
