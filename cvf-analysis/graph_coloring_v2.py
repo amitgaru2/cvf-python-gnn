@@ -159,6 +159,7 @@ class GraphColoring:
                     ]
                 )
                 program_transitions.append(self.config_to_indx(perturb_state))
+                # may be yield can save memory
 
         return program_transitions
 
