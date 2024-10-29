@@ -148,15 +148,17 @@ class GraphColoring:
         start_state = list(start_state)
         for position, color in enumerate(start_state):
             # check if node already has different color among the neighbors => If yes => no need to perturb that node's value
-            neighbor_pos = [*self.graph[position]]
-            neighbor_colors = set(start_state[i] for i in neighbor_pos)
+            neighbor_colors = set(start_state[i] for i in self.graph[position])
             transition_color = self._find_min_possible_color(neighbor_colors)
             if color != transition_color:
-                perturb_state = start_state[:]
-                perturb_state[position] = transition_color
-                perturb_state = tuple(perturb_state)
-                indx = self.config_to_indx(perturb_state)
-                program_transitions.append(indx)
+                perturb_state = tuple(
+                    [
+                        *start_state[:position],
+                        transition_color,
+                        *start_state[position + 1 :],
+                    ]
+                )
+                program_transitions.append(self.config_to_indx(perturb_state))
 
         return program_transitions
 
