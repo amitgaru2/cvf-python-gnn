@@ -184,24 +184,17 @@ class GraphColoring:
     def _get_program_transitions(self, start_state):
         program_transitions = set()
         start_state = list(start_state)
-        for position, _ in enumerate(start_state):
+        for position, color in enumerate(start_state):
             # check if node already has different color among the neighbors => If yes => no need to perturb that node's value
-            # neighbor_pos = [*self.graph[position]]
-            # neighbor_colors = set(start_state[i] for i in neighbor_pos)
-            # if self._is_different_color(val, neighbor_colors):
-            #     continue
-
-            # if the current node's color is not different among the neighbors => search for the program transitions possible
-            possible_node_colors = self.possible_node_values[position] - {
-                start_state[position]
-            }
-            for perturb_val in possible_node_colors:
+            neighbor_pos = [*self.graph[position]]
+            neighbor_colors = set(start_state[i] for i in neighbor_pos)
+            transition_color = self._find_min_possible_color(neighbor_colors)
+            if color != transition_color:
                 perturb_state = start_state[:]
-                perturb_state[position] = perturb_val
+                perturb_state[position] = transition_color
                 perturb_state = tuple(perturb_state)
-                if self._is_program_transition(position, start_state, perturb_state):
-                    indx = self.config_to_indx(perturb_state)
-                    program_transitions.add(ConfigurationNode(indx))
+                indx = self.config_to_indx(perturb_state)
+                program_transitions.add(ConfigurationNode(indx))
 
         return program_transitions
 
@@ -250,7 +243,8 @@ def main():
     coloring = GraphColoring()
     coloring.start()
     logger.info("%s", GlobalAvgRank)
-    logger.info("%s", GlobalTimeTrackFunction)
+    time_tracking = {k: round(v, 2) for k, v in GlobalTimeTrackFunction.items()}
+    logger.info("%s", time_tracking)
 
 
 if __name__ == "__main__":
