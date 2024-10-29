@@ -144,7 +144,6 @@ class GraphColoring:
     @time_track
     def _get_program_transitions(self, start_state):
         program_transitions = []
-        start_state = list(start_state)
         for position, color in enumerate(start_state):
             # check if node already has different color among the neighbors => If yes => no need to perturb that node's value
             neighbor_colors = set(start_state[i] for i in self.graph[position])
