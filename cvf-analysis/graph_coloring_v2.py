@@ -5,6 +5,8 @@ import time
 from collections import defaultdict
 from functools import reduce, wraps
 
+import pandas as pd
+
 from custom_logger import logger
 
 
@@ -47,7 +49,7 @@ def time_track(func):
 
 
 graphs_dir = "graphs"
-graph_names = ["graph_2"]
+graph_names = ["small_graph_test"]
 
 
 def start(graphs_dir, graph_name):
@@ -134,6 +136,7 @@ class GraphColoring:
 
     def start(self):
         self.find_rank()
+        self.save_rank()
 
     @time_track
     def _find_min_possible_color(self, colors):
@@ -197,6 +200,14 @@ class GraphColoring:
         for _, rank in GlobalRankMap.items():
             avg_rank = math.ceil(rank.L / rank.C)
             GlobalAvgRank[avg_rank] += 1
+
+    def save_rank(self):
+        df = pd.DataFrame(
+            {"rank": GlobalAvgRank.keys(), "count": GlobalAvgRank.values()}
+        )
+        df.sort_values(by="rank").to_csv(
+            os.path.join("new_results", f"{graph_names[0]}.csv")
+        )
 
 
 def main():
