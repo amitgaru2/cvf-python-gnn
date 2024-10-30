@@ -192,6 +192,7 @@ class GraphColoring:
             # config_node = ConfigurationNode(i)
             if i not in GlobalRankMap:
                 self.dfs([i])
+                logger.info(f"Analysed {len(GlobalRankMap):,} configurations.")
 
         for _, rank in GlobalRankMap.items():
             avg_rank = math.ceil(rank.L / rank.C)
