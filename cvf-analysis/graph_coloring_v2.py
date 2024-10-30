@@ -205,8 +205,8 @@ class GraphColoring:
         df = pd.DataFrame(
             {"rank": GlobalAvgRank.keys(), "count": GlobalAvgRank.values()}
         )
-        df.sort_values(by="rank").to_csv(
-            os.path.join("new_results", f"{graph_names[0]}.csv")
+        df.sort_values(by="rank").reset_index(drop=True).to_csv(
+            os.path.join("new_results", f"ranks__{graph_names[0]}.csv")
         )
 
 
