@@ -83,7 +83,7 @@ class GraphColoring:
         self.total_configs = reduce(
             lambda x, y: x * y, self.possible_node_values_length
         )
-        logger.info("Total configs: %s", self.total_configs)
+        logger.info(f"Total configs: {self.total_configs:,}.")
 
         self.possible_values = list(
             set([j for i in self.possible_node_values for j in i])
