@@ -2,10 +2,11 @@ import os
 import math
 import time
 
+import pandas as pd
+
 from collections import defaultdict
 from functools import reduce, wraps
 
-import pandas as pd
 
 from custom_logger import logger
 
@@ -29,6 +30,7 @@ class Rank:
 
 GlobalRankMap = defaultdict(lambda: Rank(L=0, C=0, M=0))
 GlobalAvgRank = defaultdict(lambda: 0)
+GlobalMaxRank = defaultdict(lambda: 0)
 
 GlobalTimeTrackFunction = {}
 
@@ -200,14 +202,25 @@ class GraphColoring:
         for _, rank in GlobalRankMap.items():
             avg_rank = math.ceil(rank.L / rank.C)
             GlobalAvgRank[avg_rank] += 1
+            GlobalMaxRank[rank.M] += 1
 
     def save_rank(self):
         df = pd.DataFrame(
             {"rank": GlobalAvgRank.keys(), "count": GlobalAvgRank.values()}
         )
         df.sort_values(by="rank").reset_index(drop=True).to_csv(
-            os.path.join("new_results", f"ranks__{graph_names[0]}.csv")
+            os.path.join("new_results", f"ranks_avg__{graph_names[0]}.csv")
         )
+
+        df = pd.DataFrame(
+            {"rank": GlobalMaxRank.keys(), "count": GlobalMaxRank.values()}
+        )
+        df.sort_values(by="rank").reset_index(drop=True).to_csv(
+            os.path.join("new_results", f"ranks_max__{graph_names[0]}.csv")
+        )
+
+    def find_rank_effect(self):
+        pass
 
 
 def main():
