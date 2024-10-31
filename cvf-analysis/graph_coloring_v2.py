@@ -223,15 +223,22 @@ class GraphColoring:
         )
 
     def find_rank_effect(self):
-        for frm in range(self.total_configs):
-            for to in range(self.total_configs):
-                if frm != to:
+        for indx in range(self.total_configs):
+            frm_config = self.indx_to_config(indx)
+            for position, color in enumerate(frm_config):
+                for perturb_color in self.possible_node_values[position] - {color}:
+                    perturb_state = tuple(
+                        [
+                            *frm_config[:position],
+                            perturb_color,
+                            *frm_config[position + 1 :],
+                        ]
+                    )
+                    to_indx = self.config_to_indx(perturb_state)
                     GlobalAvgRankEffect[
-                        math.ceil(GlobalRankMap[frm].L / GlobalRankMap[frm].C)
-                        - math.ceil(GlobalRankMap[to].L / GlobalRankMap[to].C)
+                        math.ceil(GlobalRankMap[indx].L / GlobalRankMap[indx].C)
+                        - math.ceil(GlobalRankMap[to_indx].L / GlobalRankMap[to_indx].C)
                     ] += 1
-
-        del GlobalAvgRankEffect[0]
 
     def save_rank_effect(self):
         df = pd.DataFrame(
