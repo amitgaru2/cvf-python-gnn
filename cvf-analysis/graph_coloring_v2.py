@@ -53,7 +53,7 @@ def time_track(func):
 
 
 graphs_dir = "graphs"
-graph_names = ["small_graph_test"]
+graph_names = ["graph_1"]
 
 
 def start(graphs_dir, graph_name):
@@ -257,7 +257,10 @@ class GraphColoring:
         )
 
         df = pd.DataFrame.from_dict(GlobalAvgNodeRankEffect, orient="index")
-        df.fillna(0, inplace=True)
+        df.fillna(
+            0, inplace=True
+        )
+        df = df.reindex(sorted(df.columns), axis=1)
         df.index.name = "node"
         df.astype("int64").to_csv(
             os.path.join(
