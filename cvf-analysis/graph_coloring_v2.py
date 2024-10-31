@@ -258,8 +258,11 @@ class GraphColoring:
 
         df = pd.DataFrame.from_dict(GlobalAvgNodeRankEffect, orient="index")
         df.fillna(0, inplace=True)
-        df.astype('int64').to_csv(
-            os.path.join("new_results", f"rank_effects_by_node_avg__{graph_names[0]}.csv")
+        df.index.name = "node"
+        df.astype("int64").to_csv(
+            os.path.join(
+                "new_results", f"rank_effects_by_node_avg__{graph_names[0]}.csv"
+            )
         )
 
 
