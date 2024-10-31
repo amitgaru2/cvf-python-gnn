@@ -31,6 +31,7 @@ class Rank:
 GlobalRankMap = defaultdict(lambda: Rank(L=0, C=0, M=0))
 GlobalAvgRank = defaultdict(lambda: 0)
 GlobalMaxRank = defaultdict(lambda: 0)
+GlobalAvgRankEffect = defaultdict(lambda: 0)
 
 GlobalTimeTrackFunction = {}
 
@@ -51,7 +52,7 @@ def time_track(func):
 
 
 graphs_dir = "graphs"
-graph_names = ["graph_8"]
+graph_names = ["graph_1"]
 
 
 def start(graphs_dir, graph_name):
@@ -139,6 +140,8 @@ class GraphColoring:
     def start(self):
         self.find_rank()
         self.save_rank()
+        self.find_rank_effect()
+        self.save_rank_effect()
 
     @time_track
     def _find_min_possible_color(self, colors):
@@ -220,7 +223,26 @@ class GraphColoring:
         )
 
     def find_rank_effect(self):
-        pass
+        for frm in range(self.total_configs):
+            for to in range(self.total_configs):
+                if frm != to:
+                    GlobalAvgRankEffect[
+                        math.ceil(GlobalRankMap[frm].L / GlobalRankMap[frm].C)
+                        - math.ceil(GlobalRankMap[to].L / GlobalRankMap[to].C)
+                    ] += 1
+
+        del GlobalAvgRankEffect[0]
+
+    def save_rank_effect(self):
+        df = pd.DataFrame(
+            {
+                "rank effect": GlobalAvgRankEffect.keys(),
+                "count": GlobalAvgRankEffect.values(),
+            }
+        )
+        df.sort_values(by="rank effect").reset_index(drop=True).to_csv(
+            os.path.join("new_results", f"rank_effects_avg__{graph_names[0]}.csv")
+        )
 
 
 def main():
