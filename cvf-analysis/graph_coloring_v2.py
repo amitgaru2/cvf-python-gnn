@@ -32,6 +32,7 @@ GlobalRankMap = defaultdict(lambda: Rank(L=0, C=0, M=0))
 GlobalAvgRank = defaultdict(lambda: 0)
 GlobalMaxRank = defaultdict(lambda: 0)
 GlobalAvgRankEffect = defaultdict(lambda: 0)
+GlobalAvgNodeRankEffect = {}
 
 GlobalTimeTrackFunction = {}
 
@@ -52,7 +53,7 @@ def time_track(func):
 
 
 graphs_dir = "graphs"
-graph_names = ["graph_1"]
+graph_names = ["small_graph_test"]
 
 
 def start(graphs_dir, graph_name):
@@ -215,6 +216,7 @@ class GraphColoring:
             os.path.join("new_results", f"ranks_avg__{graph_names[0]}.csv")
         )
 
+        # max
         df = pd.DataFrame(
             {"rank": GlobalMaxRank.keys(), "count": GlobalMaxRank.values()}
         )
@@ -235,10 +237,13 @@ class GraphColoring:
                         ]
                     )
                     to_indx = self.config_to_indx(perturb_state)
-                    GlobalAvgRankEffect[
-                        math.ceil(GlobalRankMap[indx].L / GlobalRankMap[indx].C)
-                        - math.ceil(GlobalRankMap[to_indx].L / GlobalRankMap[to_indx].C)
-                    ] += 1
+                    rank_effect = math.ceil(
+                        GlobalRankMap[indx].L / GlobalRankMap[indx].C
+                    ) - math.ceil(GlobalRankMap[to_indx].L / GlobalRankMap[to_indx].C)
+                    GlobalAvgRankEffect[rank_effect] += 1
+                    if position not in GlobalAvgNodeRankEffect:
+                        GlobalAvgNodeRankEffect[position] = defaultdict(lambda: 0)
+                    GlobalAvgNodeRankEffect[position][rank_effect] += 1
 
     def save_rank_effect(self):
         df = pd.DataFrame(
@@ -249,6 +254,12 @@ class GraphColoring:
         )
         df.sort_values(by="rank effect").reset_index(drop=True).to_csv(
             os.path.join("new_results", f"rank_effects_avg__{graph_names[0]}.csv")
+        )
+
+        df = pd.DataFrame.from_dict(GlobalAvgNodeRankEffect, orient="index")
+        df.fillna(0, inplace=True)
+        df.astype('int64').to_csv(
+            os.path.join("new_results", f"rank_effects_by_node_avg__{graph_names[0]}.csv")
         )
 
 
