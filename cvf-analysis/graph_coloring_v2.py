@@ -53,7 +53,7 @@ def time_track(func):
 
 
 graphs_dir = "graphs"
-graph_names = ["graph_5"]
+graph_names = ["graph_4"]
 
 
 def start(graphs_dir, graph_name):
