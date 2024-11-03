@@ -1,4 +1,5 @@
 import os
+import sys
 import math
 import time
 
@@ -53,7 +54,7 @@ def time_track(func):
 
 
 graphs_dir = "graphs"
-graph_names = ["graph_3"]
+graph_names = [sys.argv[1]]
 
 
 def start(graphs_dir, graph_name):
@@ -183,11 +184,6 @@ class GraphColoring:
     @time_track
     def backtrack_path(self, path: list[int]):
         for i, indx in enumerate(path):
-            GlobalRankMap[indx].add_cost(i)
-
-    @time_track
-    def backtrack_path_frm_indx(self, path: list[int], i):
-        for i, indx in enumerate(path, i):
             GlobalRankMap[indx].add_cost(i)
 
     def dfs(self, path: list[int]):
