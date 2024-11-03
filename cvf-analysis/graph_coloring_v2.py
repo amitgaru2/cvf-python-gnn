@@ -197,19 +197,16 @@ class GraphColoring:
             # self.backtrack_path(path[::-1])
             return
 
-        children = self._get_program_transitions(config)
-        L = 0
-        C = 0
-        M = 0
-        for child_indx in children:
+        rank = Rank(0, 0, 0)
+        for child_indx in self._get_program_transitions(config):
             self.dfs([*path, child_indx])
             rank_indx = GlobalRankMap[child_indx]
-            L += rank_indx.L + rank_indx.C
-            C += rank_indx.C
-            M = max(M, rank_indx.M + 1)
+            rank.L += rank_indx.L + rank_indx.C
+            rank.C += rank_indx.C
+            rank.M = max(rank.M, rank_indx.M + 1)
 
         # post visit
-        GlobalRankMap[indx] = Rank(L, C, M)
+        GlobalRankMap[indx] = rank
 
     def find_rank(self):
         for i in range(self.total_configs):
