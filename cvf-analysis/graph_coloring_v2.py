@@ -53,7 +53,7 @@ def time_track(func):
 
 
 graphs_dir = "graphs"
-graph_names = ["graph_2"]
+graph_names = ["graph_3"]
 
 
 def start(graphs_dir, graph_name):
@@ -278,6 +278,7 @@ class GraphColoring:
         df.fillna(0, inplace=True)
         df = df.reindex(sorted(df.columns), axis=1)
         df.index.name = "node"
+        df.sort_index(inplace=True)
         df.astype("int64").to_csv(
             os.path.join(
                 "new_results", f"rank_effects_by_node_avg__{graph_names[0]}.csv"
