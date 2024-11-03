@@ -53,7 +53,7 @@ def time_track(func):
 
 
 graphs_dir = "graphs"
-graph_names = ["graph_4"]
+graph_names = ["graph_1"]
 
 
 def start(graphs_dir, graph_name):
@@ -140,9 +140,9 @@ class GraphColoring:
 
     def start(self):
         self.find_rank()
-        self.save_rank()
-        self.find_rank_effect()
-        self.save_rank_effect()
+        # self.save_rank()
+        # self.find_rank_effect()
+        # self.save_rank_effect()
 
     @time_track
     def _find_min_possible_color(self, colors):
@@ -185,20 +185,38 @@ class GraphColoring:
         for i, indx in enumerate(path):
             GlobalRankMap[indx].add_cost(i)
 
+    @time_track
+    def backtrack_path_frm_indx(self, path: list[int], i):
+        for i, indx in enumerate(path, i):
+            GlobalRankMap[indx].add_cost(i)
+
     def dfs(self, path: list[int]):
         indx = path[-1]
+        if indx in GlobalRankMap:
+            return
+
         config = self.indx_to_config(indx)
         if self.is_invariant(config):
-            self.backtrack_path(path[::-1])
+            GlobalRankMap[indx] = Rank(0, 1, 0)
+            # self.backtrack_path(path[::-1])
             return
 
         children = self._get_program_transitions(config)
-        for indx in children:
-            self.dfs([*path, indx])
+        L = 0
+        C = 0
+        M = 0
+        for child_indx in children:
+            self.dfs([*path, child_indx])
+            rank_indx = GlobalRankMap[child_indx]
+            L += rank_indx.L + rank_indx.C
+            C += rank_indx.C
+            M = max(M, rank_indx.M + 1)
+
+        # post visit
+        GlobalRankMap[indx] = Rank(L, C, M)
 
     def find_rank(self):
         for i in range(self.total_configs):
-            # config_node = ConfigurationNode(i)
             if i not in GlobalRankMap:
                 self.dfs([i])
                 logger.info(f"Analysed {len(GlobalRankMap):,} configurations.")
@@ -257,9 +275,7 @@ class GraphColoring:
         )
 
         df = pd.DataFrame.from_dict(GlobalAvgNodeRankEffect, orient="index")
-        df.fillna(
-            0, inplace=True
-        )
+        df.fillna(0, inplace=True)
         df = df.reindex(sorted(df.columns), axis=1)
         df.index.name = "node"
         df.astype("int64").to_csv(
