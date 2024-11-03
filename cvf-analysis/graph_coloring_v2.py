@@ -53,7 +53,7 @@ def time_track(func):
 
 
 graphs_dir = "graphs"
-graph_names = ["graph_1"]
+graph_names = ["graph_2"]
 
 
 def start(graphs_dir, graph_name):
@@ -140,9 +140,9 @@ class GraphColoring:
 
     def start(self):
         self.find_rank()
-        # self.save_rank()
-        # self.find_rank_effect()
-        # self.save_rank_effect()
+        self.save_rank()
+        self.find_rank_effect()
+        self.save_rank_effect()
 
     @time_track
     def _find_min_possible_color(self, colors):
