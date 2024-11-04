@@ -3,6 +3,7 @@ import sys
 import math
 import time
 
+import numpy as np
 import pandas as pd
 
 from collections import defaultdict
@@ -91,6 +92,10 @@ class GraphColoring:
             lambda x, y: x * y, self.possible_node_values_length
         )
         logger.info(f"Total configs: {self.total_configs:,}.")
+
+        # rank map
+        self.global_rank_map = np.full([self.total_configs, 3], None)
+        self.analysed_rank_count = 0
 
         self.possible_values = list(
             set([j for i in self.possible_node_values for j in i])
@@ -181,43 +186,64 @@ class GraphColoring:
                     return False
         return True
 
-    @time_track
-    def backtrack_path(self, path: list[int]):
-        for i, indx in enumerate(path):
-            GlobalRankMap[indx].add_cost(i)
+    # @time_track
+    # def backtrack_path(self, path: list[int]):
+    #     for i, indx in enumerate(path):
+    #         GlobalRankMap[indx].add_cost(i)
 
     def dfs(self, path: list[int]):
         indx = path[-1]
-        if indx in GlobalRankMap:
+        # if indx in GlobalRankMap:
+        #     return
+
+        if self.global_rank_map[indx, 0] is not None:
             return
 
         config = self.indx_to_config(indx)
         if self.is_invariant(config):
-            GlobalRankMap[indx] = Rank(0, 1, 0)
+            # GlobalRankMap[indx] = Rank(0, 1, 0)
+            self.analysed_rank_count += 1
+            self.global_rank_map[indx] = np.array([0, 1, 0])
             # self.backtrack_path(path[::-1])
             return
 
-        rank = Rank(0, 0, 0)
+        # rank = Rank(0, 0, 0)
+        # for child_indx in self._get_program_transitions(config):
+        #     self.dfs([*path, child_indx])
+        #     rank_indx = GlobalRankMap[child_indx]
+        #     rank.L += rank_indx.L + rank_indx.C
+        #     rank.C += rank_indx.C
+        #     rank.M = max(rank.M, rank_indx.M + 1)
+
+        rank = np.array([0, 0, 0])
         for child_indx in self._get_program_transitions(config):
             self.dfs([*path, child_indx])
-            rank_indx = GlobalRankMap[child_indx]
-            rank.L += rank_indx.L + rank_indx.C
-            rank.C += rank_indx.C
-            rank.M = max(rank.M, rank_indx.M + 1)
+            rank_child = self.global_rank_map[child_indx]
+            rank[0] += rank_child[0] + rank_child[1]
+            rank[1] += rank_child[1]
+            rank[2] = max(rank[2], rank_child[2] + 1)
 
         # post visit
-        GlobalRankMap[indx] = rank
+        # GlobalRankMap[indx] = rank
+        self.analysed_rank_count += 1
+        self.global_rank_map[indx] = rank
 
     def find_rank(self):
         for i in range(self.total_configs):
-            if i not in GlobalRankMap:
+            # if i not in GlobalRankMap:
+            #     self.dfs([i])
+            #     logger.info(f"Analysed {len(GlobalRankMap):,} configurations.")
+            if self.global_rank_map[i, 0] is None:
                 self.dfs([i])
-                logger.info(f"Analysed {len(GlobalRankMap):,} configurations.")
+                # logger.info(f"Analysed {len(GlobalRankMap):,} configurations.")
+                logger.info(f"Analysed {self.analysed_rank_count:,} configurations.")
 
-        for _, rank in GlobalRankMap.items():
-            avg_rank = math.ceil(rank.L / rank.C)
+        # for _, rank in GlobalRankMap.items():
+        for indx in range(self.total_configs):
+            rank = self.global_rank_map[indx]
+            avg_rank = math.ceil(rank[0] / rank[1])
             GlobalAvgRank[avg_rank] += 1
-            GlobalMaxRank[rank.M] += 1
+            GlobalMaxRank[rank[2]] += 1
 
     def save_rank(self):
         df = pd.DataFrame(
@@ -249,8 +275,11 @@ class GraphColoring:
                     )
                     to_indx = self.config_to_indx(perturb_state)
                     rank_effect = math.ceil(
-                        GlobalRankMap[indx].L / GlobalRankMap[indx].C
-                    ) - math.ceil(GlobalRankMap[to_indx].L / GlobalRankMap[to_indx].C)
+                        self.global_rank_map[indx, 0] / self.global_rank_map[indx, 1]
+                    ) - math.ceil(
+                        self.global_rank_map[to_indx, 0]
+                        / self.global_rank_map[to_indx, 1]
+                    )
                     GlobalAvgRankEffect[rank_effect] += 1
                     if position not in GlobalAvgNodeRankEffect:
                         GlobalAvgNodeRankEffect[position] = defaultdict(lambda: 0)
