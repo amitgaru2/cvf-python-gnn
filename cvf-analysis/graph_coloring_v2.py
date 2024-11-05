@@ -215,7 +215,8 @@ class GraphColoring:
         #     rank.C += rank_indx.C
         #     rank.M = max(rank.M, rank_indx.M + 1)
 
-        rank = np.array([0, 0, 0])
+        self.global_rank_map[indx] = np.array([0, 0, 0])
+        rank = self.global_rank_map[indx]
         for child_indx in self._get_program_transitions(config):
             self.dfs([*path, child_indx])
             rank_child = self.global_rank_map[child_indx]
@@ -226,7 +227,7 @@ class GraphColoring:
         # post visit
         # GlobalRankMap[indx] = rank
         self.analysed_rank_count += 1
-        self.global_rank_map[indx] = rank
+        # self.global_rank_map[indx] = rank
 
     def find_rank(self):
         for i in range(self.total_configs):
