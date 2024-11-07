@@ -170,7 +170,9 @@ class GraphColoringS:
 
     def start(self):
         self.find_rank()
-        # self.save_rank()
+        self.reduce_rank()
+        if program_node_rank == 0:
+            self.save_rank()
         # self.find_rank_effect()
         # self.save_rank_effect()
 
@@ -250,6 +252,37 @@ class GraphColoringS:
                 avg_rank = math.ceil(rank[0] / rank[1])
                 GlobalAvgRank[avg_rank] += 1
                 GlobalMaxRank[rank[2]] += 1
+
+    def reduce_rank(self):
+        global GlobalAvgRank
+
+        def _reducer(x, y):
+            for rank, cnt in y.items():
+                if rank in x:
+                    x[rank] += cnt
+                else:
+                    x[rank] = cnt
+            return x
+
+        all_global_avg_rank = comm.gather(dict(GlobalAvgRank), root=0)
+        if program_node_rank == 0:
+            GlobalAvgRank = reduce(_reducer, all_global_avg_rank)
+
+    def save_rank(self):
+        df = pd.DataFrame(
+            {"rank": GlobalAvgRank.keys(), "count": GlobalAvgRank.values()}
+        )
+        df.sort_values(by="rank").reset_index(drop=True).to_csv(
+            os.path.join("new_results", f"ranks_avg__{graph_names[0]}.csv")
+        )
+
+        # max
+        # df = pd.DataFrame(
+        #     {"rank": GlobalMaxRank.keys(), "count": GlobalMaxRank.values()}
+        # )
+        # df.sort_values(by="rank").reset_index(drop=True).to_csv(
+        #     os.path.join("new_results", f"ranks_max__{graph_names[0]}.csv")
+        # )
 
 
 def main():
