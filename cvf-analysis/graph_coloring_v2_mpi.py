@@ -2,7 +2,6 @@ import os
 import sys
 import math
 import time
-import random
 
 import numpy as np
 import pandas as pd
@@ -11,7 +10,8 @@ from collections import defaultdict
 from functools import reduce, wraps
 
 
-from custom_logger import logger
+from custom_logger_mpi import logger
+from custom_mpi import comm, program_node_rank
 
 
 class Rank:
@@ -31,7 +31,6 @@ class Rank:
     __repr__ = __str__
 
 
-GlobalRankMap = defaultdict(lambda: Rank(L=0, C=0, M=0))
 GlobalAvgRank = defaultdict(lambda: 0)
 GlobalMaxRank = defaultdict(lambda: 0)
 GlobalAvgRankEffect = defaultdict(lambda: 0)
@@ -107,9 +106,29 @@ class GraphColoringS:
         }  # mapping from value to index
 
         self.initialize_helpers()
-        self.random_samples_n = 10
-        self.random_samples = random.sample(
-            range(self.total_configs), self.random_samples_n
+
+        self.sample_size = 1000
+        self.mpi_config = {}
+
+        self.config_allocation()
+
+    def config_allocation(self):
+        equal_samples = self.total_configs // comm.size
+        cursor = equal_samples + (self.total_configs - equal_samples * comm.size)
+        self.mpi_config[0] = {
+            "start": 0,
+            "end": cursor,
+        }
+        for i in range(1, comm.size):
+            new_cursor = cursor + equal_samples
+            self.mpi_config[i] = {"start": cursor, "end": new_cursor}
+            cursor = new_cursor
+
+    @property
+    def samples(self):
+        return range(
+            self.mpi_config[program_node_rank]["start"],
+            self.mpi_config[program_node_rank]["end"],
         )
 
     def initialize_helpers(self):
@@ -215,79 +234,22 @@ class GraphColoringS:
         self.analysed_rank_count += 1
 
     def find_rank(self):
-        for i in self.random_samples:
+        for i in self.samples:
             if i not in self.global_rank_map:
                 self.dfs([i])
-                logger.info(f"Analysed {self.analysed_rank_count:,} configurations.")
+                logger.debug(f"Analysed {self.analysed_rank_count:,} configurations.")
 
-        for indx in range(self.total_configs):
-            if indx in self.global_rank_map:
+        for indx in self.global_rank_map:
+            # remove duplicates for rank calculation
+            if (
+                self.mpi_config[program_node_rank]["start"]
+                <= indx
+                < self.mpi_config[program_node_rank]["end"]
+            ):
                 rank = self.global_rank_map[indx]
                 avg_rank = math.ceil(rank[0] / rank[1])
                 GlobalAvgRank[avg_rank] += 1
                 GlobalMaxRank[rank[2]] += 1
-
-    def save_rank(self):
-        df = pd.DataFrame(
-            {"rank": GlobalAvgRank.keys(), "count": GlobalAvgRank.values()}
-        )
-        df.sort_values(by="rank").reset_index(drop=True).to_csv(
-            os.path.join("new_results", f"ranks_avg__{graph_names[0]}.csv")
-        )
-
-        # max
-        df = pd.DataFrame(
-            {"rank": GlobalMaxRank.keys(), "count": GlobalMaxRank.values()}
-        )
-        df.sort_values(by="rank").reset_index(drop=True).to_csv(
-            os.path.join("new_results", f"ranks_max__{graph_names[0]}.csv")
-        )
-
-    def find_rank_effect(self):
-        for indx in range(self.total_configs):
-            frm_config = self.indx_to_config(indx)
-            for position, color in enumerate(frm_config):
-                for perturb_color in self.possible_node_values[position] - {color}:
-                    perturb_state = tuple(
-                        [
-                            *frm_config[:position],
-                            perturb_color,
-                            *frm_config[position + 1 :],
-                        ]
-                    )
-                    to_indx = self.config_to_indx(perturb_state)
-                    rank_effect = math.ceil(
-                        self.global_rank_map[indx, 0] / self.global_rank_map[indx, 1]
-                    ) - math.ceil(
-                        self.global_rank_map[to_indx, 0]
-                        / self.global_rank_map[to_indx, 1]
-                    )
-                    GlobalAvgRankEffect[rank_effect] += 1
-                    if position not in GlobalAvgNodeRankEffect:
-                        GlobalAvgNodeRankEffect[position] = defaultdict(lambda: 0)
-                    GlobalAvgNodeRankEffect[position][rank_effect] += 1
-
-    def save_rank_effect(self):
-        df = pd.DataFrame(
-            {
-                "rank effect": GlobalAvgRankEffect.keys(),
-                "count": GlobalAvgRankEffect.values(),
-            }
-        )
-        df.sort_values(by="rank effect").reset_index(drop=True).to_csv(
-            os.path.join("new_results", f"rank_effects_avg__{graph_names[0]}.csv")
-        )
-
-        df = pd.DataFrame.from_dict(GlobalAvgNodeRankEffect, orient="index")
-        df.fillna(0, inplace=True)
-        df = df.reindex(sorted(df.columns), axis=1)
-        df.index.name = "node"
-        df.sort_index(inplace=True)
-        df.astype("int64").to_csv(
-            os.path.join(
-                "new_results", f"rank_effects_by_node_avg__{graph_names[0]}.csv"
-            )
-        )
 
 
 def main():
