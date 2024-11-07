@@ -147,8 +147,8 @@ class GraphColoring:
     def start(self):
         self.find_rank()
         self.save_rank()
-        self.find_rank_effect()
-        self.save_rank_effect()
+        # self.find_rank_effect()
+        # self.save_rank_effect()
 
     @time_track
     def _find_min_possible_color(self, colors):
@@ -237,7 +237,7 @@ class GraphColoring:
             if self.global_rank_map[i, 0] is None:
                 self.dfs([i])
                 # logger.info(f"Analysed {len(GlobalRankMap):,} configurations.")
-                logger.info(f"Analysed {self.analysed_rank_count:,} configurations.")
+                logger.debug(f"Analysed {self.analysed_rank_count:,} configurations.")
 
         # for _, rank in GlobalRankMap.items():
         for indx in range(self.total_configs):
