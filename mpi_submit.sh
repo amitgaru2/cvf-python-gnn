@@ -4,9 +4,9 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=agaru@uwyo.edu
 #SBATCH --output=cvf_%A.log
-#SBATCH --nodes=4
-#SBATCH --mem=1000G
-#SBATCH --partition=beartooth-hugemem
+#SBATCH --nodes=16
+#SBATCH --mem=128G
+#SBATCH --partition=teton-cascade
 
 
 echo "JobID:         "$SLURM_JOB_ID
@@ -25,7 +25,7 @@ module load miniconda3/23.11.0
 
 echo "Activating virtualenv..."
 #conda activate dml_mpi
-conda activate /gscratch/agaru/test1234
+conda activate /project/cvf-analysis/agaru/envs/cvf-env
 
 echo "which python..."
 which python
