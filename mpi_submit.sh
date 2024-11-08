@@ -4,9 +4,9 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=agaru@uwyo.edu
 #SBATCH --output=cvf_%A.log
-#SBATCH --nodes=16
-#SBATCH --mem=128G
-#SBATCH --partition=teton-cascade
+#SBATCH --nodes=12
+#SBATCH --mem=256G
+#SBATCH --partition=teton-knl
 
 
 echo "JobID:         "$SLURM_JOB_ID
