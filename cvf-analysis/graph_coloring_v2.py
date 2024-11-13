@@ -247,6 +247,7 @@ class GraphColoring:
             GlobalMaxRank[rank[2]] += 1
 
     def save_rank(self):
+        print(GlobalAvgRank)
         df = pd.DataFrame(
             {"rank": GlobalAvgRank.keys(), "count": GlobalAvgRank.values()}
         )
@@ -315,6 +316,14 @@ def main():
     logger.info("%s", GlobalAvgRank)
     time_tracking = {k: round(v, 2) for k, v in GlobalTimeTrackFunction.items()}
     logger.info("%s", time_tracking)
+
+    # df = pd.DataFrame(
+    #     {
+    #         "config": range(coloring.global_rank_map),
+    #         "rank": coloring.global_rank_map.values(),
+    #     }
+    # )
+    # df.to_csv(f"{graph_names[0]}_config_rank_dataset.csv")
 
 
 if __name__ == "__main__":
