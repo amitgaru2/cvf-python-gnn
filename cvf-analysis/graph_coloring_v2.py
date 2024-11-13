@@ -1,3 +1,4 @@
+import csv
 import os
 import sys
 import math
@@ -317,13 +318,15 @@ def main():
     time_tracking = {k: round(v, 2) for k, v in GlobalTimeTrackFunction.items()}
     logger.info("%s", time_tracking)
 
-    # df = pd.DataFrame(
-    #     {
-    #         "config": range(coloring.global_rank_map),
-    #         "rank": coloring.global_rank_map.values(),
-    #     }
-    # )
-    # df.to_csv(f"{graph_names[0]}_config_rank_dataset.csv")
+    writer = csv.DictWriter(
+        open(f"{graph_names[0]}_config_rank_dataset.csv", "w"),
+        fieldnames=["config", "rank"],
+    )
+    writer.writeheader()
+    for k, v in enumerate(coloring.global_rank_map):
+        writer.writerow(
+            {"config": list(coloring.indx_to_config(k)), "rank": math.ceil(v[0] / v[1])}
+        )
 
 
 if __name__ == "__main__":
