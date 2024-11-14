@@ -17,9 +17,10 @@ class CVFConfigDataset(Dataset):
 
     def __getitem__(self, idx):
         row = self.data.loc[idx]
-        return torch.tensor(
-            ast.literal_eval(row["config"]), dtype=torch.float64
-        ), torch.tensor(row["rank"], dtype=torch.float64)
+        result = torch.tensor(
+            [[i] for i in ast.literal_eval(row["config"])], dtype=torch.float32
+        ), torch.tensor(row["rank"], dtype=torch.float32)
+        return result
 
 
 if __name__ == "__main__":
