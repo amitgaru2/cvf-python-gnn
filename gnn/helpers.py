@@ -19,7 +19,7 @@ class CVFConfigDataset(Dataset):
         row = self.data.loc[idx]
         result = torch.tensor(
             [[i] for i in ast.literal_eval(row["config"])], dtype=torch.float32
-        ), torch.tensor(row["rank"], dtype=torch.float32)
+        ), row["rank"]
         return result
 
 
