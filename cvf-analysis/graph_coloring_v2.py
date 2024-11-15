@@ -325,7 +325,10 @@ def main():
     writer.writeheader()
     for k, v in enumerate(coloring.global_rank_map):
         writer.writerow(
-            {"config": list(coloring.indx_to_config(k)), "rank": math.ceil(v[0] / v[1])}
+            {
+                "config": [i + 1 for i in coloring.indx_to_config(k)],
+                "rank": math.ceil(v[0] / v[1]),
+            }
         )
 
 
