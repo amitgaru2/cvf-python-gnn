@@ -1,3 +1,4 @@
+import os
 import ast
 
 import torch
@@ -9,7 +10,7 @@ from torch.utils.data import DataLoader
 
 class CVFConfigDataset(Dataset):
     def __init__(self, dataset_file) -> None:
-        self.data = pd.read_csv(dataset_file)
+        self.data = pd.read_csv(os.path.join("datasets", dataset_file))
         self.nodes = len(self[0][0])
 
     def __len__(self):
