@@ -9,11 +9,11 @@ from torch.utils.data import DataLoader
 
 class CVFConfigDataset(Dataset):
     def __init__(self) -> None:
-        # self.data = pd.read_csv("small_graph_test_config_rank_dataset.csv")
-        # self.nodes = 4
+        self.data = pd.read_csv("small_graph_test_config_rank_dataset.csv")
+        self.nodes = 4
 
-        self.data = pd.read_csv("graph_1_config_rank_dataset.csv")
-        self.nodes = 10
+        # self.data = pd.read_csv("graph_1_config_rank_dataset.csv")
+        # self.nodes = 10
 
     def __len__(self):
         return len(self.data)
