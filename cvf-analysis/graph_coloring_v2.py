@@ -326,7 +326,7 @@ def main():
     for k, v in enumerate(coloring.global_rank_map):
         writer.writerow(
             {
-                "config": [i + 1 for i in coloring.indx_to_config(k)],
+                "config": [i for i in coloring.indx_to_config(k)],
                 "rank": math.ceil(v[0] / v[1]),
             }
         )
