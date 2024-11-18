@@ -8,12 +8,9 @@ from torch.utils.data import DataLoader
 
 
 class CVFConfigDataset(Dataset):
-    def __init__(self) -> None:
-        # self.data = pd.read_csv("small_graph_test_config_rank_dataset.csv")
-        # self.nodes = 4
-
-        self.data = pd.read_csv("graph_4_config_rank_dataset.csv")
-        self.nodes = 10
+    def __init__(self, dataset_file) -> None:
+        self.data = pd.read_csv(dataset_file)
+        self.nodes = len(self[0][0])
 
     def __len__(self):
         return len(self.data)
@@ -30,9 +27,10 @@ class CVFConfigDataset(Dataset):
 
 
 if __name__ == "__main__":
-    dataset = CVFConfigDataset()
+    dataset = CVFConfigDataset("graph_4_config_rank_dataset.csv")
     loader = DataLoader(dataset, batch_size=2, shuffle=False)
 
+    print(dataset.nodes)
     for dl in loader:
         print(dl)
         print()
