@@ -18,6 +18,7 @@ class CVFConfigDataset(Dataset):
             json.load(open(os.path.join("datasets", edge_index_file), "r")),
             dtype=torch.long,
         )
+        self.num_classes = 10
 
     def __len__(self):
         return len(self.data)
@@ -28,7 +29,7 @@ class CVFConfigDataset(Dataset):
         result = (
             F.one_hot(
                 torch.tensor([i for i in ast.literal_eval(row["config"])]),
-                num_classes=4,
+                num_classes=self.num_classes,
             ).to(torch.float32),
             row["rank"],
         )
