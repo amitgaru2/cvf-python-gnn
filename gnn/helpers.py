@@ -12,7 +12,7 @@ class CVFConfigDataset(Dataset):
         # self.data = pd.read_csv("small_graph_test_config_rank_dataset.csv")
         # self.nodes = 4
 
-        self.data = pd.read_csv("graph_1_config_rank_dataset.csv")
+        self.data = pd.read_csv("graph_4_config_rank_dataset.csv")
         self.nodes = 10
 
     def __len__(self):
