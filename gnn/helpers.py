@@ -26,18 +26,18 @@ class CVFConfigDataset(Dataset):
     def __getitem__(self, idx):
         row = self.data.loc[idx]
 
-        # result = (
-        #     F.one_hot(
-        #         torch.tensor([i for i in ast.literal_eval(row["config"])]),
-        #         num_classes=self.num_classes,
-        #     ).to(torch.float32),
-        #     row["rank"],
-        # )
-
         result = (
-            torch.tensor([[i] for i in ast.literal_eval(row["config"])], dtype=torch.float32),
+            F.one_hot(
+                torch.tensor([i for i in ast.literal_eval(row["config"])]),
+                num_classes=self.num_classes,
+            ).to(torch.float32),
             row["rank"],
         )
+
+        # result = (
+        #     torch.tensor([[i] for i in ast.literal_eval(row["config"])], dtype=torch.float32),
+        #     row["rank"],
+        # )
 
         return result
 
