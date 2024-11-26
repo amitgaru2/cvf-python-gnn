@@ -28,7 +28,7 @@ class CVFConfigDataset(Dataset):
 
         result = (
             F.one_hot(
-                torch.tensor([i for i in ast.literal_eval(row["config"])]),
+                torch.tensor(ast.literal_eval(row["config"])),
                 num_classes=self.num_classes,
             ).to(torch.float32),
             row["rank"],
