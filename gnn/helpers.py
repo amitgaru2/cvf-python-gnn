@@ -101,6 +101,7 @@ class CVFConfigForGATDataset(Dataset):
 
         return result
 
+
 if __name__ == "__main__":
     # dataset = CVFConfigDataset(
     #     "graph_4_config_rank_dataset.csv", "graph_4_edge_index.json"
