@@ -72,7 +72,7 @@ class CustomR2Score:
 
         # Compute the R² score
         r2 = 1 - (self.squared_residual_sum / total_sum_squares)
-        return r2
+        return r2.item()
 
     def __call__(self, y_true, y_pred):
         """
