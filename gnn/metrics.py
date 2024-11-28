@@ -15,6 +15,7 @@ import torch
 
 import torch
 
+
 class CustomR2Score:
     def __init__(self, dtype=torch.float32):
         """
@@ -31,7 +32,9 @@ class CustomR2Score:
         self.squared_residual_sum = 0.0
         self.total_sum_squares = 0.0
         self.count = 0
-        self.y_true_values = []  # Collect all true values across batches for mean computation
+        self.y_true_values = (
+            []
+        )  # Collect all true values across batches for mean computation
 
     def update(self, y_true, y_pred):
         """
@@ -45,7 +48,7 @@ class CustomR2Score:
 
         # Compute the residuals (error) and squared residuals
         residual = y_true - y_pred
-        squared_residual = residual ** 2
+        squared_residual = residual**2
 
         # Accumulate the squared residuals
         self.squared_residual_sum += squared_residual.sum()
@@ -79,13 +82,12 @@ class CustomR2Score:
         return self.compute()
 
 
-
-
-
 if __name__ == "__main__":
     metric = CustomR2Score()
     # metric.update(torch.tensor([1, 1, 2, 3]), torch.tensor([2, 1, 1, 2]))
-    metric.update(torch.tensor([1, 1, 2, 2, 1, 2, 3]), torch.tensor([2, 1, 1, 2, 1, 1, 2]))
+    metric.update(
+        torch.tensor([1, 1, 2, 2, 1, 2, 3]), torch.tensor([2, 1, 1, 2, 1, 1, 2])
+    )
     # metric.update(torch.tensor([2, 1, 2]), torch.tensor([2, 1, 1]))
     result = metric.compute()
     print(result)
