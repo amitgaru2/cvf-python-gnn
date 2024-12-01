@@ -171,24 +171,24 @@ class DijkstraTokenRing:
 
     @time_track
     def _get_program_transitions(self, start_state):
-        program_transitions = []
+        program_transitions = set()
         if (start_state[self.bottom] + 1) % 3 == start_state[self.bottom + 1]:
-            program_transitions.append(self.__bottom_eligible_update(start_state))
+            program_transitions.add(self.__bottom_eligible_update(start_state))
 
         if (
             start_state[self.top - 1] == start_state[self.bottom]
             and (start_state[self.top - 1] + 1) % 3 != start_state[self.top]
         ):
-            program_transitions.append(self.__top_eligible_update(start_state))
+            program_transitions.add(self.__top_eligible_update(start_state))
 
         for i in range(self.bottom + 1, self.top):
             if (start_state[i] + 1) % 3 == start_state[i - 1]:
-                program_transitions.append(
+                program_transitions.add(
                     self.__other_eligible_update(start_state, i, i - 1)
                 )
 
             if (start_state[i] + 1) % 3 == start_state[i + 1]:
-                program_transitions.append(
+                program_transitions.add(
                     self.__other_eligible_update(start_state, i, i + 1)
                 )
 
