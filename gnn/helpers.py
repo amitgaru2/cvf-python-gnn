@@ -43,7 +43,14 @@ class CVFConfigDataset(Dataset):
 
 
 class CVFConfigForGCNDataset(Dataset):
-    def __init__(self, device, dataset_file, edge_index_file, num_classes) -> None:
+    def __init__(
+        self,
+        device,
+        dataset_file,
+        edge_index_file,
+        num_classes=None,
+        one_hot_encode=True,
+    ) -> None:
         self.data = pd.read_csv(os.path.join("datasets", dataset_file))
         self.edge_index = (
             torch.tensor(
@@ -53,6 +60,7 @@ class CVFConfigForGCNDataset(Dataset):
             .t()
             .to(device)
         )
+        self.one_hot_encode = one_hot_encode
         self.num_classes = num_classes
 
     def __len__(self):
@@ -61,13 +69,21 @@ class CVFConfigForGCNDataset(Dataset):
     def __getitem__(self, idx):
         row = self.data.loc[idx]
 
-        result = (
-            F.one_hot(
-                torch.tensor(ast.literal_eval(row["config"])),
-                num_classes=self.num_classes,
-            ).to(torch.float32),
-            row["rank"],
-        )
+        if self.one_hot_encode:
+            result = (
+                F.one_hot(
+                    torch.tensor(ast.literal_eval(row["config"])),
+                    num_classes=self.num_classes,
+                ).to(torch.float32),
+                row["rank"],
+            )
+        else:
+            result = (
+                torch.tensor(
+                    [[i] for i in ast.literal_eval(row["config"])], dtype=torch.float32
+                ),
+                row["rank"],
+            )
 
         return result
 
