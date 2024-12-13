@@ -30,7 +30,7 @@ dataset_pl_n12 = CVFConfigForGCNDataset(
     color_mapping_categories,
 )
 
-batch_size = 64
+batch_size = 32
 
 # dataset_coll = [dataset_pl_n5, dataset_pl_n6, dataset_pl_n7, dataset_pl_n8]
 dataset_coll = [dataset_pl_n12]
