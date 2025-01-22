@@ -3,6 +3,7 @@ import sys
 import math
 import time
 import random
+import itertools
 
 from graph_coloring_v2 import (
     GraphColoring,
@@ -47,12 +48,34 @@ class GraphColoringForSimulation(GraphColoring):
         program_transitions = []
 
         if eligible_nodes:
-            for node in eligible_nodes:
-                program_transitions.extend(
-                    self._get_program_transitions_for_node(state, node)
+            for eligible_node_cobmination in itertools.combinations(
+                eligible_nodes, n_subset_eligible_process
+            ):
+                program_transitions.append(
+                    self._get_distributed_program_transitions_for_nodes(
+                        state, set(eligible_node_cobmination)
+                    )
                 )
 
+            # for node in eligible_nodes:
+            #     program_transitions.extend(
+            #         self._get_program_transitions_for_node(state, node)
+            #     )
+
         return program_transitions
+
+    def _get_distributed_program_transitions_for_nodes(self, state, nodes):
+        program_transition = []
+        for position, color in enumerate(state):
+            transition_color = color
+            if position in nodes:
+                neighbor_colors = set(state[i] for i in self.graph[position])
+                if color in neighbor_colors:  # is different color
+                    transition_color = self._find_min_possible_color(neighbor_colors)
+
+            program_transition.append(transition_color)
+
+        return program_transition
 
     def _get_program_transitions_for_node(self, state, node):
         program_transitions = []
@@ -82,7 +105,12 @@ def main():
     print(coloring.initial_state)
     print(coloring.is_invariant(coloring.initial_state))
     # print(coloring.find_eligible_nodes(coloring.initial_state))
-    print(coloring.get_pts_distributed_schedular_wo_me(coloring.initial_state))
+    print(coloring.get_pts_distributed_schedular_wo_me(coloring.initial_state, n_subset_eligible_process=2))
+    # print(
+    #     coloring._get_distributed_program_transitions_for_nodes(
+    #         coloring.initial_state, nodes={0, 2}
+    #     )
+    # )
     # coloring.start()
     # logger.info("%s", GlobalAvgRank)
     # time_tracking = {k: round(v, 2) for k, v in GlobalTimeTrackFunction.items()}
