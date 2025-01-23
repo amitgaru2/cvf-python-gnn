@@ -26,6 +26,11 @@ class Action:
         new_state[self.process] = self.params[1]  # update to new value
         return tuple(new_state)
 
+    def __str__(self) -> str:
+        return f"{self.process}: {self.params}"
+
+    __repr__ = __str__
+
 
 class SimulationMixin:
 
@@ -54,7 +59,7 @@ class SimulationMixin:
         return random.sample(actions, subset_size)
 
     def run_simulations(self):
-        state = self.get_random_state()  # from the base class
+        state = self.get_random_state(avoid_invariant=True)  # from the base class
         step = 0
         while not self.is_invariant(state):  # from the base class
             logger.info("State %s", state)

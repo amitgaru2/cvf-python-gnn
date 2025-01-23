@@ -21,12 +21,21 @@ graph_names = [sys.argv[1]]
 
 class GraphColoringSimulation(SimulationMixin, GraphColoring):
 
-    def get_random_state(self):
-        state = []
-        for i in range(len(self.nodes)):
-            state.append(random.choice(list(self.possible_node_values[i])))
+    def get_random_state(self, avoid_invariant=False):
+        def _inner():
+            _state = []
+            for i in range(len(self.nodes)):
+                _state.append(random.choice(list(self.possible_node_values[i])))
+            _state = tuple(_state)
 
-        return tuple(state)
+            return _state
+
+        state = _inner()
+        if avoid_invariant:
+            while self.is_invariant(state):
+                state = _inner()
+
+        return state
 
     # def find_eligible_nodes(self, state):
     #     eligible_nodes = []
@@ -66,12 +75,15 @@ class GraphColoringSimulation(SimulationMixin, GraphColoring):
             action = remaining_actions[indx]
             # remove the conflicting actions from "action" i.e. remove all the actions that are neighbors to the process producing "action"
             neighbors = self.graph[action.process]
+            # print("process", action.process, "neighbors", neighbors)
+            # print("remaining actions", remaining_actions)
             remaining_actions.pop(indx)
-            remaining_actions = [
+            _ = [
                 remaining_actions.pop(i)
-                for i, action in enumerate(remaining_actions)
-                if action.process in neighbors
+                for i, act in enumerate(remaining_actions)
+                if act.process in neighbors
             ]
+            # print("remaining actions", remaining_actions)
             checked_actions.append(action)
 
         return checked_actions
