@@ -7,7 +7,7 @@ import itertools
 
 from typing import List
 
-from simulation import SimulationMixin, Action
+from simulation import SimulationMixin, Action, CENTRAL_SCHEDULER, DISTRIBUTED_SCHEDULER
 from graph_coloring_v2 import (
     GraphColoring,
     GlobalAvgRank,
@@ -137,15 +137,19 @@ class GraphColoringSimulation(SimulationMixin, GraphColoring):
 
 def main():
     coloring = GraphColoringSimulation()
-    coloring.generate_initial_random_state()
-    print(coloring.initial_state)
-    print(coloring.is_invariant(coloring.initial_state))
-    # print(coloring.find_eligible_nodes(coloring.initial_state))
-    print(
-        coloring.get_pts_distributed_schedular_wo_me(
-            coloring.initial_state, n_subset_eligible_process=None
-        )
+    coloring.create_simulation_environment(
+        no_of_simulations=50, scheduler=CENTRAL_SCHEDULER, me=False
     )
+    coloring.start_simulation()
+    # coloring.generate_initial_random_state()
+    # print(coloring.initial_state)
+    # print(coloring.is_invariant(coloring.initial_state))
+    # # print(coloring.find_eligible_nodes(coloring.initial_state))
+    # print(
+    #     coloring.get_pts_distributed_schedular_wo_me(
+    #         coloring.initial_state, n_subset_eligible_process=None
+    #     )
+    # )
     # print(
     #     coloring._get_distributed_program_transitions_for_nodes(
     #         coloring.initial_state, nodes={0, 2}

@@ -71,7 +71,7 @@ class SimulationMixin:
 
         return state
 
-    def start(self):
+    def start_simulation(self):
         results = []
         for i in range(self.no_of_simulations):
             results[i] = self.run_simulations()
