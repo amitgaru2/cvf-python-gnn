@@ -66,14 +66,12 @@ class GraphColoringSimulation(SimulationMixin, GraphColoring):
             action = remaining_actions[indx]
             # remove the conflicting actions from "action" i.e. remove all the actions that are neighbors to the process producing "action"
             neighbors = self.graph[action.process]
-            neighbor_action_indexes = [
-                i
+            remaining_actions.pop(indx)
+            remaining_actions = [
+                remaining_actions.pop(i)
                 for i, action in enumerate(remaining_actions)
                 if action.process in neighbors
             ]
-            for i in neighbor_action_indexes:
-                remaining_actions.pop(i)
-            remaining_actions.pop(indx)
             checked_actions.append(action)
 
         return checked_actions

@@ -72,6 +72,12 @@ class SimulationMixin:
         return state
 
     def start_simulation(self):
+        logger.info(
+            "Simulation environment: No. of Simulations: %d | Scheduler: %s | ME: %s",
+            self.no_of_simulations,
+            "DISTRIBUTED" if self.scheduler else "CENTRAL",
+            self.me,
+        )
         results = []
         for i in range(1, self.no_of_simulations + 1):
             logger.info("Running simulation round: %d", i)
