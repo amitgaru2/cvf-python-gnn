@@ -150,7 +150,7 @@ class GraphColoringSimulation(SimulationMixin, GraphColoring):
 def main():
     coloring = GraphColoringSimulation()
     coloring.create_simulation_environment(
-        no_of_simulations=1, scheduler=DISTRIBUTED_SCHEDULER, me=True
+        no_of_simulations=10, scheduler=DISTRIBUTED_SCHEDULER, me=False
     )
     results = coloring.start_simulation()
     print(results)
