@@ -37,20 +37,6 @@ class GraphColoringSimulation(SimulationMixin, GraphColoring):
 
         return state
 
-    # def find_eligible_nodes(self, state):
-    #     eligible_nodes = []
-    #     for position, color in enumerate(state):
-    #         # check if node already has different color among the neighbors => If yes => not eligible to do anything
-    #         neighbor_colors = set(state[i] for i in self.graph[position])
-    #         if color not in neighbor_colors:  # is different color
-    #             # considering the case where if the node has different color than neighboring node, regardless minimum or not, then it is not eligible
-    #             continue
-    #         transition_color = self._find_min_possible_color(neighbor_colors)
-    #         if color != transition_color:
-    #             eligible_nodes.append(position)
-
-    #     return eligible_nodes
-
     def get_all_eligible_actions(self, state):
         eligible_actions = []
         for position, color in enumerate(state):
@@ -95,37 +81,6 @@ def main():
     )
     results = coloring.start_simulation()
     print(results)
-    # coloring.generate_initial_random_state()
-    # print(coloring.initial_state)
-    # print(coloring.is_invariant(coloring.initial_state))
-    # # print(coloring.find_eligible_nodes(coloring.initial_state))
-    # print(
-    #     coloring.get_pts_distributed_schedular_wo_me(
-    #         coloring.initial_state, n_subset_eligible_process=None
-    #     )
-    # )
-    # print(
-    #     coloring._get_distributed_program_transitions_for_nodes(
-    #         coloring.initial_state, nodes={0, 2}
-    #     )
-    # )
-    # coloring.start()
-    # logger.info("%s", GlobalAvgRank)
-    # time_tracking = {k: round(v, 2) for k, v in GlobalTimeTrackFunction.items()}
-    # logger.info("%s", time_tracking)
-
-    # writer = csv.DictWriter(
-    #     open(f"{graph_names[0]}_config_rank_dataset.csv", "w"),
-    #     fieldnames=["config", "rank"],
-    # )
-    # writer.writeheader()
-    # for k, v in enumerate(coloring.global_rank_map):
-    #     writer.writerow(
-    #         {
-    #             "config": [i for i in coloring.indx_to_config(k)],
-    #             "rank": math.ceil(v[0] / v[1]),
-    #         }
-    #     )
 
 
 if __name__ == "__main__":

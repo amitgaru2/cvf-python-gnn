@@ -34,10 +34,19 @@ class Action:
 
 class SimulationMixin:
 
-    def create_simulation_environment(self, no_of_simulations, scheduler, me):
+    def create_simulation_environment(
+        self, no_of_simulations: int, scheduler: int, me: bool
+    ):
         self.no_of_simulations = no_of_simulations
         self.scheduler = scheduler
         self.me = me
+
+    def apply_fault_settings(self, fault_probability: float, fault_weight: List):
+        self.fault_probability = fault_probability
+        self.fault_weight = fault_weight
+
+    def generate_fault_weight(self):
+        fault_weight = 0.8
 
     def get_actions(self, state):
         eligible_actions = self.get_all_eligible_actions(state)  # from the base class
@@ -47,6 +56,7 @@ class SimulationMixin:
             actions = self.get_subset_of_actions(eligible_actions)
             if self.me:
                 actions = self.remove_conflicts(actions)  # from the base class
+
 
         return actions
 
