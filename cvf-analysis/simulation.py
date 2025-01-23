@@ -2,6 +2,7 @@ import random
 
 from typing import List
 
+from custom_logger import logger
 
 CENTRAL_SCHEDULER = 0
 DISTRIBUTED_SCHEDULER = 1
@@ -56,10 +57,12 @@ class SimulationMixin:
         state = self.get_random_state()  # from the base class
         step = 0
         while not self.is_invariant(state):  # from the base class
-            actions = self.get_actions(self.scheduler, self.me, state)
+            logger.info("State %s", state)
+            actions = self.get_actions(state)
             state = self.execute(state, actions)
             step += 1
 
+        logger.info("State %s", state)
         return step
 
     # def get_all_eligible_actions(self, actions: List[Action]):
@@ -73,7 +76,8 @@ class SimulationMixin:
 
     def start_simulation(self):
         results = []
-        for i in range(self.no_of_simulations):
-            results[i] = self.run_simulations()
+        for i in range(1, self.no_of_simulations + 1):
+            logger.info("Running simulation round: %d", i)
+            results.append(self.run_simulations())
 
         return results

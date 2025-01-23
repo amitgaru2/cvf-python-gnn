@@ -138,9 +138,10 @@ class GraphColoringSimulation(SimulationMixin, GraphColoring):
 def main():
     coloring = GraphColoringSimulation()
     coloring.create_simulation_environment(
-        no_of_simulations=50, scheduler=CENTRAL_SCHEDULER, me=False
+        no_of_simulations=1, scheduler=CENTRAL_SCHEDULER, me=False
     )
-    coloring.start_simulation()
+    results = coloring.start_simulation()
+    print(results)
     # coloring.generate_initial_random_state()
     # print(coloring.initial_state)
     # print(coloring.is_invariant(coloring.initial_state))
