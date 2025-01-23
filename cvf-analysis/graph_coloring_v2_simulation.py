@@ -75,82 +75,23 @@ class GraphColoringSimulation(SimulationMixin, GraphColoring):
             action = remaining_actions[indx]
             # remove the conflicting actions from "action" i.e. remove all the actions that are neighbors to the process producing "action"
             neighbors = self.graph[action.process]
-            # print("process", action.process, "neighbors", neighbors)
-            # print("remaining actions", remaining_actions)
             remaining_actions.pop(indx)
-            _ = [
-                remaining_actions.pop(i)
-                for i, act in enumerate(remaining_actions)
-                if act.process in neighbors
-            ]
-            # print("remaining actions", remaining_actions)
+
+            new_remaining_actions = []
+            for i, act in enumerate(remaining_actions):
+                if act.process not in neighbors:
+                    new_remaining_actions.append(act)
+
+            remaining_actions = new_remaining_actions[:]
             checked_actions.append(action)
 
         return checked_actions
-
-    # def get_pts_distributed_schedular_wo_me(
-    #     self, state, n_subset_eligible_process=None
-    # ):
-    #     """
-    #     n_subset_eligible_process = None => take all eligible nodes
-    #     """
-    #     eligible_nodes = self.find_eligible_nodes(state)
-    #     program_transitions = []
-
-    #     if eligible_nodes:
-    #         if n_subset_eligible_process is None:
-    #             n_subset_eligible_process = len(eligible_nodes)
-
-    #         for eligible_node_cobmination in itertools.combinations(
-    #             eligible_nodes, n_subset_eligible_process
-    #         ):
-    #             program_transitions.append(
-    #                 self._get_distributed_program_transitions_for_nodes(
-    #                     state, set(eligible_node_cobmination)
-    #                 )
-    #             )
-
-    #     return program_transitions
-
-    # def _get_distributed_program_transitions_for_nodes(self, state, nodes):
-    #     program_transition = []
-    #     for position, color in enumerate(state):
-    #         transition_color = color
-    #         if position in nodes:
-    #             neighbor_colors = set(state[i] for i in self.graph[position])
-    #             if color in neighbor_colors:  # is different color
-    #                 transition_color = self._find_min_possible_color(neighbor_colors)
-
-    #         program_transition.append(transition_color)
-
-    #     return tuple(program_transition)
-
-    # def _get_program_transitions_for_node(self, state, node):
-    #     program_transitions = []
-    #     color = state[node]
-    #     neighbor_colors = set(state[i] for i in self.graph[node])
-    #     # if color not in neighbor_colors:  # is different color
-    #     #     continue
-    #     transition_color = self._find_min_possible_color(neighbor_colors)
-    #     if color != transition_color:
-    #         perturb_state = tuple(
-    #             [
-    #                 *state[:node],
-    #                 transition_color,
-    #                 *state[node + 1 :],
-    #             ]
-    #         )
-    #         # program_transitions.append(self.config_to_indx(perturb_state))
-    #         program_transitions.append(perturb_state)
-    #         # may be yield can save memory
-
-    #     return program_transitions
 
 
 def main():
     coloring = GraphColoringSimulation()
     coloring.create_simulation_environment(
-        no_of_simulations=10, scheduler=DISTRIBUTED_SCHEDULER, me=False
+        no_of_simulations=10, scheduler=DISTRIBUTED_SCHEDULER, me=True
     )
     results = coloring.start_simulation()
     print(results)
