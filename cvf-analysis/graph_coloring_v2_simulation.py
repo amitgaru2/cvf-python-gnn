@@ -67,7 +67,9 @@ class GraphColoringSimulation(SimulationMixin, GraphColoring):
             # remove the conflicting actions from "action" i.e. remove all the actions that are neighbors to the process producing "action"
             neighbors = self.graph[action.process]
             neighbor_action_indexes = [
-                i.process for i in remaining_actions if i.process in neighbors
+                i
+                for i, action in enumerate(remaining_actions)
+                if action.process in neighbors
             ]
             for i in neighbor_action_indexes:
                 remaining_actions.pop(i)
@@ -138,7 +140,7 @@ class GraphColoringSimulation(SimulationMixin, GraphColoring):
 def main():
     coloring = GraphColoringSimulation()
     coloring.create_simulation_environment(
-        no_of_simulations=1, scheduler=CENTRAL_SCHEDULER, me=False
+        no_of_simulations=1, scheduler=DISTRIBUTED_SCHEDULER, me=True
     )
     results = coloring.start_simulation()
     print(results)

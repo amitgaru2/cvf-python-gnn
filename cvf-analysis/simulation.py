@@ -65,9 +65,6 @@ class SimulationMixin:
         logger.info("State %s", state)
         return step
 
-    # def get_all_eligible_actions(self, actions: List[Action]):
-    #     pass
-
     def execute(self, state, actions: List[Action]):
         for action in actions:
             state = action.execute(state)
