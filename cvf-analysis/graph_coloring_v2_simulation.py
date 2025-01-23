@@ -4,8 +4,10 @@ import math
 import time
 import random
 import itertools
+from functools import reduce
 
 from typing import List
+from pprint import pprint
 
 from simulation import SimulationMixin, Action, CENTRAL_SCHEDULER, DISTRIBUTED_SCHEDULER
 from graph_coloring_v2 import (
@@ -13,6 +15,8 @@ from graph_coloring_v2 import (
     GlobalAvgRank,
     GlobalTimeTrackFunction,
     logger,
+    start,
+    graphs_dir,
 )
 
 
@@ -20,6 +24,34 @@ graph_names = [sys.argv[1]]
 
 
 class GraphColoringSimulation(SimulationMixin, GraphColoring):
+
+    def __init__(self) -> None:
+        self.graph = start(graphs_dir, graph_names[0])
+        self.nodes = list(self.graph.keys())
+        self.degree_of_nodes = {n: len(self.graph[n]) for n in self.nodes}
+
+        self.possible_node_values = [
+            set(range(self.degree_of_nodes[node] + 1)) for node in self.nodes
+        ]
+        self.possible_node_values_length = [len(i) for i in self.possible_node_values]
+        self.total_configs = reduce(
+            lambda x, y: x * y, self.possible_node_values_length
+        )
+        logger.info(f"Total configs: {self.total_configs:,}.")
+
+        # rank map
+        self.global_rank_map = None
+        self.analysed_rank_count = 0
+
+        self.possible_values = list(
+            set([j for i in self.possible_node_values for j in i])
+        )
+        self.possible_values.sort()
+        self.possible_values_indx_str = {
+            v: str(i) for i, v in enumerate(self.possible_values)
+        }  # mapping from value to index
+
+        self.initialize_helpers()
 
     def get_random_state(self, avoid_invariant=False):
         def _inner():
@@ -77,10 +109,12 @@ class GraphColoringSimulation(SimulationMixin, GraphColoring):
 def main():
     coloring = GraphColoringSimulation()
     coloring.create_simulation_environment(
-        no_of_simulations=10, scheduler=DISTRIBUTED_SCHEDULER, me=True
+        no_of_simulations=100, scheduler=CENTRAL_SCHEDULER, me=False
     )
+    coloring.apply_fault_settings(fault_probability=0.1)
     results = coloring.start_simulation()
-    print(results)
+    pprint(results)
+    # print(coloring.generate_fault_weight(3))
 
 
 if __name__ == "__main__":

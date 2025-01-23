@@ -1,5 +1,7 @@
 import random
 
+import numpy as np
+
 from typing import List
 
 from custom_logger import logger
@@ -41,12 +43,19 @@ class SimulationMixin:
         self.scheduler = scheduler
         self.me = me
 
-    def apply_fault_settings(self, fault_probability: float, fault_weight: List):
+    def apply_fault_settings(self, fault_probability: float):
         self.fault_probability = fault_probability
-        self.fault_weight = fault_weight
+        self.fault_weight = None
 
-    def generate_fault_weight(self):
-        fault_weight = 0.8
+    def configure_fault_weight(self, process):
+        highest_fault_weight = np.float32(0.8)
+        other_fault_weight = np.float32(
+            (1 - highest_fault_weight) / (len(self.nodes) - 1)
+        )  # from the base class
+        fault_weight = np.array([other_fault_weight for _ in range(len(self.nodes))])
+        fault_weight[process] = highest_fault_weight
+        fault_weight /= fault_weight.sum()
+        self.fault_weight = fault_weight
 
     def get_actions(self, state):
         eligible_actions = self.get_all_eligible_actions(state)  # from the base class
@@ -57,8 +66,57 @@ class SimulationMixin:
             if self.me:
                 actions = self.remove_conflicts(actions)  # from the base class
 
-
         return actions
+
+    def inject_fault(self, state):
+        fault_count = 1
+        state_copy = list(state)
+        if self.scheduler == DISTRIBUTED_SCHEDULER:
+            fault_count = random.randint(1, len(self.nodes))  # from the base class
+        random_number = np.random.uniform()
+        if random_number <= self.fault_probability:
+            # inject fault
+            randomly_selected_processes = list(
+                np.random.choice(
+                    a=self.nodes, p=self.fault_weight, size=fault_count, replace=False
+                )
+            )
+            # logger.info(
+            #     "random "
+            #     + str(randomly_selected_processes)
+            #     + " fault count "
+            #     + str(fault_count)
+            #     + " fault weight "
+            #     + str(self.fault_weight)
+            # )
+            if self.me:
+                randomly_selected_processes = self.remove_conflicts_betn_processes(
+                    randomly_selected_processes
+                )
+
+            for p in randomly_selected_processes:
+                state_copy[p] = random.choice(list(self.possible_node_values[p]))
+
+        return tuple(state_copy)
+
+    def remove_conflicts_betn_processes(self, processes: List) -> List:
+        checked_processes = []
+        remaining_processes = processes[:]
+        while remaining_processes:
+            indx = random.randint(0, len(remaining_processes) - 1)
+            process = remaining_processes[indx]
+            neighbors = self.graph[process]  # from the base class
+            remaining_processes.pop(indx)
+
+            new_remaining_processes = []
+            for p in remaining_processes:
+                if p not in neighbors:
+                    new_remaining_processes.append(p)
+
+            remaining_processes = new_remaining_processes[:]
+            checked_processes.append(process)
+
+        return checked_processes
 
     def get_one_random_action(self, actions: List[Action]):
         return random.sample(actions, 1)
@@ -68,16 +126,23 @@ class SimulationMixin:
         subset_size = random.randint(1, count)
         return random.sample(actions, subset_size)
 
-    def run_simulations(self):
-        state = self.get_random_state(avoid_invariant=True)  # from the base class
+    def run_simulations(self, state, process):
+        """
+        process: process_id where the fault weight is concentrated
+        """
+        self.configure_fault_weight(process)
         step = 0
         while not self.is_invariant(state):  # from the base class
-            logger.info("State %s", state)
-            actions = self.get_actions(state)
-            state = self.execute(state, actions)
+            # logger.info("State %s", state)
+            faulty_state = self.inject_fault(state)  # might be faulty or not
+            if faulty_state != state:
+                pass
+            else:
+                actions = self.get_actions(state)
+                state = self.execute(state, actions)
             step += 1
 
-        logger.info("State %s", state)
+        # logger.info("State %s", state)
         return step
 
     def execute(self, state, actions: List[Action]):
@@ -96,6 +161,11 @@ class SimulationMixin:
         results = []
         for i in range(1, self.no_of_simulations + 1):
             logger.info("Running simulation round: %d", i)
-            results.append(self.run_simulations())
+            inner_results = []
+            state = self.get_random_state(avoid_invariant=True)  # from the base class
+            for process in range(len(self.nodes)):  # from the base class
+                inner_results.append(self.run_simulations(state, process))
+
+            results.append(inner_results)
 
         return results
