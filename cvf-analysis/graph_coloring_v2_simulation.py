@@ -112,9 +112,9 @@ class GraphColoringSimulation(SimulationMixin, GraphColoring):
 def main():
     coloring = GraphColoringSimulation()
     coloring.create_simulation_environment(
-        no_of_simulations=50000, scheduler=CENTRAL_SCHEDULER, me=False
+        no_of_simulations=10000, scheduler=CENTRAL_SCHEDULER, me=False
     )
-    coloring.apply_fault_settings(fault_probability=0.8)
+    coloring.apply_fault_settings(fault_probability=0.75)
     results = coloring.start_simulation()
     results = np.array(results)
     results = results.sum(axis=0)
