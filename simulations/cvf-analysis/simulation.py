@@ -111,7 +111,7 @@ class SimulationMixin:
                 )
 
             for p in randomly_selected_processes:
-                state_copy[p] = random.choice(list(self.possible_node_values[p]))
+                state_copy[p] = random.choice(list(self.possible_node_values[p] - {state[p]}))
 
         return tuple(state_copy)
 
