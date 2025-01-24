@@ -1,3 +1,5 @@
+import csv
+import os
 import time
 import random
 
@@ -36,6 +38,7 @@ class Action:
 
 
 class SimulationMixin:
+    highest_fault_weight = np.float32(0.8)
 
     def create_simulation_environment(
         self, no_of_simulations: int, scheduler: int, me: bool
@@ -49,12 +52,13 @@ class SimulationMixin:
         self.fault_weight = None
 
     def configure_fault_weight(self, process):
-        highest_fault_weight = np.float32(0.8)
         other_fault_weight = np.float32(
-            (1 - highest_fault_weight) / (len(self.nodes) - 1)
+            (1 - self.highest_fault_weight) / (len(self.nodes) - 1)
         )  # from the base class
-        fault_weight = np.array([other_fault_weight for _ in range(len(self.nodes))])
-        fault_weight[process] = highest_fault_weight
+        fault_weight = np.array(
+            [other_fault_weight for _ in range(len(self.nodes))]
+        )  # from the base class
+        fault_weight[process] = self.highest_fault_weight
         fault_weight /= fault_weight.sum()
         self.fault_weight = fault_weight
 
@@ -213,3 +217,16 @@ class SimulationMixin:
         result = np.array(result)
         result = result.sum(axis=0)
         return result
+
+    def store_result(self, result):
+        fieldnames = self.nodes  # from the base class
+        f = open(
+            os.path.join(
+                "results",
+                f"{self.graph_name}__{self.scheduler}__{self.no_of_simulations}__{self.me}__{self.fault_probability}__{self.highest_fault_weight:.2f}.csv",
+            ),
+            "w+",
+        )  # from the base class
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerow({i: result[i] for i in self.nodes})  # from the base class

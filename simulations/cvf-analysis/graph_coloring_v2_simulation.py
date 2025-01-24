@@ -22,8 +22,10 @@ from graph_coloring_v2 import (
 
 class GraphColoringSimulation(SimulationMixin, GraphColoring):
 
-    def __init__(self, graph) -> None:
+    def __init__(self, graph_name, graph) -> None:
+        self.graph_name = graph_name
         self.graph = graph
+
         self.nodes = list(self.graph.keys())
         self.degree_of_nodes = {n: len(self.graph[n]) for n in self.nodes}
 

@@ -57,7 +57,7 @@ def main(graph_name, graph, program, no_simulations, scheduler, me, fault_prob):
         fault_prob,
     )
     SimulationCVFAnalysisKlass = AnalysisMap[program]
-    simulation = SimulationCVFAnalysisKlass(graph)
+    simulation = SimulationCVFAnalysisKlass(graph_name, graph)
     simulation.create_simulation_environment(
         no_of_simulations=no_simulations, scheduler=scheduler, me=me
     )
@@ -65,6 +65,7 @@ def main(graph_name, graph, program, no_simulations, scheduler, me, fault_prob):
     result = simulation.start_simulation()
     result = simulation.aggregate_result(result)
     logger.info("Result %s", result)
+    simulation.store_result(result)
 
 
 if __name__ == "__main__":

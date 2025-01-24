@@ -15,5 +15,9 @@ set -e
 # python3 main.py --program linear_regression -f --graph-names test_lr_graph_1 --logging DEBUG
 # python graph_coloring_v2.py
 
-cd gnn
-python vanilla_gcn_generic.py
+# cd gnn
+# python vanilla_gcn_generic.py
+
+python main.py --program graph_coloring --sched 0 --no-sim 100000 --fault-prob 0.5 --graph-names graph_powerlaw_cluster_graph_n30
+python main.py --program graph_coloring --sched 1 --no-sim 100000 --fault-prob 0.5 --graph-names graph_powerlaw_cluster_graph_n30
+python main.py --program graph_coloring --sched 1 -me --no-sim 100000 --fault-prob 0.5 --graph-names graph_powerlaw_cluster_graph_n30
