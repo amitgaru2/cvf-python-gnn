@@ -21,3 +21,6 @@ set -e
 python main.py --program graph_coloring --sched 0 --no-sim 100000 --fault-prob 0.5 --graph-names graph_powerlaw_cluster_graph_n30
 python main.py --program graph_coloring --sched 1 --no-sim 100000 --fault-prob 0.5 --graph-names graph_powerlaw_cluster_graph_n30
 python main.py --program graph_coloring --sched 1 -me --no-sim 100000 --fault-prob 0.5 --graph-names graph_powerlaw_cluster_graph_n30
+python main.py --program graph_coloring --sched 0 --no-sim 100000 --fault-prob 0.5 --graph-names graph_powerlaw_cluster_graph_n29
+python main.py --program graph_coloring --sched 1 --no-sim 100000 --fault-prob 0.5 --graph-names graph_powerlaw_cluster_graph_n29
+python main.py --program graph_coloring --sched 1 -me --no-sim 100000 --fault-prob 0.5 --graph-names graph_powerlaw_cluster_graph_n29

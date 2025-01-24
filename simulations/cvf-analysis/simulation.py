@@ -219,7 +219,7 @@ class SimulationMixin:
         return result
 
     def store_result(self, result):
-        fieldnames = self.nodes  # from the base class
+        fieldnames = ["Node", "Aggregated Steps"]
         f = open(
             os.path.join(
                 "results",
@@ -229,4 +229,5 @@ class SimulationMixin:
         )  # from the base class
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
-        writer.writerow({i: result[i] for i in self.nodes})  # from the base class
+        for p, v in enumerate(result):
+            writer.writerow({"Node": p, "Aggregated Steps": v})  # from the base class
