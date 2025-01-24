@@ -4,10 +4,13 @@ import math
 import time
 import random
 import itertools
+import numpy as np
+
 from functools import reduce
 
 from typing import List
 from pprint import pprint
+
 
 from simulation import SimulationMixin, Action, CENTRAL_SCHEDULER, DISTRIBUTED_SCHEDULER
 from graph_coloring_v2 import (
@@ -109,11 +112,13 @@ class GraphColoringSimulation(SimulationMixin, GraphColoring):
 def main():
     coloring = GraphColoringSimulation()
     coloring.create_simulation_environment(
-        no_of_simulations=100, scheduler=CENTRAL_SCHEDULER, me=False
+        no_of_simulations=50000, scheduler=CENTRAL_SCHEDULER, me=False
     )
-    coloring.apply_fault_settings(fault_probability=0.1)
+    coloring.apply_fault_settings(fault_probability=0.8)
     results = coloring.start_simulation()
-    pprint(results)
+    results = np.array(results)
+    results = results.sum(axis=0)
+    print(results)
     # print(coloring.generate_fault_weight(3))
 
 

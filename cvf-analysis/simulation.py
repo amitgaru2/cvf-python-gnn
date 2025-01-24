@@ -68,27 +68,20 @@ class SimulationMixin:
 
         return actions
 
-    def inject_fault(self, state):
+    def inject_fault(self, state, process):
         fault_count = 1
         state_copy = list(state)
         if self.scheduler == DISTRIBUTED_SCHEDULER:
             fault_count = random.randint(1, len(self.nodes))  # from the base class
         random_number = np.random.uniform()
         if random_number <= self.fault_probability:
+            # logger.info("Fault occurred at %s", process)
             # inject fault
             randomly_selected_processes = list(
                 np.random.choice(
                     a=self.nodes, p=self.fault_weight, size=fault_count, replace=False
                 )
             )
-            # logger.info(
-            #     "random "
-            #     + str(randomly_selected_processes)
-            #     + " fault count "
-            #     + str(fault_count)
-            #     + " fault weight "
-            #     + str(self.fault_weight)
-            # )
             if self.me:
                 randomly_selected_processes = self.remove_conflicts_betn_processes(
                     randomly_selected_processes
@@ -134,7 +127,7 @@ class SimulationMixin:
         step = 0
         while not self.is_invariant(state):  # from the base class
             # logger.info("State %s", state)
-            faulty_state = self.inject_fault(state)  # might be faulty or not
+            faulty_state = self.inject_fault(state, process)  # might be faulty or not
             if faulty_state != state:
                 pass
             else:
@@ -160,7 +153,8 @@ class SimulationMixin:
         )
         results = []
         for i in range(1, self.no_of_simulations + 1):
-            logger.info("Running simulation round: %d", i)
+            if i%1000 == 0:
+                logger.info("Running simulation round: %d", i)
             inner_results = []
             state = self.get_random_state(avoid_invariant=True)  # from the base class
             for process in range(len(self.nodes)):  # from the base class
