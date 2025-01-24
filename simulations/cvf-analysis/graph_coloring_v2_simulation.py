@@ -50,22 +50,6 @@ class GraphColoringSimulation(SimulationMixin, GraphColoring):
 
         self.initialize_helpers()
 
-    def get_random_state(self, avoid_invariant=False):
-        def _inner():
-            _state = []
-            for i in range(len(self.nodes)):
-                _state.append(random.choice(list(self.possible_node_values[i])))
-            _state = tuple(_state)
-
-            return _state
-
-        state = _inner()
-        if avoid_invariant:
-            while self.is_invariant(state):
-                state = _inner()
-
-        return state
-
     def get_all_eligible_actions(self, state):
         eligible_actions = []
         for position, color in enumerate(state):
@@ -81,31 +65,6 @@ class GraphColoringSimulation(SimulationMixin, GraphColoring):
                 )
 
         return eligible_actions
-
-    def remove_conflicts(self, actions: List[Action]) -> List[Action]:
-        checked_actions = []
-        remaining_actions = actions[:]
-        while remaining_actions:
-            indx = random.randint(0, len(remaining_actions) - 1)
-            action = remaining_actions[indx]
-            # remove the conflicting actions from "action" i.e. remove all the actions that are neighbors to the process producing "action"
-            neighbors = self.graph[action.process]
-            remaining_actions.pop(indx)
-
-            new_remaining_actions = []
-            for i, act in enumerate(remaining_actions):
-                if act.process not in neighbors:
-                    new_remaining_actions.append(act)
-
-            remaining_actions = new_remaining_actions[:]
-            checked_actions.append(action)
-
-        return checked_actions
-
-    def aggregate_result(self, result):
-        result = np.array(result)
-        result = result.sum(axis=0)
-        return result
 
 
 # def main():

@@ -58,6 +58,24 @@ class SimulationMixin:
         fault_weight /= fault_weight.sum()
         self.fault_weight = fault_weight
 
+    def get_random_state(self, avoid_invariant=False):
+        def _inner():
+            _state = []
+            for i in range(len(self.nodes)):  # from the base class
+                _state.append(
+                    random.choice(list(self.possible_node_values[i]))
+                )  # from the base class
+            _state = tuple(_state)
+
+            return _state
+
+        state = _inner()
+        if avoid_invariant:
+            while self.is_invariant(state):  # from the base class
+                state = _inner()
+
+        return state
+
     def get_actions(self, state):
         eligible_actions = self.get_all_eligible_actions(state)  # from the base class
         if self.scheduler == CENTRAL_SCHEDULER:
@@ -65,7 +83,7 @@ class SimulationMixin:
         else:
             actions = self.get_subset_of_actions(eligible_actions)
             if self.me:
-                actions = self.remove_conflicts(actions)  # from the base class
+                actions = self.remove_conflicts_betn_actions(actions)
 
         return actions
 
@@ -92,6 +110,26 @@ class SimulationMixin:
                 state_copy[p] = random.choice(list(self.possible_node_values[p]))
 
         return tuple(state_copy)
+
+    def remove_conflicts_betn_actions(self, actions: List[Action]) -> List[Action]:
+        checked_actions = []
+        remaining_actions = actions[:]
+        while remaining_actions:
+            indx = random.randint(0, len(remaining_actions) - 1)
+            action = remaining_actions[indx]
+            # remove the conflicting actions from "action" i.e. remove all the actions that are neighbors to the process producing "action"
+            neighbors = self.graph[action.process]  # from the base class
+            remaining_actions.pop(indx)
+
+            new_remaining_actions = []
+            for i, act in enumerate(remaining_actions):
+                if act.process not in neighbors:
+                    new_remaining_actions.append(act)
+
+            remaining_actions = new_remaining_actions[:]
+            checked_actions.append(action)
+
+        return checked_actions
 
     def remove_conflicts_betn_processes(self, processes: List) -> List:
         checked_processes = []
@@ -170,3 +208,8 @@ class SimulationMixin:
             results.append(inner_results)
 
         return results
+
+    def aggregate_result(self, result):
+        result = np.array(result)
+        result = result.sum(axis=0)
+        return result
