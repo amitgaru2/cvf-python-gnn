@@ -1,0 +1,6 @@
+Graph graph_1
+Total configs: 5,120.
+Simulation environment: No. of Simulations: 1000 | Scheduler: DISTRIBUTED | ME: True
+Running simulation round: 1000
+Results [5576 5529 5418 5451 5633 5679 5540 5617 5419 5351]
+Total time taken: 5.1671 seconds.
