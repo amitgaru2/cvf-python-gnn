@@ -1,23 +1,8 @@
-import csv
-import sys
-import math
-import time
-import random
-import itertools
-import numpy as np
-
 from functools import reduce
 
-from typing import List
-from pprint import pprint
-
 from custom_logger import logger
-from simulation import SimulationMixin, Action, CENTRAL_SCHEDULER, DISTRIBUTED_SCHEDULER
-from graph_coloring_v2 import (
-    GraphColoring,
-    GlobalAvgRank,
-    GlobalTimeTrackFunction,
-)
+from graph_coloring_v2 import GraphColoring
+from simulation import SimulationMixin, Action
 
 
 class GraphColoringSimulation(SimulationMixin, GraphColoring):
