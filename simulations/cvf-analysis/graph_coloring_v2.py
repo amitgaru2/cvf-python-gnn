@@ -1,3 +1,5 @@
+"""duplicate from cvf-analysis/graph_coloring_v2.py"""
+
 import csv
 import os
 import sys
@@ -55,7 +57,7 @@ def time_track(func):
     return inner
 
 
-graphs_dir = os.path.join(os.getenv("CVF_PROJECT_DIR", "/home"), "cvf-analysis", "graphs")
+graphs_dir = "graphs"
 graph_names = [sys.argv[1]]
 
 

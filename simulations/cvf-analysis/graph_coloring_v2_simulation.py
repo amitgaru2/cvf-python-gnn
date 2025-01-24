@@ -11,25 +11,19 @@ from functools import reduce
 from typing import List
 from pprint import pprint
 
-
+from custom_logger import logger
 from simulation import SimulationMixin, Action, CENTRAL_SCHEDULER, DISTRIBUTED_SCHEDULER
 from graph_coloring_v2 import (
     GraphColoring,
     GlobalAvgRank,
     GlobalTimeTrackFunction,
-    logger,
-    start,
-    graphs_dir,
 )
-
-
-graph_names = [sys.argv[1]]
 
 
 class GraphColoringSimulation(SimulationMixin, GraphColoring):
 
-    def __init__(self) -> None:
-        self.graph = start(graphs_dir, graph_names[0])
+    def __init__(self, graph) -> None:
+        self.graph = graph
         self.nodes = list(self.graph.keys())
         self.degree_of_nodes = {n: len(self.graph[n]) for n in self.nodes}
 
@@ -109,21 +103,21 @@ class GraphColoringSimulation(SimulationMixin, GraphColoring):
         return checked_actions
 
 
-def main():
-    logger.info("Graph %s", graph_names[0])
-    coloring = GraphColoringSimulation()
-    coloring.create_simulation_environment(
-        no_of_simulations=1000, scheduler=DISTRIBUTED_SCHEDULER, me=True
-    )
-    coloring.apply_fault_settings(fault_probability=0.75)
-    results = coloring.start_simulation()
-    results = np.array(results)
-    results = results.sum(axis=0)
-    logger.info("Results %s", results)
-    # print(coloring.generate_fault_weight(3))
+# def main():
+#     logger.info("Graph %s", graph_names[0])
+#     coloring = GraphColoringSimulation()
+#     coloring.create_simulation_environment(
+#         no_of_simulations=1000, scheduler=DISTRIBUTED_SCHEDULER, me=True
+#     )
+#     coloring.apply_fault_settings(fault_probability=0.75)
+#     results = coloring.start_simulation()
+#     results = np.array(results)
+#     results = results.sum(axis=0)
+#     logger.info("Results %s", results)
+#     # print(coloring.generate_fault_weight(3))
 
 
-if __name__ == "__main__":
-    start_time = time.time()
-    main()
-    logger.info("Total time taken: %s seconds.", round(time.time() - start_time, 4))
+# if __name__ == "__main__":
+#     start_time = time.time()
+#     main()
+#     logger.info("Total time taken: %s seconds.", round(time.time() - start_time, 4))
