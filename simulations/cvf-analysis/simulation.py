@@ -1,3 +1,4 @@
+import time
 import random
 
 import numpy as np
@@ -152,9 +153,15 @@ class SimulationMixin:
             self.me,
         )
         results = []
+        log_time = time.time()
         for i in range(1, self.no_of_simulations + 1):
-            if i%1000 == 0:
-                logger.info("Running simulation round: %d", i)
+            if i % 1000 == 0:
+                logger.info(
+                    "Time taken: %ss, Running simulation round: %d",
+                    round(time.time() - log_time, 4),
+                    i,
+                )
+                log_time = time.time()
             inner_results = []
             state = self.get_random_state(avoid_invariant=True)  # from the base class
             for process in range(len(self.nodes)):  # from the base class

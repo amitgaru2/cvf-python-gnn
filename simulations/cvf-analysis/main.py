@@ -44,6 +44,9 @@ def start(graphs_dir, graph_names):
 
 
 def main(graph_name, graph, program, no_simulations, scheduler, me, fault_prob):
+    if scheduler == CENTRAL_SCHEDULER:
+        me = False
+
     logger.info(
         "Analysis graph: %s | program: %s | No. of Simulations: %s | Scheduler: %s | Mutual Exclusion: %s | Fault Probability: %s",
         graph_name,
@@ -59,7 +62,9 @@ def main(graph_name, graph, program, no_simulations, scheduler, me, fault_prob):
         no_of_simulations=no_simulations, scheduler=scheduler, me=me
     )
     simulation.apply_fault_settings(fault_probability=fault_prob)
-    simulation.start_simulation()
+    result = simulation.start_simulation()
+    result = simulation.aggregate_result(result)
+    logger.info("Result %s", result)
 
 
 if __name__ == "__main__":
@@ -118,3 +123,10 @@ if __name__ == "__main__":
             args.me,
             args.fault_prob,
         )
+
+
+"""
+python main.py --program graph_coloring --sched 0 --no-sim 100 --fault-prob 0.5 --graph-names graph_1
+python main.py --program graph_coloring --sched 1 --no-sim 100 --fault-prob 0.5 --graph-names graph_1
+python main.py --program graph_coloring --sched 1 -me --no-sim 100 --fault-prob 0.5 --graph-names graph_1
+"""

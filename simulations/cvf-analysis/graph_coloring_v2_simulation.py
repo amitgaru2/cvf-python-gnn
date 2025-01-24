@@ -102,6 +102,11 @@ class GraphColoringSimulation(SimulationMixin, GraphColoring):
 
         return checked_actions
 
+    def aggregate_result(self, result):
+        result = np.array(result)
+        result = result.sum(axis=0)
+        return result
+
 
 # def main():
 #     logger.info("Graph %s", graph_names[0])
