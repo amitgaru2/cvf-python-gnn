@@ -111,7 +111,9 @@ class SimulationMixin:
                 )
 
             for p in randomly_selected_processes:
-                state_copy[p] = random.choice(list(self.possible_node_values[p] - {state[p]}))
+                state_copy[p] = random.choice(
+                    list(self.possible_node_values[p] - {state[p]})
+                )
 
         return tuple(state_copy)
 
@@ -215,19 +217,25 @@ class SimulationMixin:
 
     def aggregate_result(self, result):
         result = np.array(result)
-        result = result.sum(axis=0)
-        return result
+        _, bin_edges = np.histogram(result.flatten(), bins=10)
+        result = result.transpose()
+        histogram = []
+        for p in range(len(self.nodes)):
+            hist, _ = np.histogram(result[p], bins=bin_edges)
+            histogram.append(hist)
+        return histogram, bin_edges
 
-    def store_result(self, result):
-        fieldnames = ["Node", "Aggregated Steps"]
+    def store_result(self, histogram, bin_edges):
+        # fieldnames = ["Node", "Aggregated Steps"]
         f = open(
             os.path.join(
                 "results",
                 f"{self.graph_name}__{self.scheduler}__{self.no_of_simulations}__{self.me}__{self.fault_probability}__{self.highest_fault_weight:.2f}.csv",
             ),
-            "w+",
+            "w",
+            newline=''
         )  # from the base class
-        writer = csv.DictWriter(f, fieldnames=fieldnames)
-        writer.writeheader()
-        for p, v in enumerate(result):
-            writer.writerow({"Node": p, "Aggregated Steps": v})  # from the base class
+        writer = csv.writer(f)
+        writer.writerow(["Node", *bin_edges])
+        for p, v in enumerate(histogram):
+            writer.writerow([p, *v])  # from the base class

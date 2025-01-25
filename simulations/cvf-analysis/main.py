@@ -63,9 +63,9 @@ def main(graph_name, graph, program, no_simulations, scheduler, me, fault_prob):
     )
     simulation.apply_fault_settings(fault_probability=fault_prob)
     result = simulation.start_simulation()
-    result = simulation.aggregate_result(result)
+    hist, bin_edges = simulation.aggregate_result(result)
     logger.info("Result %s", result)
-    simulation.store_result(result)
+    simulation.store_result(hist, bin_edges)
 
 
 if __name__ == "__main__":
