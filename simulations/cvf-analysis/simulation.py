@@ -91,9 +91,9 @@ class SimulationMixin:
 
         return actions
 
-    def inject_fault(self, state, process):
+    def inject_fault(self, state):
         fault_count = 1
-        state_copy = list(state)
+        faulty_actions = []
         if self.scheduler == DISTRIBUTED_SCHEDULER:
             fault_count = random.randint(1, len(self.nodes))  # from the base class
         random_number = np.random.uniform()
@@ -111,11 +111,14 @@ class SimulationMixin:
                 )
 
             for p in randomly_selected_processes:
-                state_copy[p] = random.choice(
+                transition_color = random.choice(
                     list(self.possible_node_values[p] - {state[p]})
                 )
+                faulty_actions.append(
+                    Action(Action.UPDATE, p, [state[p], transition_color])
+                )
 
-        return tuple(state_copy)
+        return faulty_actions
 
     def remove_conflicts_betn_actions(self, actions: List[Action]) -> List[Action]:
         checked_actions = []
@@ -172,9 +175,9 @@ class SimulationMixin:
         step = 0
         while not self.is_invariant(state):  # from the base class
             # logger.info("State %s", state)
-            faulty_state = self.inject_fault(state, process)  # might be faulty or not
-            if faulty_state != state:
-                pass
+            faulty_actions = self.inject_fault(state)  # might be faulty or not
+            if faulty_actions:
+                state = self.execute(state, faulty_actions)
             else:
                 actions = self.get_actions(state)
                 state = self.execute(state, actions)
@@ -218,6 +221,7 @@ class SimulationMixin:
     def aggregate_result(self, result):
         result = np.array(result)
         _, bin_edges = np.histogram(result.flatten(), bins=10)
+        bin_edges = bin_edges.astype(int)
         result = result.transpose()
         histogram = []
         for p in range(len(self.nodes)):
@@ -233,7 +237,7 @@ class SimulationMixin:
                 f"{self.graph_name}__{self.scheduler}__{self.no_of_simulations}__{self.me}__{self.fault_probability}__{self.highest_fault_weight:.2f}.csv",
             ),
             "w",
-            newline=''
+            newline="",
         )  # from the base class
         writer = csv.writer(f)
         writer.writerow(["Node", *bin_edges])
