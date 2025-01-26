@@ -52,18 +52,20 @@ class SimulationMixin:
         self.fault_weight = None
 
     def configure_fault_weight(self, process):
-        # other_fault_weight = np.float32(
-        #     (1 - self.highest_fault_weight) / (len(self.nodes) - 1)
-        # )  # from the base class
+        other_fault_weight = np.float32(
+            (1 - self.highest_fault_weight) / (len(self.nodes) - 1)
+        )  # from the base class
+        fault_weight = np.full((len(self.nodes), len(self.nodes)), other_fault_weight)
+        np.fill_diagonal(fault_weight, self.highest_fault_weight)
         # fault_weight = np.array(
         #     [other_fault_weight for _ in range(len(self.nodes))]
         # )  # from the base class
         # fault_weight[process] = self.highest_fault_weight
         # fault_weight /= fault_weight.sum()
-        # self.fault_weight = fault_weight
-        doubly_stochastic_fault_weight = np.full(
-            (len(self.nodes), len(self.nodes)), np.nan
-        )
+        self.fault_weight = fault_weight
+        # doubly_stochastic_fault_weight = np.full(
+        #     (len(self.nodes), len(self.nodes)), np.nan
+        # )
         # for n1 in self.nodes:
         #     doubly_stochastic_fault_weight[n1, n1] = self.highest_fault_weight
         #     doubly_stochastic_fault_weight[n1, -1] = np.float32(1) - self.highest_fault_weight
@@ -93,7 +95,7 @@ class SimulationMixin:
         # print(doubly_stochastic_fault_weight)
         # doubly_stochastic_fault_weight = doubly_stochastic_fault_weight[:, :-1]
         # self.fault_weight = doubly_stochastic_fault_weight
-        self.fault_weight = []
+        # self.fault_weight = []
 
     def get_random_state(self, avoid_invariant=False):
         def _inner():
@@ -248,7 +250,7 @@ class SimulationMixin:
             inner_results = []
             state = self.get_random_state(avoid_invariant=True)  # from the base class
             self.configure_fault_weight(0)
-            print(self.fault_weight)
+            # print(self.fault_weight)
             for process in range(len(self.nodes)):  # from the base class
                 inner_results.append(self.run_simulations(state, process))
 
