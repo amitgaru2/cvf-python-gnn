@@ -38,7 +38,7 @@ class Action:
 
 
 class SimulationMixin:
-    highest_fault_weight = np.float32(0.8)
+    highest_fault_weight = np.float32(0.5)
 
     def create_simulation_environment(
         self, no_of_simulations: int, scheduler: int, me: bool
@@ -52,15 +52,48 @@ class SimulationMixin:
         self.fault_weight = None
 
     def configure_fault_weight(self, process):
-        other_fault_weight = np.float32(
-            (1 - self.highest_fault_weight) / (len(self.nodes) - 1)
-        )  # from the base class
-        fault_weight = np.array(
-            [other_fault_weight for _ in range(len(self.nodes))]
-        )  # from the base class
-        fault_weight[process] = self.highest_fault_weight
-        fault_weight /= fault_weight.sum()
-        self.fault_weight = fault_weight
+        # other_fault_weight = np.float32(
+        #     (1 - self.highest_fault_weight) / (len(self.nodes) - 1)
+        # )  # from the base class
+        # fault_weight = np.array(
+        #     [other_fault_weight for _ in range(len(self.nodes))]
+        # )  # from the base class
+        # fault_weight[process] = self.highest_fault_weight
+        # fault_weight /= fault_weight.sum()
+        # self.fault_weight = fault_weight
+        doubly_stochastic_fault_weight = np.full(
+            (len(self.nodes), len(self.nodes)), np.nan
+        )
+        # for n1 in self.nodes:
+        #     doubly_stochastic_fault_weight[n1, n1] = self.highest_fault_weight
+        #     doubly_stochastic_fault_weight[n1, -1] = np.float32(1) - self.highest_fault_weight
+
+        # nodes_copy = self.nodes[:]
+        # random.shuffle(nodes_copy)
+        # for i, n1 in enumerate(nodes_copy):
+        #     temp = nodes_copy[:]
+        #     temp.pop(i)
+        #     print(n1, temp)
+        #     for n2 in temp[:-1]:
+        #         if not np.isnan(doubly_stochastic_fault_weight[n1, n2]):
+        #             continue
+        #         random_wt = np.round(np.random.uniform(0, doubly_stochastic_fault_weight[n1, -1]), 4)
+        #         doubly_stochastic_fault_weight[n1, n2] = random_wt
+        #         doubly_stochastic_fault_weight[n1, -1] -= random_wt
+
+        #         doubly_stochastic_fault_weight[n2, n1] = random_wt
+        #         doubly_stochastic_fault_weight[n2, -1] -= random_wt
+
+        #     doubly_stochastic_fault_weight[n1, temp[-1]] = doubly_stochastic_fault_weight[n1, -1]
+        #     doubly_stochastic_fault_weight[n1, -1] -= doubly_stochastic_fault_weight[n1, -1]
+
+        #     doubly_stochastic_fault_weight[temp[-1], n1] = doubly_stochastic_fault_weight[n1, -1]
+        #     doubly_stochastic_fault_weight[temp[-1], -1] -= doubly_stochastic_fault_weight[n1, -1]
+
+        # print(doubly_stochastic_fault_weight)
+        # doubly_stochastic_fault_weight = doubly_stochastic_fault_weight[:, :-1]
+        # self.fault_weight = doubly_stochastic_fault_weight
+        self.fault_weight = []
 
     def get_random_state(self, avoid_invariant=False):
         def _inner():
@@ -91,7 +124,7 @@ class SimulationMixin:
 
         return actions
 
-    def inject_fault(self, state):
+    def inject_fault(self, state, process):
         fault_count = 1
         faulty_actions = []
         if self.scheduler == DISTRIBUTED_SCHEDULER:
@@ -102,7 +135,10 @@ class SimulationMixin:
             # inject fault
             randomly_selected_processes = list(
                 np.random.choice(
-                    a=self.nodes, p=self.fault_weight, size=fault_count, replace=False
+                    a=self.nodes,
+                    p=self.fault_weight[process],
+                    size=fault_count,
+                    replace=False,
                 )
             )
             if self.me:
@@ -171,11 +207,11 @@ class SimulationMixin:
         """
         process: process_id where the fault weight is concentrated
         """
-        self.configure_fault_weight(process)
+        # self.configure_fault_weight(process)
         step = 0
         while not self.is_invariant(state):  # from the base class
             # logger.info("State %s", state)
-            faulty_actions = self.inject_fault(state)  # might be faulty or not
+            faulty_actions = self.inject_fault(state, process)  # might be faulty or not
             if faulty_actions:
                 state = self.execute(state, faulty_actions)
             else:
@@ -211,6 +247,8 @@ class SimulationMixin:
                 log_time = time.time()
             inner_results = []
             state = self.get_random_state(avoid_invariant=True)  # from the base class
+            self.configure_fault_weight(0)
+            print(self.fault_weight)
             for process in range(len(self.nodes)):  # from the base class
                 inner_results.append(self.run_simulations(state, process))
 
