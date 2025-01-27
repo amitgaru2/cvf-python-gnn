@@ -38,7 +38,7 @@ class Action:
 
 
 class SimulationMixin:
-    highest_fault_weight = np.float32(0.5)
+    highest_fault_weight = np.float32(0.6)
 
     def create_simulation_environment(
         self, no_of_simulations: int, scheduler: int, me: bool
@@ -52,17 +52,17 @@ class SimulationMixin:
         self.fault_weight = None
 
     def configure_fault_weight(self, process):
-        other_fault_weight = np.float32(
-            (1 - self.highest_fault_weight) / (len(self.nodes) - 1)
-        )  # from the base class
-        fault_weight = np.full((len(self.nodes), len(self.nodes)), other_fault_weight)
-        np.fill_diagonal(fault_weight, self.highest_fault_weight)
+        # other_fault_weight = np.float32(
+        #     (1 - self.highest_fault_weight) / (len(self.nodes) - 1)
+        # )  # from the base class
+        # fault_weight = np.full((len(self.nodes), len(self.nodes)), other_fault_weight)
+        # np.fill_diagonal(fault_weight, self.highest_fault_weight)
         # fault_weight = np.array(
         #     [other_fault_weight for _ in range(len(self.nodes))]
         # )  # from the base class
         # fault_weight[process] = self.highest_fault_weight
         # fault_weight /= fault_weight.sum()
-        self.fault_weight = fault_weight
+        # self.fault_weight = fault_weight
         # doubly_stochastic_fault_weight = np.full(
         #     (len(self.nodes), len(self.nodes)), np.nan
         # )
@@ -96,6 +96,24 @@ class SimulationMixin:
         # doubly_stochastic_fault_weight = doubly_stochastic_fault_weight[:, :-1]
         # self.fault_weight = doubly_stochastic_fault_weight
         # self.fault_weight = []
+
+        sm = np.full((len(self.nodes), len(self.nodes) + 1), np.nan)
+        np.fill_diagonal(sm, self.highest_fault_weight)
+        sm[:, -1] = np.float32(1.0 - self.highest_fault_weight)
+
+        for i in self.nodes:
+            temp = self.nodes[:]
+            temp.pop(i)
+            random.shuffle(temp)
+            for j in temp:
+                value = np.random.uniform(0, min(self.highest_fault_weight, sm[i, -1]))
+                sm[i, j] = value
+                sm[i, -1] -= value
+
+            sm[i, j] += sm[i, -1]
+            sm[i, -1] = 0
+
+        self.fault_weight = sm[:, :-1]
 
     def get_random_state(self, avoid_invariant=False):
         def _inner():
