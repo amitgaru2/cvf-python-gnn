@@ -277,6 +277,7 @@ class SimulationMixin:
         return results
 
     def aggregate_result(self, result):
+        # print("result", result)
         result = np.array(result)
         _, bin_edges = np.histogram(result.flatten(), bins=10)
         bin_edges = bin_edges.astype(int)
