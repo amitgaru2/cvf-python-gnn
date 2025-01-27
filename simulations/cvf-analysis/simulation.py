@@ -38,7 +38,7 @@ class Action:
 
 
 class SimulationMixin:
-    highest_fault_weight = np.float32(0.6)
+    highest_fault_weight = np.float32(0.8)
 
     def create_simulation_environment(
         self, no_of_simulations: int, scheduler: int, me: bool
