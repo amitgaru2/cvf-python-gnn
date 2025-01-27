@@ -167,11 +167,11 @@ class SimulationMixin:
                 )
 
             for p in randomly_selected_processes:
-                transition_color = random.choice(
+                transition_value = random.choice(
                     list(self.possible_node_values[p] - {state[p]})
                 )
                 faulty_actions.append(
-                    Action(Action.UPDATE, p, [state[p], transition_color])
+                    Action(Action.UPDATE, p, [state[p], transition_value])
                 )
 
         return faulty_actions
