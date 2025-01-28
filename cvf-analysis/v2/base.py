@@ -13,6 +13,8 @@ from custom_logger import logger
 
 
 class CVFAnalysisV2:
+    results_dir = ""
+
     def __init__(self, graph_name, graph) -> None:
         self.graph_name = graph_name
         self.graph = graph
@@ -151,7 +153,9 @@ class CVFAnalysisV2:
             }
         )
         df.sort_values(by="rank").reset_index(drop=True).to_csv(
-            os.path.join("results", f"ranks_avg__{self.graph_name}.csv")
+            os.path.join(
+                "results", self.results_dir, f"ranks_avg__{self.graph_name}.csv"
+            )
         )
 
         # max
@@ -162,7 +166,9 @@ class CVFAnalysisV2:
             }
         )
         df.sort_values(by="rank").reset_index(drop=True).to_csv(
-            os.path.join("results", f"ranks_max__{self.graph_name}.csv")
+            os.path.join(
+                "results", self.results_dir, f"ranks_max__{self.graph_name}.csv"
+            )
         )
 
     def find_rank_effect(self):
@@ -199,7 +205,9 @@ class CVFAnalysisV2:
             }
         )
         df.sort_values(by="rank effect").reset_index(drop=True).to_csv(
-            os.path.join("results", f"rank_effects_avg__{self.graph_name}.csv")
+            os.path.join(
+                "results", self.results_dir, f"rank_effects_avg__{self.graph_name}.csv"
+            )
         )
 
         df = pd.DataFrame.from_dict(self.global_avg_node_rank_effect, orient="index")
@@ -208,5 +216,9 @@ class CVFAnalysisV2:
         df.index.name = "node"
         df.sort_index(inplace=True)
         df.astype("int64").to_csv(
-            os.path.join("results", f"rank_effects_by_node_avg__{self.graph_name}.csv")
+            os.path.join(
+                "results",
+                self.results_dir,
+                f"rank_effects_by_node_avg__{self.graph_name}.csv",
+            )
         )

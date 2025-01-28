@@ -2,6 +2,8 @@ from base import CVFAnalysisV2
 
 
 class DijkstraTokenRingCVFAnalysisV2(CVFAnalysisV2):
+    results_dir = "dijkstra"
+
     def get_possible_node_values(self):
         return [{0, 1, 2} for _ in self.nodes]
 
