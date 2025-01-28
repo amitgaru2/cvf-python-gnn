@@ -7,7 +7,8 @@ class GraphColoringCVFAnalysisV2(CVFAnalysisV2):
     def get_possible_node_values(self):
         return [set(range(self.degree_of_nodes[node] + 1)) for node in self.nodes]
 
-    def _find_min_possible_color(self, colors):
+    @staticmethod
+    def _find_min_possible_color(colors):
         for i in range(len(colors) + 1):
             if i not in colors:
                 return i
