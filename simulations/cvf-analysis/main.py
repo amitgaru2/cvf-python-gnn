@@ -4,9 +4,9 @@ import sys
 import argparse
 
 from custom_logger import logger
-from dijkstra_v2_simulation import DijkstraSimulation
+from dijkstra_simulation import DijkstraSimulation
+from graph_coloring_simulation import GraphColoringSimulation
 from simulation import CENTRAL_SCHEDULER, DISTRIBUTED_SCHEDULER
-from graph_coloring_v2_simulation import GraphColoringSimulation
 
 ColoringProgram = "graph_coloring"
 DijkstraProgram = "dijkstra_token_ring"

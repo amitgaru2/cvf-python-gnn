@@ -1,38 +1,13 @@
 from functools import reduce
 
 from custom_logger import logger
-from dijkstra_v2 import DijkstraTokenRing
 from simulation import SimulationMixin, Action
 
+from dijkstra import DijkstraTokenRingCVFAnalysisV2
 
-class DijkstraSimulation(SimulationMixin, DijkstraTokenRing):
 
-    def __init__(self, graph_name, graph) -> None:
-        self.graph = graph
-        self.graph_name = graph_name
-        self.nodes = list(self.graph.keys())
-
-        self.possible_node_values = [{0, 1, 2} for _ in self.nodes]
-        self.possible_node_values_length = [len(i) for i in self.possible_node_values]
-        self.total_configs = reduce(
-            lambda x, y: x * y, self.possible_node_values_length
-        )
-        logger.info(f"Total configs: {self.total_configs:,}.")
-
-        # rank map
-        self.global_rank_map = None
-        self.analysed_rank_count = 0
-
-        self.possible_values = list(
-            set([j for i in self.possible_node_values for j in i])
-        )
-        self.possible_values.sort()
-        self.possible_values_indx_str = {
-            v: str(i) for i, v in enumerate(self.possible_values)
-        }  # mapping from value to index
-
-        self.initialize_helpers()
-        self.initialize_problem_helpers()
+class DijkstraSimulation(SimulationMixin, DijkstraTokenRingCVFAnalysisV2):
+    results_dir = "dijkstra"
 
     def get_all_eligible_actions(self, state):
         eligible_actions = []

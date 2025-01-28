@@ -1,5 +1,6 @@
 import csv
 import os
+import sys
 import time
 import random
 
@@ -8,6 +9,10 @@ import numpy as np
 from typing import List
 
 from custom_logger import logger
+
+sys.path.append(
+    os.path.join(os.getenv("CVF_PROJECT_DIR", "/home"), "cvf-analysis", "v2")
+)
 
 CENTRAL_SCHEDULER = 0
 DISTRIBUTED_SCHEDULER = 1
@@ -38,7 +43,12 @@ class Action:
 
 
 class SimulationMixin:
+    results_dir = ""
     highest_fault_weight = np.float32(0.8)
+
+    def init_global_rank_map(self):
+        """override this when not needed like for simulation"""
+        self.global_rank_map = None
 
     def create_simulation_environment(
         self, no_of_simulations: int, scheduler: int, me: bool
@@ -248,6 +258,7 @@ class SimulationMixin:
         f = open(
             os.path.join(
                 "results",
+                self.results_dir,
                 f"{self.graph_name}__{self.scheduler}__{self.no_of_simulations}__{self.me}__{self.fault_probability}__{self.highest_fault_weight:.2f}.csv",
             ),
             "w",
