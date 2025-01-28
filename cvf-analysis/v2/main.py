@@ -85,35 +85,6 @@ if __name__ == "__main__":
     if args.logging:
         logger.setLevel(getattr(logging, args.logging, "INFO"))
 
-    # analysis_type = FullAnalysisType if args.full_analysis else PartialAnalysisType
-    # CVFAnalysisKlass: CVFAnalysis = AnalysisMap[args.program][analysis_type]
-    # logger.info("Analysis program : %s.", CVFAnalysisKlass.__name__)
-    # if args.program == DijkstraProgram:
-    #     for no_nodes in args.graph_names:
-    #         no_nodes = int(no_nodes)
-    #         graph_name = f"implicit_graph_n{no_nodes}"
-    #         logger.info('Started for Graph: "%s".', graph_name)
-    #         graph = CVFAnalysisKlass.gen_implicit_graph(no_nodes)
-    #         analysis = CVFAnalysisKlass(graph_name, graph)
-    #         if analysis_type == PartialAnalysisType and args.sample_size:
-    #             set_sample_size(analysis, args.sample_size)
-    #         analysis.start()
-    # elif args.program == LinearRegressionProgram:
-    #     if not args.config_file:
-    #         logger.error("You need to provide config file for Linear Regression!")
-    #         exit(1)
-    #     for graph_name, graph in start(CVFAnalysisKlass.graphs_dir, args.graph_names):
-    #         analysis = CVFAnalysisKlass(graph_name, graph, args.config_file)
-    #         if analysis_type == PartialAnalysisType and args.sample_size:
-    #             set_sample_size(analysis, args.sample_size)
-    #         analysis.start()
-    # else:
-    #     for graph_name, graph in start(CVFAnalysisKlass.graphs_dir, args.graph_names):
-    #         analysis = CVFAnalysisKlass(graph_name, graph)
-    #         if analysis_type == PartialAnalysisType and args.sample_size:
-    #             set_sample_size(analysis, args.sample_size)
-    #         analysis.start()
-
     for graph_name, graph in start(graphs_dir, args.graph_names):
         main(
             graph_name,
@@ -124,4 +95,5 @@ if __name__ == "__main__":
 
 """
 python main.py --program graph_coloring --graph-names graph_1
+python main.py --program dijkstra_token_ring --graph-names implicit_graph_n10
 """
