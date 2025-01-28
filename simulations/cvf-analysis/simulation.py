@@ -52,51 +52,6 @@ class SimulationMixin:
         self.fault_weight = None
 
     def configure_fault_weight(self, process):
-        # other_fault_weight = np.float32(
-        #     (1 - self.highest_fault_weight) / (len(self.nodes) - 1)
-        # )  # from the base class
-        # fault_weight = np.full((len(self.nodes), len(self.nodes)), other_fault_weight)
-        # np.fill_diagonal(fault_weight, self.highest_fault_weight)
-        # fault_weight = np.array(
-        #     [other_fault_weight for _ in range(len(self.nodes))]
-        # )  # from the base class
-        # fault_weight[process] = self.highest_fault_weight
-        # fault_weight /= fault_weight.sum()
-        # self.fault_weight = fault_weight
-        # doubly_stochastic_fault_weight = np.full(
-        #     (len(self.nodes), len(self.nodes)), np.nan
-        # )
-        # for n1 in self.nodes:
-        #     doubly_stochastic_fault_weight[n1, n1] = self.highest_fault_weight
-        #     doubly_stochastic_fault_weight[n1, -1] = np.float32(1) - self.highest_fault_weight
-
-        # nodes_copy = self.nodes[:]
-        # random.shuffle(nodes_copy)
-        # for i, n1 in enumerate(nodes_copy):
-        #     temp = nodes_copy[:]
-        #     temp.pop(i)
-        #     print(n1, temp)
-        #     for n2 in temp[:-1]:
-        #         if not np.isnan(doubly_stochastic_fault_weight[n1, n2]):
-        #             continue
-        #         random_wt = np.round(np.random.uniform(0, doubly_stochastic_fault_weight[n1, -1]), 4)
-        #         doubly_stochastic_fault_weight[n1, n2] = random_wt
-        #         doubly_stochastic_fault_weight[n1, -1] -= random_wt
-
-        #         doubly_stochastic_fault_weight[n2, n1] = random_wt
-        #         doubly_stochastic_fault_weight[n2, -1] -= random_wt
-
-        #     doubly_stochastic_fault_weight[n1, temp[-1]] = doubly_stochastic_fault_weight[n1, -1]
-        #     doubly_stochastic_fault_weight[n1, -1] -= doubly_stochastic_fault_weight[n1, -1]
-
-        #     doubly_stochastic_fault_weight[temp[-1], n1] = doubly_stochastic_fault_weight[n1, -1]
-        #     doubly_stochastic_fault_weight[temp[-1], -1] -= doubly_stochastic_fault_weight[n1, -1]
-
-        # print(doubly_stochastic_fault_weight)
-        # doubly_stochastic_fault_weight = doubly_stochastic_fault_weight[:, :-1]
-        # self.fault_weight = doubly_stochastic_fault_weight
-        # self.fault_weight = []
-
         sm = np.full((len(self.nodes), len(self.nodes) + 1), np.nan)
         np.fill_diagonal(sm, self.highest_fault_weight)
         sm[:, -1] = np.float32(1.0 - self.highest_fault_weight)
