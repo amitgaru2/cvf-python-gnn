@@ -1,5 +1,3 @@
-from functools import reduce
-
 from simulation import SimulationMixin, Action
 
 from graph_coloring import GraphColoringCVFAnalysisV2

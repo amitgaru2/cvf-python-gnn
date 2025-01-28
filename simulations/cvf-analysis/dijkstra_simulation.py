@@ -1,6 +1,3 @@
-from functools import reduce
-
-from custom_logger import logger
 from simulation import SimulationMixin, Action
 
 from dijkstra import DijkstraTokenRingCVFAnalysisV2
