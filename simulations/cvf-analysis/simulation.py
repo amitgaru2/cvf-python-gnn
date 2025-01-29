@@ -1,5 +1,5 @@
-import csv
 import os
+import csv
 import sys
 import time
 import random
