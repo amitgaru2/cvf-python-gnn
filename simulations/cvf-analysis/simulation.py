@@ -233,7 +233,6 @@ class SimulationMixin:
             inner_results = []
             state = self.get_random_state(avoid_invariant=True)  # from the base class
             self.configure_fault_weight(0)
-            # print(self.fault_weight)
             for process in range(len(self.nodes)):  # from the base class
                 inner_results.append(self.run_simulations(state, process))
 
@@ -242,10 +241,10 @@ class SimulationMixin:
         return results
 
     def aggregate_result(self, result):
-        # print("result", result)
         result = np.array(result)
-        _, bin_edges = np.histogram(result.flatten(), bins=10)
-        bin_edges = bin_edges.astype(int)
+        # _, bin_edges = np.histogram(result.flatten(), bins=10)
+        # bin_edges = bin_edges.astype(int)
+        bin_edges = [1, 5, 10, 15, 20]
         result = result.transpose()
         histogram = []
         for p in range(len(self.nodes)):
@@ -254,7 +253,6 @@ class SimulationMixin:
         return histogram, bin_edges
 
     def store_result(self, histogram, bin_edges):
-        # fieldnames = ["Node", "Aggregated Steps"]
         f = open(
             os.path.join(
                 "results",
