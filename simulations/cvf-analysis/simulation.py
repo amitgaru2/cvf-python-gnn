@@ -44,7 +44,7 @@ class Action:
 
 class SimulationMixin:
     results_dir = ""
-    highest_fault_weight = np.float32(0.8)
+    highest_fault_weight = np.float32(0.6)
 
     def init_global_rank_map(self):
         """override this when not needed like for simulation"""
@@ -116,12 +116,51 @@ class SimulationMixin:
             fault_count = random.randint(1, len(self.nodes))  # from the base class
         random_number = np.random.uniform()
         if random_number <= self.fault_probability:
-            # logger.info("Fault occurred at %s", process)
-            # inject fault
             randomly_selected_processes = list(
                 np.random.choice(
                     a=self.nodes,
                     p=self.fault_weight[process],
+                    size=fault_count,
+                    replace=False,
+                )
+            )
+            if self.me:
+                randomly_selected_processes = self.remove_conflicts_betn_processes(
+                    randomly_selected_processes
+                )
+
+            for p in randomly_selected_processes:
+                transition_value = random.choice(
+                    list(self.possible_node_values[p] - {state[p]})
+                )
+                faulty_actions.append(
+                    Action(Action.UPDATE, p, [state[p], transition_value])
+                )
+
+        return faulty_actions
+
+    def inject_fault_at_node(self, state, process):
+        faulty_actions = []
+        transition_value = random.choice(
+            list(self.possible_node_values[process] - {state[process]})
+        )
+        faulty_actions.append(
+            Action(Action.UPDATE, process, [state[process], transition_value])
+        )
+        return faulty_actions
+
+    def inject_fault_w_equal_prob(self, state):
+        fault_count = 1
+        faulty_actions = []
+
+        if self.scheduler == DISTRIBUTED_SCHEDULER:
+            fault_count = random.randint(1, len(self.nodes))  # from the base class
+
+        random_number = np.random.uniform()
+        if random_number <= self.fault_probability:
+            randomly_selected_processes = list(
+                np.random.choice(
+                    a=self.nodes,
                     size=fault_count,
                     replace=False,
                 )
@@ -192,11 +231,15 @@ class SimulationMixin:
         """
         process: process_id where the fault weight is concentrated
         """
-        # self.configure_fault_weight(process)
         step = 0
+        # actions = self.inject_fault(state, process)
+        # state = self.execute(state, actions)
+        # step = 1
         while not self.is_invariant(state):  # from the base class
-            # logger.info("State %s", state)
             faulty_actions = self.inject_fault(state, process)  # might be faulty or not
+            # faulty_actions = self.inject_fault_w_equal_prob(
+            #     state
+            # )  # might be faulty or not
             if faulty_actions:
                 state = self.execute(state, faulty_actions)
             else:
@@ -204,7 +247,6 @@ class SimulationMixin:
                 state = self.execute(state, actions)
             step += 1
 
-        # logger.info("State %s", state)
         return step
 
     def execute(self, state, actions: List[Action]):
