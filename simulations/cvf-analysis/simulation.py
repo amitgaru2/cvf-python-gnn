@@ -242,9 +242,9 @@ class SimulationMixin:
 
     def aggregate_result(self, result):
         result = np.array(result)
-        # _, bin_edges = np.histogram(result.flatten(), bins=10)
-        # bin_edges = bin_edges.astype(int)
-        bin_edges = [1, 5, 10, 15, 20]
+        _, bin_edges = np.histogram(result.flatten(), bins=10)
+        bin_edges = bin_edges.astype(int)
+        # bin_edges = [1, 5, 10, 15, 20]
         result = result.transpose()
         histogram = []
         for p in range(len(self.nodes)):
