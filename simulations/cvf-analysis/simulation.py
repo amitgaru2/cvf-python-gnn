@@ -232,11 +232,12 @@ class SimulationMixin:
         process: process_id where the fault weight is concentrated
         """
         step = 0
-        # actions = self.inject_fault(state, process)
-        # state = self.execute(state, actions)
-        # step = 1
+        actions = self.inject_fault_at_node(state, process)
+        state = self.execute(state, actions)
+        step = 0
         while not self.is_invariant(state):  # from the base class
-            faulty_actions = self.inject_fault(state, process)  # might be faulty or not
+            faulty_actions = []
+            # faulty_actions = self.inject_fault(state, process)  # might be faulty or not
             # faulty_actions = self.inject_fault_w_equal_prob(
             #     state
             # )  # might be faulty or not
@@ -246,7 +247,6 @@ class SimulationMixin:
                 actions = self.get_actions(state)
                 state = self.execute(state, actions)
             step += 1
-
         return step
 
     def execute(self, state, actions: List[Action]):
@@ -280,6 +280,7 @@ class SimulationMixin:
 
             results.append(inner_results)
 
+        logger.info("results %s", results)
         return results
 
     def aggregate_result(self, result):
