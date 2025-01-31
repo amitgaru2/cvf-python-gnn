@@ -98,6 +98,19 @@ class SimulationMixin:
 
         return state
 
+    def get_random_state_v2(self, avoid_invariant=False):
+        def _inner():
+            _indx = random.randint(0, self.total_configs - 1)
+            _state = self.indx_to_config(_indx)
+            return _indx, _state
+
+        indx, state = _inner()
+        if avoid_invariant:
+            while self.is_invariant(state):  # from the base class
+                indx, state = _inner()
+
+        return indx, state
+
     def get_actions(self, state):
         eligible_actions = self.get_all_eligible_actions(state)  # from the base class
         if self.scheduler == CENTRAL_SCHEDULER:
@@ -227,14 +240,25 @@ class SimulationMixin:
         subset_size = random.randint(1, count)
         return random.sample(actions, subset_size)
 
+    def get_steps_to_convergence(self, state):
+        step = 0
+        while not self.is_invariant(state):  # from the base class
+            actions = self.get_actions(state)
+            state = self.execute(state, actions)
+            step += 1
+        return step
+
     def run_simulations(self, state, process):
         """
         process: process_id where the fault weight is concentrated
         """
         step = 0
+        # transitions = []
+        # transitions.append(state)
         actions = self.inject_fault_at_node(state, process)
         state = self.execute(state, actions)
         step = 0
+        # transitions.append(state)
         while not self.is_invariant(state):  # from the base class
             # faulty_actions = self.inject_fault(state, process)  # might be faulty or not
             # faulty_actions = self.inject_fault_w_equal_prob(
@@ -245,7 +269,10 @@ class SimulationMixin:
             # else:
             actions = self.get_actions(state)
             state = self.execute(state, actions)
+            # transitions.append(state)
             step += 1
+
+        # logger.info("process: %s, transitions: %s", process, transitions)
         return step
 
     def execute(self, state, actions: List[Action]):
@@ -272,19 +299,22 @@ class SimulationMixin:
                 )
                 log_time = time.time()
             inner_results = []
-            state = self.get_random_state(avoid_invariant=True)  # from the base class
+            _, state = self.get_random_state_v2(avoid_invariant=False)
             self.configure_fault_weight(0)
             for process in range(len(self.nodes)):  # from the base class
-                inner_results.append(self.run_simulations(state, process))
+                inner_results.append(
+                    self.get_steps_to_convergence(state)
+                    - self.run_simulations(state, process)
+                )
 
             results.append(inner_results)
 
-        # logger.info("results %s", results)
+        logger.info("results %s", results)
         return results
 
     def aggregate_result(self, result):
         result = np.array(result)
-        _, bin_edges = np.histogram(result.flatten(), bins=10)
+        _, bin_edges = np.histogram(result.flatten())
         bin_edges = bin_edges.astype(int)
         # bin_edges = [1, 5, 10, 15, 20]
         result = result.transpose()
