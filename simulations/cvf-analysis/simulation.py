@@ -309,7 +309,7 @@ class SimulationMixin:
 
             results.append(inner_results)
 
-        logger.info("results %s", results)
+        # logger.info("results %s", results)
         return results
 
     def aggregate_result(self, result):
