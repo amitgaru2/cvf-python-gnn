@@ -1,4 +1,5 @@
 import os
+import csv
 import math
 
 import numpy as np
@@ -15,9 +16,11 @@ from custom_logger import logger
 class CVFAnalysisV2:
     results_dir = ""
 
-    def __init__(self, graph_name, graph) -> None:
+    def __init__(self, graph_name: str, graph: dict, generate_data_ml: bool) -> None:
         self.graph_name = graph_name
         self.graph = graph
+        self.generate_data_ml = generate_data_ml
+
         self.nodes = list(self.graph.keys())
         self.degree_of_nodes = {n: len(self.graph[n]) for n in self.nodes}
 
@@ -102,6 +105,8 @@ class CVFAnalysisV2:
         self.save_rank()
         self.find_rank_effect()
         self.save_rank_effect()
+        if self.generate_data_ml:
+            self.generate_dataset_for_ml()
 
     def _get_program_transitions(self, start_state):
         raise NotImplemented
@@ -222,3 +227,23 @@ class CVFAnalysisV2:
                 f"rank_effects_by_node_avg__{self.graph_name}.csv",
             )
         )
+
+    def generate_dataset_for_ml(self):
+        writer = csv.DictWriter(
+            open(
+                os.path.join(
+                    "datasets", f"{self.graph_name}_config_rank_dataset.csv", "w"
+                )
+            ),
+            fieldnames=["config", "L", "C", "M"],
+        )
+        writer.writeheader()
+        for k, v in enumerate(self.global_rank_map):
+            writer.writerow(
+                {
+                    "config": list(self.indx_to_config(k)),
+                    "L": v[0],
+                    "C": v[1],
+                    "M": v[2],
+                }
+            )
