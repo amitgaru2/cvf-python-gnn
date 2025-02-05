@@ -232,8 +232,11 @@ class CVFAnalysisV2:
         writer = csv.DictWriter(
             open(
                 os.path.join(
-                    "datasets", f"{self.graph_name}_config_rank_dataset.csv", "w"
-                )
+                    "datasets",
+                    self.results_dir,
+                    f"{self.graph_name}_config_rank_dataset.csv",
+                ),
+                "w",
             ),
             fieldnames=["config", "L", "C", "M"],
         )
