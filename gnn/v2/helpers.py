@@ -11,11 +11,14 @@ from torch.utils.data import Dataset
 
 class CVFConfigDataset(Dataset):
     def __init__(
-        self, dataset_file, edge_index_file, num_classes, one_hot_encode=True
+        self, program, dataset_file, edge_index_file, num_classes, one_hot_encode=True
     ) -> None:
-        self.data = pd.read_csv(os.path.join("datasets", dataset_file))
+        dataset_dir = os.path.join(
+            os.getenv("CVF_PROJECT_DIR", ""), "cvf-analysis", "v2", "datasets", program
+        )
+        self.data = pd.read_csv(os.path.join(dataset_dir, dataset_file))
         self.edge_index = torch.tensor(
-            json.load(open(os.path.join("datasets", edge_index_file), "r")),
+            json.load(open(os.path.join(dataset_dir, edge_index_file), "r")),
             dtype=torch.long,
         )
         self.num_classes = num_classes
@@ -42,7 +45,7 @@ class CVFConfigDataset(Dataset):
                 torch.tensor(
                     [i for i in ast.literal_eval(row["config"])], dtype=torch.float32
                 ),
-                torch.tensor([row["rank"]]).float(),
+                torch.tensor([row["M"]]).float(),
             )
 
         return result
