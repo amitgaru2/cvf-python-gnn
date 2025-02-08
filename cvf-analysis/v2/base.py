@@ -16,7 +16,9 @@ from custom_logger import logger
 class CVFAnalysisV2:
     results_dir = ""
 
-    def __init__(self, graph_name: str, graph: dict, generate_data_ml: bool) -> None:
+    def __init__(
+        self, graph_name: str, graph: dict, generate_data_ml: bool = False
+    ) -> None:
         self.graph_name = graph_name
         self.graph = graph
         self.generate_data_ml = generate_data_ml
@@ -35,6 +37,9 @@ class CVFAnalysisV2:
         # rank
         self.global_avg_rank = defaultdict(lambda: 0)
         self.global_max_rank = defaultdict(lambda: 0)
+
+        # node's program transitions
+        self.global_pt = defaultdict(lambda: 0)
 
         # rank effects
         self.global_avg_rank_effect = defaultdict(lambda: 0)
@@ -215,6 +220,7 @@ class CVFAnalysisV2:
             )
         )
 
+        # node's rank effect
         df = pd.DataFrame.from_dict(self.global_avg_node_rank_effect, orient="index")
         df.fillna(0, inplace=True)
         df = df.reindex(sorted(df.columns), axis=1)
@@ -250,3 +256,17 @@ class CVFAnalysisV2:
                     "M": v[2],
                 }
             )
+
+    def save_node_pt(self):
+        df = pd.DataFrame.from_dict(self.global_pt, orient="index")
+        df.fillna(0, inplace=True)
+        df = df.reindex(sorted(df.columns), axis=1)
+        df.index.name = "node"
+        df.sort_index(inplace=True)
+        df.astype("int64").to_csv(
+            os.path.join(
+                "results",
+                self.results_dir,
+                f"pts_by_node_avg__{self.graph_name}.csv",
+            )
+        )

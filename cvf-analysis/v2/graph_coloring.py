@@ -20,7 +20,11 @@ class GraphColoringCVFAnalysisV2(CVFAnalysisV2):
                     return False
         return True
 
-    def _get_program_transitions(self, start_state):
+    def start(self):
+        super().start()
+        self.save_node_pt()
+
+    def _get_program_transitions(self, start_state: tuple):
         program_transitions = []
         for position, color in enumerate(start_state):
             # check if node already has different color among the neighbors => If yes => no need to perturb that node's value
@@ -29,6 +33,7 @@ class GraphColoringCVFAnalysisV2(CVFAnalysisV2):
                 continue
             transition_color = self._find_min_possible_color(neighbor_colors)
             if color != transition_color:
+                self.global_pt[position] += 1
                 perturb_state = tuple(
                     [
                         *start_state[:position],
@@ -36,6 +41,7 @@ class GraphColoringCVFAnalysisV2(CVFAnalysisV2):
                         *start_state[position + 1 :],
                     ]
                 )
+
                 program_transitions.append(self.config_to_indx(perturb_state))
                 # may be yield can save memory
 

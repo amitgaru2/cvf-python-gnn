@@ -1,6 +1,5 @@
-import logging
 import os
-import sys
+import logging
 import argparse
 
 from custom_logger import logger

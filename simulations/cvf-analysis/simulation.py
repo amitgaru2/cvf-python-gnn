@@ -253,26 +253,15 @@ class SimulationMixin:
         process: process_id where the fault weight is concentrated
         """
         step = 0
-        # transitions = []
-        # transitions.append(state)
-        actions = self.inject_fault_at_node(state, process)
-        state = self.execute(state, actions)
-        step = 0
-        # transitions.append(state)
         while not self.is_invariant(state):  # from the base class
-            # faulty_actions = self.inject_fault(state, process)  # might be faulty or not
-            # faulty_actions = self.inject_fault_w_equal_prob(
-            #     state
-            # )  # might be faulty or not
-            # if faulty_actions:
-            #     state = self.execute(state, faulty_actions)
-            # else:
-            actions = self.get_actions(state)
-            state = self.execute(state, actions)
-            # transitions.append(state)
+            faulty_actions = self.inject_fault(state, process)  # might be faulty or not
+            if faulty_actions:
+                state = self.execute(state, faulty_actions)
+            else:
+                actions = self.get_actions(state)
+                state = self.execute(state, actions)
             step += 1
 
-        # logger.info("process: %s, transitions: %s", process, transitions)
         return step
 
     def execute(self, state, actions: List[Action]):
@@ -299,13 +288,10 @@ class SimulationMixin:
                 )
                 log_time = time.time()
             inner_results = []
-            _, state = self.get_random_state_v2(avoid_invariant=False)
+            _, state = self.get_random_state_v2(avoid_invariant=True)
             self.configure_fault_weight(0)
             for process in range(len(self.nodes)):  # from the base class
-                inner_results.append(
-                    self.get_steps_to_convergence(state)
-                    - self.run_simulations(state, process)
-                )
+                inner_results.append(self.run_simulations(state, process))
 
             results.append(inner_results)
 
@@ -314,8 +300,10 @@ class SimulationMixin:
 
     def aggregate_result(self, result):
         result = np.array(result)
-        _, bin_edges = np.histogram(result.flatten())
-        bin_edges = bin_edges.astype(int)
+        # _, bin_edges = np.histogram(result.flatten())
+        # bin_edges = bin_edges.astype(int)
+        bin_edges = [1, 2, 3, 4, 5, 10]
+        bin_edges += [(i + 1) * 10 for i in range(1, np.max(result) // 10)]
         # bin_edges = [1, 5, 10, 15, 20]
         result = result.transpose()
         histogram = []
