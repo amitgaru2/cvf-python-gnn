@@ -138,6 +138,7 @@ class CVFAnalysisV2:
 
         config = self.indx_to_config(indx)
         if self.is_invariant(config):
+            self.pt_graph_adj_list[indx] = []
             self.total_invariants += 1
             self.analysed_rank_count += 1
             self.global_rank_map[indx] = np.array([0, 1, 0])
@@ -157,7 +158,6 @@ class CVFAnalysisV2:
 
     def find_rank(self):
         for i in range(self.total_configs):
-            self.pt_graph_adj_list[i] = []
             if self.global_rank_map[i, 0] is None:
                 self.dfs([i])
                 logger.debug(f"Analysed {self.analysed_rank_count:,} configurations.")
