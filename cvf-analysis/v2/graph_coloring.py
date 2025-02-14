@@ -26,6 +26,7 @@ class GraphColoringCVFAnalysisV2(CVFAnalysisV2):
 
     def _get_program_transitions(self, start_state: tuple):
         program_transitions = []
+        indx = self.config_to_indx(start_state)
         for position, color in enumerate(start_state):
             # check if node already has different color among the neighbors => If yes => no need to perturb that node's value
             neighbor_colors = set(start_state[i] for i in self.graph[position])
@@ -45,4 +46,5 @@ class GraphColoringCVFAnalysisV2(CVFAnalysisV2):
                 program_transitions.append(self.config_to_indx(perturb_state))
                 # may be yield can save memory
 
+        self.pt_graph_adj_list[indx] = program_transitions
         return program_transitions

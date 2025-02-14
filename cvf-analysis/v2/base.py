@@ -17,11 +17,17 @@ class CVFAnalysisV2:
     results_dir = ""
 
     def __init__(
-        self, graph_name: str, graph: dict, generate_data_ml: bool = False
+        self,
+        graph_name: str,
+        graph: dict,
+        generate_data_ml: bool = False,
+        generate_data_embedding: bool = False,
     ) -> None:
         self.graph_name = graph_name
         self.graph = graph
         self.generate_data_ml = generate_data_ml
+        self.generate_data_embedding = generate_data_embedding
+        self.pt_graph_adj_list = {}
 
         self.nodes = list(self.graph.keys())
         self.degree_of_nodes = {n: len(self.graph[n]) for n in self.nodes}
@@ -33,6 +39,8 @@ class CVFAnalysisV2:
             lambda x, y: x * y, self.possible_node_values_length
         )
         logger.info(f"Total configs: {self.total_configs:,}.")
+
+        self.total_invariants = 0
 
         # rank
         self.global_avg_rank = defaultdict(lambda: 0)
@@ -107,11 +115,14 @@ class CVFAnalysisV2:
 
     def start(self):
         self.find_rank()
+        logger.info("Total Invariants: %s.", self.total_invariants)
         self.save_rank()
         self.find_rank_effect()
         self.save_rank_effect()
         if self.generate_data_ml:
             self.generate_dataset_for_ml()
+        if self.generate_data_embedding:
+            self.generate_dataset_for_embedding()
 
     def _get_program_transitions(self, start_state):
         raise NotImplemented
@@ -127,6 +138,7 @@ class CVFAnalysisV2:
 
         config = self.indx_to_config(indx)
         if self.is_invariant(config):
+            self.total_invariants += 1
             self.analysed_rank_count += 1
             self.global_rank_map[indx] = np.array([0, 1, 0])
             return
@@ -145,6 +157,7 @@ class CVFAnalysisV2:
 
     def find_rank(self):
         for i in range(self.total_configs):
+            self.pt_graph_adj_list[i] = []
             if self.global_rank_map[i, 0] is None:
                 self.dfs([i])
                 logger.debug(f"Analysed {self.analysed_rank_count:,} configurations.")
@@ -270,3 +283,14 @@ class CVFAnalysisV2:
                 f"pts_by_node_avg__{self.graph_name}.csv",
             )
         )
+
+    def generate_dataset_for_embedding(self):
+        with open(
+            os.path.join(
+                "datasets", self.results_dir, f"{self.graph_name}_pt_adj_list.txt"
+            ),
+            "w",
+        ) as f:
+            for indx in range(self.total_configs):
+                f.write(",".join(str(i) for i in self.pt_graph_adj_list[indx]))
+                f.write("\n")

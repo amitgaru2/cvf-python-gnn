@@ -43,9 +43,11 @@ def start(graphs_dir, graph_names):
         yield graph_name, graph
 
 
-def main(graph_name, graph, program, generate_data_ml):
+def main(graph_name, graph, program, generate_data_ml, generate_data_emb):
     CVFAnalysisKlass = AnalysisMap[program]
-    cvf_analysis = CVFAnalysisKlass(graph_name, graph, generate_data_ml)
+    cvf_analysis = CVFAnalysisKlass(
+        graph_name, graph, generate_data_ml, generate_data_emb
+    )
     cvf_analysis.start()
 
 
@@ -78,12 +80,19 @@ if __name__ == "__main__":
         required=False,
     )
     parser.add_argument("-ml", "--generate-data-ml", action="store_true")
+    parser.add_argument("-emb", "--generate-data-emb", action="store_true")
     args = parser.parse_args()
     if args.logging:
         logger.setLevel(getattr(logging, args.logging, "INFO"))
 
     for graph_name, graph in start(graphs_dir, args.graph_names):
-        main(graph_name, graph, args.program, args.generate_data_ml)
+        main(
+            graph_name,
+            graph,
+            args.program,
+            args.generate_data_ml,
+            args.generate_data_emb,
+        )
 
 
 """
