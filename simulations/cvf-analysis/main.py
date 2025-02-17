@@ -44,29 +44,41 @@ def start(graphs_dir, graph_names):
         yield graph_name, graph
 
 
-def main(graph_name, graph, program, no_simulations, scheduler, me, fault_prob):
+def main(
+    graph_name,
+    graph,
+    program,
+    no_simulations,
+    scheduler,
+    me,
+    fault_prob,
+    fault_interval,
+):
     if scheduler == CENTRAL_SCHEDULER:
         me = False
 
     logger.info(
-        "Analysis graph: %s | program: %s | No. of Simulations: %s | Scheduler: %s | Mutual Exclusion: %s | Fault Probability: %s",
+        "Analysis graph: %s | program: %s | No. of Simulations: %s | Scheduler: %s | Mutual Exclusion: %s | Fault Interval: %s",
         graph_name,
         program,
         no_simulations,
         scheduler,
         me,
-        fault_prob,
+        fault_interval,
     )
     SimulationCVFAnalysisKlass = AnalysisMap[program]
     simulation = SimulationCVFAnalysisKlass(graph_name, graph)
     simulation.create_simulation_environment(
         no_of_simulations=no_simulations, scheduler=scheduler, me=me
     )
-    simulation.apply_fault_settings(fault_probability=fault_prob)
+    simulation.apply_fault_settings(
+        fault_probability=fault_prob, fault_interval=fault_interval
+    )
     result = simulation.start_simulation()
-    hist, bin_edges = simulation.aggregate_result(result)
+    simulation.store_raw_result(result)
+    # hist, bin_edges = simulation.aggregate_result(result)
     # logger.info("Result %s", result)
-    simulation.store_result(hist, bin_edges)
+    # simulation.store_result(hist, bin_edges)
 
 
 if __name__ == "__main__":
@@ -91,6 +103,9 @@ if __name__ == "__main__":
     parser.add_argument("-me", "--me", action="store_true")
     parser.add_argument("--no-sim", type=int, required=True)  # number of simulations
     parser.add_argument("--fault-prob", type=float, required=True)  # fault probability
+    parser.add_argument(
+        "--fault-interval", type=int, required=True
+    )  # fault probability
     parser.add_argument(
         "--graph-names",
         type=str,
@@ -124,6 +139,7 @@ if __name__ == "__main__":
             args.sched,
             args.me,
             args.fault_prob,
+            args.fault_interval,
         )
 
 

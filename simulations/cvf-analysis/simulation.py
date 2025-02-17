@@ -57,8 +57,9 @@ class SimulationMixin:
         self.scheduler = scheduler
         self.me = me
 
-    def apply_fault_settings(self, fault_probability: float):
+    def apply_fault_settings(self, fault_probability: float, fault_interval: int):
         self.fault_probability = fault_probability
+        self.fault_interval = fault_interval
         self.fault_weight = None
 
     def configure_fault_weight(self, process):
@@ -253,13 +254,21 @@ class SimulationMixin:
         process: process_id where the fault weight is concentrated
         """
         step = 0
+        last_fault_interval = 0
         while not self.is_invariant(state):  # from the base class
-            faulty_actions = self.inject_fault(state, process)  # might be faulty or not
+            # faulty_actions = self.inject_fault(state, process)  # might be faulty or not
+            faulty_actions = []
+            if last_fault_interval == self.fault_interval:
+                faulty_actions = self.inject_fault_at_node(state, process)
+                last_fault_interval = -1
+
             if faulty_actions:
                 state = self.execute(state, faulty_actions)
             else:
                 actions = self.get_actions(state)
                 state = self.execute(state, actions)
+
+            last_fault_interval += 1
             step += 1
 
         return step
@@ -297,6 +306,21 @@ class SimulationMixin:
 
         # logger.info("results %s", results)
         return results
+
+    def store_raw_result(self, result):
+        f = open(
+            os.path.join(
+                "results",
+                self.results_dir,
+                f"{self.graph_name}__{self.scheduler}__{self.no_of_simulations}__{self.me}__{self.fault_interval}__raw.csv",
+            ),
+            "w",
+            newline="",
+        )  # from the base class
+        writer = csv.writer(f)
+        writer.writerow(["Iteration", *self.nodes])
+        for i, v in enumerate(result, 1):
+            writer.writerow([i, *v])  # from the base class
 
     def aggregate_result(self, result):
         result = np.array(result)
