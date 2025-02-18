@@ -30,10 +30,12 @@ cd simulations/cvf-analysis
 #python main.py --program dijkstra_token_ring --sched 1 --no-sim 50000 --fault-prob 0.5 --graph-names implicit_graph_n20
 #python main.py --program dijkstra_token_ring --sched 1 -me --no-sim 50000 --fault-prob 0.5 --graph-names implicit_graph_n20
 
-python main.py --program graph_coloring --sched 0 --no-sim 100000 --fault-interval 1 --graph-names graph_7 --fault-prob 1.0
-python main.py --program graph_coloring --sched 0 --no-sim 100000 --fault-interval 2 --graph-names graph_7 --fault-prob 1.0
-python main.py --program graph_coloring --sched 0 --no-sim 100000 --fault-interval 4 --graph-names graph_7 --fault-prob 1.0
+# python main.py --program graph_coloring --sched 0 --no-sim 100000 --fault-interval 1 --graph-names graph_7 --fault-prob 1.0
+# python main.py --program graph_coloring --sched 0 --no-sim 100000 --fault-interval 2 --graph-names graph_7 --fault-prob 1.0
+# python main.py --program graph_coloring --sched 0 --no-sim 100000 --fault-interval 4 --graph-names graph_7 --fault-prob 1.0
+python main.py --program graph_coloring --sched 0 --no-sim 100000 --fault-interval 5 --graph-names graph_7 --fault-prob 1.0
 
-python main.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 1 --graph-names graph_7 --fault-prob 1.0
-python main.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 2 --graph-names graph_7 --fault-prob 1.0
-python main.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 4 --graph-names graph_7 --fault-prob 1.0
+# python main.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 1 --graph-names graph_7 --fault-prob 1.0
+# python main.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 2 --graph-names graph_7 --fault-prob 1.0
+# python main.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 4 --graph-names graph_7 --fault-prob 1.0
+python main.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 5 --graph-names graph_7 --fault-prob 1.0
