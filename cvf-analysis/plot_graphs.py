@@ -10,18 +10,19 @@ graph_names = [
     # "graph_6b",
     # "graph_7",
     # "graph_8",
-    "graph_4",
-    "graph_5",
+    # "graph_4",
+    # "graph_5",
     # "test_lr_graph_6",
     # "implicit_graph_n5",
+    "graph_powerlaw_cluster_graph_n30",
 ]
 
-planar = True
+planar = False
 fontsize = 25
 
 for gname in graph_names:
     G = nx.read_adjlist(f"graphs/{gname}.txt")
-    fig = plt.figure(figsize=(14, 7), constrained_layout=True)
+    fig = plt.figure(figsize=(50, 35), constrained_layout=True)
     if planar:
         pos = nx.planar_layout(G)
         nx.draw_networkx(G, pos=pos, node_color="black", font_color="white", ax=fig.add_subplot(), font_size=30, node_size=1200)
@@ -31,5 +32,6 @@ for gname in graph_names:
         ax.collections[0].set_edgecolor("#000000") 
 
     # fig.suptitle(f"Graph {gname.split("_")[1]}", fontsize=fontsize)
+    fig.suptitle(f"Graph {' '.join(gname.split("_"))}", fontsize=fontsize)
     fig.savefig(f"graph_images/{gname}.png")
     # plt.show()
