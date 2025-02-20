@@ -11,7 +11,7 @@ class MaximalMatchingCVFAnalysisV2(CVFAnalysisV2):
         result = []
         for position in self.nodes:
             result.append(
-                set([None, *self.graph[position]])
+                set([-1, *self.graph[position]])
             )  # either None, or one of its neighbors
         return result
 

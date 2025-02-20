@@ -5,6 +5,8 @@ import argparse
 from custom_logger import logger
 from dijkstra import DijkstraTokenRingCVFAnalysisV2
 from graph_coloring import GraphColoringCVFAnalysisV2
+from maximal_matching import MaximalMatchingCVFAnalysisV2
+
 
 ColoringProgram = "graph_coloring"
 DijkstraProgram = "dijkstra_token_ring"
@@ -15,6 +17,7 @@ LinearRegressionProgram = "linear_regression"
 AnalysisMap = {
     ColoringProgram: GraphColoringCVFAnalysisV2,
     DijkstraProgram: DijkstraTokenRingCVFAnalysisV2,
+    MaxMatchingProgram: MaximalMatchingCVFAnalysisV2,
 }
 
 graphs_dir = os.path.join(
@@ -58,7 +61,7 @@ if __name__ == "__main__":
         choices=[
             ColoringProgram,
             DijkstraProgram,
-            # MaxMatchingProgram,
+            MaxMatchingProgram,
             # MaxIndependentSetProgram,
             # LinearRegressionProgram,
         ],
