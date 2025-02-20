@@ -210,7 +210,7 @@ class CVFAnalysisV2:
             frm_config = self.indx_to_config(indx)
             for position, value in enumerate(frm_config):
                 for perturb_value in set(
-                    range(len(self.possible_node_values[position]))
+                    range(self.possible_node_values_length[position])
                 ) - {value}:
                     perturb_state = tuple(
                         [
