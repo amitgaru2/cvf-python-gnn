@@ -12,7 +12,7 @@ class GraphColoringCVFAnalysisV2(CVFAnalysisV2):
             ]
             result.append(tuple(possible_values))
 
-        return result
+        return result, []
 
     @staticmethod
     def _find_min_possible_color(colors):

@@ -17,15 +17,17 @@ class MaximalMatchingCVFAnalysisV2(CVFAnalysisV2):
     def get_possible_node_values(self):
         """include m values as well"""
         result = []
+        mapping = []
         for position in self.nodes:
             possible_values = list()
             for neighbor in [None, *self.graph[position]]:
                 for m in (True, False):
                     possible_values.append(MaximalMatchingData(neighbor, m))
 
+            mapping.append({v: i for i, v in enumerate(possible_values)})
             result.append(tuple(possible_values))
 
-        return result
+        return result, mapping
 
     def is_invariant(self, state: Tuple[int]):
         """check invariant"""
@@ -65,6 +67,97 @@ class MaximalMatchingCVFAnalysisV2(CVFAnalysisV2):
 
         return True
 
+    def _is_program_transition(self, perturb_pos, start_state, dest_state) -> bool:
+        j = perturb_pos
+        state = start_state
+        config = self.possible_node_values[perturb_pos][state[perturb_pos]]
+        dest_config = self.possible_node_values[perturb_pos][dest_state[perturb_pos]]
+
+        def _pr_married(j, config):
+            for i in self.graph[j]:
+                if self.possible_node_values[i][state[i]].p == j and config.p == i:
+                    return True
+            return False
+
+        # update m.j
+        if config.m != _pr_married(j, config):
+            if dest_config.m == _pr_married(j, config):
+                return True
+        else:
+            if config.p is None:
+                for i in self.graph[j]:
+                    if (
+                        self.possible_node_values[i][state[i]].p == j
+                        and dest_config.p == i
+                    ):
+                        return True
+
+                # make a proposal
+                for i in self.graph[j]:
+                    if self.possible_node_values[i][state[i]].p == j:
+                        break
+                else:
+                    max_k = -1
+                    for k in self.graph[j]:
+                        if (
+                            self.possible_node_values[k][state[k]].p is None
+                            and k < j
+                            and not self.possible_node_values[k][state[k]].m
+                        ):
+                            if k > max_k:
+                                max_k = k
+
+                    if max_k >= 0 and dest_config.p == max_k:
+                        return True
+            else:
+                # withdraw a proposal
+                i = config.p
+                if self.possible_node_values[i][state[i]].p != j and (
+                    self.possible_node_values[i][state[i]].m or j <= i
+                ):
+                    if dest_config.p is None:
+                        return True
+
+        return False
+
     def _get_program_transitions(self, start_state):
         program_transitions = []
+
+        for position, node_val_indx in enumerate(start_state):
+            current_p_value = self.possible_node_values[position][node_val_indx].p
+            current_m_value = self.possible_node_values[position][node_val_indx].m
+
+            possible_config_p_val = {
+                i.p for i in self.possible_node_values[position]
+            } - {current_p_value}
+
+            for perturb_p_val in possible_config_p_val:
+                perturb_node_val_indx = self.possible_node_values_mapping[position][
+                    MaximalMatchingData(perturb_p_val, current_m_value)
+                ]
+                perturb_state = tuple(
+                    [
+                        *start_state[:position],
+                        perturb_node_val_indx,
+                        *start_state[position + 1 :],
+                    ]
+                )
+                if self._is_program_transition(position, start_state, perturb_state):
+                    program_transitions.append(self.config_to_indx(perturb_state))
+
+            possible_config_m_val = {True, False} - {current_m_value}
+            for perturb_m_val in possible_config_m_val:
+                perturb_node_val_indx = self.possible_node_values_mapping[position][
+                    MaximalMatchingData(current_p_value, perturb_m_val)
+                ]
+                perturb_state = tuple(
+                    [
+                        *start_state[:position],
+                        perturb_node_val_indx,
+                        *start_state[position + 1 :],
+                    ]
+                )
+                if self._is_program_transition(position, start_state, perturb_state):
+                    program_transitions.append(self.config_to_indx(perturb_state))
+
         return program_transitions

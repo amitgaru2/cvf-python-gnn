@@ -49,7 +49,9 @@ class CVFAnalysisV2:
         self.nodes = list(self.graph.keys())
         self.degree_of_nodes = {n: len(self.graph[n]) for n in self.nodes}
 
-        self.possible_node_values: List[ProgramData] = self.get_possible_node_values()
+        self.possible_node_values, self.possible_node_values_mapping = (
+            self.get_possible_node_values()
+        )
 
         self.possible_node_values_length = [len(i) for i in self.possible_node_values]
         self.total_configs = reduce(
@@ -107,7 +109,7 @@ class CVFAnalysisV2:
         return value  # base 10, not fractional value
 
     def config_to_indx(self, config):
-        config_to_indx_str = "".join(str(indx) for indx in config)
+        config_to_indx_str = [str(indx) for indx in config]
         result = self.base_n_to_decimal(config_to_indx_str)
         return result
 
