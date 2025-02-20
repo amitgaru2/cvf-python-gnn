@@ -5,12 +5,29 @@ import math
 import numpy as np
 import pandas as pd
 
-from typing import List
+from typing import List, Tuple
 from functools import reduce
 from collections import defaultdict
 
 
 from custom_logger import logger
+
+
+class ProgramData:
+    def __init__(self, val: int):
+        self.val = val
+        self.data = self.val
+
+    def __eq__(self, other):
+        return self.data == other.data
+
+    def __hash__(self):
+        return hash(self.data)
+
+    def __str__(self):
+        return str(self.data)
+
+    __repr__ = __str__
 
 
 class CVFAnalysisV2:
@@ -57,19 +74,30 @@ class CVFAnalysisV2:
         self.init_global_rank_map()
         self.analysed_rank_count = 0
 
-        self.possible_values = list(
-            set([j for i in self.possible_node_values for j in i])
-        )
-        self.possible_values.sort()
-        self.possible_values_indx_str = {
-            v: str(i) for i, v in enumerate(self.possible_values)
-        }  # mapping from value to index
+        # self.possible_values = list(
+        #     set([j for i in self.possible_node_values for j in i])
+        # )
+        # self.possible_values.sort()
+        # self.possible_values_indx_str = {
+        #     v: str(i) for i, v in enumerate(self.possible_values)
+        # }  # mapping from value to index
+
+        # self.possible_node_values_indx_str = self.get_possible_node_values_indx_str()
 
         self.initialize_helpers()
         self.initialize_program_helpers()
 
     def get_possible_node_values(self) -> List:
         raise NotImplemented
+
+    # def get_possible_node_values_indx_str(self):
+    #     result = {}
+    #     for node in self.nodes:
+    #         result[node] = {}
+    #         for i, v in enumerate(self.possible_node_values[node]):
+    #             result[node][i] = str(i)
+
+    #     return result
 
     def init_global_rank_map(self):
         """override this when not needed like for simulation"""
@@ -98,7 +126,7 @@ class CVFAnalysisV2:
         return value  # base 10, not fractional value
 
     def config_to_indx(self, config):
-        config_to_indx_str = "".join(self.possible_values_indx_str[i] for i in config)
+        config_to_indx_str = "".join(str(indx) for indx in config)
         result = self.base_n_to_decimal(config_to_indx_str)
         return result
 
@@ -127,7 +155,7 @@ class CVFAnalysisV2:
     def _get_program_transitions(self, start_state):
         raise NotImplemented
 
-    def is_invariant(self, config):
+    def is_invariant(self, config: Tuple[ProgramData]):
         raise NotImplemented
 
     def dfs(self, path: list[int]):
@@ -198,7 +226,9 @@ class CVFAnalysisV2:
         for indx in range(self.total_configs):
             frm_config = self.indx_to_config(indx)
             for position, value in enumerate(frm_config):
-                for perturb_value in self.possible_node_values[position] - {value}:
+                for perturb_value in set(
+                    range(len(self.possible_node_values[position]))
+                ) - {value}:
                     perturb_state = tuple(
                         [
                             *frm_config[:position],

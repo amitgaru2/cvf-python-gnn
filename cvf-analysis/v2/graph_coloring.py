@@ -1,11 +1,19 @@
-from base import CVFAnalysisV2
+from base import ProgramData, CVFAnalysisV2
 
 
 class GraphColoringCVFAnalysisV2(CVFAnalysisV2):
     results_dir = "coloring"
 
     def get_possible_node_values(self):
-        return [set(range(self.degree_of_nodes[node] + 1)) for node in self.nodes]
+        result = list()
+        for node in self.nodes:
+            possible_values = [
+                ProgramData(i) for i in range(self.degree_of_nodes[node] + 1)
+            ]
+            result.append(tuple(possible_values))
+
+        return result
+        # return [set(range(self.degree_of_nodes[node] + 1)) for node in self.nodes]
 
     @staticmethod
     def _find_min_possible_color(colors):
