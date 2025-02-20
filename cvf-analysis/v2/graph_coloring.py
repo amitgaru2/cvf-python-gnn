@@ -13,7 +13,6 @@ class GraphColoringCVFAnalysisV2(CVFAnalysisV2):
             result.append(tuple(possible_values))
 
         return result
-        # return [set(range(self.degree_of_nodes[node] + 1)) for node in self.nodes]
 
     @staticmethod
     def _find_min_possible_color(colors):

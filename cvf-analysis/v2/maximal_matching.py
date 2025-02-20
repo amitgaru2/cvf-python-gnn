@@ -27,7 +27,7 @@ class MaximalMatchingCVFAnalysisV2(CVFAnalysisV2):
 
         return result
 
-    def is_invariant(self, state: Tuple[ProgramData]):
+    def is_invariant(self, state: Tuple[int]):
         """check invariant"""
 
         def _pr_married(j, config):

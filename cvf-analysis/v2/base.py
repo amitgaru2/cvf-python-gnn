@@ -5,8 +5,8 @@ import math
 import numpy as np
 import pandas as pd
 
-from typing import List, Tuple
 from functools import reduce
+from typing import List, Tuple
 from collections import defaultdict
 
 
@@ -49,7 +49,7 @@ class CVFAnalysisV2:
         self.nodes = list(self.graph.keys())
         self.degree_of_nodes = {n: len(self.graph[n]) for n in self.nodes}
 
-        self.possible_node_values = self.get_possible_node_values()
+        self.possible_node_values: List[ProgramData] = self.get_possible_node_values()
 
         self.possible_node_values_length = [len(i) for i in self.possible_node_values]
         self.total_configs = reduce(
@@ -74,30 +74,11 @@ class CVFAnalysisV2:
         self.init_global_rank_map()
         self.analysed_rank_count = 0
 
-        # self.possible_values = list(
-        #     set([j for i in self.possible_node_values for j in i])
-        # )
-        # self.possible_values.sort()
-        # self.possible_values_indx_str = {
-        #     v: str(i) for i, v in enumerate(self.possible_values)
-        # }  # mapping from value to index
-
-        # self.possible_node_values_indx_str = self.get_possible_node_values_indx_str()
-
         self.initialize_helpers()
         self.initialize_program_helpers()
 
     def get_possible_node_values(self) -> List:
         raise NotImplemented
-
-    # def get_possible_node_values_indx_str(self):
-    #     result = {}
-    #     for node in self.nodes:
-    #         result[node] = {}
-    #         for i, v in enumerate(self.possible_node_values[node]):
-    #             result[node][i] = str(i)
-
-    #     return result
 
     def init_global_rank_map(self):
         """override this when not needed like for simulation"""
@@ -155,7 +136,7 @@ class CVFAnalysisV2:
     def _get_program_transitions(self, start_state):
         raise NotImplemented
 
-    def is_invariant(self, config: Tuple[ProgramData]):
+    def is_invariant(self, config: Tuple[int]):
         raise NotImplemented
 
     def dfs(self, path: list[int]):

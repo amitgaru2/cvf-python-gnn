@@ -1,11 +1,21 @@
-from base import CVFAnalysisV2
+from base import CVFAnalysisV2, ProgramData
 
 
 class DijkstraTokenRingCVFAnalysisV2(CVFAnalysisV2):
     results_dir = "dijkstra"
 
+    # def get_possible_node_values(self):
+    #     return [{0, 1, 2} for _ in self.nodes]
+
     def get_possible_node_values(self):
-        return [{0, 1, 2} for _ in self.nodes]
+        result = list()
+        for node in self.nodes:
+            possible_values = [
+                ProgramData(i) for i in [0, 1, 2]
+            ]
+            result.append(tuple(possible_values))
+
+        return result
 
     def initialize_program_helpers(self):
         self.bottom = 0
