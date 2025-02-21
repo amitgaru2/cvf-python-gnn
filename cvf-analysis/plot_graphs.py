@@ -16,7 +16,9 @@ graph_names = [
     # "implicit_graph_n5",
     # "graph_powerlaw_cluster_graph_n30",
     # "random_graph_diff_degree_1",
-    "random_graph_diff_degree_2",
+    # "random_graph_diff_degree_2",
+    # "graph_random_regular_graph_n10_d4",
+    "graph_powerlaw_cluster_graph_n9"
 ]
 
 planar = False
