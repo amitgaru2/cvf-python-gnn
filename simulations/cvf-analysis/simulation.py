@@ -156,7 +156,7 @@ class SimulationMixin:
     def inject_fault_at_node(self, state, process):
         faulty_actions = []
         transition_value = random.choice(
-            list(self.possible_node_values[process] - {state[process]})
+            list(set(range(len(self.possible_node_values[process]))) - {state[process]})
         )
         faulty_actions.append(
             Action(Action.UPDATE, process, [state[process], transition_value])

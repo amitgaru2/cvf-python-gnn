@@ -5,6 +5,7 @@ import argparse
 from custom_logger import logger
 from dijkstra_simulation import DijkstraSimulation
 from graph_coloring_simulation import GraphColoringSimulation
+from maximal_matching_simulation import MaximalMatchingSimulation
 from simulation import CENTRAL_SCHEDULER, DISTRIBUTED_SCHEDULER
 
 ColoringProgram = "graph_coloring"
@@ -16,6 +17,7 @@ LinearRegressionProgram = "linear_regression"
 AnalysisMap = {
     ColoringProgram: GraphColoringSimulation,
     DijkstraProgram: DijkstraSimulation,
+    MaxMatchingProgram: MaximalMatchingSimulation,
 }
 
 graphs_dir = os.path.join(
@@ -88,7 +90,7 @@ if __name__ == "__main__":
         choices=[
             ColoringProgram,
             DijkstraProgram,
-            # MaxMatchingProgram,
+            MaxMatchingProgram,
             # MaxIndependentSetProgram,
             # LinearRegressionProgram,
         ],
