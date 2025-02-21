@@ -1,3 +1,5 @@
+import random
+
 from simulation import SimulationMixin, Action
 
 from maximal_matching import MaximalMatchingCVFAnalysisV2, MaximalMatchingData
@@ -59,3 +61,70 @@ class MaximalMatchingSimulation(SimulationMixin, MaximalMatchingCVFAnalysisV2):
                     )
 
         return eligible_actions
+
+    def inject_fault_at_node(self, state, process):
+        faulty_actions = []
+        config = self.possible_node_values[process][state[process]]
+        possible_actions = []
+        for a_pr_married_value in self._evaluate_perturbed_pr_married(process, state):
+            if config.m is not a_pr_married_value:
+                perturb_node_val_indx = self.possible_node_values_mapping[process][
+                    MaximalMatchingData(config.p, a_pr_married_value)
+                ]
+                perturb_state = tuple(
+                    [
+                        *state[:process],
+                        perturb_node_val_indx,
+                        *state[process + 1 :],
+                    ]
+                )
+
+                possible_actions.append(
+                    Action(
+                        Action.UPDATE, process, [state[process], perturb_state[process]]
+                    )
+                )
+
+            else:
+                if config.p is None:
+                    for nbr in self.graph[process]:
+                        perturb_node_val_indx = self.possible_node_values_mapping[
+                            process
+                        ][MaximalMatchingData(nbr, a_pr_married_value)]
+                        perturb_state = tuple(
+                            [
+                                *state[:process],
+                                perturb_node_val_indx,
+                                *state[process + 1 :],
+                            ]
+                        )
+
+                        possible_actions.append(
+                            Action(
+                                Action.UPDATE,
+                                process,
+                                [state[process], perturb_state[process]],
+                            )
+                        )
+
+                else:
+                    perturb_node_val_indx = self.possible_node_values_mapping[process][
+                        MaximalMatchingData(None, a_pr_married_value)
+                    ]
+                    perturb_state = tuple(
+                        [
+                            *state[:process],
+                            perturb_node_val_indx,
+                            *state[process + 1 :],
+                        ]
+                    )
+                    possible_actions.append(
+                        Action(
+                            Action.UPDATE,
+                            process,
+                            [state[process], perturb_state[process]],
+                        )
+                    )
+
+        faulty_actions.append(random.choice(possible_actions))
+        return faulty_actions
