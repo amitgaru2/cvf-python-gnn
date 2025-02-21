@@ -56,9 +56,9 @@ class MaximalMatchingCVFAnalysisV2(CVFAnalysisV2):
 
                     for k in self.graph[j]:
                         if (
-                            self.possible_node_values[i][state[k]].p is None
+                            self.possible_node_values[k][state[k]].p is None
                             and k < j
-                            and not self.possible_node_values[i][state[k]].m
+                            and not self.possible_node_values[k][state[k]].m
                         ):
                             return False
                 else:
