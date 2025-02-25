@@ -5,8 +5,9 @@ import argparse
 from custom_logger import logger
 from dijkstra_simulation import DijkstraSimulation
 from graph_coloring_simulation import GraphColoringSimulation
-from maximal_matching_simulation import MaximalMatchingSimulation
 from simulation import CENTRAL_SCHEDULER, DISTRIBUTED_SCHEDULER
+from maximal_matching_simulation import MaximalMatchingSimulation
+from maximal_independent_set_simulation import MaximalIndependentSetSimulation
 
 ColoringProgram = "graph_coloring"
 DijkstraProgram = "dijkstra_token_ring"
@@ -18,6 +19,7 @@ AnalysisMap = {
     ColoringProgram: GraphColoringSimulation,
     DijkstraProgram: DijkstraSimulation,
     MaxMatchingProgram: MaximalMatchingSimulation,
+    MaxIndependentSetProgram: MaximalIndependentSetSimulation,
 }
 
 graphs_dir = os.path.join(
@@ -91,7 +93,7 @@ if __name__ == "__main__":
             ColoringProgram,
             DijkstraProgram,
             MaxMatchingProgram,
-            # MaxIndependentSetProgram,
+            MaxIndependentSetProgram,
             # LinearRegressionProgram,
         ],
         required=True,

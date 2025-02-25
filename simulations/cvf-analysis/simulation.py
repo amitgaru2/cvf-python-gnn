@@ -43,7 +43,6 @@ class Action:
 
 
 class SimulationMixin:
-    results_dir = ""
     highest_fault_weight = np.float32(0.6)
 
     def init_global_rank_map(self):
