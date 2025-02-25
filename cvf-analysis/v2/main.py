@@ -6,6 +6,7 @@ from custom_logger import logger
 from dijkstra import DijkstraTokenRingCVFAnalysisV2
 from graph_coloring import GraphColoringCVFAnalysisV2
 from maximal_matching import MaximalMatchingCVFAnalysisV2
+from maximal_independent_set import MaximalIndependentSetCVFAnalysisV2
 
 
 ColoringProgram = "graph_coloring"
@@ -18,6 +19,7 @@ AnalysisMap = {
     ColoringProgram: GraphColoringCVFAnalysisV2,
     DijkstraProgram: DijkstraTokenRingCVFAnalysisV2,
     MaxMatchingProgram: MaximalMatchingCVFAnalysisV2,
+    MaxIndependentSetProgram: MaximalIndependentSetCVFAnalysisV2,
 }
 
 graphs_dir = os.path.join(
@@ -62,7 +64,7 @@ if __name__ == "__main__":
             ColoringProgram,
             DijkstraProgram,
             MaxMatchingProgram,
-            # MaxIndependentSetProgram,
+            MaxIndependentSetProgram,
             # LinearRegressionProgram,
         ],
         required=True,

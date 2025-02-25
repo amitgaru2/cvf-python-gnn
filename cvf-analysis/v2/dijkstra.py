@@ -9,7 +9,7 @@ class DijkstraTokenRingCVFAnalysisV2(CVFAnalysisV2):
 
     def get_possible_node_values(self):
         result = list()
-        for node in self.nodes:
+        for _ in self.nodes:
             possible_values = [ProgramData(i) for i in [0, 1, 2]]
             result.append(tuple(possible_values))
 
