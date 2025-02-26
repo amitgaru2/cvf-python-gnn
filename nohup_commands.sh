@@ -41,9 +41,10 @@ cd simulations/cvf-analysis
 # python main.py --program maximal_matching --sched 0 --no-sim 100000 --fault-interval 1 --graph-names graph_powerlaw_cluster_graph_n9 --fault-prob 1.0
 # python main.py --program maximal_matching --sched 0 --no-sim 100000 --fault-interval 2 --graph-names graph_powerlaw_cluster_graph_n9 --fault-prob 1.0
 # python main.py --program maximal_matching --sched 0 --no-sim 500000 --fault-interval 4 --graph-names graph_10 --fault-prob 1.0
-python main.py --program maximal_independent_set --sched 0 --no-sim 100000 --fault-interval 4 --graph-names graph_1 --fault-prob 1.0
-python main.py --program maximal_independent_set --sched 0 --no-sim 100000 --fault-interval 4 --graph-names graph_7 --fault-prob 1.0
-python main.py --program maximal_independent_set --sched 0 --no-sim 100000 --fault-interval 4 --graph-names graph_10 --fault-prob 1.0
+# python main.py --program maximal_independent_set --sched 0 --no-sim 100000 --fault-interval 4 --graph-names graph_1 --fault-prob 1.0
+# python main.py --program maximal_independent_set --sched 0 --no-sim 100000 --fault-interval 4 --graph-names graph_7 --fault-prob 1.0
+# python main.py --program maximal_independent_set --sched 0 --no-sim 100000 --fault-interval 4 --graph-names graph_10 --fault-prob 1.0
+python main.py --program maximal_independent_set --sched 0 --no-sim 100000 --fault-interval 4 --graph-names graph_powerlaw_cluster_graph_n9 graph_random_regular_graph_n10_d4 --fault-prob 1.0
 # python main.py --program maximal_matching --graph-names graph_10
 # python main.py --program graph_coloring --sched 0 --no-sim 100000 --fault-interval 2 --graph-names graph_7 --fault-prob 1.0
 # python main.py --program graph_coloring --sched 0 --no-sim 100000 --fault-interval 4 --graph-names graph_7 --fault-prob 1.0
