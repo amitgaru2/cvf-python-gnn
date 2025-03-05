@@ -68,6 +68,7 @@ class MaximalMatchingCVFAnalysisV2(CVFAnalysisV2):
                     ):
                         return False
 
+        # print("Invariant", [self.possible_node_values[i][j] for i, j in enumerate(state)])
         return True
 
     def _is_program_transition(self, perturb_pos, start_state, dest_state) -> bool:
@@ -124,9 +125,8 @@ class MaximalMatchingCVFAnalysisV2(CVFAnalysisV2):
         return False
 
     def _get_program_transitions(self, start_state):
-        # print(self.possible_node_values_mapping)
-        print("start state", [self.possible_node_values[i][j] for i, j in enumerate(start_state)])
         program_transitions = []
+        # print("start state", [self.possible_node_values[i][j] for i, j in enumerate(start_state)])
 
         for position, node_val_indx in enumerate(start_state):
             current_p_value = self.possible_node_values[position][node_val_indx].p
@@ -163,11 +163,10 @@ class MaximalMatchingCVFAnalysisV2(CVFAnalysisV2):
                     ]
                 )
                 if self._is_program_transition(position, start_state, perturb_state):
-                    print("pt", [self.possible_node_values[i][j] for i, j in enumerate(perturb_state)])
+                    # print("pt", [self.possible_node_values[i][j] for i, j in enumerate(perturb_state)])
                     program_transitions.append(self.config_to_indx(perturb_state))
 
-        print()
-        print()
+        # print()
         return program_transitions
 
     def _evaluate_perturbed_pr_married(self, position, state):

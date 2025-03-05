@@ -11,7 +11,7 @@ graph_names = [
     # "graph_7",
     # "graph_8",
     # "graph_9",
-    "graph_10",
+    # "graph_10",
     # "graph_4",
     # "graph_5",
     # "test_lr_graph_6",
@@ -21,6 +21,9 @@ graph_names = [
     # "random_graph_diff_degree_2",
     # "graph_random_regular_graph_n10_d4",
     # "graph_powerlaw_cluster_graph_n9"
+    # "test_graph_11",
+    "test_graph_12",
+    "test_graph_13",
 ]
 
 planar = False
@@ -53,6 +56,6 @@ for gname in graph_names:
         # ax.collections[0].set_edgecolor("#000000")
 
     # fig.suptitle(f"Graph {gname.split("_")[1]}", fontsize=fontsize)
-    fig.suptitle(f"Graph {' '.join(gname.split("_"))}", fontsize=fontsize)
+    fig.suptitle(f"Graph {' '.join(gname.split('_'))}", fontsize=fontsize)
     fig.savefig(f"graph_images/{gname}.png")
     # plt.show()
