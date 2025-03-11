@@ -187,7 +187,7 @@ class CVFAnalysisV2:
 
         config = self.indx_to_config(indx)
         if self.is_invariant(config):
-            print("invariant", indx)
+            # print("invariant", indx)
             self.total_invariants += 1
             self.analysed_rank_count += 1
             self.global_rank_map[indx] = np.array([0, 1, 0])
