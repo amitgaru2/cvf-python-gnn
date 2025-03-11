@@ -44,7 +44,7 @@ class CVFAnalysisV2:
         self.graph = graph
         self.generate_data_ml = generate_data_ml
         self.generate_data_embedding = generate_data_embedding
-        self.pt_graph_adj_list = {}
+        self.pt_graph_adj_list = []
 
         self.nodes = list(self.graph.keys())
         self.degree_of_nodes = {n: len(self.graph[n]) for n in self.nodes}
@@ -149,10 +149,10 @@ class CVFAnalysisV2:
 
         config = self.indx_to_config(indx)
         if self.is_invariant(config):
-            self.pt_graph_adj_list[indx] = [indx]
             self.total_invariants += 1
             self.analysed_rank_count += 1
             self.global_rank_map[indx] = np.array([0, 1, 0])
+            self.pt_graph_adj_list.append(path)
             return
 
         self.global_rank_map[indx] = np.array([0, 0, 0])
@@ -304,6 +304,6 @@ class CVFAnalysisV2:
             ),
             "w",
         ) as f:
-            for indx in range(self.total_configs):
-                f.write(",".join(str(i) for i in self.pt_graph_adj_list[indx]))
+            for path in self.pt_graph_adj_list:
+                f.write(",".join(str(i) for i in path))
                 f.write("\n")
