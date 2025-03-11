@@ -13,6 +13,44 @@ from collections import defaultdict
 from custom_logger import logger
 
 
+class Singleton(type):
+    _instances = {}
+
+    def __call__(cls, *args, **kwargs):
+        new_instance = super(Singleton, cls).__call__(*args, **kwargs)
+        if new_instance not in cls._instances:
+            cls._instances[new_instance] = new_instance
+        return cls._instances[new_instance]
+
+
+class ProgramTransitionTreeNode(metaclass=Singleton):
+
+    def __init__(self, indx):
+        self.indx = indx
+        self.children = []
+        self.parents = []
+
+    def add_child(self, child: "ProgramTransitionTreeNode"):
+        self.children.append(child)
+
+    def add_parent(self, parent: "ProgramTransitionTreeNode"):
+        self.parents.append(parent)
+
+    def is_disjoint(self) -> bool:
+        return len(self.parents) == 0
+
+    def __hash__(self):
+        return hash(self.indx)
+
+    def __eq__(self, other):
+        return self.indx == other.indx
+
+    def __str__(self):
+        return f"{self.__class__.__name__}: {self.indx}"
+
+    __repr__ = __str__
+
+
 class ProgramData:
     def __init__(self, val: int):
         self.val = val
@@ -44,7 +82,7 @@ class CVFAnalysisV2:
         self.graph = graph
         self.generate_data_ml = generate_data_ml
         self.generate_data_embedding = generate_data_embedding
-        self.pt_graph_adj_list = []
+        self.pt_graph_adj_list = {None: set()}
 
         self.nodes = list(self.graph.keys())
         self.degree_of_nodes = {n: len(self.graph[n]) for n in self.nodes}
@@ -149,15 +187,19 @@ class CVFAnalysisV2:
 
         config = self.indx_to_config(indx)
         if self.is_invariant(config):
+            print("invariant", indx)
             self.total_invariants += 1
             self.analysed_rank_count += 1
             self.global_rank_map[indx] = np.array([0, 1, 0])
-            self.pt_graph_adj_list.append(path)
             return
 
         self.global_rank_map[indx] = np.array([0, 0, 0])
         rank = self.global_rank_map[indx]
+        pt_node = ProgramTransitionTreeNode(indx)
         for child_indx in self._get_program_transitions(config):
+            child_node = ProgramTransitionTreeNode(child_indx)
+            pt_node.add_child(child_node)
+            child_node.add_parent(pt_node)
             self.dfs([*path, child_indx])
             rank_child = self.global_rank_map[child_indx]
             rank[0] += rank_child[0] + rank_child[1]
@@ -304,6 +346,26 @@ class CVFAnalysisV2:
             ),
             "w",
         ) as f:
-            for path in self.pt_graph_adj_list:
-                f.write(",".join(str(i) for i in path))
-                f.write("\n")
+
+            def _dfs(start_node: ProgramTransitionTreeNode, path):
+                for child_node in start_node.children:
+                    full_path = _dfs(child_node, [*path, child_node.indx])
+                    if full_path is not None:
+                        f.write(",".join(str(i) for i in full_path))
+                        f.write("\n")
+
+                if not start_node.children:
+                    # invariant
+                    if len(path) == 1:
+                        f.write(",".join(str(i) for i in path))
+                        f.write("\n")
+
+                    return path
+
+                return None
+
+            for indx in range(self.total_configs):
+                pt_node = ProgramTransitionTreeNode(indx)
+                if pt_node.is_disjoint():
+                    # do the DFS
+                    _dfs(pt_node, [pt_node.indx])
