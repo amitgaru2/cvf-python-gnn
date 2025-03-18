@@ -1,11 +1,9 @@
 import os
-import ast
 import json
 
 import torch
 import gensim
 import pandas as pd
-import torch.nn.functional as F
 
 from torch.utils.data import Dataset
 
@@ -40,7 +38,7 @@ class CVFConfigDataset(Dataset):
 
         result = (
             torch.tensor(
-                [self.get_embedding_for_config(row["config"])], dtype=torch.float32
+                self.get_embedding_for_config(row["config"]), dtype=torch.float32
             ),
             torch.tensor([[row["M"]]]).float(),
         )
@@ -55,8 +53,12 @@ class CVFConfigDataset(Dataset):
                 data.append(line.rstrip().split(","))
                 line = f.readline()
         self.embedding_model = gensim.models.Word2Vec(
-            data, min_count=1, vector_size=self.num_nodes, window=window
+            data,
+            min_count=1,
+            vector_size=self.num_nodes * self.num_nodes,
+            window=window,
+            sg=1
         )
 
     def get_embedding_for_config(self, config):
-        return self.embedding_model.wv[config]
+        return self.embedding_model.wv[config].reshape(self.num_nodes, self.num_nodes)
