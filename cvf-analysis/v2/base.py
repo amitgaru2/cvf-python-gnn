@@ -318,7 +318,7 @@ class CVFAnalysisV2:
         for k, v in enumerate(self.global_rank_map):
             writer.writerow(
                 {
-                    "config": k,
+                    "config": list(self.indx_to_config(k)),
                     "L": v[0],
                     "C": v[1],
                     "M": v[2],
