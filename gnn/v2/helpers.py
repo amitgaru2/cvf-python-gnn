@@ -22,6 +22,7 @@ class CVFConfigDataset(Dataset):
             os.getenv("CVF_PROJECT_DIR", ""), "cvf-analysis", "v2", "datasets", program
         )
         self.data = pd.read_csv(os.path.join(dataset_dir, dataset_file))
+        self.no_of_configs = self.data["config"].count()
         self.A = torch.tensor(
             json.load(open(os.path.join(dataset_dir, A_file), "r")),
             dtype=torch.long,
@@ -55,10 +56,33 @@ class CVFConfigDataset(Dataset):
         self.embedding_model = gensim.models.Word2Vec(
             data,
             min_count=1,
-            vector_size=self.num_nodes * self.num_nodes,
+            vector_size=self.num_nodes,
             window=window,
-            sg=1
+            sg=1,
         )
 
     def get_embedding_for_config(self, config):
-        return self.embedding_model.wv[config].reshape(self.num_nodes, self.num_nodes)
+        return self.embedding_model.wv[config]
+        # return self.embedding_model.wv[config].reshape(self.num_nodes, self.num_nodes)
+
+
+if __name__ == "__main__":
+    dataset = CVFConfigDataset(
+        "coloring",
+        3,
+        "tiny_graph_test_config_rank_dataset.csv",
+        "tiny_graph_test_A.json",
+        "tiny_graph_test_pt_adj_list.txt",
+        {"window": 3},
+    )
+    # x1 = 0
+    # x2 = 1
+    for i in range(dataset.no_of_configs):
+        for j in range(dataset.no_of_configs):
+            if i != j:
+                print(
+                    f"Distance betn config {i} and {j} is",
+                    torch.cdist(
+                        dataset[i][0].unsqueeze(0), dataset[j][0].unsqueeze(0)
+                    ).item(),
+                )
