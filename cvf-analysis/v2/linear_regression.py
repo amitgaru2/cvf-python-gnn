@@ -1,5 +1,5 @@
-import numpy as np
 import torch
+import numpy as np
 
 from base import ProgramData, CVFAnalysisV2
 from lr_configs.config_adapter import LRConfig
@@ -11,38 +11,6 @@ class LinearRegressionCVFAnalysisV2(CVFAnalysisV2):
     def initialize_program_helpers(self):
         self.config = LRConfig.generate_config(self.config_file)
         self.cache = {"p": {}, "q": {}, "r": {}}
-
-    # def __get_f(self, state, node_id):
-    #     doubly_st_mt = self.config.doubly_stochastic_matrix[node_id]
-    #     return sum(frac * state[j] for j, frac in enumerate(doubly_st_mt))
-
-    # def __get_p(self, node_id):
-    #     if node_id in self.cache["p"]:
-    #         return self.cache["p"][node_id]
-
-    #     df = self.__get_node_data_df(node_id)
-    #     N = len(df)
-    #     result = -2 / N
-    #     self.cache["p"][node_id] = result
-    #     return result
-
-    # def __get_q(self, node_id):
-    #     if node_id in self.cache["q"]:
-    #         return self.cache["q"][node_id]
-
-    #     df = self.__get_node_data_df(node_id)
-    #     result = np.sum(df["Xy"])
-    #     self.cache["q"][node_id] = result
-    #     return result
-
-    # def __get_r(self, node_id):
-    #     if node_id in self.cache["r"]:
-    #         return self.cache["r"][node_id]
-
-    #     df = self.__get_node_data_df(node_id)
-    #     result = np.sum(df["X_2"])
-    #     self.cache["r"][node_id] = result
-    #     return result
 
     def __get_node_data_df(self, node_id):
         return self.config.df[self.config.df["node"] == node_id]
@@ -84,26 +52,23 @@ class LinearRegressionCVFAnalysisV2(CVFAnalysisV2):
 
         for node_id in range(self.nodes):
             for _ in range(1, self.config.iterations + 1):
-                prev_m = node_params[node_id]
+                m = torch.tensor(node_params[node_id], requires_grad=True)
 
                 start_state_cpy = list(start_state)
-                start_state_cpy[node_id] = prev_m
+                start_state_cpy[node_id] = m.item()
 
                 node_df = self.__get_node_data_df(node_id)
                 X_node = torch.tensor(node_df["X"].array)
-                y_node = torch.tensor(node_df["y"].array)
-
-                y_node_pred = self.__forward(X_node, {"m": prev_m, "c": 0})
-                grad_m = self.__gradient_m(X_node, y_node, y_node_pred)
+                y = m * X_node
+                y.backward()
 
                 doubly_st_mt = self.doubly_stochastic_matrix_config[node_id]
 
                 new_slope = (
                     sum(
-                        frac * start_state_cpy[j]
-                        for j, frac in enumerate(doubly_st_mt)
+                        frac * start_state_cpy[j] for j, frac in enumerate(doubly_st_mt)
                     )
-                    - self.learning_rate * grad_m
+                    - self.learning_rate * m.grad
                 )
 
                 if new_slope > self.config.max_slope:
@@ -111,7 +76,7 @@ class LinearRegressionCVFAnalysisV2(CVFAnalysisV2):
 
                 node_params[node_id] = new_slope
 
-                if abs(prev_m - new_slope) <= self.config.stop_threshold:
+                if abs(m - new_slope) <= self.config.stop_threshold:
                     break
             # else:
             #     logger.debug(
