@@ -48,20 +48,23 @@ class CVFConfigForGCNDataset(Dataset):
         device,
         dataset_file,
         edge_index_file,
-        num_classes=None,
-        one_hot_encode=True,
     ) -> None:
-        self.data = pd.read_csv(os.path.join("datasets", dataset_file))
+        dataset_dir = os.path.join(
+            os.getenv("CVF_PROJECT_DIR", ""),
+            "cvf-analysis",
+            "v2",
+            "datasets",
+            "coloring",
+        )
+        self.data = pd.read_csv(os.path.join(dataset_dir, dataset_file))
+        self.device = device
         self.edge_index = (
-            torch.tensor(
-                json.load(open(os.path.join("datasets", edge_index_file), "r")),
-                dtype=torch.long,
+            torch.LongTensor(
+                json.load(open(os.path.join(dataset_dir, edge_index_file), "r")),
             )
             .t()
-            .to(device)
+            .to(self.device)
         )
-        self.one_hot_encode = one_hot_encode
-        self.num_classes = num_classes
 
     def __len__(self):
         return len(self.data)
@@ -69,21 +72,12 @@ class CVFConfigForGCNDataset(Dataset):
     def __getitem__(self, idx):
         row = self.data.loc[idx]
 
-        if self.one_hot_encode:
-            result = (
-                F.one_hot(
-                    torch.tensor(ast.literal_eval(row["config"])),
-                    num_classes=self.num_classes,
-                ).to(torch.float32),
-                row["rank"],
-            )
-        else:
-            result = (
-                torch.tensor(
-                    [[i] for i in ast.literal_eval(row["config"])], dtype=torch.float32
-                ),
-                row["rank"],
-            )
+        result = (
+            torch.FloatTensor([[i] for i in ast.literal_eval(row["config"])]).to(
+                self.device
+            ),
+            torch.FloatTensor([row["rank"]]).to(self.device),
+        )
 
         return result
 
@@ -122,8 +116,11 @@ if __name__ == "__main__":
     # dataset = CVFConfigDataset(
     #     "graph_4_config_rank_dataset.csv", "graph_4_edge_index.json"
     # )
-    dataset = CVFConfigDataset(
-        "small_graph_test_config_rank_dataset.csv", "small_graph_edge_index.json", 4
+    device = "cpu"
+    dataset = CVFConfigForGCNDataset(
+        device,
+        "implicit_graph_n5_config_rank_dataset.csv",
+        "implicit_graph_n5_edge_index.json",
     )
     loader = DataLoader(dataset, batch_size=2, shuffle=False)
 

@@ -312,16 +312,14 @@ class CVFAnalysisV2:
                 ),
                 "w",
             ),
-            fieldnames=["config", "L", "C", "M"],
+            fieldnames=["config", "rank"],
         )
         writer.writeheader()
         for k, v in enumerate(self.global_rank_map):
             writer.writerow(
                 {
-                    "config": k,
-                    "L": v[0],
-                    "C": v[1],
-                    "M": v[2],
+                    "config": list(self.indx_to_config(k)),
+                    "rank": math.ceil(v[0] / v[1]),
                 }
             )
 

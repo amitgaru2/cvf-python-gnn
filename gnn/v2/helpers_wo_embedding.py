@@ -6,11 +6,11 @@ import pickle
 import torch
 import pandas as pd
 
-from torch.utils.data import Dataset
+from torch.utils.data import Dataset, DataLoader
 
 
 class CVFConfigDataset(Dataset):
-    embedding_map = torch.FloatTensor(pickle.load(open("matrix.dump", "rb")))
+    embedding_map = torch.FloatTensor(pickle.load(open("embedding.dump", "rb")))
 
     def __init__(self, program, dataset_file, A_file, num_nodes) -> None:
         dataset_dir = os.path.join(
@@ -46,9 +46,11 @@ class CVFConfigDataset(Dataset):
 if __name__ == "__main__":
     dataset = CVFConfigDataset(
         "coloring",
-        "graph_random_regular_graph_n6_d3_config_rank_dataset.csv",
-        "graph_random_regular_graph_n6_d3_A.json",
-        6,
+        "graph_random_regular_graph_n4_d3_config_rank_dataset.csv",
+        "graph_random_regular_graph_n4_d3_A.json",
+        4,
     )
 
-    print(dataset[0], dataset[0][0].shape)
+    for data in DataLoader(dataset):
+        print(data)
+    # print(dataset[0], dataset[0][0].shape)
