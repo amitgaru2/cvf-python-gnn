@@ -76,6 +76,46 @@ class CVFConfigForGCNDataset(Dataset):
             torch.FloatTensor([[i] for i in ast.literal_eval(row["config"])]).to(
                 self.device
             ),
+            torch.FloatTensor([row["rank"]]).to(self.device),
+        )
+
+        return result
+
+
+class CVFConfigForGCNGridSearchDataset(Dataset):
+    def __init__(
+        self,
+        device,
+        dataset_file,
+        edge_index_file,
+    ) -> None:
+        dataset_dir = os.path.join(
+            os.getenv("CVF_PROJECT_DIR", ""),
+            "cvf-analysis",
+            "v2",
+            "datasets",
+            "coloring",
+        )
+        self.data = pd.read_csv(os.path.join(dataset_dir, dataset_file))
+        self.device = device
+        self.edge_index = (
+            torch.LongTensor(
+                json.load(open(os.path.join(dataset_dir, edge_index_file), "r")),
+            )
+            .t()
+            .to(self.device)
+        )
+
+    def __len__(self):
+        return len(self.data)
+
+    def __getitem__(self, idx):
+        row = self.data.loc[idx]
+
+        result = (
+            torch.FloatTensor([[i] for i in ast.literal_eval(row["config"])]).to(
+                self.device
+            ),
             torch.FloatTensor([[row["rank"]]]).to(self.device),
         )
 
