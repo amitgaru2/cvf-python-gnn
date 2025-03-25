@@ -76,7 +76,7 @@ class CVFConfigForGCNDataset(Dataset):
             torch.FloatTensor([[i] for i in ast.literal_eval(row["config"])]).to(
                 self.device
             ),
-            torch.FloatTensor([row["rank"]]).to(self.device),
+            torch.FloatTensor([[row["rank"]]]).to(self.device),
         )
 
         return result
