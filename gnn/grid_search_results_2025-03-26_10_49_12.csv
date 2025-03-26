@@ -1,0 +1,7 @@
+params,avg loss (3)
+"{'lr': 0.01, 'batch_size': 32, 'max_epochs': 10, 'optimizer': <class 'torch.optim.sgd.SGD'>, 'module__dim_h': 16, 'optimizer__weight_decay': 0.01}",1.3994793891906738
+"{'lr': 0.01, 'batch_size': 32, 'max_epochs': 10, 'optimizer': <class 'torch.optim.sgd.SGD'>, 'module__dim_h': 32, 'optimizer__weight_decay': 0.01}",1.3914170265197754
+"{'lr': 0.01, 'batch_size': 32, 'max_epochs': 10, 'optimizer': <class 'torch.optim.sgd.SGD'>, 'module__dim_h': 64, 'optimizer__weight_decay': 0.01}",1.8076924085617065
+"{'lr': 0.01, 'batch_size': 32, 'max_epochs': 10, 'optimizer': <class 'torch.optim.adam.Adam'>, 'module__dim_h': 16, 'optimizer__weight_decay': 0.01}",0.9641551375389099
+"{'lr': 0.01, 'batch_size': 32, 'max_epochs': 10, 'optimizer': <class 'torch.optim.adam.Adam'>, 'module__dim_h': 32, 'optimizer__weight_decay': 0.01}",0.6043574810028076
+"{'lr': 0.01, 'batch_size': 32, 'max_epochs': 10, 'optimizer': <class 'torch.optim.adam.Adam'>, 'module__dim_h': 64, 'optimizer__weight_decay': 0.01}",0.5775683522224426
