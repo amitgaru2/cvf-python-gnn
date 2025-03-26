@@ -82,6 +82,51 @@ class CVFConfigForGCNDataset(Dataset):
         return result
 
 
+class CVFConfigForGCNWSuccDataset(Dataset):
+    def __init__(
+        self,
+        device,
+        dataset_file,
+        edge_index_file,
+    ) -> None:
+        dataset_dir = os.path.join(
+            os.getenv("CVF_PROJECT_DIR", ""),
+            "cvf-analysis",
+            "v2",
+            "datasets",
+            "coloring",
+        )
+        self.data = pd.read_csv(os.path.join(dataset_dir, dataset_file))
+        self.device = device
+        self.edge_index = (
+            torch.LongTensor(
+                json.load(open(os.path.join(dataset_dir, edge_index_file), "r")),
+            )
+            .t()
+            .to(self.device)
+        )
+
+    def __len__(self):
+        return len(self.data)
+
+    def __getitem__(self, idx):
+        row = self.data.loc[idx]
+        config = [i for i in ast.literal_eval(row["config"])]
+        succ = [i for i in ast.literal_eval(row["succ"])]
+        if succ:
+            succ = torch.FloatTensor(succ).to(self.device)
+            succ = torch.mean(succ, dim=0).unsqueeze(0)
+        else:
+            succ = torch.zeros(1, len(config)).to(self.device)
+
+        config = torch.FloatTensor([config]).to(self.device)
+        result = torch.cat((config, succ), dim=0).t(), torch.FloatTensor([row["rank"]]).to(
+            self.device
+        )
+
+        return result
+
+
 class CVFConfigForGCNGridSearchDataset(Dataset):
     def __init__(
         self,
@@ -157,15 +202,27 @@ if __name__ == "__main__":
     #     "graph_4_config_rank_dataset.csv", "graph_4_edge_index.json"
     # )
     device = "cpu"
-    dataset = CVFConfigForGCNDataset(
+    # dataset = CVFConfigForGCNDataset(
+    #     device,
+    #     "implicit_graph_n5_config_rank_dataset.csv",
+    #     "implicit_graph_n5_edge_index.json",
+    # )
+    # loader = DataLoader(dataset, batch_size=2, shuffle=False)
+
+    # # print(dataset.nodes)
+    # for dl in loader:
+    #     print(dl)
+    #     print()
+    #     input()
+
+    dataset = CVFConfigForGCNWSuccDataset(
         device,
-        "implicit_graph_n5_config_rank_dataset.csv",
-        "implicit_graph_n5_edge_index.json",
+        "tiny_graph_test_config_rank_w_succ_dataset.csv",
+        "tiny_graph_edge_index.json",
     )
     loader = DataLoader(dataset, batch_size=2, shuffle=False)
 
-    # print(dataset.nodes)
-    for dl in loader:
-        print(dl)
+    for batch in loader:
+        print(batch[0], batch[1])
         print()
-        input()
+        # break
