@@ -110,6 +110,9 @@ class CVFAnalysisV2:
         self.global_avg_rank_effect = defaultdict(lambda: 0)
         self.global_avg_node_rank_effect = {}
 
+        # config -> successors / program transitions for ml
+        self.config_successors = {}
+
         # rank map
         self.init_global_rank_map()
         self.analysed_rank_count = 0
@@ -182,6 +185,8 @@ class CVFAnalysisV2:
     def dfs(self, path: list[int]):
         indx = path[-1]
 
+        successors = []
+
         if self.global_rank_map[indx, 0] is not None:
             return
 
@@ -197,6 +202,7 @@ class CVFAnalysisV2:
         rank = self.global_rank_map[indx]
         pt_node = ProgramTransitionTreeNode(indx)
         for child_indx in self._get_program_transitions(config):
+            successors.append(child_indx)
             child_node = ProgramTransitionTreeNode(child_indx)
             pt_node.add_child(child_node)
             child_node.add_parent(pt_node)
@@ -208,6 +214,7 @@ class CVFAnalysisV2:
 
         # post visit
         self.analysed_rank_count += 1
+        self.config_successors[indx] = successors
 
     def find_rank(self):
         for i in range(self.total_configs):
@@ -312,7 +319,7 @@ class CVFAnalysisV2:
                 ),
                 "w",
             ),
-            fieldnames=["config", "rank"],
+            fieldnames=["config", "rank", "succ"],
         )
         writer.writeheader()
         for k, v in enumerate(self.global_rank_map):
@@ -320,6 +327,14 @@ class CVFAnalysisV2:
                 {
                     "config": list(self.indx_to_config(k)),
                     "rank": math.ceil(v[0] / v[1]),
+                    "succ": (
+                        [
+                            list(self.indx_to_config(i))
+                            for i in self.config_successors[k]
+                        ]
+                        if k in self.config_successors
+                        else []
+                    ),
                 }
             )
 
