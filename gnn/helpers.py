@@ -115,14 +115,16 @@ class CVFConfigForGCNWSuccDataset(Dataset):
         succ = [i for i in ast.literal_eval(row["succ"])]
         if succ:
             succ = torch.FloatTensor(succ).to(self.device)
-            succ = torch.mean(succ, dim=0).unsqueeze(0)
+            succ1 = torch.mean(succ, dim=0).unsqueeze(0)  # column wise
+            succ2 = torch.mean(succ, dim=1).unsqueeze(0)  # row wise
+            succ2 = torch.matmul(succ1.repeat(succ2.shape[1], 1).t(), succ2.t()).t()
         else:
-            succ = torch.zeros(1, len(config)).to(self.device)
+            succ1 = succ2 = torch.zeros(1, len(config)).to(self.device)
 
         config = torch.FloatTensor([config]).to(self.device)
-        result = torch.cat((config, succ), dim=0).t(), torch.FloatTensor([row["rank"]]).to(
-            self.device
-        )
+        result = torch.cat((config, succ1, succ2), dim=0).t(), torch.FloatTensor(
+            [row["rank"]]
+        ).to(self.device)
 
         return result
 
