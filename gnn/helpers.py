@@ -216,6 +216,60 @@ class CVFConfigForGCNWSuccDataset(Dataset):
             succ1 = torch.mean(succ, dim=0).unsqueeze(0)  # column wise
             succ2 = torch.mean(succ, dim=1)  # row wise
             succ2 = torch.sum(succ2).repeat(succ1.shape)
+            # succ3 = torch.FloatTensor([succ.shape[0]]).to(self.device).repeat(succ1.shape)
+        else:
+            succ1 = torch.zeros(1, len(config)).to(self.device)
+            succ2 = succ1
+
+        config = torch.FloatTensor([config]).to(self.device)
+        result = torch.cat((config, succ1, succ2), dim=0).t(), torch.FloatTensor(
+            [row["rank"]]
+        ).to(self.device)
+
+        return result
+
+
+class CVFConfigForGCNWSuccFDataset(Dataset):
+    def __init__(
+        self,
+        device,
+        dataset_file,
+        edge_index_file,
+        adjacency_file,
+        program="coloring",
+    ) -> None:
+        dataset_dir = os.path.join(
+            os.getenv("CVF_PROJECT_DIR", ""),
+            "cvf-analysis",
+            "v2",
+            "datasets",
+            program,
+        )
+        self.data = pd.read_csv(os.path.join(dataset_dir, dataset_file))
+        self.device = device
+        self.edge_index = (
+            torch.LongTensor(
+                json.load(open(os.path.join(dataset_dir, edge_index_file), "r")),
+            )
+            .t()
+            .to(self.device)
+        )
+        self.A = torch.FloatTensor(
+            json.load(open(os.path.join(dataset_dir, adjacency_file), "r")),
+        ).to(self.device)
+
+    def __len__(self):
+        return len(self.data)
+
+    def __getitem__(self, idx):
+        row = self.data.loc[idx]
+        config = [i for i in ast.literal_eval(row["config"])]
+        succ = [i for i in ast.literal_eval(row["succ"])]
+        if succ:
+            succ = torch.FloatTensor(succ).to(self.device)
+            succ1 = torch.mean(succ, dim=0).unsqueeze(0)  # column wise
+            succ2 = torch.matmul(succ, self.A)
+            succ2 = torch.mean(succ2, dim=0).unsqueeze(0)
         else:
             succ1 = succ2 = torch.zeros(1, len(config)).to(self.device)
 
@@ -267,7 +321,7 @@ class CVFConfigForGCNWSuccConvDataset(Dataset):
 
             expanded_matrix = succ.unsqueeze(0) * succ.unsqueeze(1)
             column_wise_conv = expanded_matrix.sum(dim=1)
-            
+
             succ1 = torch.mean(row_wise_conv, dim=0).unsqueeze(0)  # column wise
             succ2 = torch.mean(column_wise_conv, dim=0).unsqueeze(0)  # column wise
         else:
@@ -369,18 +423,25 @@ if __name__ == "__main__":
     #     print()
     #     input()
 
-    # dataset = CVFConfigForGCNWSuccDataset(
+    dataset = CVFConfigForGCNWSuccDataset(
+        device,
+        "implicit_graph_n10_config_rank_dataset.csv",
+        "implicit_graph_n10_edge_index.json",
+        "dijkstra",
+    )
+    # dataset = CVFConfigForGCNWSuccConvDataset(
     #     device,
     #     "implicit_graph_n5_config_rank_dataset.csv",
     #     "implicit_graph_n5_edge_index.json",
     #     "dijkstra",
     # )
-    dataset = CVFConfigForGCNWSuccConvDataset(
-        device,
-        "implicit_graph_n5_config_rank_dataset.csv",
-        "implicit_graph_n5_edge_index.json",
-        "dijkstra",
-    )
+    # dataset = CVFConfigForGCNWSuccFDataset(
+    #     device,
+    #     "implicit_graph_n10_config_rank_dataset.csv",
+    #     "implicit_graph_n10_edge_index.json",
+    #     "implicit_graph_n10_A.json",
+    #     "dijkstra",
+    # )
     # dataset = CVFConfigForGCNWSuccDataset(
     #     device,
     #     "tiny_graph_test_config_rank_w_succ_dataset.csv",
