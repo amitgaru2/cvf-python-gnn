@@ -53,7 +53,7 @@ dataset_coll = [
     dataset_rr_n5,
     dataset_rr_n6,
     dataset_rr_n7,
-    dataset_rr_n8,
+    # dataset_rr_n8,
 ]
 
 
@@ -269,12 +269,12 @@ class CustomNeuralNet(NeuralNet):
 
 
 params = {
-    "lr": [0.01, 0.001, 0.05],
-    "batch_size": [32, 128, 512],
-    "max_epochs": [25, 50, 100],
+    "lr": [0.01, 0.001],
+    "batch_size": [32, 64],
+    "max_epochs": [25, 50],
     "optimizer": [torch.optim.SGD, torch.optim.Adam],
-    "module__dim_h": [16, 32, 64, 128],
-    "optimizer__weight_decay": [0.01, 0.001, 0.05],
+    "module__dim_h": [16, 32, 64],
+    "optimizer__weight_decay": [0.0001, 0.00001],
 }
 
 
