@@ -167,7 +167,7 @@ class CVFAnalysisV2:
 
     def start(self):
         self.find_rank()
-        logger.info("Total Invariants: %s.", self.total_invariants)
+        logger.info("Total Invariants: %s.", f"{self.total_invariants:,}")
         self.save_rank()
         self.find_rank_effect()
         self.save_rank_effect()
