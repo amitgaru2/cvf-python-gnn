@@ -16,18 +16,26 @@ class GCNConvByHand(torch.nn.Module):
         num_nodes = A.shape[1]  # B x N x N
         omega_k = self.linear.weight
         A = A + torch.eye(num_nodes).to(self.device)  # A_cap = A + I
-        h = torch.matmul(
-            torch.matmul(A, x), omega_k.t()
-        )  # ( (O x D) x ( (N x N) x (N x D) = N x D ) = O x N)  => B x O x N
+        # print("A", A, A.shape)
+        # normalization D
+        eps = 0
+        # D = torch.sum(A, dim=1).to(self.device)
+        D = torch.sum(A, dim=2)
+        D_inv_root = torch.diag_embed(1 / (torch.sqrt(D) + eps)).to(
+            self.device
+        )  # D_cap_sqrt
+        A = D_inv_root @ A
+        A = A.transpose(1, 2) @ D_inv_root  # B x N x N
+        # print("A transformed", A, A.shape)
+        # end of normalization
+        h = (
+            A @ x
+        ) @ omega_k.t()  # ( (O x D) x ( (N x N) x (N x D) = N x D ) = O x N)  => B x O x N
         if self.linear.bias is not None:
             beta_k = self.linear.bias.reshape(1, -1)
             h = (
-                torch.matmul(
-                    torch.reshape(torch.ones(num_nodes).to(self.device), (-1, 1)),
-                    beta_k,
-                )
-                + h
-            )
+                torch.reshape(torch.ones(num_nodes).to(self.device), (-1, 1)) @ beta_k
+            ) + h
 
         return h
 
@@ -44,3 +52,4 @@ if __name__ == "__main__":
     gcn = GCNConvByHand(D, O, bias=True)
     result = gcn(x, A)
     print(result)
+    print(result.shape)
