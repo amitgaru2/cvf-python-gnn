@@ -16,17 +16,13 @@ class GCNConvByHand(torch.nn.Module):
         num_nodes = A.shape[1]  # B x N x N
         omega_k = self.linear.weight
         A = A + torch.eye(num_nodes).to(self.device)  # A_cap = A + I
-        # print("A", A, A.shape)
         # normalization D
         eps = 0
-        # D = torch.sum(A, dim=1).to(self.device)
-        D = torch.sum(A, dim=2)
+        D = torch.sum(A, dim=2)  # degree of each nodes
         D_inv_root = torch.diag_embed(1 / (torch.sqrt(D) + eps)).to(
             self.device
         )  # D_cap_sqrt
-        A = D_inv_root @ A
-        A = A.transpose(1, 2) @ D_inv_root  # B x N x N
-        # print("A transformed", A, A.shape)
+        A = (D_inv_root @ A) @ D_inv_root  # B x N x N
         # end of normalization
         h = (
             A @ x
