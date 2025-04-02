@@ -4,9 +4,9 @@ import networkx as nx
 
 N = 7
 
-graph_type = "star_graph"
+graph_type = "cycle_graph"
 
-G = getattr(nx, graph_type)(N, nx.DiGraph())
+G = getattr(nx, graph_type)(N, nx.Graph())
 
 graph_name = f"{graph_type}" + f"_n{N}"
 
