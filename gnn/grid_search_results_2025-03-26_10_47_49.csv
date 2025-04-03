@@ -1,7 +1,0 @@
-params,avg loss (1)
-"{'lr': 0.01, 'batch_size': 32, 'max_epochs': 10, 'optimizer': <class 'torch.optim.sgd.SGD'>, 'module__dim_h': 16, 'optimizer__weight_decay': 0.01}","tensor(0.4720, device='cuda:0')"
-"{'lr': 0.01, 'batch_size': 32, 'max_epochs': 10, 'optimizer': <class 'torch.optim.sgd.SGD'>, 'module__dim_h': 32, 'optimizer__weight_decay': 0.01}","tensor(0.4715, device='cuda:0')"
-"{'lr': 0.01, 'batch_size': 32, 'max_epochs': 10, 'optimizer': <class 'torch.optim.sgd.SGD'>, 'module__dim_h': 64, 'optimizer__weight_decay': 0.01}","tensor(1.7308, device='cuda:0')"
-"{'lr': 0.01, 'batch_size': 32, 'max_epochs': 10, 'optimizer': <class 'torch.optim.adam.Adam'>, 'module__dim_h': 16, 'optimizer__weight_decay': 0.01}","tensor(0.3742, device='cuda:0')"
-"{'lr': 0.01, 'batch_size': 32, 'max_epochs': 10, 'optimizer': <class 'torch.optim.adam.Adam'>, 'module__dim_h': 32, 'optimizer__weight_decay': 0.01}","tensor(0.4069, device='cuda:0')"
-"{'lr': 0.01, 'batch_size': 32, 'max_epochs': 10, 'optimizer': <class 'torch.optim.adam.Adam'>, 'module__dim_h': 64, 'optimizer__weight_decay': 0.01}","tensor(0.3957, device='cuda:0')"
