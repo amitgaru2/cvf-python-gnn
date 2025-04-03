@@ -286,6 +286,13 @@ class CVFConfigForGCNWSuccWEIDataset(Dataset):
             self.dataset_name
         ), torch.FloatTensor([row["rank"]]).to(self.device)
 
+        # result = (
+        #     config.t(),
+        #     self.A,
+        #     self.dataset_name
+        # ), torch.FloatTensor([row["rank"]]).to(self.device)
+
+
         return result
 
     def __repr__(self):
