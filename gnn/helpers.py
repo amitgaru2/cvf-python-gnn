@@ -324,14 +324,15 @@ class CVFConfigForGCNWSuccLSTMDataset(Dataset):
             .to(self.device)
         )
         self.A = to_dense_adj(self.edge_index).squeeze(0)
+        self.D = 3  # input dimension
         # sum of adjacency for each node in row and column
-        A = self.A + torch.eye(self.A.shape[0]).to(self.device)  # A_cap = A + I
-        D = torch.sum(A, dim=1)  # degree of each nodes
-        D_inv_root = torch.diag(1 / (torch.sqrt(D))).to(
-            self.device
-        )  # D_cap_sqrt
-        A = (D_inv_root @ A) @ D_inv_root  # B x N x N
-        self.succ3 = torch.sum(A, dim=0).unsqueeze(0)
+        # A = self.A + torch.eye(self.A.shape[0]).to(self.device)  # A_cap = A + I
+        # D = torch.sum(A, dim=1)  # degree of each nodes
+        # D_inv_root = torch.diag(1 / (torch.sqrt(D))).to(
+        #     self.device
+        # )  # D_cap_sqrt
+        # A = (D_inv_root @ A) @ D_inv_root  # B x N x N
+        # self.succ3 = torch.sum(A, dim=0).unsqueeze(0)
         # self.succ4 = torch.sum(self.A, dim=1).unsqueeze(0).to(self.device)
 
     def __len__(self):
@@ -352,7 +353,7 @@ class CVFConfigForGCNWSuccLSTMDataset(Dataset):
 
         config = torch.FloatTensor([config]).to(self.device)
         result = (
-            torch.cat((config, succ1, succ2, self.succ3), dim=0).t(),
+            torch.cat((config, succ1, succ2), dim=0).t(),
             self.dataset_name,
         ), torch.FloatTensor([row["rank"]]).to(self.device)
 
