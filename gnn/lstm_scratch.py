@@ -1,4 +1,5 @@
 import csv
+import time
 import datetime
 import argparse
 
@@ -36,6 +37,7 @@ class SimpleLSTM(nn.Module):
         criterion = torch.nn.MSELoss()
         optimizer = torch.optim.Adam(self.parameters(), lr=0.01, weight_decay=0.0001)
         for epoch in range(1, epochs + 1):
+            start_time = time.time()
             self.train()
             total_loss = 0
             count = 0
@@ -44,7 +46,6 @@ class SimpleLSTM(nn.Module):
                 y = batch[1]
                 y = y.unsqueeze(-1)
                 out = self(x[0])
-                # print(out.shape, y.shape)
                 optimizer.zero_grad()
                 loss = criterion(out, y)
                 total_loss += loss
@@ -53,9 +54,10 @@ class SimpleLSTM(nn.Module):
                 optimizer.step()
 
             logger.info(
-                "Training set | Epoch %s | MSE Loss: %s",
+                "Training set | Epoch %s | MSE Loss: %s | Time taken: %ss",
                 epoch,
                 round((total_loss / count).item(), 4),
+                round(time.time() - start_time, 4),
             )
 
 
@@ -191,7 +193,12 @@ def main(graph_names, H, batch_size, epochs):
     logger.info("Model %s", model)
     logger.info(f"Total parameters: {sum(p.numel() for p in model.parameters()):,}")
     logger.info("\n")
+    start_time = time.time()
     model.fit(epochs=epochs, dataloader=dataloader)
+    logger.info("\n")
+    logger.info(
+        "End Training | Total training time taken %ss", round(time.time() - start_time, 4)
+    )
     logger.info("\n")
     logger.info("Saving model...")
     torch.save(
