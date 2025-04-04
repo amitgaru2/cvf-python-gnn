@@ -69,4 +69,16 @@ set -e
 
 cd gnn
 
-python vanilla_gcn_generic_grid_search.py
+python lstm_scratch.py \
+    --epochs 20 \
+    --batch-size 256 \
+    --hidden-size 64 \
+    --graph-names \
+    star_graph_n7 \
+    graph_powerlaw_cluster_graph_n7 \
+    graph_random_regular_graph_n7_d4 \
+    star_graph_n13 \
+    star_graph_n15 \
+    graph_powerlaw_cluster_graph_n8 \
+    graph_powerlaw_cluster_graph_n9 \
+    graph_random_regular_graph_n8_d4
