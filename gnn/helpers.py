@@ -303,7 +303,7 @@ class CVFConfigForGCNWSuccLSTMDataset(Dataset):
         self,
         device,
         dataset_file,
-        edge_index_file,
+        edge_index_file=None,
         program="coloring",
     ) -> None:
         dataset_dir = os.path.join(
@@ -316,15 +316,16 @@ class CVFConfigForGCNWSuccLSTMDataset(Dataset):
         self.data = pd.read_csv(os.path.join(dataset_dir, dataset_file))
         self.device = device
         self.dataset_name = dataset_file.split("_config_rank_dataset.csv")[0]
-        self.edge_index = (
-            torch.LongTensor(
-                json.load(open(os.path.join(dataset_dir, edge_index_file), "r")),
-            )
-            .t()
-            .to(self.device)
-        )
-        self.A = to_dense_adj(self.edge_index).squeeze(0)
         self.D = 3  # input dimension
+
+        # self.edge_index = (
+        #     torch.LongTensor(
+        #         json.load(open(os.path.join(dataset_dir, edge_index_file), "r")),
+        #     )
+        #     .t()
+        #     .to(self.device)
+        # )
+        # self.A = to_dense_adj(self.edge_index).squeeze(0)
         # sum of adjacency for each node in row and column
         # A = self.A + torch.eye(self.A.shape[0]).to(self.device)  # A_cap = A + I
         # D = torch.sum(A, dim=1)  # degree of each nodes

@@ -1,5 +1,6 @@
 import csv
 import datetime
+import argparse
 
 import torch
 import torch.nn as nn
@@ -87,70 +88,29 @@ class CustomBatchSampler(Sampler):
                 last_accessed[turn] += batch_size
 
 
-def get_dataset_coll():
-    dataset_s_n7 = CVFConfigForGCNWSuccLSTMDataset(
-        device,
-        "star_graph_n7_config_rank_dataset.csv",
-        "star_graph_n7_edge_index.json",
-    )
+def get_dataset_coll(*graph_names):
+    dataset_coll = []
 
-    dataset_s_n13 = CVFConfigForGCNWSuccLSTMDataset(
-        device,
-        "star_graph_n13_config_rank_dataset.csv",
-        "star_graph_n13_edge_index.json",
-    )
-
-    dataset_s_n15 = CVFConfigForGCNWSuccLSTMDataset(
-        device,
-        "star_graph_n15_config_rank_dataset.csv",
-        "star_graph_n15_edge_index.json",
-    )
-
-    dataset_rr_n7 = CVFConfigForGCNWSuccLSTMDataset(
-        device,
-        "graph_random_regular_graph_n7_d4_config_rank_dataset.csv",
-        "graph_random_regular_graph_n7_d4_edge_index.json",
-    )
-
-    dataset_rr_n8 = CVFConfigForGCNWSuccLSTMDataset(
-        device,
-        "graph_random_regular_graph_n8_d4_config_rank_dataset.csv",
-        "graph_random_regular_graph_n8_d4_edge_index.json",
-    )
-
-    dataset_plc_n7 = CVFConfigForGCNWSuccLSTMDataset(
-        device,
-        "graph_powerlaw_cluster_graph_n7_config_rank_dataset.csv",
-        "graph_powerlaw_cluster_graph_n7_edge_index.json",
-    )
-
-    dataset_plc_n9 = CVFConfigForGCNWSuccLSTMDataset(
-        device,
-        "graph_powerlaw_cluster_graph_n9_config_rank_dataset.csv",
-        "graph_powerlaw_cluster_graph_n9_edge_index.json",
-    )
-
-    dataset_coll = [
-        dataset_s_n7,
-        # dataset_s_n13,
-        # dataset_s_n15,
-        # dataset_rr_n7,
-        # dataset_rr_n8,
-        # dataset_plc_n7,
-        # dataset_plc_n9,
-    ]
+    for graph_name in graph_names:
+        dataset_coll.append(
+            CVFConfigForGCNWSuccLSTMDataset(
+                device,
+                f"{graph_name}_config_rank_dataset.csv",
+            )
+        )
 
     return dataset_coll
 
 
-def test_model(model, test_datasets):
-    f = open(
-        f"test_results/test_result_w_succ_diff_nodes_lstm_{datetime.datetime.now().strftime("%Y_%m_%d_%H_%M")}.csv",
-        "w",
-        newline="",
-    )
-    csv_writer = csv.writer(f)
-    csv_writer.writerow(["Dataset", "Actual", "Predicted"])
+def test_model(model, test_datasets, save_result=False):
+    if save_result:
+        f = open(
+            f"test_results/test_result_w_succ_diff_nodes_lstm_script_{datetime.datetime.now().strftime("%Y_%m_%d_%H_%M")}.csv",
+            "w",
+            newline="",
+        )
+        csv_writer = csv.writer(f)
+        csv_writer.writerow(["Dataset", "Actual", "Predicted"])
 
     criterion = torch.nn.MSELoss()
 
@@ -171,12 +131,13 @@ def test_model(model, test_datasets):
             y = batch[1]
             y = y.unsqueeze(-1)
             out = model(x[0])
-            csv_writer.writerows(
-                (i, j.item(), k.item())
-                for (i, j, k) in zip(
-                    x[1], y.detach().cpu().numpy(), out.detach().cpu().numpy()
+            if save_result:
+                csv_writer.writerows(
+                    (i, j.item(), k.item())
+                    for (i, j, k) in zip(
+                        x[1], y.detach().cpu().numpy(), out.detach().cpu().numpy()
+                    )
                 )
-            )
             loss = criterion(out, y)
             total_loss += loss
             out = torch.round(out)
@@ -188,11 +149,20 @@ def test_model(model, test_datasets):
             f"Test set | MSE loss: {round((total_loss / count).item(), 4)} | Total matched: {total_matched:,} out of {len(test_concat_datasets):,} (Accuracy: {round(total_matched / len(test_concat_datasets) * 100, 2):,}%)",
         )
 
-    f.close()
+    if save_result:
+        f.close()
 
 
-def main(H=32, batch_size=64, epochs=10):
-    dataset_coll = get_dataset_coll()
+def main(graph_names, H, batch_size, epochs):
+    logger.info(
+        "Training with Graphs: %s | Batch size: %s | Epochs: %s | Hidden size: %s.",
+        ",".join(graph_names),
+        batch_size,
+        epochs,
+        H,
+    )
+    logger.info("\n")
+    dataset_coll = get_dataset_coll(*graph_names)
     D = dataset_coll[0].D
     train_sizes = [int(0.95 * len(ds)) for ds in dataset_coll]
     test_sizes = [len(ds) - trs for ds, trs in zip(dataset_coll, train_sizes)]
@@ -207,6 +177,7 @@ def main(H=32, batch_size=64, epochs=10):
 
     datasets = ConcatDataset(train_datasets)
     logger.info(f"Train dataset size: {len(datasets):,}")
+    logger.info("\n")
 
     batch_sampler = CustomBatchSampler(datasets, batch_size=batch_size)
     dataloader = DataLoader(datasets, batch_sampler=batch_sampler)
@@ -214,17 +185,44 @@ def main(H=32, batch_size=64, epochs=10):
     model = SimpleLSTM(D, H, 1).to(device)
     logger.info("Model %s", model)
     logger.info(f"Total parameters: {sum(p.numel() for p in model.parameters()):,}")
+    logger.info("\n")
     model.fit(epochs=epochs, dataloader=dataloader)
-
+    logger.info("\n")
     logger.info("Saving model.")
     torch.save(
         model,
         f"trained_models/lstm_trained_at_{datetime.datetime.now().strftime('%Y_%m_%d_%H_%M')}.pt",
     )
 
+    logger.info("\n")
     logger.info("Testing model.")
-    test_model(model, test_datasets)
+    test_model(model, test_datasets, save_result=True)
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--epochs", type=int, default=10)
+    parser.add_argument("--batch-size", type=int, default=64)
+    parser.add_argument("--hidden-size", type=int, default=16)
+    parser.add_argument(
+        "--graph-names",
+        type=str,
+        nargs="+",
+        help="list of graph names in the 'graphs_dir' or list of number of nodes for implict graphs (if implicit program)",
+        required=True,
+    )
+    parser.add_argument(
+        "--logging",
+        choices=[
+            "INFO",
+            "DEBUG",
+        ],
+        required=False,
+    )
+    args = parser.parse_args()
+    main(
+        epochs=args.epochs,
+        batch_size=args.batch_size,
+        H=args.hidden_size,
+        graph_names=args.graph_names,
+    )
