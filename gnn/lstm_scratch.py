@@ -102,7 +102,7 @@ def get_dataset_coll(*graph_names):
     return dataset_coll
 
 
-def test_model(model, test_datasets, save_result=False):
+def test_model(model, test_concat_datasets, save_result=False):
     if save_result:
         f = open(
             f"test_results/test_result_w_succ_diff_nodes_lstm_script_{datetime.datetime.now().strftime("%Y_%m_%d_%H_%M")}.csv",
@@ -117,7 +117,7 @@ def test_model(model, test_datasets, save_result=False):
     model.eval()
 
     with torch.no_grad():
-        test_concat_datasets = ConcatDataset(test_datasets)
+        # test_concat_datasets = ConcatDataset(test_datasets)
         test_batch_sampler = CustomBatchSampler(test_concat_datasets, batch_size=10240)
         test_dataloader = DataLoader(
             test_concat_datasets, batch_sampler=test_batch_sampler
@@ -155,8 +155,9 @@ def test_model(model, test_datasets, save_result=False):
 
 def main(graph_names, H, batch_size, epochs):
     logger.info(
-        "Training with Graphs: %s | Batch size: %s | Epochs: %s | Hidden size: %s.",
-        ",".join(graph_names),
+        "Timestamp: %s | Training with Graphs: %s | Batch size: %s | Epochs: %s | Hidden size: %s.",
+        datetime.datetime.now().timestamp(),
+        ", ".join(graph_names),
         batch_size,
         epochs,
         H,
@@ -176,7 +177,11 @@ def main(graph_names, H, batch_size, epochs):
     test_datasets = [ds[1] for ds in train_test_datasets]
 
     datasets = ConcatDataset(train_datasets)
-    logger.info(f"Train dataset size: {len(datasets):,}")
+    test_concat_datasets = ConcatDataset(test_datasets)
+
+    logger.info(
+        f"Train dataset size: {len(datasets):,} | Test dataset size: {len(test_concat_datasets):,}"
+    )
     logger.info("\n")
 
     batch_sampler = CustomBatchSampler(datasets, batch_size=batch_size)
@@ -188,15 +193,15 @@ def main(graph_names, H, batch_size, epochs):
     logger.info("\n")
     model.fit(epochs=epochs, dataloader=dataloader)
     logger.info("\n")
-    logger.info("Saving model.")
+    logger.info("Saving model...")
     torch.save(
         model,
         f"trained_models/lstm_trained_at_{datetime.datetime.now().strftime('%Y_%m_%d_%H_%M')}.pt",
     )
 
     logger.info("\n")
-    logger.info("Testing model.")
-    test_model(model, test_datasets, save_result=True)
+    logger.info("Testing model...")
+    test_model(model, test_concat_datasets, save_result=True)
 
 
 if __name__ == "__main__":
