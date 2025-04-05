@@ -18,10 +18,12 @@ device = "cuda"  # force cuda or exit
 
 
 class SimpleLSTM(nn.Module):
-    def __init__(self, input_size, hidden_size, output_size):
+    def __init__(self, input_size, hidden_size, output_size, num_layers=1):
         super().__init__()
         # self.gcn = GCNConvByHand(input_size, input_size, bias=False, device=device)
-        self.rnn = nn.LSTM(input_size, hidden_size, batch_first=True)
+        self.rnn = nn.LSTM(
+            input_size, hidden_size, num_layers=num_layers, batch_first=True
+        )
         self.h2o = nn.Linear(hidden_size, output_size)
 
     def forward(self, x):
@@ -155,14 +157,15 @@ def test_model(model, test_concat_datasets, save_result=False):
         f.close()
 
 
-def main(graph_names, H, batch_size, epochs):
+def main(graph_names, H, batch_size, epochs, num_layers):
     logger.info(
-        "Timestamp: %s | Training with Graphs: %s | Batch size: %s | Epochs: %s | Hidden size: %s.",
+        "Timestamp: %s | Training with Graphs: %s | Batch size: %s | Epochs: %s | Hidden size: %s | Num layers: %s.",
         datetime.datetime.now().timestamp(),
         ", ".join(graph_names),
         batch_size,
         epochs,
         H,
+        num_layers,
     )
     logger.info("\n")
     dataset_coll = get_dataset_coll(*graph_names)
@@ -189,7 +192,7 @@ def main(graph_names, H, batch_size, epochs):
     batch_sampler = CustomBatchSampler(datasets, batch_size=batch_size)
     dataloader = DataLoader(datasets, batch_sampler=batch_sampler)
 
-    model = SimpleLSTM(D, H, 1).to(device)
+    model = SimpleLSTM(D, H, 1, num_layers=num_layers).to(device)
     logger.info("Model %s", model)
     logger.info(f"Total parameters: {sum(p.numel() for p in model.parameters()):,}")
     logger.info("\n")
@@ -197,7 +200,8 @@ def main(graph_names, H, batch_size, epochs):
     model.fit(epochs=epochs, dataloader=dataloader)
     logger.info("\n")
     logger.info(
-        "End Training | Total training time taken %ss", round(time.time() - start_time, 4)
+        "End Training | Total training time taken %ss",
+        round(time.time() - start_time, 4),
     )
     logger.info("\n")
     logger.info("Saving model...")
@@ -216,6 +220,7 @@ if __name__ == "__main__":
     parser.add_argument("--epochs", type=int, default=10)
     parser.add_argument("--batch-size", type=int, default=64)
     parser.add_argument("--hidden-size", type=int, default=16)
+    parser.add_argument("--num-layers", type=int, default=1)
     parser.add_argument(
         "--graph-names",
         type=str,
@@ -236,5 +241,6 @@ if __name__ == "__main__":
         epochs=args.epochs,
         batch_size=args.batch_size,
         H=args.hidden_size,
+        num_layers=args.num_layers,
         graph_names=args.graph_names,
     )

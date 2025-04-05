@@ -71,8 +71,9 @@ cd gnn
 
 python lstm_scratch.py \
     --epochs 20 \
-    --batch-size 256 \
-    --hidden-size 64 \
+    --batch-size 64 \
+    --hidden-size 32 \
+    --num-layers 2 \
     --graph-names \
     star_graph_n7 \
     graph_powerlaw_cluster_graph_n7 \
