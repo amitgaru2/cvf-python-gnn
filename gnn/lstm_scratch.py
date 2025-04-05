@@ -21,7 +21,7 @@ class SimpleLSTM(nn.Module):
     def __init__(self, input_size, hidden_size, output_size, num_layers=1):
         super().__init__()
         # self.gcn = GCNConvByHand(input_size, input_size, bias=False, device=device)
-        self.rnn = nn.LSTM(
+        self.lstm = nn.LSTM(
             input_size, hidden_size, num_layers=num_layers, batch_first=True
         )
         self.h2o = nn.Linear(hidden_size, output_size)
@@ -29,8 +29,8 @@ class SimpleLSTM(nn.Module):
     def forward(self, x):
         # h = self.gcn(x, A)
         # h = torch.relu(h)
-        rnn_out, _ = self.rnn(x)
-        output = self.h2o(rnn_out)
+        lstm_out, _ = self.rnn(x)
+        output = self.h2o(lstm_out)
         output = torch.relu(output)
         output = global_mean_pool(output, torch.zeros(output.size(1)).to(device).long())
         return output
