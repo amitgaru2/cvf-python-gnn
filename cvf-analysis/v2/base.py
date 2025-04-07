@@ -280,33 +280,34 @@ class CVFAnalysisV2:
             )
         )
 
+    def possible_perturbed_state_frm(self, frm_indx):
+        frm_config = self.indx_to_config(frm_indx)
+        for position, value in enumerate(frm_config):
+            for perturb_value in set(
+                range(self.possible_node_values_length[position])
+            ) - {value}:
+                perturb_state = tuple(
+                    [
+                        *frm_config[:position],
+                        perturb_value,
+                        *frm_config[position + 1 :],
+                    ]
+                )
+                to_indx = self.config_to_indx(perturb_state)
+                yield position, to_indx
+
     def find_rank_effect(self):
         for indx in range(self.total_configs):
-            frm_config = self.indx_to_config(indx)
-            for position, value in enumerate(frm_config):
-                for perturb_value in set(
-                    range(self.possible_node_values_length[position])
-                ) - {value}:
-                    perturb_state = tuple(
-                        [
-                            *frm_config[:position],
-                            perturb_value,
-                            *frm_config[position + 1 :],
-                        ]
-                    )
-                    to_indx = self.config_to_indx(perturb_state)
-                    rank_effect = math.ceil(
-                        self.global_rank_map[indx, 0] / self.global_rank_map[indx, 1]
-                    ) - math.ceil(
-                        self.global_rank_map[to_indx, 0]
-                        / self.global_rank_map[to_indx, 1]
-                    )
-                    self.global_avg_rank_effect[rank_effect] += 1
-                    if position not in self.global_avg_node_rank_effect:
-                        self.global_avg_node_rank_effect[position] = defaultdict(
-                            lambda: 0
-                        )
-                    self.global_avg_node_rank_effect[position][rank_effect] += 1
+            for position, to_indx in self.possible_perturbed_state_frm(indx):
+                rank_effect = math.ceil(
+                    self.global_rank_map[indx, 0] / self.global_rank_map[indx, 1]
+                ) - math.ceil(
+                    self.global_rank_map[to_indx, 0] / self.global_rank_map[to_indx, 1]
+                )
+                self.global_avg_rank_effect[rank_effect] += 1
+                if position not in self.global_avg_node_rank_effect:
+                    self.global_avg_node_rank_effect[position] = defaultdict(lambda: 0)
+                self.global_avg_node_rank_effect[position][rank_effect] += 1
 
     def save_rank_effect(self):
         df = pd.DataFrame(

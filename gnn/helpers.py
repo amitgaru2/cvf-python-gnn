@@ -1,4 +1,5 @@
 import os
+import sys
 import ast
 import json
 
@@ -9,6 +10,11 @@ import torch.nn.functional as F
 from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
 from torch_geometric.utils import to_dense_adj
+
+sys.path.append(os.path.join(os.getenv("CVF_PROJECT_DIR", ""), "cvf-analysis", "v2"))
+
+from cvf_fa_helpers import get_graph
+from graph_coloring import GraphColoringCVFAnalysisV2
 
 
 class CVFConfigDataset(Dataset):
@@ -351,27 +357,33 @@ class CVFConfigForAnalysisDataset(Dataset):
     def __init__(
         self,
         device,
-        dataset_file,
+        graph_name,
         program="coloring",
     ) -> None:
-        dataset_dir = os.path.join(
-            os.getenv("CVF_PROJECT_DIR", ""),
-            "cvf-analysis",
-            "v2",
-            "datasets",
-            program,
+        graphs_dir = os.path.join(
+            os.getenv("CVF_PROJECT_DIR", ""), "cvf-analysis", "graphs"
         )
-        self.data = pd.read_csv(os.path.join(dataset_dir, dataset_file))
+        graph_path = os.path.join(graphs_dir, f"{graph_name}.txt")
+        graph = get_graph(graph_path)
+        self.cvf_analysis = GraphColoringCVFAnalysisV2(
+            graph_name,
+            graph,
+            generate_data_ml=False,
+            generate_data_embedding=False,
+            generate_test_data_ml=True,
+        )
+
         self.device = device
-        self.dataset_name = dataset_file.split("_config_succ_dataset.csv")[0]
+        self.dataset_name = graph_name
+        self.cache = {}
 
     def __len__(self):
-        return len(self.data)
+        return self.cvf_analysis.total_configs
 
-    def __getitem__(self, idx):
-        row = self.data.loc[idx]
-        config = [i for i in ast.literal_eval(row["config"])]
-        succ = [i for i in ast.literal_eval(row["succ"])]
+    def _get_succ_encoding(self, idx, config):
+        program_transition_idxs = self.cvf_analysis._get_program_transitions(config)
+        self.cache[idx] = program_transition_idxs
+        succ = [self.cvf_analysis.indx_to_config(i) for i in program_transition_idxs]
         if succ:
             succ = torch.FloatTensor(succ).to(self.device)
             succ1 = torch.mean(succ, dim=0).unsqueeze(0)  # column wise
@@ -381,13 +393,21 @@ class CVFConfigForAnalysisDataset(Dataset):
             succ1 = torch.zeros(1, len(config)).to(self.device)
             succ2 = succ1.clone()
 
-        config = torch.FloatTensor([config]).to(self.device)
-        result = (
-            torch.cat((config, succ1, succ2), dim=0).t(),
-            self.dataset_name,
-        )
+        return succ1, succ2
 
+    def __getitem__(self, idx):
+        config = self.cvf_analysis.indx_to_config(idx)
+        succ1, succ2 = self._get_succ_encoding(idx, config)
+        config = torch.FloatTensor([config]).to(self.device)
+        result = (torch.cat((config, succ1, succ2), dim=0).t(), idx)
         return result
+
+    def get_pts(self, idx):
+        if idx in self.cache:
+            return self.cache[idx]
+        config = self.cvf_analysis.indx_to_config(idx)
+        program_transition_idxs = self.cvf_analysis._get_program_transitions(config)
+        return program_transition_idxs
 
 
 class CVFConfigForGCNWSuccFDataset(Dataset):
@@ -584,12 +604,12 @@ if __name__ == "__main__":
     #     print()
     #     input()
 
-    dataset = CVFConfigForGCNWSuccDataset(
-        device,
-        "implicit_graph_n10_config_rank_dataset.csv",
-        "implicit_graph_n10_edge_index.json",
-        "dijkstra",
-    )
+    # dataset = CVFConfigForGCNWSuccDataset(
+    #     device,
+    #     "implicit_graph_n10_config_rank_dataset.csv",
+    #     "implicit_graph_n10_edge_index.json",
+    #     "dijkstra",
+    # )
     # dataset = CVFConfigForGCNWSuccConvDataset(
     #     device,
     #     "implicit_graph_n5_config_rank_dataset.csv",
@@ -608,9 +628,10 @@ if __name__ == "__main__":
     #     "tiny_graph_test_config_rank_w_succ_dataset.csv",
     #     "tiny_graph_edge_index.json",
     # )
+
+    dataset = CVFConfigForAnalysisDataset("cuda", "star_graph_n7")
     loader = DataLoader(dataset, batch_size=2, shuffle=False)
 
     for batch in loader:
-        print(batch[0], batch[1])
-        print()
-        # break
+        x = batch[0]
+        break
