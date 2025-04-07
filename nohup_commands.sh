@@ -73,9 +73,9 @@ graphs=("star_graph_n7" "graph_powerlaw_cluster_graph_n7" "graph_random_regular_
 # graphs=("star_graph_n7")
 joined_graphs_args="${graphs[@]}"
 
-epochs=3
-batch_size=256
-hidden_size=16
+epochs=20
+batch_size=64
+hidden_size=32
 
 python lstm_scratch.py \
     --epochs $epochs \
