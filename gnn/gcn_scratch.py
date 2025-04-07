@@ -204,12 +204,9 @@ def main(graph_names, H, batch_size, epochs):
         round(time.time() - start_time, 4),
     )
     logger.info("\n")
-    logger.info("Saving model...")
-    torch.save(
-        model,
-        f"trained_models/gcn_trained_at_{datetime.datetime.now().strftime('%Y_%m_%d_%H_%M')}.pt",
-    )
-
+    model_name = f"trained_models/gcn_trained_at_{datetime.datetime.now().strftime('%Y_%m_%d_%H_%M')}.pt"
+    logger.info("Saving model %s", model_name)
+    torch.save(model, model_name)
     logger.info("\n")
     logger.info("Testing model...")
     test_model(model, test_concat_datasets, save_result=True)
