@@ -262,6 +262,7 @@ class CVFConfigForGCNWSuccWEIDataset(Dataset):
             .to(self.device)
         )
         self.A = to_dense_adj(self.edge_index).squeeze(0)
+        self.D = 3
 
     def __len__(self):
         return len(self.data)
