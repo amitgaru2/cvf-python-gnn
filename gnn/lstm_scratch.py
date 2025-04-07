@@ -29,7 +29,7 @@ class SimpleLSTM(nn.Module):
     def forward(self, x):
         # h = self.gcn(x, A)
         # h = torch.relu(h)
-        lstm_out, _ = self.rnn(x)
+        lstm_out, _ = self.lstm(x)
         output = self.h2o(lstm_out)
         output = torch.relu(output)
         output = global_mean_pool(output, torch.zeros(output.size(1)).to(device).long())

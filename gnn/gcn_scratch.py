@@ -160,7 +160,7 @@ def test_model(model, test_concat_datasets, save_result=False):
 
 def main(graph_names, H, batch_size, epochs):
     logger.info(
-        "Timestamp: %s | Training with Graphs: %s | Batch size: %s | Epochs: %s | Hidden size: %s | Num layers: %s.",
+        "Timestamp: %s | Training with Graphs: %s | Batch size: %s | Epochs: %s | Hidden size: %s.",
         datetime.datetime.now().timestamp(),
         ", ".join(graph_names),
         batch_size,
@@ -220,7 +220,6 @@ if __name__ == "__main__":
     parser.add_argument("--epochs", type=int, default=10)
     parser.add_argument("--batch-size", type=int, default=64)
     parser.add_argument("--hidden-size", type=int, default=16)
-    # parser.add_argument("--num-layers", type=int, default=1)
     parser.add_argument(
         "--graph-names",
         type=str,
