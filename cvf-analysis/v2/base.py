@@ -77,11 +77,13 @@ class CVFAnalysisV2:
         graph: dict,
         generate_data_ml: bool = False,
         generate_data_embedding: bool = False,
+        generate_test_data_ml: bool = False,
     ) -> None:
         self.graph_name = graph_name
         self.graph = graph
         self.generate_data_ml = generate_data_ml
         self.generate_data_embedding = generate_data_embedding
+        self.generate_test_data_ml = generate_test_data_ml
         self.pt_graph_adj_list = {None: set()}
 
         self.nodes = list(self.graph.keys())
@@ -99,29 +101,34 @@ class CVFAnalysisV2:
 
         self.total_invariants = 0
 
-        # rank
-        self.global_avg_rank = defaultdict(lambda: 0)
-        self.global_max_rank = defaultdict(lambda: 0)
-
-        # node's program transitions
+        # node's program transitions count
         self.global_pt = defaultdict(lambda: 0)
-
-        # rank effects
-        self.global_avg_rank_effect = defaultdict(lambda: 0)
-        self.global_avg_node_rank_effect = {}
 
         # config -> successors / program transitions for ml
         self.config_successors = {}
 
-        # rank map
-        self.init_global_rank_map()
-        self.analysed_rank_count = 0
+        if not self.generate_test_data_ml:
+            self.init_rank_calculation_related_configs()
 
         self.initialize_helpers()
         self.initialize_program_helpers()
 
     def get_possible_node_values(self) -> List:
         raise NotImplemented
+
+    def init_rank_calculation_related_configs(self):
+        """not needed when generating ML test data"""
+        # rank
+        self.global_avg_rank = defaultdict(lambda: 0)
+        self.global_max_rank = defaultdict(lambda: 0)
+
+        # rank effects
+        self.global_avg_rank_effect = defaultdict(lambda: 0)
+        self.global_avg_node_rank_effect = {}
+
+        # rank map
+        self.init_global_rank_map()
+        self.analysed_rank_count = 0
 
     def init_global_rank_map(self):
         """override this when not needed like for simulation"""
@@ -166,6 +173,10 @@ class CVFAnalysisV2:
         return tuple(s)
 
     def start(self):
+        if self.generate_test_data_ml:
+            self.start_test_data_generation_ml()
+            return
+
         self.find_rank()
         logger.info("Total Invariants: %s.", f"{self.total_invariants:,}")
         self.save_rank()
@@ -173,8 +184,13 @@ class CVFAnalysisV2:
         self.save_rank_effect()
         if self.generate_data_ml:
             self.generate_dataset_for_ml()
-        if self.generate_data_embedding:
-            self.generate_dataset_for_embedding()
+        # if self.generate_data_embedding:
+        #     self.generate_dataset_for_embedding()
+
+    def start_test_data_generation_ml(self):
+        logger.info("Generating test data for ML.")
+        self.find_successors()
+        self.generate_test_dataset_for_ml()
 
     def _get_program_transitions(self, start_state):
         raise NotImplemented
@@ -215,6 +231,16 @@ class CVFAnalysisV2:
         # post visit
         self.analysed_rank_count += 1
         self.config_successors[indx] = successors
+
+    def find_successors(self):
+        """for ML test dataset"""
+        for indx in range(self.total_configs):
+            successors = []
+            config = self.indx_to_config(indx)
+            if not self.is_invariant(config):
+                for child_indx in self._get_program_transitions(config):
+                    successors.append(child_indx)
+            self.config_successors[indx] = successors
 
     def find_rank(self):
         for i in range(self.total_configs):
@@ -327,6 +353,34 @@ class CVFAnalysisV2:
                 {
                     "config": list(self.indx_to_config(k)),
                     "rank": math.ceil(v[0] / v[1]),
+                    "succ": (
+                        [
+                            list(self.indx_to_config(i))
+                            for i in self.config_successors[k]
+                        ]
+                        if k in self.config_successors
+                        else []
+                    ),
+                }
+            )
+
+    def generate_test_dataset_for_ml(self):
+        writer = csv.DictWriter(
+            open(
+                os.path.join(
+                    "datasets",
+                    self.results_dir,
+                    f"{self.graph_name}_config_succ_dataset.csv",
+                ),
+                "w",
+            ),
+            fieldnames=["config", "succ"],
+        )
+        writer.writeheader()
+        for k in range(self.total_configs):
+            writer.writerow(
+                {
+                    "config": list(self.indx_to_config(k)),
                     "succ": (
                         [
                             list(self.indx_to_config(i))

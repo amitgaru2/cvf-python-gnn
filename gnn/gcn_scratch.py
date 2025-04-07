@@ -110,7 +110,7 @@ def get_dataset_coll(*graph_names):
 def test_model(model, test_concat_datasets, save_result=False):
     if save_result:
         f = open(
-            f"test_results/test_result_w_succ_diff_nodes_lstm_script_{datetime.datetime.now().strftime('%Y_%m_%d_%H_%M')}.csv",
+            f"test_results/test_result_w_succ_diff_nodes_gcn_script_{datetime.datetime.now().strftime('%Y_%m_%d_%H_%M')}.csv",
             "w",
             newline="",
         )
@@ -207,7 +207,7 @@ def main(graph_names, H, batch_size, epochs):
     logger.info("Saving model...")
     torch.save(
         model,
-        f"trained_models/lstm_trained_at_{datetime.datetime.now().strftime('%Y_%m_%d_%H_%M')}.pt",
+        f"trained_models/gcn_trained_at_{datetime.datetime.now().strftime('%Y_%m_%d_%H_%M')}.pt",
     )
 
     logger.info("\n")
