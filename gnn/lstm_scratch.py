@@ -21,7 +21,7 @@ class SimpleLSTM(nn.Module):
     def __init__(self, input_size, hidden_size, output_size, num_layers=1):
         super().__init__()
         # self.gcn = GCNConvByHand(input_size, input_size, bias=False, device=device)
-        self.lstm = nn.LSTM(
+        self.lstm = nn.GRU(
             input_size, hidden_size, num_layers=num_layers, batch_first=True
         )
         self.h2o = nn.Linear(hidden_size, output_size)

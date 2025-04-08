@@ -77,16 +77,15 @@ epochs=20
 batch_size=64
 hidden_size=32
 
-# python lstm_scratch.py \
-#     --epochs $epochs \
-#     --batch-size $batch_size \
-#     --hidden-size $hidden_size \
-#     --num-layers 1 \
-#     --graph-names $joined_graphs_args
-
-
-python gcn_scratch.py \
+python lstm_scratch.py \
     --epochs $epochs \
     --batch-size $batch_size \
     --hidden-size $hidden_size \
+    --num-layers 1 \
     --graph-names $joined_graphs_args
+
+# python gcn_scratch.py \
+#     --epochs $epochs \
+#     --batch-size $batch_size \
+#     --hidden-size $hidden_size \
+#     --graph-names $joined_graphs_args
