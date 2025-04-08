@@ -404,7 +404,9 @@ class CVFConfigForAnalysisDataset(Dataset):
 
     def get_pts(self, idx):
         if idx in self.cache:
-            return self.cache[idx]
+            result = self.cache[idx]
+            del self.cache[idx]
+            return result
         config = self.cvf_analysis.indx_to_config(idx)
         program_transition_idxs = self.cvf_analysis._get_program_transitions(config)
         return program_transition_idxs

@@ -122,7 +122,7 @@ def test_model(model, test_concat_datasets, save_result=False):
 
     with torch.no_grad():
         # test_concat_datasets = ConcatDataset(test_datasets)
-        test_batch_sampler = CustomBatchSampler(test_concat_datasets, batch_size=10240)
+        test_batch_sampler = CustomBatchSampler(test_concat_datasets, batch_size=1)
         test_dataloader = DataLoader(
             test_concat_datasets, batch_sampler=test_batch_sampler
         )
@@ -135,6 +135,7 @@ def test_model(model, test_concat_datasets, save_result=False):
             y = batch[1]
             y = y.unsqueeze(-1)
             out = model(x[0])
+            print(y, out)
             if save_result:
                 csv_writer.writerows(
                     (i, j.item(), k.item())
