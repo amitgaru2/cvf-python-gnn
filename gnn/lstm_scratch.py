@@ -135,7 +135,7 @@ def test_model(model, test_concat_datasets, save_result=False):
             y = batch[1]
             y = y.unsqueeze(-1)
             out = model(x[0])
-            print(y, out)
+            # print(y, out)
             if save_result:
                 csv_writer.writerows(
                     (i, j.item(), k.item())
