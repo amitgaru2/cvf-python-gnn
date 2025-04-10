@@ -73,7 +73,7 @@ graphs=("star_graph_n7" "graph_powerlaw_cluster_graph_n7" "graph_random_regular_
 # graphs=("star_graph_n7")
 joined_graphs_args="${graphs[@]}"
 
-epochs=20
+epochs=50
 batch_size=64
 hidden_size=32
 
