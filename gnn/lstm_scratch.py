@@ -20,17 +20,16 @@ device = "cuda"  # force cuda or exit
 class SimpleLSTM(nn.Module):
     def __init__(self, input_size, hidden_size, output_size, num_layers=1):
         super().__init__()
-        # self.gcn = GCNConvByHand(input_size, input_size, bias=False, device=device)
         self.lstm = nn.GRU(
             input_size, hidden_size, num_layers=num_layers, batch_first=True
         )
+        self.norm = nn.LayerNorm(hidden_size)
         self.h2o = nn.Linear(hidden_size, output_size)
 
     def forward(self, x):
-        # h = self.gcn(x, A)
-        # h = torch.relu(h)
         lstm_out, _ = self.lstm(x)
-        output = self.h2o(lstm_out)
+        output = self.norm(lstm_out)
+        output = self.h2o(output)
         output = torch.relu(output)
         output = global_mean_pool(output, torch.zeros(output.size(1)).to(device).long())
         return output

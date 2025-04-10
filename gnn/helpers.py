@@ -353,6 +353,60 @@ class CVFConfigForGCNWSuccLSTMDataset(Dataset):
         return f"{self.__class__.__name__} {self.dataset_name}"
 
 
+class CVFConfigForGCNWSuccLSTMWNormalizationDataset(Dataset):
+    def __init__(
+        self,
+        device,
+        dataset_file,
+        edge_index_file=None,
+        program="coloring",
+    ) -> None:
+        dataset_dir = os.path.join(
+            os.getenv("CVF_PROJECT_DIR", ""),
+            "cvf-analysis",
+            "v2",
+            "datasets",
+            program,
+        )
+        self.data = pd.read_csv(os.path.join(dataset_dir, dataset_file))
+        self.device = device
+        self.dataset_name = dataset_file.split("_config_rank_dataset.csv")[0]
+        self.D = 3  # input dimension
+        self.transform = None
+
+    def __len__(self):
+        return len(self.data)
+
+    def set_transform(self, transform):
+        self.transform = transform
+
+    def __getitem__(self, idx):
+        row = self.data.loc[idx]
+        config = [i for i in ast.literal_eval(row["config"])]
+        succ = [i for i in ast.literal_eval(row["succ"])]
+        if succ:
+            succ = torch.FloatTensor(succ).to(self.device)
+            if self.transform:
+                succ = self.transform(succ)
+            succ1 = torch.mean(succ, dim=0).unsqueeze(0)  # column wise
+            succ2 = torch.mean(succ, dim=1)  # row wise
+            succ2 = torch.sum(succ2).repeat(succ1.shape)
+        else:
+            succ1 = torch.zeros(1, len(config)).to(self.device)
+            succ2 = succ1.clone()
+
+        config = torch.FloatTensor([config]).to(self.device)
+        result = (
+            torch.cat((config, succ1, succ2), dim=0).t(),
+            self.dataset_name,
+        ), torch.FloatTensor([row["rank"]]).to(self.device)
+
+        return result
+
+    def __repr__(self):
+        return f"{self.__class__.__name__} {self.dataset_name}"
+
+
 class CVFConfigForGCNWSuccLSTMGCDataset(Dataset):
     def __init__(
         self,
