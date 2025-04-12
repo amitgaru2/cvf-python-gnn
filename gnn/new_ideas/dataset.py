@@ -1,3 +1,4 @@
+import json
 import os
 import sys
 import ast
@@ -7,6 +8,7 @@ import torch
 import pandas as pd
 import torch.nn.functional as F
 
+from torch_geometric.utils import to_dense_adj
 from torch.utils.data import Dataset, DataLoader
 
 sys.path.append(os.path.join(os.getenv("CVF_PROJECT_DIR", ""), "cvf-analysis", "v2"))
@@ -17,7 +19,7 @@ class CVFConfigForGCNWSuccLSTMDataset(Dataset):
         self,
         device,
         dataset_file,
-        graph_encoding,
+        edge_index_file,
         program="coloring",
     ) -> None:
         dataset_dir = os.path.join(
@@ -29,9 +31,16 @@ class CVFConfigForGCNWSuccLSTMDataset(Dataset):
         )
         self.data = pd.read_csv(os.path.join(dataset_dir, dataset_file))
         self.device = device
+        self.edge_index = (
+            torch.LongTensor(
+                json.load(open(os.path.join(dataset_dir, edge_index_file), "r")),
+            )
+            .t()
+            .to(self.device)
+        )
+        self.A = to_dense_adj(self.edge_index).squeeze(0)
         self.dataset_name = dataset_file.split("_config_rank_dataset.csv")[0]
         self.D = 7  # input dimension
-        self.graph_encoding = graph_encoding
         self.total_succ_select = 6
 
     def __len__(self):
@@ -58,7 +67,7 @@ class CVFConfigForGCNWSuccLSTMDataset(Dataset):
         config = torch.FloatTensor([config]).to(self.device)
         labels = torch.FloatTensor([row["rank"]]).to(self.device)
         result = (
-            torch.cat((self.graph_encoding, config, succ)),
+            torch.cat((self.A, config, succ)),
             self.dataset_name,
         ), labels
         # result = config, labels
@@ -73,7 +82,7 @@ if __name__ == "__main__":
     dataset = CVFConfigForGCNWSuccLSTMDataset(
         device,
         "star_graph_n7_config_rank_dataset.csv",
-        graph_encoding=F.one_hot(torch.tensor([0]), num_classes=7).to(device),
+        "star_graph_n7_edge_index.json",
     )
 
     loader = DataLoader(dataset, batch_size=2, shuffle=False)
