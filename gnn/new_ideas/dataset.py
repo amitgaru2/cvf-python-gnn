@@ -11,7 +11,11 @@ import torch.nn.functional as F
 from torch_geometric.utils import to_dense_adj
 from torch.utils.data import Dataset, DataLoader
 
+
 sys.path.append(os.path.join(os.getenv("CVF_PROJECT_DIR", ""), "cvf-analysis", "v2"))
+
+from cvf_fa_helpers import get_graph
+from graph_coloring import GraphColoringCVFAnalysisV2
 
 
 class CVFConfigForGCNWSuccLSTMDataset(Dataset):
@@ -77,18 +81,71 @@ class CVFConfigForGCNWSuccLSTMDataset(Dataset):
         return f"{self.__class__.__name__} {self.dataset_name}"
 
 
+class CVFConfigForBertDataset(Dataset):
+    def __init__(self, device, graph_name, pt_dataset_file, program="coloring") -> None:
+        graphs_dir = os.path.join(
+            os.getenv("CVF_PROJECT_DIR", ""), "cvf-analysis", "graphs"
+        )
+        graph_path = os.path.join(graphs_dir, f"{graph_name}.txt")
+        graph = get_graph(graph_path)
+        self.cvf_analysis = GraphColoringCVFAnalysisV2(
+            graph_name,
+            graph,
+            generate_data_ml=False,
+            generate_data_embedding=False,
+            generate_test_data_ml=True,
+        )
+
+        self.device = device
+        self.dataset_name = graph_name
+        dataset_dir = os.path.join(
+            os.getenv("CVF_PROJECT_DIR", ""),
+            "cvf-analysis",
+            "v2",
+            "datasets",
+            program,
+        )
+        self.data = pd.read_csv(os.path.join(dataset_dir, pt_dataset_file))
+
+    def vocab_tensor(self):
+        result = []
+        for i in range(self.cvf_analysis.total_configs):
+            result.append(self.cvf_analysis.indx_to_config(i))
+        result = torch.FloatTensor(result)
+        return result
+
+    def __len__(self):
+        return len(self.data)
+
+    def __getitem__(self, idx):
+        row = self.data.loc[idx]
+        na_mask = torch.tensor(list(row.isna()))
+        result = torch.FloatTensor([self.cvf_analysis.indx_to_config(i) for i in row])
+        result[na_mask] = -1
+        attention_mask = ~na_mask
+        return result, attention_mask
+
+
 if __name__ == "__main__":
     device = "cuda"
-    dataset = CVFConfigForGCNWSuccLSTMDataset(
+    # dataset = CVFConfigForGCNWSuccLSTMDataset(
+    #     device,
+    #     "star_graph_n7_config_rank_dataset.csv",
+    #     "star_graph_n7_edge_index.json",
+    # )
+
+    # loader = DataLoader(dataset, batch_size=2, shuffle=False)
+
+    dataset = CVFConfigForBertDataset(
         device,
-        "star_graph_n7_config_rank_dataset.csv",
-        "star_graph_n7_edge_index.json",
+        "graph_random_regular_graph_n4_d3",
+        "graph_random_regular_graph_n4_d3_pt_adj_list.txt",
     )
 
-    loader = DataLoader(dataset, batch_size=2, shuffle=False)
+    loader = DataLoader(dataset, batch_size=2, shuffle=True)
 
     for batch in loader:
-        x = batch[0]
-        y = batch[1]
-        print(x[0].shape)
-        # break
+        # x = batch[0]
+        print(batch[0])
+        print(batch[1])
+        break
