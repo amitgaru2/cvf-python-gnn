@@ -82,7 +82,7 @@ class CVFConfigForGCNWSuccLSTMDataset(Dataset):
 
 
 class CVFConfigForBertDataset(Dataset):
-    def __init__(self, device, graph_name, pt_dataset_file, program="coloring") -> None:
+    def __init__(self, device, graph_name, pt_dataset_file, D, program="coloring") -> None:
         graphs_dir = os.path.join(
             os.getenv("CVF_PROJECT_DIR", ""), "cvf-analysis", "graphs"
         )
@@ -106,6 +106,9 @@ class CVFConfigForBertDataset(Dataset):
             program,
         )
         self.data = pd.read_csv(os.path.join(dataset_dir, pt_dataset_file))
+        self.sequence_length = len(self.data.loc[0])
+        self.D = D
+
 
     def vocab_tensor(self):
         result = []
