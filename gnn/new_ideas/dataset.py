@@ -17,6 +17,8 @@ sys.path.append(os.path.join(os.getenv("CVF_PROJECT_DIR", ""), "cvf-analysis", "
 from cvf_fa_helpers import get_graph
 from graph_coloring import GraphColoringCVFAnalysisV2
 
+from custom_logger import logger
+
 
 class CVFConfigForGCNWSuccLSTMDataset(Dataset):
     def __init__(
@@ -82,7 +84,9 @@ class CVFConfigForGCNWSuccLSTMDataset(Dataset):
 
 
 class CVFConfigForBertDataset(Dataset):
-    def __init__(self, device, graph_name, pt_dataset_file, D, program="coloring") -> None:
+    def __init__(
+        self, device, graph_name, pt_dataset_file, D, program="coloring"
+    ) -> None:
         graphs_dir = os.path.join(
             os.getenv("CVF_PROJECT_DIR", ""), "cvf-analysis", "graphs"
         )
@@ -109,7 +113,6 @@ class CVFConfigForBertDataset(Dataset):
         self.sequence_length = len(self.data.loc[0])
         self.D = D
 
-
     def vocab_tensor(self):
         result = []
         for i in range(self.cvf_analysis.total_configs):
@@ -121,8 +124,13 @@ class CVFConfigForBertDataset(Dataset):
         return len(self.data)
 
     def __getitem__(self, idx):
-        row = self.data.loc[idx]
-        na_mask = torch.tensor(list(row.isna()))
+        row = self.data.loc[idx].reset_index(drop=True)
+        is_na = row.isna()
+        # if is_na.any():
+        #     first_na_index = is_na.idxmax()
+        # else:
+        #     first_na_index = len(row)  # if no na in the data
+        na_mask = torch.tensor(list(is_na))
         result = torch.FloatTensor([self.cvf_analysis.indx_to_config(i) for i in row])
         result[na_mask] = -1
         attention_mask = ~na_mask
@@ -143,6 +151,7 @@ if __name__ == "__main__":
         device,
         "graph_random_regular_graph_n4_d3",
         "graph_random_regular_graph_n4_d3_pt_adj_list.txt",
+        D=4,
     )
 
     loader = DataLoader(dataset, batch_size=2, shuffle=True)
@@ -151,4 +160,5 @@ if __name__ == "__main__":
         # x = batch[0]
         print(batch[0])
         print(batch[1])
+        print(batch[2])
         break
