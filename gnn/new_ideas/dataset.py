@@ -126,15 +126,15 @@ class CVFConfigForBertDataset(Dataset):
     def __getitem__(self, idx):
         row = self.data.loc[idx].reset_index(drop=True)
         is_na = row.isna()
-        # if is_na.any():
-        #     first_na_index = is_na.idxmax()
-        # else:
-        #     first_na_index = len(row)  # if no na in the data
+        if is_na.any():
+            first_na_index = is_na.idxmax()
+        else:
+            first_na_index = len(row)  # if no na in the data
         na_mask = torch.tensor(list(is_na))
         result = torch.FloatTensor([self.cvf_analysis.indx_to_config(i) for i in row])
         result[na_mask] = -1
         attention_mask = ~na_mask
-        return result, attention_mask
+        return result, attention_mask, first_na_index
 
 
 if __name__ == "__main__":

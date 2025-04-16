@@ -12,7 +12,7 @@ device = "cuda"
 
 batch_size = 64
 
-epochs = 1000
+epochs = 25
 
 
 # dataset = CVFConfigForBertDataset(
@@ -72,10 +72,13 @@ class TokenVectorBERT(nn.Module):
 
 
 # ----- Masking Function -----
-def mask_input_tokens(inputs, mask_vector, mask_prob=0.3):
+def mask_input_tokens(inputs, mask_before, mask_vector, mask_prob):
     labels = inputs.clone()
     masked_inputs = inputs.clone()
     b_mask = torch.rand(masked_inputs[:, :, 0].shape) < mask_prob  # shape: (B, T)
+
+    for i, mb in enumerate(mask_before):
+        b_mask[i, mb:] = False  # do not mask the padded vectors
 
     for i in range(masked_inputs.size(0)):
         for j in range(masked_inputs.size(1)):
@@ -97,13 +100,13 @@ def masked_mse_loss(pred, target, mask):
 
 
 def main():
-    model = TokenVectorBERT(input_dim=dataset.D, vocab_dim=64, bert_hidden=64)
+    model = TokenVectorBERT(input_dim=dataset.D, vocab_dim=32, bert_hidden=32)
 
     logger.info(
         "Total parameters: {:,}".format(sum(p.numel() for p in model.parameters()))
     )
 
-    optimizer = torch.optim.AdamW(model.parameters(), lr=5e-4)
+    optimizer = torch.optim.AdamW(model.parameters(), lr=5e-4, weight_decay=1e-4)
 
     model.train()
     for epoch in range(epochs):
@@ -111,8 +114,9 @@ def main():
         for batch in loader:
             x = batch[0]
             attention_mask = batch[1]
+            mask_before = batch[2]
             masked_inputs, target_labels, loss_mask = mask_input_tokens(
-                x, model.mask_vector, mask_prob=0.2
+                x, mask_before, model.mask_vector, mask_prob=0.15
             )
 
             logits = model(masked_inputs, attention_mask)
@@ -128,9 +132,7 @@ def main():
             f"Epoch {epoch+1}/{epochs} | Loss: {total_loss.item()/ len(loader):.4f}"
         )
 
-    model_name = (
-        f"bert_trained_at_{datetime.datetime.now().strftime('%Y_%m_%d_%H_%M')}.pt"
-    )
+    model_name = f"trained_models/bert_trained_at_{datetime.datetime.now().strftime('%Y_%m_%d_%H_%M')}.pt"
     logger.info("Saving model %s", model_name)
     torch.save(model, model_name)
 
@@ -142,9 +144,9 @@ def main():
     for batch in test_loader:
         x = batch[0]
         attention_mask = batch[1]
-
+        mask_before = batch[2]
         masked_inputs, target_labels, loss_mask = mask_input_tokens(
-            x, model.mask_vector, mask_prob=0.15
+            x, mask_before, model.mask_vector, mask_prob=0.15
         )
         logits = model(masked_inputs, attention_mask)
         loss = masked_mse_loss(logits, target_labels, loss_mask)
