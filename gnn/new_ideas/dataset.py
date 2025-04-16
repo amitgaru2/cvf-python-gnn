@@ -147,11 +147,19 @@ if __name__ == "__main__":
 
     # loader = DataLoader(dataset, batch_size=2, shuffle=False)
 
+    # dataset = CVFConfigForBertDataset(
+    #     device,
+    #     "graph_random_regular_graph_n4_d3",
+    #     "graph_random_regular_graph_n4_d3_pt_adj_list.txt",
+    #     D=4,
+    # )
+
     dataset = CVFConfigForBertDataset(
         device,
-        "graph_random_regular_graph_n4_d3",
-        "graph_random_regular_graph_n4_d3_pt_adj_list.txt",
-        D=4,
+        "implicit_graph_n5",
+        "implicit_graph_n5_pt_adj_list.txt",
+        D=5,
+        program="dijkstra",
     )
 
     loader = DataLoader(dataset, batch_size=2, shuffle=True)
@@ -160,5 +168,4 @@ if __name__ == "__main__":
         # x = batch[0]
         print(batch[0])
         print(batch[1])
-        print(batch[2])
         break

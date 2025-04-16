@@ -184,8 +184,8 @@ class CVFAnalysisV2:
         self.save_rank_effect()
         if self.generate_data_ml:
             self.generate_dataset_for_ml()
-        # if self.generate_data_embedding:
-        #     self.generate_dataset_for_embedding()
+        if self.generate_data_embedding:
+            self.generate_dataset_for_embedding()
 
     def start_test_data_generation_ml(self):
         logger.info("Generating test data for ML.")

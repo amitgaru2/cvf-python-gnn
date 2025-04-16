@@ -29,7 +29,7 @@ class GraphColoringCVFAnalysisV2(CVFAnalysisV2):
 
     def start(self):
         super().start()
-        self.save_node_pt()
+        # self.save_node_pt()
 
     def _get_program_transitions(self, start_state: tuple):
         program_transitions = []

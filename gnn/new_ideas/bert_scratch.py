@@ -12,17 +12,25 @@ device = "cuda"
 
 batch_size = 64
 
-epochs = 500
+epochs = 1000
 
+
+# dataset = CVFConfigForBertDataset(
+#     device,
+#     "graph_random_regular_graph_n6_d3",
+#     "graph_random_regular_graph_n6_d3_pt_adj_list.txt",
+#     D=6,
+# )
 
 dataset = CVFConfigForBertDataset(
     device,
-    "graph_random_regular_graph_n6_d3",
-    "graph_random_regular_graph_n6_d3_pt_adj_list.txt",
-    D=6,
+    "implicit_graph_n5",
+    "implicit_graph_n5_pt_adj_list.txt",
+    D=5,
+    program="dijkstra",
 )
 
-logger.info(f"Dataset size: {len(dataset):,}")
+logger.info(f"Dataset: {dataset.dataset_name} | Size: {len(dataset):,}")
 
 train_size = int(0.80 * len(dataset))
 test_size = len(dataset) - train_size
@@ -104,7 +112,7 @@ def main():
             x = batch[0]
             attention_mask = batch[1]
             masked_inputs, target_labels, loss_mask = mask_input_tokens(
-                x, model.mask_vector, mask_prob=0.15
+                x, model.mask_vector, mask_prob=0.2
             )
 
             logits = model(masked_inputs, attention_mask)
