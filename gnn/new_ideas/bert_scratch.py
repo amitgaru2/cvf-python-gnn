@@ -12,7 +12,7 @@ device = "cuda"
 
 batch_size = 64
 
-epochs = 25
+epochs = 5000
 
 
 # dataset = CVFConfigForBertDataset(
@@ -32,7 +32,7 @@ dataset = CVFConfigForBertDataset(
 
 logger.info(f"Dataset: {dataset.dataset_name} | Size: {len(dataset):,}")
 
-train_size = int(0.80 * len(dataset))
+train_size = int(0.95 * len(dataset))
 test_size = len(dataset) - train_size
 train_dataset, test_dataset = random_split(dataset, [train_size, test_size])
 
@@ -100,7 +100,7 @@ def masked_mse_loss(pred, target, mask):
 
 
 def main():
-    model = TokenVectorBERT(input_dim=dataset.D, vocab_dim=32, bert_hidden=32)
+    model = TokenVectorBERT(input_dim=dataset.D, vocab_dim=64, bert_hidden=64)
 
     logger.info(
         "Total parameters: {:,}".format(sum(p.numel() for p in model.parameters()))
