@@ -37,7 +37,7 @@ result_df = pd.DataFrame(
 )
 
 with torch.no_grad():
-    test_dataloader = DataLoader(dataset, batch_size=1)
+    test_dataloader = DataLoader(dataset, batch_size=10)
 
     count = 0
     for batch in test_dataloader:
