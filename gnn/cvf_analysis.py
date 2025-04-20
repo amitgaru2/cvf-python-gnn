@@ -72,6 +72,7 @@ ml_grp_by_node_re.to_csv(f"ml_predictions/{model_name}__{graph_name}__cvf_by_nod
 ml_grp_by_re = result_df.groupby(["rank effect"]).size().reset_index(name="ml_count")
 ml_grp_by_re.to_csv(f"ml_predictions/{model_name}__{graph_name}__cvf.csv")
 
+# fa results
 import os
 
 results_dir = os.path.join(
