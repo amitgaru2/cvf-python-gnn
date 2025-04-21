@@ -51,7 +51,7 @@ def print_runtime_report():
 
 
 @track_runtime
-def perturbed_state_wrapper(dataset, frm_idx):
+def get_perturbed_states(dataset, frm_idx):
     return dataset.cvf_analysis.possible_perturbed_state_frm(frm_idx)
 
 
@@ -60,6 +60,11 @@ def get_model():
     model = torch.load(f"trained_models/{model_name}.pt", weights_only=False)
     model.eval()
     return model
+
+
+@track_runtime
+def get_rank(model, x):
+    return model(x)
 
 
 @track_runtime
@@ -74,19 +79,18 @@ def ml_cvf_analysis():
 
     data = []
     with torch.no_grad():
-        test_dataloader = DataLoader(dataset, batch_size=10)
+        test_dataloader = DataLoader(dataset, batch_size=1)
         for batch in test_dataloader:
-            for i in range(len(batch[0])):
-                frm_idx = batch[1][i].item()
-                frm_rank = model(batch[0][i].unsqueeze(0))
-                for (
-                    position,
-                    to_indx,
-                ) in perturbed_state_wrapper(dataset, frm_idx):
-                    to = dataset[to_indx]
-                    to_rank = model(to[0].unsqueeze(0))
-                    rank_effect = (frm_rank - to_rank).item()  # to round off at 0.5
-                    data.append({"node": position, "rank effect": rank_effect})
+            frm_idx = batch[1].item()
+            frm_rank = get_rank(model, batch[0])
+            for (
+                position,
+                to_indx,
+            ) in get_perturbed_states(dataset, frm_idx):
+                to = dataset[to_indx]
+                to_rank = get_rank(model, to[0])
+                rank_effect = (frm_rank - to_rank).item()  # to round off at 0.5
+                data.append({"node": position, "rank effect": rank_effect})
 
             temp_df = pd.DataFrame(data, columns=["node", "rank effect"])
             data = []
