@@ -1,9 +1,13 @@
 import os
 import sys
+import time
 
 import torch
 import numpy as np
 import pandas as pd
+
+from functools import wraps
+from collections import defaultdict
 
 from torch.utils.data import DataLoader
 
@@ -20,12 +24,45 @@ model_name = "lstm_trained_at_2025_04_10_00_11"
 device = "cuda"
 
 
+function_runtimes = defaultdict(float)
+
+
+def track_runtime(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        start = time.perf_counter()
+        result = func(*args, **kwargs)
+        end = time.perf_counter()
+        duration = end - start
+        function_runtimes[func.__name__] += duration
+        # logger.info(
+        #     f"[{func.__name__}] call took {duration:.6f}s, total: {function_runtimes[func.__name__]:.6f}s"
+        # )
+        return result
+
+    return wrapper
+
+
+# Optional utility to print final report
+def print_runtime_report():
+    logger.info("\n=== Runtime Report ===")
+    for func_name, total_time in function_runtimes.items():
+        logger.info(f"{func_name}: {total_time:.6f}s")
+
+
+@track_runtime
+def perturbed_state_wrapper(dataset, frm_idx):
+    return dataset.cvf_analysis.possible_perturbed_state_frm(frm_idx)
+
+
+@track_runtime
 def get_model():
     model = torch.load(f"trained_models/{model_name}.pt", weights_only=False)
     model.eval()
     return model
 
 
+@track_runtime
 def ml_cvf_analysis():
     model = get_model()
 
@@ -45,7 +82,7 @@ def ml_cvf_analysis():
                 for (
                     position,
                     to_indx,
-                ) in dataset.cvf_analysis.possible_perturbed_state_frm(frm_idx):
+                ) in perturbed_state_wrapper(dataset, frm_idx):
                     to = dataset[to_indx]
                     to_rank = model(to[0].unsqueeze(0))
                     rank_effect = (frm_rank - to_rank).item()  # to round off at 0.5
@@ -76,7 +113,7 @@ def ml_cvf_analysis():
     return ml_grp_by_re, ml_grp_by_node_re
 
 
-# fa results
+@track_runtime
 def get_fa_results(graph_name, ml_grp_by_re, ml_grp_by_node_re):
     results_dir = os.path.join(
         os.getenv("CVF_PROJECT_DIR", ""), "cvf-analysis", "v2", "results", "coloring"
@@ -122,6 +159,7 @@ def main(graph_name, has_fa_analysis=True):
         get_fa_results(graph_name, ml_grp_by_re, ml_grp_by_node_re)
 
     logger.info("Complete for %s.", graph_name)
+    print_runtime_report()
 
 
 if __name__ == "__main__":
