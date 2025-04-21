@@ -82,15 +82,25 @@ def ml_cvf_analysis():
         test_dataloader = DataLoader(dataset, batch_size=1)
         for batch in test_dataloader:
             frm_idx = batch[1].item()
-            frm_rank = get_rank(model, batch[0])
-            for (
-                position,
-                to_indx,
-            ) in get_perturbed_states(dataset, frm_idx):
-                to = dataset[to_indx]
-                to_rank = get_rank(model, to[0])
+            perturbed_states = [
+                (p, indx) for (p, indx) in get_perturbed_states(dataset, frm_idx)
+            ]
+            perturbed_states_x = [dataset[i[1]][0] for i in perturbed_states]
+            x = torch.stack([batch[0][0], *perturbed_states_x])
+            # frm_rank = get_rank(model, batch[0])q
+            ranks = get_rank(model, x)
+            frm_rank = ranks[0]
+            for i, to_rank in enumerate(ranks[1:]):
+                # for (
+                #     position,
+                #     to_indx,
+                # ) in get_perturbed_states(dataset, frm_idx):
+                #     to = dataset[to_indx]
+                #     to_rank = get_rank(model, to[0])
                 rank_effect = (frm_rank - to_rank).item()  # to round off at 0.5
-                data.append({"node": position, "rank effect": rank_effect})
+                data.append(
+                    {"node": perturbed_states[i][0], "rank effect": rank_effect}
+                )
 
             temp_df = pd.DataFrame(data, columns=["node", "rank effect"])
             data = []
