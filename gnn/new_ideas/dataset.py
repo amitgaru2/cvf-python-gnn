@@ -137,6 +137,45 @@ class CVFConfigForBertDataset(Dataset):
         return result, attention_mask, first_na_index
 
 
+class CVFConfigForBertFTDataset(Dataset):
+    def __init__(self, device, graph_name, dataset_file, D, program="coloring") -> None:
+        graphs_dir = os.path.join(
+            os.getenv("CVF_PROJECT_DIR", ""), "cvf-analysis", "graphs"
+        )
+        graph_path = os.path.join(graphs_dir, f"{graph_name}.txt")
+        graph = get_graph(graph_path)
+        self.cvf_analysis = GraphColoringCVFAnalysisV2(
+            graph_name,
+            graph,
+            generate_data_ml=False,
+            generate_data_embedding=False,
+            generate_test_data_ml=True,
+        )
+
+        self.device = device
+        self.dataset_name = graph_name
+        dataset_dir = os.path.join(
+            os.getenv("CVF_PROJECT_DIR", ""),
+            "cvf-analysis",
+            "v2",
+            "datasets",
+            program,
+        )
+        self.data = pd.read_csv(os.path.join(dataset_dir, dataset_file))
+        self.sequence_length = len(self.data.loc[0])
+        self.D = D
+
+    def __len__(self):
+        return len(self.data)
+
+    def __getitem__(self, idx):
+        row = self.data.loc[idx]
+        config = [i for i in ast.literal_eval(row["config"])]
+        config = torch.FloatTensor([config]).to(self.device)
+        labels = torch.FloatTensor([row["rank"]]).to(self.device)
+        return config, labels
+
+
 if __name__ == "__main__":
     device = "cuda"
     # dataset = CVFConfigForGCNWSuccLSTMDataset(
@@ -154,10 +193,18 @@ if __name__ == "__main__":
     #     D=4,
     # )
 
-    dataset = CVFConfigForBertDataset(
+    # dataset = CVFConfigForBertDataset(
+    #     device,
+    #     "implicit_graph_n5",
+    #     "implicit_graph_n5_pt_adj_list.txt",
+    #     D=5,
+    #     program="dijkstra",
+    # )
+    
+    dataset = CVFConfigForBertFTDataset(
         device,
         "implicit_graph_n5",
-        "implicit_graph_n5_pt_adj_list.txt",
+        "implicit_graph_n5_config_rank_dataset.csv",
         D=5,
         program="dijkstra",
     )
