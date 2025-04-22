@@ -91,11 +91,11 @@ set -e
 #     --graph-names $joined_graphs_args
 
 
-# cd gnn/new_ideas
+cd gnn/new_ideas
 
-# python bert_scratch.py
+python bert_scratch.py
 
-cd gnn
+# cd gnn
 
 # python cvf_analysis.py star_graph_n7
 # python cvf_analysis.py star_graph_n13
@@ -106,7 +106,7 @@ cd gnn
 # python cvf_analysis.py graph_random_regular_graph_n8_d4
 # python cvf_analysis.py graph_random_regular_graph_n9_d4
 # python cvf_analysis.py graph_random_regular_graph_n10_d4
-python cvf_analysis.py graph_random_regular_graph_n11_d4
+# python cvf_analysis.py graph_random_regular_graph_n11_d4
 # python cvf_analysis.py graph_random_regular_graph_n12_d4
 # python cvf_analysis.py graph_random_regular_graph_n13_d4
 # python cvf_analysis.py star_graph_n15

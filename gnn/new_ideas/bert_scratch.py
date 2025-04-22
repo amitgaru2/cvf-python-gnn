@@ -12,7 +12,7 @@ device = "cuda"
 
 batch_size = 64
 
-epochs = 5000
+epochs = 500
 
 
 # dataset = CVFConfigForBertDataset(
