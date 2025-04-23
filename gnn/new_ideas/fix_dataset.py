@@ -2,7 +2,7 @@ import os
 import dataset
 
 program = "dijkstra"
-filename = "implicit_graph_n5_pt_adj_list.txt"
+filename = "implicit_graph_n7_pt_adj_list.txt"
 dataset_dir = os.path.join(
     os.getenv("CVF_PROJECT_DIR", ""),
     "cvf-analysis",

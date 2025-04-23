@@ -1,10 +1,11 @@
-import json
 import os
 import sys
 import ast
+import json
 import random
 
 import torch
+import numpy as np
 import pandas as pd
 import torch.nn.functional as F
 
@@ -186,14 +187,61 @@ class CVFConfigForTransformerDataset(Dataset):
         ).to(self.device)
         result[na_mask] = -1
         attention_mask = ~na_mask
-        label = self.cr_data.loc[int(row[0])]["rank"]
+        labels = [
+            self.cr_data.loc[int(i)]["rank"] if not pd.isna(i) else -1 for i in row
+        ]
         return (
             (
                 result,
                 attention_mask,
             ),
-            torch.FloatTensor([label]).to(self.device),
+            torch.FloatTensor(labels).to(self.device),
         )
+
+
+class CVFConfigForTransformerTestDataset(Dataset):
+    def __init__(
+        self,
+        device,
+        graph_name,
+        config_rank_dataset,
+        D,
+        program="coloring",
+    ) -> None:
+        graphs_dir = os.path.join(
+            os.getenv("CVF_PROJECT_DIR", ""), "cvf-analysis", "graphs"
+        )
+        graph_path = os.path.join(graphs_dir, f"{graph_name}.txt")
+        graph = get_graph(graph_path)
+        self.cvf_analysis = GraphColoringCVFAnalysisV2(
+            graph_name,
+            graph,
+            generate_data_ml=False,
+            generate_data_embedding=False,
+            generate_test_data_ml=True,
+        )
+
+        self.device = device
+        self.dataset_name = graph_name
+        dataset_dir = os.path.join(
+            os.getenv("CVF_PROJECT_DIR", ""),
+            "cvf-analysis",
+            "v2",
+            "datasets",
+            program,
+        )
+        self.data = pd.read_csv(os.path.join(dataset_dir, config_rank_dataset))
+        self.D = D
+
+    def __len__(self):
+        return len(self.data)
+
+    def __getitem__(self, idx):
+        row = self.data.loc[idx]
+        config = [i for i in ast.literal_eval(row["config"])]
+        config = torch.FloatTensor([config]).to(self.device)
+        labels = torch.FloatTensor([row["rank"]]).to(self.device)
+        return config, labels
 
 
 class CVFConfigForBertFTDataset(Dataset):
@@ -268,10 +316,18 @@ if __name__ == "__main__":
     #     program="dijkstra",
     # )
 
-    dataset = CVFConfigForTransformerDataset(
+    # dataset = CVFConfigForTransformerDataset(
+    #     device,
+    #     "implicit_graph_n5",
+    #     "implicit_graph_n5_pt_adj_list.txt",
+    #     "implicit_graph_n5_config_rank_dataset.csv",
+    #     D=5,
+    #     program="dijkstra",
+    # )
+
+    dataset = CVFConfigForTransformerTestDataset(
         device,
         "implicit_graph_n5",
-        "implicit_graph_n5_pt_adj_list.txt",
         "implicit_graph_n5_config_rank_dataset.csv",
         D=5,
         program="dijkstra",
