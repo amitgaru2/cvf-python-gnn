@@ -5,10 +5,12 @@ import json
 import random
 
 import torch
-import numpy as np
 import pandas as pd
-import torch.nn.functional as F
+import networkx as nx
 
+from functools import cached_property
+
+from sklearn.manifold import SpectralEmbedding
 from torch_geometric.utils import to_dense_adj
 from torch.utils.data import Dataset, DataLoader
 
@@ -199,6 +201,111 @@ class CVFConfigForTransformerDataset(Dataset):
         )
 
 
+def get_A_of_graph(graph_path):
+    edges = []
+    with open(graph_path, "r") as f:
+        lines = f.readlines()
+        for line in lines:
+            nodes = list(map(int, line.strip().split()))
+            src = nodes[0]
+            for dst in nodes[1:]:
+                edges.append((src, dst))
+
+    # Create undirected graph
+    G = nx.Graph()
+    G.add_edges_from(edges)
+
+    # Ensure nodes are sorted for consistent adjacency matrix
+    nodes = sorted(G.nodes())
+
+    # Convert to adjacency matrix
+    adj_matrix = nx.to_numpy_array(G, nodelist=nodes)
+
+    # print("Adjacency Matrix:")
+    # print(adj_matrix)
+    return adj_matrix
+
+
+class CVFConfigForTransformerMDataset(Dataset):
+    def __init__(
+        self,
+        device,
+        graph_name,
+        pt_dataset_file,
+        config_rank_dataset,
+        D,
+        program="coloring",
+    ) -> None:
+        graphs_dir = os.path.join(
+            os.getenv("CVF_PROJECT_DIR", ""), "cvf-analysis", "graphs"
+        )
+        graph_path = os.path.join(graphs_dir, f"{graph_name}.txt")
+        graph = get_graph(graph_path)
+        self.cvf_analysis = GraphColoringCVFAnalysisV2(
+            graph_name,
+            graph,
+            generate_data_ml=False,
+            generate_data_embedding=False,
+            generate_test_data_ml=True,
+        )
+
+        self.device = device
+        self.dataset_name = graph_name
+        dataset_dir = os.path.join(
+            os.getenv("CVF_PROJECT_DIR", ""),
+            "cvf-analysis",
+            "v2",
+            "datasets",
+            program,
+        )
+        self.data = pd.read_csv(os.path.join(dataset_dir, pt_dataset_file))
+        self.cr_data = pd.read_csv(os.path.join(dataset_dir, config_rank_dataset))
+        self.sequence_length = len(self.data.loc[0]) + 1
+        self.D = D
+        self.A = torch.FloatTensor(get_A_of_graph(graph_path))
+
+    @cached_property
+    def spectral_embedding(self):
+        embedding_model = SpectralEmbedding(n_components=1, affinity="precomputed")
+        embedding = embedding_model.fit_transform(self.A).T
+        return torch.FloatTensor(embedding).to(self.device)
+
+    def __len__(self):
+        return len(self.data)
+
+    def __getitem__(self, idx):
+        row = self.data.loc[idx].reset_index(drop=True)
+        is_na = row.isna()
+        na_mask = torch.tensor(list(is_na))
+        result = torch.FloatTensor(
+            [self.cvf_analysis.indx_to_config(i) for i in row]
+        ).to(self.device)
+        result[na_mask] = -1
+        result = torch.cat(
+            [self.spectral_embedding, result]
+        )  # add the graph info here at indx 0
+        # padding_mask = ~na_mask
+        padding_mask = torch.cat(
+            [
+                torch.Tensor([False]),
+                na_mask,
+            ]
+        ).to(
+            self.device
+        )  # padding  mask for the graph info at indx 0
+        labels = [-1]
+        labels.extend(
+            [self.cr_data.loc[int(i)]["rank"] if not pd.isna(i) else -1 for i in row]
+        )
+        return (
+            (
+                result,
+                padding_mask,
+            ),
+            torch.FloatTensor(labels).to(self.device),
+        )
+
+
 class CVFConfigForTransformerTestDataset(Dataset):
     def __init__(
         self,
@@ -242,6 +349,59 @@ class CVFConfigForTransformerTestDataset(Dataset):
         config = torch.FloatTensor([config]).to(self.device)
         labels = torch.FloatTensor([row["rank"]]).to(self.device)
         return config, labels
+
+
+class CVFConfigForTransformerTestDatasetWName(Dataset):
+    def __init__(
+        self,
+        device,
+        graph_name,
+        config_rank_dataset,
+        D,
+        program="coloring",
+    ) -> None:
+        graphs_dir = os.path.join(
+            os.getenv("CVF_PROJECT_DIR", ""), "cvf-analysis", "graphs"
+        )
+        graph_path = os.path.join(graphs_dir, f"{graph_name}.txt")
+        graph = get_graph(graph_path)
+        self.cvf_analysis = GraphColoringCVFAnalysisV2(
+            graph_name,
+            graph,
+            generate_data_ml=False,
+            generate_data_embedding=False,
+            generate_test_data_ml=True,
+        )
+
+        self.device = device
+        self.dataset_name = graph_name
+        dataset_dir = os.path.join(
+            os.getenv("CVF_PROJECT_DIR", ""),
+            "cvf-analysis",
+            "v2",
+            "datasets",
+            program,
+        )
+        self.data = pd.read_csv(os.path.join(dataset_dir, config_rank_dataset))
+        self.D = D
+        self.A = torch.FloatTensor(get_A_of_graph(graph_path))
+
+    @cached_property
+    def spectral_embedding(self):
+        embedding_model = SpectralEmbedding(n_components=1, affinity="precomputed")
+        embedding = embedding_model.fit_transform(self.A).T
+        return torch.FloatTensor(embedding).to(self.device)
+
+    def __len__(self):
+        return len(self.data)
+
+    def __getitem__(self, idx):
+        row = self.data.loc[idx]
+        config = [i for i in ast.literal_eval(row["config"])]
+        config = torch.FloatTensor([config]).to(self.device)
+        config = torch.cat([self.spectral_embedding, config])
+        labels = torch.FloatTensor([row["rank"]]).to(self.device)
+        return config, labels, self.dataset_name
 
 
 class CVFConfigForBertFTDataset(Dataset):
@@ -316,7 +476,7 @@ if __name__ == "__main__":
     #     program="dijkstra",
     # )
 
-    # dataset = CVFConfigForTransformerDataset(
+    # dataset = CVFConfigForTransformerMDataset(
     #     device,
     #     "implicit_graph_n5",
     #     "implicit_graph_n5_pt_adj_list.txt",
@@ -325,7 +485,7 @@ if __name__ == "__main__":
     #     program="dijkstra",
     # )
 
-    dataset = CVFConfigForTransformerTestDataset(
+    dataset = CVFConfigForTransformerTestDatasetWName(
         device,
         "implicit_graph_n5",
         "implicit_graph_n5_config_rank_dataset.csv",
@@ -339,4 +499,5 @@ if __name__ == "__main__":
         # x = batch[0]
         print(batch[0])
         print(batch[1])
+        # print(batch[2])
         break

@@ -1,8 +1,8 @@
 import os
 import dataset
 
-program = "dijkstra"
-filename = "implicit_graph_n7_pt_adj_list.txt"
+program = "coloring"
+filename = "graph_powerlaw_cluster_graph_n7_pt_adj_list.txt"
 dataset_dir = os.path.join(
     os.getenv("CVF_PROJECT_DIR", ""),
     "cvf-analysis",
