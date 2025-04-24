@@ -11,7 +11,7 @@ from torch.utils.data import ConcatDataset, DataLoader, random_split
 
 from dataset import (
     logger,
-    CVFConfigForTransformerDataset,
+    CVFConfigForTransformerMDataset,
     CVFConfigForTransformerTestDatasetWName,
 )
 
@@ -28,7 +28,7 @@ def generate_local_mask(seq_len):
 
 
 def get_dataset_coll(batch_size):
-    dataset_s_n7 = CVFConfigForTransformerDataset(
+    dataset_s_n7 = CVFConfigForTransformerMDataset(
         device,
         "star_graph_n7",
         "star_graph_n7_pt_adj_list.txt",
@@ -36,7 +36,7 @@ def get_dataset_coll(batch_size):
         D=7,
     )
 
-    dataset_rr_n7 = CVFConfigForTransformerDataset(
+    dataset_rr_n7 = CVFConfigForTransformerMDataset(
         device,
         "graph_random_regular_graph_n7_d4",
         "graph_random_regular_graph_n7_d4_pt_adj_list.txt",
@@ -44,7 +44,7 @@ def get_dataset_coll(batch_size):
         D=7,
     )
 
-    dataset_plc_n7 = CVFConfigForTransformerDataset(
+    dataset_plc_n7 = CVFConfigForTransformerMDataset(
         device,
         "graph_powerlaw_cluster_graph_n7",
         "graph_powerlaw_cluster_graph_n7_pt_adj_list.txt",
@@ -54,11 +54,11 @@ def get_dataset_coll(batch_size):
 
     dataset_coll = [
         dataset_s_n7,
-        # dataset_rr_n7,
-        # dataset_plc_n7,
+        dataset_rr_n7,
+        dataset_plc_n7,
     ]
 
-    logger.info(f"Datasets: {dataset_coll}")
+    logger.info(f"Datasets: {[i.dataset_name for i in dataset_coll]}")
 
     train_sizes = [int(0.95 * len(ds)) for ds in dataset_coll]
     test_sizes = [len(ds) - trs for ds, trs in zip(dataset_coll, train_sizes)]
@@ -124,7 +124,7 @@ class CausalTransformer(nn.Module):
             count = 0
             for _, batch in enumerate(dataloader):
                 x = batch[0][0]
-                padding_mask = (~batch[0][1]).float()
+                padding_mask = batch[0][1]
                 y = batch[1]
                 out = self(x, padding_mask)
                 optimizer.zero_grad()
@@ -193,18 +193,18 @@ def test_model(model, sequence_length, vocab_size):
         count = 0
         total_seq_count = 0
         for batch in test_dataloader:
-            x = batch[0][:, 0, :]
-            padd = torch.full((sequence_length - 1, vocab_size), -1).to(device)
-            padded_batches = [torch.cat([batch.unsqueeze(0), padd]) for batch in x]
+            x = batch[0][:, 0:2, :]
+            padd = torch.full((sequence_length - 2, vocab_size), -1).to(device)
+            padded_batches = [torch.cat([b, padd]) for b in x]
             x = torch.stack(padded_batches)
             padding_mask = torch.full(
                 (x.shape[0], sequence_length), 1, dtype=torch.bool
             ).to(device)
-            padding_mask[:, 0] = False
-            padding_mask = (~padding_mask).float()
+            padding_mask[:, 0:2] = False
+            padding_mask = padding_mask.float()
             y = batch[1]
             out = model(x, padding_mask)
-            out = out[:, 0].unsqueeze(-1)
+            out = out[:, 1].unsqueeze(-1)
             matched = torch.round(out) == y
             csv_writer.writerows(
                 (n, j.item(), k.item(), z.item())
