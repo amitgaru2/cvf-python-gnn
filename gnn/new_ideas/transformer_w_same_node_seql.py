@@ -119,6 +119,7 @@ class CausalTransformer(nn.Module):
         optimizer = optim.Adam(self.parameters(), lr=1e-3)
 
         for epoch in range(num_epochs):
+            start_time = time.time()
             self.train()
             total_loss = 0
             count = 0
@@ -135,10 +136,11 @@ class CausalTransformer(nn.Module):
                 optimizer.step()
 
             logger.info(
-                "Training set | Epoch %s | MSE Loss: %s"
+                "Training set | Epoch %s | MSE Loss: %s | Time taken: %ss"
                 % (
                     epoch + 1,
                     round((total_loss / count).item(), 4),
+                    round(time.time() - start_time, 4),
                 )
             )
 
@@ -258,5 +260,5 @@ def main(num_epochs, batch_size):
 
 
 if __name__ == "__main__":
-    main(num_epochs=50, batch_size=1024)
+    main(num_epochs=10, batch_size=1024)
     logger.info("Done!")
