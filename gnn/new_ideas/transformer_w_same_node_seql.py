@@ -186,35 +186,35 @@ def test_model(model, sequence_length, vocab_size):
     test_datasets = ConcatDataset(
         [dataset_s_n7_test, dataset_rr_n7_test, dataset_plc_n7_test]
     )
+    sp_emb_dim = test_datasets.datasets[0].sp_emb_dim
 
     with torch.no_grad():
-        test_dataloader = DataLoader(test_datasets, batch_size=10240)
+        test_dataloader = DataLoader(test_datasets, batch_size=1024)
 
         total_loss = 0
         total_matched = 0
         count = 0
         total_seq_count = 0
         for batch in test_dataloader:
-            x = batch[0][:, 0:2, :]
-            padd = torch.full((sequence_length - 2, vocab_size), -1).to(device)
+            x = batch[0][:, 0 : sp_emb_dim + 1, :]
+            padd = torch.full((sequence_length - (sp_emb_dim + 1), vocab_size), -1).to(
+                device
+            )
             padded_batches = [torch.cat([b, padd]) for b in x]
             x = torch.stack(padded_batches)
             padding_mask = torch.full(
                 (x.shape[0], sequence_length), 1, dtype=torch.bool
             ).to(device)
-            padding_mask[:, 0:2] = False
+            padding_mask[:, 0 : sp_emb_dim + 1] = False
             padding_mask = padding_mask.float()
             y = batch[1]
             out = model(x, padding_mask)
-            out = out[:, 1].unsqueeze(-1)
+            out = out[:, sp_emb_dim].unsqueeze(-1)
             matched = torch.round(out) == y
             csv_writer.writerows(
-                (n, j.item(), k.item(), z.item())
-                for (n, j, k, z) in zip(
-                    batch[2],
-                    y.detach().cpu().numpy(),
-                    out.detach().cpu().numpy(),
-                    matched,
+                (j.item(), k.item(), z.item())
+                for (j, k, z) in zip(
+                    y.detach().cpu().numpy(), out.detach().cpu().numpy(), matched
                 )
             )
             loss = criterion(out, y)
