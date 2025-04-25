@@ -150,7 +150,7 @@ def test_model(model, sequence_length, vocab_size):
 
     criterion = torch.nn.MSELoss()
 
-    test_result_fn = f"test_results/test_result_transformer_same_node_seql_{datetime.datetime.now().strftime("%Y_%m_%d_%H_%M")}.csv"
+    test_result_fn = f"test_results/test_result_transformer_same_node_seql_{datetime.datetime.now().strftime('%Y_%m_%d_%H_%M')}.csv"
 
     logger.info("Saving test results to %s.", test_result_fn)
 
