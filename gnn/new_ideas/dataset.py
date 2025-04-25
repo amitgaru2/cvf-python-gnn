@@ -260,13 +260,16 @@ class CVFConfigForTransformerMDataset(Dataset):
         )
         self.data = pd.read_csv(os.path.join(dataset_dir, pt_dataset_file))
         self.cr_data = pd.read_csv(os.path.join(dataset_dir, config_rank_dataset))
-        self.sequence_length = len(self.data.loc[0]) + 1
+        self.sp_emb_dim = 2
+        self.sequence_length = self.sp_emb_dim + len(self.data.loc[0])
         self.D = D
         self.A = torch.FloatTensor(get_A_of_graph(graph_path))
 
     @cached_property
     def spectral_embedding(self):
-        embedding_model = SpectralEmbedding(n_components=1, affinity="precomputed")
+        embedding_model = SpectralEmbedding(
+            n_components=self.sp_emb_dim, affinity="precomputed"
+        )
         embedding = embedding_model.fit_transform(self.A).T
         return torch.FloatTensor(embedding).to(self.device)
 
@@ -284,16 +287,15 @@ class CVFConfigForTransformerMDataset(Dataset):
         result = torch.cat(
             [self.spectral_embedding, result]
         )  # add the graph info here at indx 0
-        # padding_mask = ~na_mask
         padding_mask = torch.cat(
             [
-                torch.Tensor([False]),
+                torch.Tensor([False for _ in range(self.sp_emb_dim)]),
                 na_mask,
             ]
         ).to(
             self.device
         )  # padding  mask for the graph info at indx 0
-        labels = [-1]
+        labels = [-1 for _ in range(self.sp_emb_dim)]
         labels.extend(
             [self.cr_data.loc[int(i)]["rank"] if not pd.isna(i) else -1 for i in row]
         )
@@ -385,10 +387,14 @@ class CVFConfigForTransformerTestDatasetWName(Dataset):
         self.data = pd.read_csv(os.path.join(dataset_dir, config_rank_dataset))
         self.D = D
         self.A = torch.FloatTensor(get_A_of_graph(graph_path))
+        self.sp_emb_dim = 2
+        self.sequence_length = self.sp_emb_dim + len(self.data.loc[0])
 
     @cached_property
     def spectral_embedding(self):
-        embedding_model = SpectralEmbedding(n_components=1, affinity="precomputed")
+        embedding_model = SpectralEmbedding(
+            n_components=self.sp_emb_dim, affinity="precomputed"
+        )
         embedding = embedding_model.fit_transform(self.A).T
         return torch.FloatTensor(embedding).to(self.device)
 
@@ -476,22 +482,22 @@ if __name__ == "__main__":
     #     program="dijkstra",
     # )
 
-    # dataset = CVFConfigForTransformerMDataset(
-    #     device,
-    #     "implicit_graph_n5",
-    #     "implicit_graph_n5_pt_adj_list.txt",
-    #     "implicit_graph_n5_config_rank_dataset.csv",
-    #     D=5,
-    #     program="dijkstra",
-    # )
-
-    dataset = CVFConfigForTransformerTestDatasetWName(
+    dataset = CVFConfigForTransformerMDataset(
         device,
         "implicit_graph_n5",
+        "implicit_graph_n5_pt_adj_list.txt",
         "implicit_graph_n5_config_rank_dataset.csv",
         D=5,
         program="dijkstra",
     )
+
+    # dataset = CVFConfigForTransformerTestDatasetWName(
+    #     device,
+    #     "implicit_graph_n5",
+    #     "implicit_graph_n5_config_rank_dataset.csv",
+    #     D=5,
+    #     program="dijkstra",
+    # )
 
     loader = DataLoader(dataset, batch_size=2, shuffle=True)
 

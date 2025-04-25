@@ -260,5 +260,5 @@ def main(num_epochs, batch_size):
 
 
 if __name__ == "__main__":
-    main(num_epochs=10, batch_size=1024)
+    main(num_epochs=5, batch_size=1024)
     logger.info("Done!")
