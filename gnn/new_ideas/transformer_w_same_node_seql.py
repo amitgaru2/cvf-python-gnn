@@ -54,8 +54,8 @@ def get_dataset_coll(batch_size):
 
     dataset_coll = [
         dataset_s_n7,
-        # dataset_rr_n7,
-        # dataset_plc_n7,
+        dataset_rr_n7,
+        dataset_plc_n7,
     ]
 
     logger.info(f"Train Datasets: {[i.dataset_name for i in dataset_coll]}")
