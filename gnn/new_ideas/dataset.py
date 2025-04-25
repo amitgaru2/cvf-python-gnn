@@ -227,6 +227,9 @@ def get_A_of_graph(graph_path):
 
 
 class CVFConfigForTransformerMDataset(Dataset):
+    # control tokens
+    eo_sp_dim_full_value = -10
+
     def __init__(
         self,
         device,
@@ -261,7 +264,7 @@ class CVFConfigForTransformerMDataset(Dataset):
         self.data = pd.read_csv(os.path.join(dataset_dir, pt_dataset_file))
         self.cr_data = pd.read_csv(os.path.join(dataset_dir, config_rank_dataset))
         self.sp_emb_dim = 2
-        self.sequence_length = self.sp_emb_dim + len(self.data.loc[0])
+        self.sequence_length = self.sp_emb_dim + 1 + len(self.data.loc[0])
         self.D = D
         self.A = torch.FloatTensor(get_A_of_graph(graph_path))
 
@@ -285,17 +288,25 @@ class CVFConfigForTransformerMDataset(Dataset):
         ).to(self.device)
         result[na_mask] = -1
         result = torch.cat(
-            [self.spectral_embedding, result]
+            [
+                self.spectral_embedding,
+                torch.full((1, result.shape[1]), self.eo_sp_dim_full_value).to(
+                    self.device
+                ),
+                result,
+            ]
         )  # add the graph info here at indx 0
         padding_mask = torch.cat(
             [
-                torch.Tensor([False for _ in range(self.sp_emb_dim)]),
+                torch.Tensor([False for _ in range(self.sp_emb_dim + 1)]),
                 na_mask,
             ]
         ).to(
             self.device
         )  # padding  mask for the graph info at indx 0
-        labels = [-1 for _ in range(self.sp_emb_dim)]
+        labels = [
+            -1 for _ in range(self.sp_emb_dim + 1)
+        ]  # spectral dimension + separator
         labels.extend(
             [self.cr_data.loc[int(i)]["rank"] if not pd.isna(i) else -1 for i in row]
         )
@@ -354,6 +365,8 @@ class CVFConfigForTransformerTestDataset(Dataset):
 
 
 class CVFConfigForTransformerTestDatasetWName(Dataset):
+    eo_sp_dim_full_value = -5
+
     def __init__(
         self,
         device,
@@ -388,7 +401,7 @@ class CVFConfigForTransformerTestDatasetWName(Dataset):
         self.D = D
         self.A = torch.FloatTensor(get_A_of_graph(graph_path))
         self.sp_emb_dim = 2
-        self.sequence_length = self.sp_emb_dim + len(self.data.loc[0])
+        self.sequence_length = self.sp_emb_dim + 1 + len(self.data.loc[0])
 
     @cached_property
     def spectral_embedding(self):
@@ -405,7 +418,15 @@ class CVFConfigForTransformerTestDatasetWName(Dataset):
         row = self.data.loc[idx]
         config = [i for i in ast.literal_eval(row["config"])]
         config = torch.FloatTensor([config]).to(self.device)
-        config = torch.cat([self.spectral_embedding, config])
+        config = torch.cat(
+            [
+                self.spectral_embedding,
+                torch.full((1, config.shape[1]), self.eo_sp_dim_full_value).to(
+                    self.device
+                ),
+                config,
+            ]
+        )
         labels = torch.FloatTensor([row["rank"]]).to(self.device)
         return config, labels, self.dataset_name
 
@@ -482,22 +503,22 @@ if __name__ == "__main__":
     #     program="dijkstra",
     # )
 
-    dataset = CVFConfigForTransformerMDataset(
-        device,
-        "implicit_graph_n5",
-        "implicit_graph_n5_pt_adj_list.txt",
-        "implicit_graph_n5_config_rank_dataset.csv",
-        D=5,
-        program="dijkstra",
-    )
-
-    # dataset = CVFConfigForTransformerTestDatasetWName(
+    # dataset = CVFConfigForTransformerMDataset(
     #     device,
     #     "implicit_graph_n5",
+    #     "implicit_graph_n5_pt_adj_list.txt",
     #     "implicit_graph_n5_config_rank_dataset.csv",
     #     D=5,
     #     program="dijkstra",
     # )
+
+    dataset = CVFConfigForTransformerTestDatasetWName(
+        device,
+        "implicit_graph_n5",
+        "implicit_graph_n5_config_rank_dataset.csv",
+        D=5,
+        program="dijkstra",
+    )
 
     loader = DataLoader(dataset, batch_size=2, shuffle=True)
 

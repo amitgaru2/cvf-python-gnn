@@ -64,7 +64,7 @@ def get_dataset_coll(batch_size):
 
     logger.info(f"Train Datasets: {[i.dataset_name for i in dataset_coll]}")
 
-    train_sizes = [int(0.95 * len(ds)) for ds in dataset_coll]
+    train_sizes = [int(0.5 * len(ds)) for ds in dataset_coll]
     test_sizes = [len(ds) - trs for ds, trs in zip(dataset_coll, train_sizes)]
 
     train_test_datasets = [
@@ -204,8 +204,8 @@ def test_model(model, sequence_length, vocab_size, sp_emb_dim):
         count = 0
         total_seq_count = 0
         for batch in test_dataloader:
-            x = batch[0][:, 0 : sp_emb_dim + 1, :]
-            padd = torch.full((sequence_length - (sp_emb_dim + 1), vocab_size), -1).to(
+            x = batch[0][:, 0 : sp_emb_dim + 2, :]
+            padd = torch.full((sequence_length - (sp_emb_dim + 2), vocab_size), -1).to(
                 device
             )
             padded_batches = [torch.cat([b, padd]) for b in x]
@@ -213,11 +213,11 @@ def test_model(model, sequence_length, vocab_size, sp_emb_dim):
             padding_mask = torch.full(
                 (x.shape[0], sequence_length), 1, dtype=torch.bool
             ).to(device)
-            padding_mask[:, 0 : sp_emb_dim + 1] = False
+            padding_mask[:, 0 : sp_emb_dim + 2] = False
             padding_mask = padding_mask.float()
             y = batch[1]
             out = model(x, padding_mask)
-            out = out[:, sp_emb_dim].unsqueeze(-1)
+            out = out[:, sp_emb_dim+1].unsqueeze(-1)
             matched = torch.round(out) == y
             csv_writer.writerows(
                 (j.item(), k.item(), z.item())
@@ -270,5 +270,5 @@ def main(num_epochs, batch_size):
 
 if __name__ == "__main__":
     num_epochs = int(sys.argv[1])
-    main(num_epochs=num_epochs, batch_size=256)
+    main(num_epochs=num_epochs, batch_size=1024)
     logger.info("Done!")
