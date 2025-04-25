@@ -1,4 +1,5 @@
 import csv
+import sys
 import time
 import datetime
 
@@ -19,11 +20,14 @@ from dataset import (
 device = "cuda"
 
 
-def generate_local_mask(seq_len):
+def generate_local_mask(seq_len, spec_emb_dim):
     mask = torch.full((seq_len, seq_len), float("-inf"))
     for i in range(1, seq_len):
-        mask[i, i - 1] = 0  # Only allow attending to the previous token
-    mask[0, 0] = 0  # Optional: allow first token to attend to itself
+        mask[i, i - 1] = 0
+        for j in range(spec_emb_dim):
+            if j < i:
+                mask[i, j] = 0
+    mask[0, 0] = 0
     return mask
 
 
@@ -81,7 +85,10 @@ def get_dataset_coll(batch_size):
 
     N = dataset_coll[0].D
 
-    return loader, sequence_length, N
+    sp_emb_dim = datasets.datasets[0].dataset.sp_emb_dim
+    logger.info(f"Spectral embedding dim: {sp_emb_dim}")
+
+    return loader, sequence_length, N, sp_emb_dim
 
 
 class EmbeddingProjectionModel(nn.Module):
@@ -94,17 +101,18 @@ class EmbeddingProjectionModel(nn.Module):
 
 
 class CausalTransformer(nn.Module):
-    def __init__(self, vocab_size, hidden_dim, num_layers, seq_length):
+    def __init__(self, vocab_size, hidden_dim, num_layers, seq_length, sp_emb_dim):
         super().__init__()
         self.embedding = EmbeddingProjectionModel(vocab_size, hidden_dim)
         decoder_layer = nn.TransformerDecoderLayer(d_model=hidden_dim, nhead=4)
         self.transformer = nn.TransformerDecoder(decoder_layer, num_layers=num_layers)
         self.output_head = nn.Linear(hidden_dim, 1)
         self.sequence_length = seq_length
+        self.spec_emb_dim = sp_emb_dim
 
     def forward(self, x, padding_mask):
         x = self.embedding(x).transpose(0, 1)
-        mask = generate_local_mask(self.sequence_length).to(x.device)
+        mask = generate_local_mask(self.sequence_length, self.spec_emb_dim).to(x.device)
         out = self.transformer(
             x,
             memory=torch.zeros(1, x.size(1), x.size(2)).to(x.device),
@@ -145,7 +153,7 @@ class CausalTransformer(nn.Module):
             )
 
 
-def test_model(model, sequence_length, vocab_size):
+def test_model(model, sequence_length, vocab_size, sp_emb_dim):
     model.eval()
 
     criterion = torch.nn.MSELoss()
@@ -187,7 +195,6 @@ def test_model(model, sequence_length, vocab_size):
     logger.info(f"Test Datasets: {[i.dataset_name for i in test_dataset_coll]}")
 
     test_datasets = ConcatDataset(test_dataset_coll)
-    sp_emb_dim = test_datasets.datasets[0].sp_emb_dim
 
     with torch.no_grad():
         test_dataloader = DataLoader(test_datasets, batch_size=1024)
@@ -235,14 +242,14 @@ def test_model(model, sequence_length, vocab_size):
 
 def main(num_epochs, batch_size):
     logger.info("Starting with %s epochs and %s batch size.", num_epochs, batch_size)
-    loader, sequence_length, N = get_dataset_coll(batch_size)
+    loader, sequence_length, N, sp_emb_dim = get_dataset_coll(batch_size)
     vocab_size = N
     hidden_dim = 8
     num_layers = 2
 
-    model = CausalTransformer(vocab_size, hidden_dim, num_layers, sequence_length).to(
-        device
-    )
+    model = CausalTransformer(
+        vocab_size, hidden_dim, num_layers, sequence_length, sp_emb_dim
+    ).to(device)
     logger.info(f"{model}")
     logger.info(f"Total parameters: {sum(p.numel() for p in model.parameters()):,}")
     start_time = time.time()
@@ -258,9 +265,10 @@ def main(num_epochs, batch_size):
     torch.save(model, model_name)
 
     logger.info("Testing model.")
-    test_model(model, sequence_length, vocab_size)
+    test_model(model, sequence_length, vocab_size, sp_emb_dim)
 
 
 if __name__ == "__main__":
-    main(num_epochs=50, batch_size=256)
+    num_epochs = int(sys.argv[1])
+    main(num_epochs=num_epochs, batch_size=256)
     logger.info("Done!")
