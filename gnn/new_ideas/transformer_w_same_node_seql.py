@@ -54,11 +54,11 @@ def get_dataset_coll(batch_size):
 
     dataset_coll = [
         dataset_s_n7,
-        dataset_rr_n7,
-        dataset_plc_n7,
+        # dataset_rr_n7,
+        # dataset_plc_n7,
     ]
 
-    logger.info(f"Datasets: {[i.dataset_name for i in dataset_coll]}")
+    logger.info(f"Train Datasets: {[i.dataset_name for i in dataset_coll]}")
 
     train_sizes = [int(0.95 * len(ds)) for ds in dataset_coll]
     test_sizes = [len(ds) - trs for ds, trs in zip(dataset_coll, train_sizes)]
@@ -183,9 +183,10 @@ def test_model(model, sequence_length, vocab_size):
         D=7,
     )
 
-    test_datasets = ConcatDataset(
-        [dataset_s_n7_test, dataset_rr_n7_test, dataset_plc_n7_test]
-    )
+    test_dataset_coll = [dataset_s_n7_test, dataset_rr_n7_test, dataset_plc_n7_test]
+    logger.info(f"Test Datasets: {[i.dataset_name for i in test_dataset_coll]}")
+
+    test_datasets = ConcatDataset(test_dataset_coll)
     sp_emb_dim = test_datasets.datasets[0].sp_emb_dim
 
     with torch.no_grad():
@@ -233,9 +234,10 @@ def test_model(model, sequence_length, vocab_size):
 
 
 def main(num_epochs, batch_size):
+    logger.info("Starting with %s epochs and %s batch size.", num_epochs, batch_size)
     loader, sequence_length, N = get_dataset_coll(batch_size)
     vocab_size = N
-    hidden_dim = 16
+    hidden_dim = 8
     num_layers = 2
 
     model = CausalTransformer(vocab_size, hidden_dim, num_layers, sequence_length).to(
@@ -260,5 +262,5 @@ def main(num_epochs, batch_size):
 
 
 if __name__ == "__main__":
-    main(num_epochs=5, batch_size=1024)
+    main(num_epochs=50, batch_size=256)
     logger.info("Done!")
