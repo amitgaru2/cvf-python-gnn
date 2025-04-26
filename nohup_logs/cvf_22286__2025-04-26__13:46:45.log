@@ -1,0 +1,18 @@
+Timestamp: 1745696807.090386 | Training with Graphs: star_graph_n7, graph_powerlaw_cluster_graph_n7, graph_random_regular_graph_n7_d4, star_graph_n13 | Batch size: 64 | Epochs: 50 | Hidden size: 32 | Num layers: 1.
+
+
+Train dataset size: 150,878 | Test dataset size: 7,943
+
+
+Model SimpleLSTM(
+  (lstm): GRU(3, 32, batch_first=True)
+  (norm): LayerNorm((32,), eps=1e-05, elementwise_affine=True)
+  (h2o): Linear(in_features=32, out_features=1, bias=True)
+)
+Total parameters: 3,649
+
+
+Training set | Epoch 1 | MSE Loss: 0.1189 | Time taken: 17.7895s
+Training set | Epoch 2 | MSE Loss: 0.0696 | Time taken: 17.6569s
+Training set | Epoch 3 | MSE Loss: 0.0566 | Time taken: 17.642s
+Training set | Epoch 4 | MSE Loss: 0.0545 | Time taken: 17.7537s

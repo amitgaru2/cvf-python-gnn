@@ -67,22 +67,23 @@ set -e
 # python main.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 6 --graph-names graph_7 --fault-prob 1.0
 # python main.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 5 --graph-names graph_powerlaw_cluster_graph_n30 --fault-prob 1.0
 
-# cd gnn
+cd gnn
 
 # graphs=("star_graph_n7" "graph_powerlaw_cluster_graph_n7" "graph_random_regular_graph_n7_d4" "star_graph_n13" "graph_powerlaw_cluster_graph_n8" "graph_random_regular_graph_n8_d4" "star_graph_n15" "graph_powerlaw_cluster_graph_n9")
+graphs=("star_graph_n7" "graph_powerlaw_cluster_graph_n7" "graph_random_regular_graph_n7_d4" "star_graph_n13")
 # # graphs=("star_graph_n7")
-# joined_graphs_args="${graphs[@]}"
+joined_graphs_args="${graphs[@]}"
 
-# epochs=50
-# batch_size=64
-# hidden_size=32
+epochs=50
+batch_size=64
+hidden_size=32
 
-# python lstm_scratch.py \
-#     --epochs $epochs \
-#     --batch-size $batch_size \
-#     --hidden-size $hidden_size \
-#     --num-layers 1 \
-#     --graph-names $joined_graphs_args
+python lstm_scratch.py \
+    --epochs $epochs \
+    --batch-size $batch_size \
+    --hidden-size $hidden_size \
+    --num-layers 1 \
+    --graph-names $joined_graphs_args
 
 # python gcn_scratch.py \
 #     --epochs $epochs \
@@ -91,10 +92,10 @@ set -e
 #     --graph-names $joined_graphs_args
 
 
-cd gnn/new_ideas
+# cd gnn/new_ideas
 
 # python bert_scratch.py
-python transformer_w_same_node_seql.py 50
+# python transformer_w_same_node_seql.py 50
 
 # cd gnn
 
