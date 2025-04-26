@@ -16,7 +16,7 @@ from lstm_scratch import SimpleLSTM
 from helpers import CVFConfigForAnalysisDataset
 
 
-model_name = "lstm_trained_at_2025_04_10_00_11"
+model_name = "lstm_trained_at_2025_04_26_14_01"
 
 # graph_name = "graph_random_regular_graph_n8_d4"
 

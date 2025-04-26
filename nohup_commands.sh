@@ -69,21 +69,21 @@ set -e
 
 cd gnn
 
-# graphs=("star_graph_n7" "graph_powerlaw_cluster_graph_n7" "graph_random_regular_graph_n7_d4" "star_graph_n13" "graph_powerlaw_cluster_graph_n8" "graph_random_regular_graph_n8_d4" "star_graph_n15" "graph_powerlaw_cluster_graph_n9")
-graphs=("star_graph_n7" "graph_powerlaw_cluster_graph_n7" "graph_random_regular_graph_n7_d4" "star_graph_n13")
-# # graphs=("star_graph_n7")
-joined_graphs_args="${graphs[@]}"
+# # graphs=("star_graph_n7" "graph_powerlaw_cluster_graph_n7" "graph_random_regular_graph_n7_d4" "star_graph_n13" "graph_powerlaw_cluster_graph_n8" "graph_random_regular_graph_n8_d4" "star_graph_n15" "graph_powerlaw_cluster_graph_n9")
+# graphs=("star_graph_n7" "graph_powerlaw_cluster_graph_n7" "graph_random_regular_graph_n7_d4" "star_graph_n13")
+# # # graphs=("star_graph_n7")
+# joined_graphs_args="${graphs[@]}"
 
-epochs=50
-batch_size=64
-hidden_size=32
+# epochs=50
+# batch_size=64
+# hidden_size=32
 
-python lstm_scratch.py \
-    --epochs $epochs \
-    --batch-size $batch_size \
-    --hidden-size $hidden_size \
-    --num-layers 1 \
-    --graph-names $joined_graphs_args
+# python lstm_scratch.py \
+#     --epochs $epochs \
+#     --batch-size $batch_size \
+#     --hidden-size $hidden_size \
+#     --num-layers 1 \
+#     --graph-names $joined_graphs_args
 
 # python gcn_scratch.py \
 #     --epochs $epochs \
@@ -101,14 +101,14 @@ python lstm_scratch.py \
 
 # python cvf_analysis.py star_graph_n7
 # python cvf_analysis.py star_graph_n13
-# python cvf_analysis.py graph_powerlaw_cluster_graph_n7
-# python cvf_analysis.py graph_powerlaw_cluster_graph_n8
-# python cvf_analysis.py graph_powerlaw_cluster_graph_n9
+python cvf_analysis.py graph_powerlaw_cluster_graph_n7
+python cvf_analysis.py graph_powerlaw_cluster_graph_n8
+python cvf_analysis.py graph_powerlaw_cluster_graph_n9
 # python cvf_analysis.py graph_powerlaw_cluster_graph_n12
-# python cvf_analysis.py graph_random_regular_graph_n8_d4
-# python cvf_analysis.py graph_random_regular_graph_n9_d4
+python cvf_analysis.py graph_random_regular_graph_n8_d4
+python cvf_analysis.py graph_random_regular_graph_n9_d4
 # python cvf_analysis.py graph_random_regular_graph_n10_d4
 # python cvf_analysis.py graph_random_regular_graph_n11_d4
 # python cvf_analysis.py graph_random_regular_graph_n12_d4
 # python cvf_analysis.py graph_random_regular_graph_n13_d4
-# python cvf_analysis.py star_graph_n15
+python cvf_analysis.py star_graph_n15
