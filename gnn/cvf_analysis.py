@@ -68,6 +68,11 @@ def get_rank(model, x):
 
 
 @track_runtime
+def group_data(df, grp_by: list):
+    return df.groupby(grp_by)
+
+
+@track_runtime
 def ml_cvf_analysis():
     model = get_model()
 
@@ -109,7 +114,9 @@ def ml_cvf_analysis():
     logger.info("Done ML CVF Analysis!")
 
     ml_grp_by_node_re = (
-        result_df.groupby(["node", "rank effect"]).size().reset_index(name="ml_count")
+        group_data(result_df, ["node", "rank effect"])
+        .size()
+        .reset_index(name="ml_count")
     )
 
     ml_grp_by_node_re.to_csv(
@@ -117,7 +124,7 @@ def ml_cvf_analysis():
     )
 
     ml_grp_by_re = (
-        result_df.groupby(["rank effect"]).size().reset_index(name="ml_count")
+        group_data(result_df, ["rank effect"]).size().reset_index(name="ml_count")
     )
 
     ml_grp_by_re.to_csv(f"ml_predictions/{model_name}__{graph_name}__cvf.csv")
