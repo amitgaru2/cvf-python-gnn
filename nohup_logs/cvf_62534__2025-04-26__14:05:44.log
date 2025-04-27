@@ -1,2 +1,49 @@
 Starting for graph_powerlaw_cluster_graph_n7.
 Total configs: 27,000.
+Done ML CVF Analysis!
+Complete for graph_powerlaw_cluster_graph_n7.
+
+=== Runtime Report ===
+get_model: 0.066370s
+get_perturbed_states: 0.012925s
+get_rank: 5.697395s
+ml_cvf_analysis: 69.654136s
+get_fa_results: 0.012652s
+Starting for graph_powerlaw_cluster_graph_n8.
+Total configs: 143,360.
+Done CVF Analysis for 143,360.
+Done ML CVF Analysis!
+Complete for graph_powerlaw_cluster_graph_n8.
+
+=== Runtime Report ===
+get_model: 0.054283s
+get_perturbed_states: 0.087933s
+get_rank: 32.158256s
+ml_cvf_analysis: 793.734919s
+get_fa_results: 0.013468s
+Starting for graph_powerlaw_cluster_graph_n9.
+Total configs: 1,382,400.
+Done CVF Analysis for 1,382,400.
+Done ML CVF Analysis!
+Complete for graph_powerlaw_cluster_graph_n9.
+
+=== Runtime Report ===
+get_model: 0.066803s
+get_perturbed_states: 1.155947s
+get_rank: 393.964437s
+ml_cvf_analysis: 61015.645504s
+get_fa_results: 0.014656s
+Starting for graph_random_regular_graph_n8_d4.
+Total configs: 390,625.
+Done CVF Analysis for 390,625.
+Done ML CVF Analysis!
+Complete for graph_random_regular_graph_n8_d4.
+
+=== Runtime Report ===
+get_model: 0.042448s
+get_perturbed_states: 0.231216s
+get_rank: 89.975967s
+ml_cvf_analysis: 5141.154075s
+get_fa_results: 0.013741s
+Starting for graph_random_regular_graph_n9_d4.
+Total configs: 1,953,125.
