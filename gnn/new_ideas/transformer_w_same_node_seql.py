@@ -220,9 +220,9 @@ def test_model(model, sequence_length, vocab_size, sp_emb_dim):
             out = out[:, sp_emb_dim+1].unsqueeze(-1)
             matched = torch.round(out) == y
             csv_writer.writerows(
-                (j.item(), k.item(), z.item())
-                for (j, k, z) in zip(
-                    y.detach().cpu().numpy(), out.detach().cpu().numpy(), matched
+                (d, j.item(), k.item(), z.item())
+                for (d, j, k, z) in zip(
+                    batch[2], y.detach().cpu().numpy(), out.detach().cpu().numpy(), matched
                 )
             )
             loss = criterion(out, y)

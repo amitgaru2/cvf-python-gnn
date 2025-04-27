@@ -401,7 +401,7 @@ class CVFConfigForTransformerTestDatasetWName(Dataset):
         self.D = D
         self.A = torch.FloatTensor(get_A_of_graph(graph_path))
         self.sp_emb_dim = 2
-        self.sequence_length = self.sp_emb_dim + 1 + len(self.data.loc[0])
+        self.sequence_length = self.sp_emb_dim + 1 + 8
 
     @cached_property
     def spectral_embedding(self):

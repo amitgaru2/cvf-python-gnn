@@ -92,10 +92,10 @@ set -e
 #     --graph-names $joined_graphs_args
 
 
-cd gnn/new_ideas
+# cd gnn/new_ideas
 
 # python bert_scratch.py
-python transformer_w_same_node_seql.py 50
+# python transformer_w_same_node_seql.py 50
 
 # cd gnn
 
