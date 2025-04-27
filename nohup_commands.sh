@@ -19,7 +19,7 @@ set -e
 # cd gnn
 # python vanilla_gcn_generic.py
 
-# cd cvf-analysis/v2
+cd cvf-analysis/v2
 # cd simulations/cvf-analysis
 # python main.py --program graph_coloring --sched 0 --no-sim 1000000 --fault-prob 0.5 --graph-names graph_powerlaw_cluster_graph_n30
 #python main.py --program graph_coloring --sched 1 --no-sim 100000 --fault-prob 0.5 --graph-names graph_powerlaw_cluster_graph_n30
@@ -47,7 +47,7 @@ set -e
 # python main.py --program maximal_independent_set --sched 0 --no-sim 100000 --fault-interval 4 --graph-names graph_powerlaw_cluster_graph_n9 graph_random_regular_graph_n10_d4 --fault-prob 1.0
 # python main.py --program maximal_independent_set --graph-names graph_powerlaw_cluster_graph_n9 graph_random_regular_graph_n10_d4
 
-# python main.py --program maximal_matching --graph-names test_graph_13
+python main.py --program maximal_matching --graph-names graph_random_regular_graph_n7_d4 graph_random_regular_graph_n8_d4 -ml
 # python main.py --program dijkstra_token_ring --graph-names implicit_graph_n10 -ml
 
 # python main.py --program graph_coloring --sched 0 --no-sim 100000 --fault-interval 2 --graph-names graph_7 --fault-prob 1.0
