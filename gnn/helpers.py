@@ -566,9 +566,9 @@ class CVFConfigForAnalysisDataset(Dataset):
         return self.cvf_analysis.total_configs
 
     def _get_succ_encoding(self, idx, config):
-        program_transition_idxs = self.cvf_analysis._get_program_transitions(config)
-        self.cache[idx] = program_transition_idxs
-        succ = [self.cvf_analysis.indx_to_config(i) for i in program_transition_idxs]
+        succ = list(self.cvf_analysis._get_program_transitions_as_configs(config))
+        # self.cache[idx] = program_transition_idxs
+        # succ = [self.cvf_analysis.indx_to_config(i) for i in program_transition_idxs]
         if succ:
             succ = torch.FloatTensor(succ).to(self.device)
             succ1 = torch.mean(succ, dim=0).unsqueeze(0)  # column wise
