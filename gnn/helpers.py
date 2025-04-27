@@ -561,6 +561,7 @@ class CVFConfigForAnalysisDataset(Dataset):
         self.device = device
         self.dataset_name = graph_name
         self.cache = {}
+        self.default_succ1 = torch.zeros(1, len(graph)).to(self.device)
 
     def __len__(self):
         return self.cvf_analysis.total_configs
@@ -575,8 +576,8 @@ class CVFConfigForAnalysisDataset(Dataset):
             succ2 = torch.mean(succ, dim=1)  # row wise
             succ2 = torch.sum(succ2).repeat(succ1.shape)
         else:
-            succ1 = torch.zeros(1, len(config)).to(self.device)
-            succ2 = succ1.clone()
+            succ1 = self.default_succ1.clone()
+            succ2 = self.default_succ1.clone()
 
         return succ1, succ2
 
