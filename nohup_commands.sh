@@ -67,7 +67,7 @@ set -e
 # python main.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 6 --graph-names graph_7 --fault-prob 1.0
 # python main.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 5 --graph-names graph_powerlaw_cluster_graph_n30 --fault-prob 1.0
 
-cd gnn
+# cd gnn
 
 # # graphs=("star_graph_n7" "graph_powerlaw_cluster_graph_n7" "graph_random_regular_graph_n7_d4" "star_graph_n13" "graph_powerlaw_cluster_graph_n8" "graph_random_regular_graph_n8_d4" "star_graph_n15" "graph_powerlaw_cluster_graph_n9")
 # graphs=("star_graph_n7" "graph_powerlaw_cluster_graph_n7" "graph_random_regular_graph_n7_d4" "star_graph_n13")
@@ -92,23 +92,23 @@ cd gnn
 #     --graph-names $joined_graphs_args
 
 
-# cd gnn/new_ideas
+cd gnn/new_ideas
 
 # python bert_scratch.py
-# python transformer_w_same_node_seql.py 50
+python transformer_w_same_node_seql.py 50
 
 # cd gnn
 
 # python cvf_analysis.py star_graph_n7
 # python cvf_analysis.py star_graph_n13
-python cvf_analysis.py graph_powerlaw_cluster_graph_n7
-python cvf_analysis.py graph_powerlaw_cluster_graph_n8
-python cvf_analysis.py graph_powerlaw_cluster_graph_n9
-# python cvf_analysis.py graph_powerlaw_cluster_graph_n12
-python cvf_analysis.py graph_random_regular_graph_n8_d4
-python cvf_analysis.py graph_random_regular_graph_n9_d4
-# python cvf_analysis.py graph_random_regular_graph_n10_d4
-# python cvf_analysis.py graph_random_regular_graph_n11_d4
-# python cvf_analysis.py graph_random_regular_graph_n12_d4
-# python cvf_analysis.py graph_random_regular_graph_n13_d4
-python cvf_analysis.py star_graph_n15
+# python cvf_analysis.py graph_powerlaw_cluster_graph_n7
+# python cvf_analysis.py graph_powerlaw_cluster_graph_n8
+# python cvf_analysis.py graph_powerlaw_cluster_graph_n9
+# # python cvf_analysis.py graph_powerlaw_cluster_graph_n12
+# python cvf_analysis.py graph_random_regular_graph_n8_d4
+# python cvf_analysis.py graph_random_regular_graph_n9_d4
+# # python cvf_analysis.py graph_random_regular_graph_n10_d4
+# # python cvf_analysis.py graph_random_regular_graph_n11_d4
+# # python cvf_analysis.py graph_random_regular_graph_n12_d4
+# # python cvf_analysis.py graph_random_regular_graph_n13_d4
+# python cvf_analysis.py star_graph_n15

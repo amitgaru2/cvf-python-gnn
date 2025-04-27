@@ -1,0 +1,108 @@
+Starting with 50 epochs and 1024 batch size.
+Total configs: 448.
+Total configs: 78,125.
+Total configs: 27,000.
+Train Datasets: ['star_graph_n7', 'graph_random_regular_graph_n7_d4', 'graph_powerlaw_cluster_graph_n7']
+Train Dataset size: 1,543,989
+Max sequence length: 11
+Spectral embedding dim: 2
+CausalTransformer(
+  (embedding): EmbeddingProjectionModel(
+    (projection): Linear(in_features=7, out_features=8, bias=True)
+  )
+  (transformer): TransformerDecoder(
+    (layers): ModuleList(
+      (0-1): 2 x TransformerDecoderLayer(
+        (self_attn): MultiheadAttention(
+          (out_proj): NonDynamicallyQuantizableLinear(in_features=8, out_features=8, bias=True)
+        )
+        (multihead_attn): MultiheadAttention(
+          (out_proj): NonDynamicallyQuantizableLinear(in_features=8, out_features=8, bias=True)
+        )
+        (linear1): Linear(in_features=8, out_features=2048, bias=True)
+        (dropout): Dropout(p=0.1, inplace=False)
+        (linear2): Linear(in_features=2048, out_features=8, bias=True)
+        (norm1): LayerNorm((8,), eps=1e-05, elementwise_affine=True)
+        (norm2): LayerNorm((8,), eps=1e-05, elementwise_affine=True)
+        (norm3): LayerNorm((8,), eps=1e-05, elementwise_affine=True)
+        (dropout1): Dropout(p=0.1, inplace=False)
+        (dropout2): Dropout(p=0.1, inplace=False)
+        (dropout3): Dropout(p=0.1, inplace=False)
+      )
+    )
+  )
+  (output_head): Linear(in_features=8, out_features=1, bias=True)
+)
+Total parameters: 70,969
+Training set | Epoch 1 | MSE Loss: 0.4101 | Time taken: 800.4481s
+Training set | Epoch 2 | MSE Loss: 0.2625 | Time taken: 797.5747s
+Training set | Epoch 3 | MSE Loss: 0.2206 | Time taken: 788.8573s
+Training set | Epoch 4 | MSE Loss: 0.2074 | Time taken: 786.2536s
+Training set | Epoch 5 | MSE Loss: 0.1952 | Time taken: 786.6527s
+Training set | Epoch 6 | MSE Loss: 0.1923 | Time taken: 786.4726s
+Training set | Epoch 7 | MSE Loss: 0.1824 | Time taken: 783.6231s
+Training set | Epoch 8 | MSE Loss: 0.1736 | Time taken: 783.8998s
+Training set | Epoch 9 | MSE Loss: 0.1683 | Time taken: 783.6655s
+Training set | Epoch 10 | MSE Loss: 0.1642 | Time taken: 785.5879s
+Training set | Epoch 11 | MSE Loss: 0.1598 | Time taken: 786.3702s
+Training set | Epoch 12 | MSE Loss: 0.1532 | Time taken: 785.6005s
+Training set | Epoch 13 | MSE Loss: 0.1515 | Time taken: 783.2955s
+Training set | Epoch 14 | MSE Loss: 0.1428 | Time taken: 784.0888s
+Training set | Epoch 15 | MSE Loss: 0.1354 | Time taken: 783.2884s
+Training set | Epoch 16 | MSE Loss: 0.1282 | Time taken: 783.5477s
+Training set | Epoch 17 | MSE Loss: 0.1247 | Time taken: 783.5449s
+Training set | Epoch 18 | MSE Loss: 0.1225 | Time taken: 784.8719s
+Training set | Epoch 19 | MSE Loss: 0.121 | Time taken: 783.821s
+Training set | Epoch 20 | MSE Loss: 0.1184 | Time taken: 784.064s
+Training set | Epoch 21 | MSE Loss: 0.116 | Time taken: 783.5188s
+Training set | Epoch 22 | MSE Loss: 0.1147 | Time taken: 783.8143s
+Training set | Epoch 23 | MSE Loss: 0.1135 | Time taken: 784.2678s
+Training set | Epoch 24 | MSE Loss: 0.1123 | Time taken: 783.7273s
+Training set | Epoch 25 | MSE Loss: 0.1112 | Time taken: 782.4398s
+Training set | Epoch 26 | MSE Loss: 0.1106 | Time taken: 784.0088s
+Training set | Epoch 27 | MSE Loss: 0.1106 | Time taken: 783.5436s
+Training set | Epoch 28 | MSE Loss: 0.1099 | Time taken: 783.4088s
+Training set | Epoch 29 | MSE Loss: 0.1077 | Time taken: 783.3502s
+Training set | Epoch 30 | MSE Loss: 0.1073 | Time taken: 783.4324s
+Training set | Epoch 31 | MSE Loss: 0.1071 | Time taken: 785.8382s
+Training set | Epoch 32 | MSE Loss: 0.1067 | Time taken: 795.4801s
+Training set | Epoch 33 | MSE Loss: 0.1066 | Time taken: 782.9567s
+Training set | Epoch 34 | MSE Loss: 0.1055 | Time taken: 784.967s
+Training set | Epoch 35 | MSE Loss: 0.1042 | Time taken: 785.6843s
+Training set | Epoch 36 | MSE Loss: 0.1028 | Time taken: 784.9469s
+Training set | Epoch 37 | MSE Loss: 0.1024 | Time taken: 784.8534s
+Training set | Epoch 38 | MSE Loss: 0.1023 | Time taken: 785.1728s
+Training set | Epoch 39 | MSE Loss: 0.1005 | Time taken: 785.0364s
+Training set | Epoch 40 | MSE Loss: 0.101 | Time taken: 785.2311s
+Training set | Epoch 41 | MSE Loss: 0.1009 | Time taken: 785.4076s
+Training set | Epoch 42 | MSE Loss: 0.1006 | Time taken: 785.3563s
+Training set | Epoch 43 | MSE Loss: 0.099 | Time taken: 784.7549s
+Training set | Epoch 44 | MSE Loss: 0.0996 | Time taken: 785.4225s
+Training set | Epoch 45 | MSE Loss: 0.0995 | Time taken: 785.5662s
+Training set | Epoch 46 | MSE Loss: 0.0982 | Time taken: 785.4707s
+Training set | Epoch 47 | MSE Loss: 0.0993 | Time taken: 784.7946s
+Training set | Epoch 48 | MSE Loss: 0.0982 | Time taken: 784.1451s
+Training set | Epoch 49 | MSE Loss: 0.0993 | Time taken: 784.2942s
+Training set | Epoch 50 | MSE Loss: 0.0979 | Time taken: 784.4736s
+
+
+End Training | Total training time taken 39271.0726s
+
+
+Saving model trained_models/transformer_trained_at_2025_04_27_00_56.pt
+Testing model.
+Saving test results to test_results/test_result_transformer_same_node_seql_2025_04_27_00_56.csv.
+Traceback (most recent call last):
+  File "/home/agaru/research/cvf-python-gnn/gnn/new_ideas/transformer_w_same_node_seql.py", line 273, in <module>
+    main(num_epochs=num_epochs, batch_size=1024)
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/agaru/research/cvf-python-gnn/gnn/new_ideas/transformer_w_same_node_seql.py", line 268, in main
+    test_model(model, sequence_length, vocab_size, sp_emb_dim)
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/agaru/research/cvf-python-gnn/gnn/new_ideas/transformer_w_same_node_seql.py", line 165, in test_model
+    f = open(
+        test_result_fn,
+        "w",
+        newline="",
+    )
+FileNotFoundError: [Errno 2] No such file or directory: 'test_results/test_result_transformer_same_node_seql_2025_04_27_00_56.csv'
