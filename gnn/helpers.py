@@ -598,6 +598,51 @@ class CVFConfigForAnalysisDataset(Dataset):
         return program_transition_idxs
 
 
+class CVFConfigForAnalysisV2Dataset(Dataset):
+    def __init__(
+        self,
+        device,
+        graph_name,
+        program="coloring",
+    ) -> None:
+        graphs_dir = os.path.join(
+            os.getenv("CVF_PROJECT_DIR", ""), "cvf-analysis", "graphs"
+        )
+        graph_path = os.path.join(graphs_dir, f"{graph_name}.txt")
+        graph = get_graph(graph_path)
+        self.cvf_analysis = GraphColoringCVFAnalysisV2(
+            graph_name,
+            graph,
+            generate_data_ml=False,
+            generate_data_embedding=False,
+            generate_test_data_ml=True,
+        )
+
+        dataset_dir = os.path.join(
+            os.getenv("CVF_PROJECT_DIR", ""),
+            "cvf-analysis",
+            "v2",
+            "datasets",
+            program,
+        )
+        dataset_file = f"{graph_name}_config_rank_dataset_v2.csv"
+        self.data = pd.read_csv(os.path.join(dataset_dir, dataset_file))
+
+        self.device = device
+        self.dataset_name = graph_name
+
+    def __len__(self):
+        return len(self.data)
+
+    def __getitem__(self, idx):
+        row = self.data.loc[idx]
+        config = torch.FloatTensor(ast.literal_eval(row["config"])).to(self.device)
+        succ1 = torch.FloatTensor(ast.literal_eval(row["succ1"])).to(self.device)
+        succ2 = torch.FloatTensor(ast.literal_eval(row["succ2"])).to(self.device)
+        result = (torch.cat((config, succ1, succ2), dim=0).t(), idx)
+        return result
+
+
 class CVFConfigForGCNWSuccFDataset(Dataset):
     def __init__(
         self,
@@ -817,14 +862,13 @@ if __name__ == "__main__":
     #     "tiny_graph_edge_index.json",
     # )
 
-    dataset = CVFConfigForGCNWSuccLSTMGCV2Dataset(
-        device, "star_graph_n7_config_rank_dataset.csv"
-    )
+    dataset = CVFConfigForAnalysisV2Dataset(device, "star_graph_n7")
 
     # dataset = CVFConfigForAnalysisDataset("cuda", "star_graph_n7")
     loader = DataLoader(dataset, batch_size=2, shuffle=False)
 
     for batch in loader:
         x = batch[0]
-        print(x[0].shape)
-        # break
+        print(x)
+        # print(x[0].shape)
+        break
