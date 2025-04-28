@@ -40,7 +40,7 @@ for row in csv_reader:
         succ2 = torch.mean(succ, dim=1)  # row wise
         succ2 = torch.sum(succ2).repeat(succ1.shape)
     else:
-        succ1 = torch.zeros(1, len(config))
+        succ1 = torch.zeros(1, config.shape[1])
         succ2 = succ1.clone()
 
     data.append(

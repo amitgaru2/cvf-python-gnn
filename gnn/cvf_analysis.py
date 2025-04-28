@@ -83,7 +83,6 @@ def ml_cvf_analysis():
     )
 
     data = []
-    count = 0
     with torch.no_grad():
         test_dataloader = DataLoader(dataset, batch_size=1)
         for batch in test_dataloader:
@@ -96,7 +95,7 @@ def ml_cvf_analysis():
             ranks = get_rank(model, x)
             frm_rank = ranks[0]
             for i, to_rank in enumerate(ranks[1:]):
-                rank_effect = (frm_rank - to_rank).item()  # to round off at 0.5
+                rank_effect = (frm_rank - to_rank).item()
                 data.append(
                     {"node": perturbed_states[i][0], "rank effect": rank_effect}
                 )
@@ -104,10 +103,6 @@ def ml_cvf_analysis():
             temp_df = pd.DataFrame(data, columns=["node", "rank effect"])
             data = []
             result_df = pd.concat([result_df, temp_df], ignore_index=True)
-            count += 1
-
-        if count >= 50000:
-            logger.info(f"Done CVF Analysis for {count:,}.")
 
     result_df["rank effect"] = np.floor(result_df["rank effect"] + 0.5)
 
