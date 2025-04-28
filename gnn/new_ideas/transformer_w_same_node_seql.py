@@ -56,15 +56,29 @@ def get_dataset_coll(batch_size):
         D=7,
     )
 
-    dataset_coll = [
-        dataset_s_n7,
-        dataset_rr_n7,
-        dataset_plc_n7,
-    ]
+    dataset_implicit_n5 = CVFConfigForTransformerMDataset(
+        device,
+        "implicit_graph_n5",
+        "implicit_graph_n5_pt_adj_list.txt",
+        "implicit_graph_n5_config_rank_dataset.csv",
+        D=5,
+        program="dijkstra",
+    )
+
+    dataset_implicit_n7 = CVFConfigForTransformerMDataset(
+        device,
+        "implicit_graph_n7",
+        "implicit_graph_n7_pt_adj_list.txt",
+        "implicit_graph_n7_config_rank_dataset.csv",
+        D=7,
+        program="dijkstra",
+    )
+
+    dataset_coll = [dataset_implicit_n7]
 
     logger.info(f"Train Datasets: {[i.dataset_name for i in dataset_coll]}")
 
-    train_sizes = [int(0.5 * len(ds)) for ds in dataset_coll]
+    train_sizes = [int(0.75 * len(ds)) for ds in dataset_coll]
     test_sizes = [len(ds) - trs for ds, trs in zip(dataset_coll, train_sizes)]
 
     train_test_datasets = [
@@ -78,7 +92,7 @@ def get_dataset_coll(batch_size):
     datasets = ConcatDataset(train_datasets)
     logger.info(f"Train Dataset size: {len(datasets):,}")
 
-    loader = DataLoader(datasets, batch_size=batch_size)
+    loader = DataLoader(datasets, batch_size=batch_size, shuffle=True)
 
     sequence_length = max(d.sequence_length for d in dataset_coll)
     logger.info(f"Max sequence length: {sequence_length:,}")
@@ -170,28 +184,36 @@ def test_model(model, sequence_length, vocab_size, sp_emb_dim):
     csv_writer = csv.writer(f)
     csv_writer.writerow(["Dataset", "Actual", "Predicted", "Correct"])
 
-    dataset_s_n7_test = CVFConfigForTransformerTestDatasetWName(
+    # dataset_s_n7_test = CVFConfigForTransformerTestDatasetWName(
+    #     device,
+    #     "star_graph_n7",
+    #     "star_graph_n7_config_rank_dataset.csv",
+    #     D=7,
+    # )
+
+    # dataset_rr_n7_test = CVFConfigForTransformerTestDatasetWName(
+    #     device,
+    #     "graph_random_regular_graph_n7_d4",
+    #     "graph_random_regular_graph_n7_d4_config_rank_dataset.csv",
+    #     D=7,
+    # )
+
+    # dataset_plc_n7_test = CVFConfigForTransformerTestDatasetWName(
+    #     device,
+    #     "graph_powerlaw_cluster_graph_n7",
+    #     "graph_powerlaw_cluster_graph_n7_config_rank_dataset.csv",
+    #     D=7,
+    # )
+
+    dataset_implicit_n7 = CVFConfigForTransformerTestDatasetWName(
         device,
-        "star_graph_n7",
-        "star_graph_n7_config_rank_dataset.csv",
-        D=7,
+        "implicit_graph_n7",
+        "implicit_graph_n7_config_rank_dataset.csv",
+        D=5,
+        program="dijkstra",
     )
 
-    dataset_rr_n7_test = CVFConfigForTransformerTestDatasetWName(
-        device,
-        "graph_random_regular_graph_n7_d4",
-        "graph_random_regular_graph_n7_d4_config_rank_dataset.csv",
-        D=7,
-    )
-
-    dataset_plc_n7_test = CVFConfigForTransformerTestDatasetWName(
-        device,
-        "graph_powerlaw_cluster_graph_n7",
-        "graph_powerlaw_cluster_graph_n7_config_rank_dataset.csv",
-        D=7,
-    )
-
-    test_dataset_coll = [dataset_s_n7_test, dataset_rr_n7_test, dataset_plc_n7_test]
+    test_dataset_coll = [dataset_implicit_n7]
     logger.info(f"Test Datasets: {[i.dataset_name for i in test_dataset_coll]}")
 
     test_datasets = ConcatDataset(test_dataset_coll)
@@ -217,12 +239,15 @@ def test_model(model, sequence_length, vocab_size, sp_emb_dim):
             padding_mask = padding_mask.float()
             y = batch[1]
             out = model(x, padding_mask)
-            out = out[:, sp_emb_dim+1].unsqueeze(-1)
+            out = out[:, sp_emb_dim + 1].unsqueeze(-1)
             matched = torch.round(out) == y
             csv_writer.writerows(
                 (d, j.item(), k.item(), z.item())
                 for (d, j, k, z) in zip(
-                    batch[2], y.detach().cpu().numpy(), out.detach().cpu().numpy(), matched
+                    batch[2],
+                    y.detach().cpu().numpy(),
+                    out.detach().cpu().numpy(),
+                    matched,
                 )
             )
             loss = criterion(out, y)
@@ -244,7 +269,7 @@ def main(num_epochs, batch_size):
     logger.info("Starting with %s epochs and %s batch size.", num_epochs, batch_size)
     loader, sequence_length, N, sp_emb_dim = get_dataset_coll(batch_size)
     vocab_size = N
-    hidden_dim = 8
+    hidden_dim = 16
     num_layers = 2
 
     model = CausalTransformer(
@@ -264,11 +289,11 @@ def main(num_epochs, batch_size):
     logger.info("Saving model %s", model_name)
     torch.save(model, model_name)
 
-    logger.info("Testing model.")
-    test_model(model, sequence_length, vocab_size, sp_emb_dim)
+    # logger.info("Testing model.")
+    # test_model(model, sequence_length, vocab_size, sp_emb_dim)
 
 
 if __name__ == "__main__":
     num_epochs = int(sys.argv[1])
-    main(num_epochs=num_epochs, batch_size=1024)
+    main(num_epochs=num_epochs, batch_size=512)
     logger.info("Done!")
