@@ -1,4 +1,5 @@
 import csv
+import math
 import sys
 import time
 import random
@@ -20,22 +21,29 @@ from dataset import (
 
 device = "cuda"
 
-
-class EpochwiseRandomSampler(Sampler):
-    def __init__(self, dataset, num_samples):
+class EpochwiseBatchSampler(Sampler):
+    def __init__(self, dataset, num_samples, batch_size, drop_last=False):
         self.dataset = dataset
         self.num_samples = num_samples
-        self.indices = self._sample_indices()
-
-    def _sample_indices(self):
-        return random.sample(range(len(self.dataset)), self.num_samples)
+        self.batch_size = batch_size
+        self.drop_last = drop_last
 
     def __iter__(self):
-        self.indices = self._sample_indices()
-        return iter(self.indices)
+        # Sample a unique subset of indices per epoch
+        indices = random.sample(range(len(self.dataset)), self.num_samples)
+        # Shuffle the indices for batching
+        random.shuffle(indices)
+        # Yield batches
+        for i in range(0, len(indices), self.batch_size):
+            batch = indices[i:i + self.batch_size]
+            if self.drop_last and len(batch) < self.batch_size:
+                continue
+            yield batch
 
     def __len__(self):
-        return self.num_samples
+        if self.drop_last:
+            return self.num_samples // self.batch_size
+        return math.ceil(self.num_samples / self.batch_size)
 
 
 def generate_local_mask(seq_len, spec_emb_dim):
@@ -96,7 +104,7 @@ def get_dataset_coll(batch_size):
 
     logger.info(f"Train Datasets: {[i.dataset_name for i in dataset_coll]}")
 
-    train_sizes = [int(0.75 * len(ds)) for ds in dataset_coll]
+    train_sizes = [int(0.9 * len(ds)) for ds in dataset_coll]
     test_sizes = [len(ds) - trs for ds, trs in zip(dataset_coll, train_sizes)]
 
     train_test_datasets = [
@@ -106,14 +114,14 @@ def get_dataset_coll(batch_size):
 
     train_datasets = [ds[0] for ds in train_test_datasets]
     # test_datasets = [ds[1] for ds in train_test_datasets]
-    subset_size = 10_000
+    subset_size = 100_000
 
     datasets = ConcatDataset(train_datasets)
-    # sampler = EpochwiseRandomSampler(datasets, subset_size)
+    batch_sampler = EpochwiseBatchSampler(datasets, subset_size, batch_size)
 
     logger.info(f"Train Dataset size: {len(datasets):,}")
 
-    loader = DataLoader(datasets, batch_size=batch_size, shuffle=True)
+    loader = DataLoader(datasets, batch_sampler=batch_sampler)
 
     sequence_length = max(d.sequence_length for d in dataset_coll)
     logger.info(f"Max sequence length: {sequence_length:,}")
