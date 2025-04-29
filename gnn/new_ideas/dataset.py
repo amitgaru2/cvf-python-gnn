@@ -304,18 +304,19 @@ class CVFConfigForTransformerMDataset(Dataset):
         ).to(
             self.device
         )  # padding  mask for the graph info at indx 0
-        labels = [
-            -1 for _ in range(self.sp_emb_dim + 1)
-        ]  # spectral dimension + separator
-        labels.extend(
-            [self.cr_data.loc[int(i)]["rank"] if not pd.isna(i) else -1 for i in row]
-        )
+        # labels = [
+        #     -1 for _ in range(self.sp_emb_dim + 1)
+        # ]  # spectral dimension + separator
+        # labels.extend(
+        #     [self.cr_data.loc[int(i)]["rank"] if not pd.isna(i) else -1 for i in row]
+        # )
+        label = torch.FloatTensor([self.cr_data.loc[row[0]]["rank"]]).to(self.device)
         return (
             (
                 result,
                 padding_mask,
             ),
-            torch.FloatTensor(labels).to(self.device),
+            label,
         )
 
 
@@ -365,7 +366,7 @@ class CVFConfigForTransformerTestDataset(Dataset):
 
 
 class CVFConfigForTransformerTestDatasetWName(Dataset):
-    eo_sp_dim_full_value = -5
+    eo_sp_dim_full_value = -10
 
     def __init__(
         self,
@@ -401,7 +402,7 @@ class CVFConfigForTransformerTestDatasetWName(Dataset):
         self.D = D
         self.A = torch.FloatTensor(get_A_of_graph(graph_path))
         self.sp_emb_dim = 2
-        self.sequence_length = self.sp_emb_dim + 1 + 8
+        self.sequence_length = self.sp_emb_dim + 1 + 44
 
     @cached_property
     def spectral_embedding(self):
@@ -503,22 +504,24 @@ if __name__ == "__main__":
     #     program="dijkstra",
     # )
 
-    # dataset = CVFConfigForTransformerMDataset(
-    #     device,
-    #     "implicit_graph_n5",
-    #     "implicit_graph_n5_pt_adj_list.txt",
-    #     "implicit_graph_n5_config_rank_dataset.csv",
-    #     D=5,
-    #     program="dijkstra",
-    # )
-
-    dataset = CVFConfigForTransformerTestDatasetWName(
+    dataset = CVFConfigForTransformerMDataset(
         device,
         "implicit_graph_n5",
+        "implicit_graph_n5_pt_adj_list.txt",
         "implicit_graph_n5_config_rank_dataset.csv",
         D=5,
         program="dijkstra",
     )
+
+    print(dataset.sequence_length)
+
+    # dataset = CVFConfigForTransformerTestDatasetWName(
+    #     device,
+    #     "implicit_graph_n5",
+    #     "implicit_graph_n5_config_rank_dataset.csv",
+    #     D=5,
+    #     program="dijkstra",
+    # )
 
     loader = DataLoader(dataset, batch_size=2, shuffle=True)
 

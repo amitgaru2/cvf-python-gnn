@@ -50,38 +50,38 @@ def generate_local_mask(seq_len, spec_emb_dim):
 
 
 def get_dataset_coll(batch_size):
-    dataset_s_n7 = CVFConfigForTransformerMDataset(
-        device,
-        "star_graph_n7",
-        "star_graph_n7_pt_adj_list.txt",
-        "star_graph_n7_config_rank_dataset.csv",
-        D=7,
-    )
+    # dataset_s_n7 = CVFConfigForTransformerMDataset(
+    #     device,
+    #     "star_graph_n7",
+    #     "star_graph_n7_pt_adj_list.txt",
+    #     "star_graph_n7_config_rank_dataset.csv",
+    #     D=7,
+    # )
 
-    dataset_rr_n7 = CVFConfigForTransformerMDataset(
-        device,
-        "graph_random_regular_graph_n7_d4",
-        "graph_random_regular_graph_n7_d4_pt_adj_list.txt",
-        "graph_random_regular_graph_n7_d4_config_rank_dataset.csv",
-        D=7,
-    )
+    # dataset_rr_n7 = CVFConfigForTransformerMDataset(
+    #     device,
+    #     "graph_random_regular_graph_n7_d4",
+    #     "graph_random_regular_graph_n7_d4_pt_adj_list.txt",
+    #     "graph_random_regular_graph_n7_d4_config_rank_dataset.csv",
+    #     D=7,
+    # )
 
-    dataset_plc_n7 = CVFConfigForTransformerMDataset(
-        device,
-        "graph_powerlaw_cluster_graph_n7",
-        "graph_powerlaw_cluster_graph_n7_pt_adj_list.txt",
-        "graph_powerlaw_cluster_graph_n7_config_rank_dataset.csv",
-        D=7,
-    )
+    # dataset_plc_n7 = CVFConfigForTransformerMDataset(
+    #     device,
+    #     "graph_powerlaw_cluster_graph_n7",
+    #     "graph_powerlaw_cluster_graph_n7_pt_adj_list.txt",
+    #     "graph_powerlaw_cluster_graph_n7_config_rank_dataset.csv",
+    #     D=7,
+    # )
 
-    dataset_implicit_n5 = CVFConfigForTransformerMDataset(
-        device,
-        "implicit_graph_n5",
-        "implicit_graph_n5_pt_adj_list.txt",
-        "implicit_graph_n5_config_rank_dataset.csv",
-        D=5,
-        program="dijkstra",
-    )
+    # dataset_implicit_n5 = CVFConfigForTransformerMDataset(
+    #     device,
+    #     "implicit_graph_n5",
+    #     "implicit_graph_n5_pt_adj_list.txt",
+    #     "implicit_graph_n5_config_rank_dataset.csv",
+    #     D=5,
+    #     program="dijkstra",
+    # )
 
     dataset_implicit_n7 = CVFConfigForTransformerMDataset(
         device,
@@ -96,7 +96,7 @@ def get_dataset_coll(batch_size):
 
     logger.info(f"Train Datasets: {[i.dataset_name for i in dataset_coll]}")
 
-    train_sizes = [int(0.9 * len(ds)) for ds in dataset_coll]
+    train_sizes = [int(0.75 * len(ds)) for ds in dataset_coll]
     test_sizes = [len(ds) - trs for ds, trs in zip(dataset_coll, train_sizes)]
 
     train_test_datasets = [
@@ -106,14 +106,14 @@ def get_dataset_coll(batch_size):
 
     train_datasets = [ds[0] for ds in train_test_datasets]
     # test_datasets = [ds[1] for ds in train_test_datasets]
-    subset_size = 500_000
+    subset_size = 10_000
 
     datasets = ConcatDataset(train_datasets)
-    sampler = EpochwiseRandomSampler(datasets, subset_size)
+    # sampler = EpochwiseRandomSampler(datasets, subset_size)
 
-    logger.info(f"Train Dataset size: {len(datasets):,}, Subset size: {subset_size}")
+    logger.info(f"Train Dataset size: {len(datasets):,}")
 
-    loader = DataLoader(datasets, sampler=sampler)
+    loader = DataLoader(datasets, batch_size=batch_size, shuffle=True)
 
     sequence_length = max(d.sequence_length for d in dataset_coll)
     logger.info(f"Max sequence length: {sequence_length:,}")
@@ -172,7 +172,8 @@ class CausalTransformer(nn.Module):
                 y = batch[1]
                 out = self(x, padding_mask)
                 optimizer.zero_grad()
-                loss = criterion(out, y)
+                # loss = criterion(out, y)
+                loss = criterion(out[:, 0].unsqueeze(-1), y)
                 total_loss += loss
                 count += 1
                 loss.backward()
