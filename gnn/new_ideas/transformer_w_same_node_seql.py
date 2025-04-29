@@ -1,13 +1,14 @@
 import csv
 import sys
 import time
+import random
 import datetime
 
 import torch
 import torch.nn as nn
 import torch.optim as optim
 
-from torch.utils.data import ConcatDataset, DataLoader, random_split
+from torch.utils.data import ConcatDataset, DataLoader, random_split, Sampler
 
 
 from dataset import (
@@ -18,6 +19,23 @@ from dataset import (
 
 
 device = "cuda"
+
+
+class EpochwiseRandomSampler(Sampler):
+    def __init__(self, dataset, num_samples):
+        self.dataset = dataset
+        self.num_samples = num_samples
+        self.indices = self._sample_indices()
+
+    def _sample_indices(self):
+        return random.sample(range(len(self.dataset)), self.num_samples)
+
+    def __iter__(self):
+        self.indices = self._sample_indices()
+        return iter(self.indices)
+
+    def __len__(self):
+        return self.num_samples
 
 
 def generate_local_mask(seq_len, spec_emb_dim):
@@ -78,7 +96,7 @@ def get_dataset_coll(batch_size):
 
     logger.info(f"Train Datasets: {[i.dataset_name for i in dataset_coll]}")
 
-    train_sizes = [int(0.75 * len(ds)) for ds in dataset_coll]
+    train_sizes = [int(0.9 * len(ds)) for ds in dataset_coll]
     test_sizes = [len(ds) - trs for ds, trs in zip(dataset_coll, train_sizes)]
 
     train_test_datasets = [
@@ -88,11 +106,14 @@ def get_dataset_coll(batch_size):
 
     train_datasets = [ds[0] for ds in train_test_datasets]
     # test_datasets = [ds[1] for ds in train_test_datasets]
+    subset_size = 500_000
 
     datasets = ConcatDataset(train_datasets)
-    logger.info(f"Train Dataset size: {len(datasets):,}")
+    sampler = EpochwiseRandomSampler(datasets, subset_size)
 
-    loader = DataLoader(datasets, batch_size=batch_size, shuffle=True)
+    logger.info(f"Train Dataset size: {len(datasets):,}, Subset size: {subset_size}")
+
+    loader = DataLoader(datasets, sampler=sampler)
 
     sequence_length = max(d.sequence_length for d in dataset_coll)
     logger.info(f"Max sequence length: {sequence_length:,}")
@@ -269,7 +290,7 @@ def main(num_epochs, batch_size):
     logger.info("Starting with %s epochs and %s batch size.", num_epochs, batch_size)
     loader, sequence_length, N, sp_emb_dim = get_dataset_coll(batch_size)
     vocab_size = N
-    hidden_dim = 16
+    hidden_dim = 8
     num_layers = 2
 
     model = CausalTransformer(
@@ -295,5 +316,5 @@ def main(num_epochs, batch_size):
 
 if __name__ == "__main__":
     num_epochs = int(sys.argv[1])
-    main(num_epochs=num_epochs, batch_size=512)
+    main(num_epochs=num_epochs, batch_size=1024)
     logger.info("Done!")

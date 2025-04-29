@@ -1,0 +1,40 @@
+Starting with 50 epochs and 1024 batch size.
+Total configs: 448.
+Total configs: 78,125.
+Total configs: 27,000.
+Total configs: 243.
+Total configs: 2,187.
+Train Datasets: ['implicit_graph_n7']
+Train Dataset size: 856,402
+Max sequence length: 47
+Spectral embedding dim: 2
+CausalTransformer(
+  (embedding): EmbeddingProjectionModel(
+    (projection): Linear(in_features=7, out_features=8, bias=True)
+  )
+  (transformer): TransformerDecoder(
+    (layers): ModuleList(
+      (0-1): 2 x TransformerDecoderLayer(
+        (self_attn): MultiheadAttention(
+          (out_proj): NonDynamicallyQuantizableLinear(in_features=8, out_features=8, bias=True)
+        )
+        (multihead_attn): MultiheadAttention(
+          (out_proj): NonDynamicallyQuantizableLinear(in_features=8, out_features=8, bias=True)
+        )
+        (linear1): Linear(in_features=8, out_features=2048, bias=True)
+        (dropout): Dropout(p=0.1, inplace=False)
+        (linear2): Linear(in_features=2048, out_features=8, bias=True)
+        (norm1): LayerNorm((8,), eps=1e-05, elementwise_affine=True)
+        (norm2): LayerNorm((8,), eps=1e-05, elementwise_affine=True)
+        (norm3): LayerNorm((8,), eps=1e-05, elementwise_affine=True)
+        (dropout1): Dropout(p=0.1, inplace=False)
+        (dropout2): Dropout(p=0.1, inplace=False)
+        (dropout3): Dropout(p=0.1, inplace=False)
+      )
+    )
+  )
+  (output_head): Linear(in_features=8, out_features=1, bias=True)
+)
+Total parameters: 70,969
+Training set | Epoch 1 | MSE Loss: 92.8201 | Time taken: 1073.4115s
+./nohup_commands.sh: line 98: 612201 Killed                  python transformer_w_same_node_seql.py 50
