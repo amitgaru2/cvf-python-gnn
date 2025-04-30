@@ -91,7 +91,7 @@ class CustomBatchSampler(Sampler):
                 last_accessed[turn] += batch_size
 
 
-def get_dataset_coll(*graph_names):
+def get_dataset_coll(program, *graph_names):
     dataset_coll = []
 
     for graph_name in graph_names:
@@ -99,6 +99,7 @@ def get_dataset_coll(*graph_names):
             CVFConfigForGCNWSuccLSTMDataset(
                 device,
                 f"{graph_name}_config_rank_dataset.csv",
+                program=program
             )
         )
 
@@ -157,7 +158,7 @@ def test_model(model, test_concat_datasets, save_result=False):
         f.close()
 
 
-def main(graph_names, H, batch_size, epochs, num_layers):
+def main(program, graph_names, H, batch_size, epochs, num_layers):
     logger.info(
         "Timestamp: %s | Training with Graphs: %s | Batch size: %s | Epochs: %s | Hidden size: %s | Num layers: %s.",
         datetime.datetime.now().timestamp(),
@@ -168,7 +169,7 @@ def main(graph_names, H, batch_size, epochs, num_layers):
         num_layers,
     )
     logger.info("\n")
-    dataset_coll = get_dataset_coll(*graph_names)
+    dataset_coll = get_dataset_coll(program, *graph_names)
     D = dataset_coll[0].D
     train_sizes = [int(0.95 * len(ds)) for ds in dataset_coll]
     test_sizes = [len(ds) - trs for ds, trs in zip(dataset_coll, train_sizes)]
@@ -236,6 +237,7 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
     main(
+        program="coloring",
         epochs=args.epochs,
         batch_size=args.batch_size,
         H=args.hidden_size,
