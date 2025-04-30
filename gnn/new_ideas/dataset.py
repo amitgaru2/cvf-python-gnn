@@ -316,6 +316,96 @@ class CVFConfigForTransformerMDataset(Dataset):
             ),
             torch.FloatTensor(labels).to(self.device),
         )
+    
+
+class CVFConfigForTransformerDecoderDataset(Dataset):
+
+    def __init__(
+        self,
+        device,
+        graph_name,
+        pt_dataset_file,
+        config_rank_dataset,
+        D,
+        program="coloring",
+    ) -> None:
+        graphs_dir = os.path.join(
+            os.getenv("CVF_PROJECT_DIR", ""), "cvf-analysis", "graphs"
+        )
+        graph_path = os.path.join(graphs_dir, f"{graph_name}.txt")
+        graph = get_graph(graph_path)
+        self.cvf_analysis = GraphColoringCVFAnalysisV2(
+            graph_name,
+            graph,
+            generate_data_ml=False,
+            generate_data_embedding=False,
+            generate_test_data_ml=True,
+        )
+
+        self.device = device
+        self.dataset_name = graph_name
+        dataset_dir = os.path.join(
+            os.getenv("CVF_PROJECT_DIR", ""),
+            "cvf-analysis",
+            "v2",
+            "datasets",
+            program,
+        )
+        self.data = pd.read_csv(os.path.join(dataset_dir, pt_dataset_file))
+        self.cr_data = pd.read_csv(os.path.join(dataset_dir, config_rank_dataset))
+        self.sp_emb_dim = 1
+        self.prepend_size = self.sp_emb_dim
+        self.sequence_length = self.prepend_size + len(self.data.loc[0])
+        self.D = D
+        self.A = torch.FloatTensor(get_A_of_graph(graph_path))
+
+    @cached_property
+    def spectral_embedding(self):
+        embedding_model = SpectralEmbedding(
+            n_components=self.sp_emb_dim, affinity="precomputed"
+        )
+        embedding = embedding_model.fit_transform(self.A).T
+        return torch.FloatTensor(embedding).to(self.device)
+
+    def __len__(self):
+        return len(self.data)
+
+    def __getitem__(self, idx):
+        row = self.data.loc[idx].reset_index(drop=True)
+        is_na = row.isna()
+        len_row_non_na = len(row.dropna())
+        na_mask = torch.tensor(list(is_na))
+        result = torch.FloatTensor(
+            [self.cvf_analysis.indx_to_config(i) for i in row]
+        ).to(self.device)
+        result[na_mask] = -1
+        result = torch.cat(
+            [
+                self.spectral_embedding,
+                result,
+            ]
+        )  # add the graph info here at indx 0
+        padding_mask = torch.cat(
+            [
+                torch.Tensor([False for _ in range(self.prepend_size)]),
+                na_mask,
+            ]
+        ).to(
+            self.device
+        )  # padding  mask for the graph info at indx 0
+        labels = [
+            1 for _ in range(self.prepend_size)
+        ]  # 1 for valid sequence, 0 for invalid
+        labels.extend(
+            [len_row_non_na - (i - 1) if (i - 1) <= len_row_non_na else -1 for i in range(len(row))]
+        )
+        return (
+            (
+                result,
+                padding_mask,
+            ),
+            torch.FloatTensor(labels).to(self.device),
+        )
 
 
 class CVFConfigForTransformerTestDataset(Dataset):
@@ -500,7 +590,7 @@ if __name__ == "__main__":
     #     program="dijkstra",
     # )
 
-    dataset = CVFConfigForTransformerMDataset(
+    dataset = CVFConfigForTransformerDecoderDataset(
         device,
         "implicit_graph_n5",
         "implicit_graph_n5_pt_adj_list.txt",

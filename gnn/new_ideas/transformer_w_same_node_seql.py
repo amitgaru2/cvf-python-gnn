@@ -14,7 +14,7 @@ from torch.utils.data import ConcatDataset, DataLoader, random_split, Sampler
 
 from dataset import (
     logger,
-    CVFConfigForTransformerMDataset,
+    CVFConfigForTransformerDecoderDataset,
 )
 
 
@@ -91,7 +91,7 @@ def get_dataset_coll(batch_size):
     #     program="dijkstra",
     # )
 
-    dataset_implicit_n7 = CVFConfigForTransformerMDataset(
+    dataset_implicit_n7 = CVFConfigForTransformerDecoderDataset(
         device,
         "implicit_graph_n7",
         "implicit_graph_n7_pt_adj_list.txt",
@@ -149,7 +149,7 @@ class CausalTransformer(nn.Module):
         self.embedding = EmbeddingProjectionModel(vocab_size, hidden_dim)
         decoder_layer = nn.TransformerDecoderLayer(d_model=hidden_dim, nhead=4)
         self.transformer = nn.TransformerDecoder(decoder_layer, num_layers=num_layers)
-        self.output_head = nn.Linear(hidden_dim, 2)
+        self.output_head = nn.Linear(hidden_dim, 1)
         self.sequence_length = seq_length
         self.spec_emb_dim = sp_emb_dim
 
@@ -180,8 +180,7 @@ class CausalTransformer(nn.Module):
                 y = batch[1]
                 out = self(x, padding_mask)
                 optimizer.zero_grad()
-                # loss = criterion(out, y)
-                loss = criterion(out[:, :, 0], y)
+                loss = criterion(out, y)
                 total_loss += loss
                 count += 1
                 loss.backward()
