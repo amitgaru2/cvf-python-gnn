@@ -399,8 +399,9 @@ class CVFConfigForTransformerTestDatasetWName(Dataset):
         self.data = pd.read_csv(os.path.join(dataset_dir, config_rank_dataset))
         self.D = D
         self.A = torch.FloatTensor(get_A_of_graph(graph_path))
-        self.sp_emb_dim = 2
-        self.sequence_length = self.sp_emb_dim + 1 + 44
+        self.sp_emb_dim = 1
+        self.prefix_embedding = 1
+        self.sequence_length = self.prefix_embedding + 44
 
     @cached_property
     def spectral_embedding(self):
@@ -420,9 +421,6 @@ class CVFConfigForTransformerTestDatasetWName(Dataset):
         config = torch.cat(
             [
                 self.spectral_embedding,
-                torch.full((1, config.shape[1]), self.eo_sp_dim_full_value).to(
-                    self.device
-                ),
                 config,
             ]
         )

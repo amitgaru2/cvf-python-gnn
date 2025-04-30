@@ -82,25 +82,25 @@ def get_dataset_coll(batch_size):
     #     D=7,
     # )
 
-    dataset_implicit_n5 = CVFConfigForTransformerMDataset(
-        device,
-        "implicit_graph_n5",
-        "implicit_graph_n5_pt_adj_list.txt",
-        "implicit_graph_n5_config_rank_dataset.csv",
-        D=5,
-        program="dijkstra",
-    )
-
-    # dataset_implicit_n7 = CVFConfigForTransformerMDataset(
+    # dataset_implicit_n5 = CVFConfigForTransformerMDataset(
     #     device,
-    #     "implicit_graph_n7",
-    #     "implicit_graph_n7_pt_adj_list.txt",
-    #     "implicit_graph_n7_config_rank_dataset.csv",
-    #     D=7,
+    #     "implicit_graph_n5",
+    #     "implicit_graph_n5_pt_adj_list.txt",
+    #     "implicit_graph_n5_config_rank_dataset.csv",
+    #     D=5,
     #     program="dijkstra",
     # )
 
-    dataset_coll = [dataset_implicit_n5]
+    dataset_implicit_n7 = CVFConfigForTransformerMDataset(
+        device,
+        "implicit_graph_n7",
+        "implicit_graph_n7_pt_adj_list.txt",
+        "implicit_graph_n7_config_rank_dataset.csv",
+        D=7,
+        program="dijkstra",
+    )
+
+    dataset_coll = [dataset_implicit_n7]
 
     logger.info(f"Train Datasets: {[i.dataset_name for i in dataset_coll]}")
 
@@ -114,14 +114,14 @@ def get_dataset_coll(batch_size):
 
     train_datasets = [ds[0] for ds in train_test_datasets]
     # test_datasets = [ds[1] for ds in train_test_datasets]
-    subset_size = 20_000
+    subset_size = 100_000
 
     datasets = ConcatDataset(train_datasets)
     batch_sampler = EpochwiseBatchSampler(datasets, subset_size, batch_size)
 
     logger.info(f"Train Dataset size: {len(datasets):,}")
 
-    loader = DataLoader(datasets, batch_size=batch_size)
+    loader = DataLoader(datasets, batch_sampler=batch_sampler)
 
     sequence_length = max(d.sequence_length for d in dataset_coll)
     logger.info(f"Max sequence length: {sequence_length:,}")

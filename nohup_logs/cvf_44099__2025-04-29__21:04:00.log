@@ -1,0 +1,141 @@
+Starting with 100 epochs and 256 batch size.
+Total configs: 243.
+Train Datasets: ['implicit_graph_n5']
+Train Dataset size: 23,341
+Max sequence length: 25
+Spectral embedding dim: 1
+CausalTransformer(
+  (embedding): EmbeddingProjectionModel(
+    (projection): Linear(in_features=5, out_features=8, bias=True)
+  )
+  (transformer): TransformerDecoder(
+    (layers): ModuleList(
+      (0-1): 2 x TransformerDecoderLayer(
+        (self_attn): MultiheadAttention(
+          (out_proj): NonDynamicallyQuantizableLinear(in_features=8, out_features=8, bias=True)
+        )
+        (multihead_attn): MultiheadAttention(
+          (out_proj): NonDynamicallyQuantizableLinear(in_features=8, out_features=8, bias=True)
+        )
+        (linear1): Linear(in_features=8, out_features=2048, bias=True)
+        (dropout): Dropout(p=0.1, inplace=False)
+        (linear2): Linear(in_features=2048, out_features=8, bias=True)
+        (norm1): LayerNorm((8,), eps=1e-05, elementwise_affine=True)
+        (norm2): LayerNorm((8,), eps=1e-05, elementwise_affine=True)
+        (norm3): LayerNorm((8,), eps=1e-05, elementwise_affine=True)
+        (dropout1): Dropout(p=0.1, inplace=False)
+        (dropout2): Dropout(p=0.1, inplace=False)
+        (dropout3): Dropout(p=0.1, inplace=False)
+      )
+    )
+  )
+  (output_head): Linear(in_features=8, out_features=2, bias=True)
+)
+Total parameters: 70,962
+Training set | Epoch 1 | MSE Loss: 29.7776 | Time taken: 27.2499s
+Training set | Epoch 2 | MSE Loss: 21.448 | Time taken: 27.8424s
+Training set | Epoch 3 | MSE Loss: 15.3425 | Time taken: 18.8524s
+Training set | Epoch 4 | MSE Loss: 12.2898 | Time taken: 17.2645s
+Training set | Epoch 5 | MSE Loss: 11.3641 | Time taken: 17.2714s
+Training set | Epoch 6 | MSE Loss: 9.1166 | Time taken: 17.2743s
+Training set | Epoch 7 | MSE Loss: 5.3195 | Time taken: 17.2681s
+Training set | Epoch 8 | MSE Loss: 2.6615 | Time taken: 17.2405s
+Training set | Epoch 9 | MSE Loss: 1.6111 | Time taken: 17.2409s
+Training set | Epoch 10 | MSE Loss: 1.1741 | Time taken: 17.2257s
+Training set | Epoch 11 | MSE Loss: 0.8734 | Time taken: 17.2344s
+Training set | Epoch 12 | MSE Loss: 0.6692 | Time taken: 17.2506s
+Training set | Epoch 13 | MSE Loss: 0.5408 | Time taken: 17.2422s
+Training set | Epoch 14 | MSE Loss: 0.4576 | Time taken: 17.2317s
+Training set | Epoch 15 | MSE Loss: 0.417 | Time taken: 17.2449s
+Training set | Epoch 16 | MSE Loss: 0.3525 | Time taken: 17.2448s
+Training set | Epoch 17 | MSE Loss: 0.3235 | Time taken: 17.2446s
+Training set | Epoch 18 | MSE Loss: 0.3058 | Time taken: 17.2454s
+Training set | Epoch 19 | MSE Loss: 0.2745 | Time taken: 17.2461s
+Training set | Epoch 20 | MSE Loss: 0.2635 | Time taken: 17.2523s
+Training set | Epoch 21 | MSE Loss: 0.2434 | Time taken: 17.3517s
+Training set | Epoch 22 | MSE Loss: 0.2312 | Time taken: 17.3554s
+Training set | Epoch 23 | MSE Loss: 0.2223 | Time taken: 17.3377s
+Training set | Epoch 24 | MSE Loss: 0.2095 | Time taken: 17.3426s
+Training set | Epoch 25 | MSE Loss: 0.2039 | Time taken: 17.2272s
+Training set | Epoch 26 | MSE Loss: 0.1912 | Time taken: 17.1575s
+Training set | Epoch 27 | MSE Loss: 0.1853 | Time taken: 17.143s
+Training set | Epoch 28 | MSE Loss: 0.1841 | Time taken: 17.1166s
+Training set | Epoch 29 | MSE Loss: 0.1727 | Time taken: 17.102s
+Training set | Epoch 30 | MSE Loss: 0.1667 | Time taken: 17.0957s
+Training set | Epoch 31 | MSE Loss: 0.1611 | Time taken: 17.0844s
+Training set | Epoch 32 | MSE Loss: 0.1588 | Time taken: 17.0897s
+Training set | Epoch 33 | MSE Loss: 0.1522 | Time taken: 17.0958s
+Training set | Epoch 34 | MSE Loss: 0.1469 | Time taken: 17.0997s
+Training set | Epoch 35 | MSE Loss: 0.1406 | Time taken: 17.0905s
+Training set | Epoch 36 | MSE Loss: 0.1386 | Time taken: 17.098s
+Training set | Epoch 37 | MSE Loss: 0.1366 | Time taken: 17.1011s
+Training set | Epoch 38 | MSE Loss: 0.1362 | Time taken: 17.0818s
+Training set | Epoch 39 | MSE Loss: 0.1327 | Time taken: 17.0711s
+Training set | Epoch 40 | MSE Loss: 0.1259 | Time taken: 17.0706s
+Training set | Epoch 41 | MSE Loss: 0.1212 | Time taken: 17.0725s
+Training set | Epoch 42 | MSE Loss: 0.1239 | Time taken: 17.0601s
+Training set | Epoch 43 | MSE Loss: 0.1176 | Time taken: 17.0742s
+Training set | Epoch 44 | MSE Loss: 0.1158 | Time taken: 17.067s
+Training set | Epoch 45 | MSE Loss: 0.1122 | Time taken: 17.0723s
+Training set | Epoch 46 | MSE Loss: 0.1089 | Time taken: 17.1048s
+Training set | Epoch 47 | MSE Loss: 0.1082 | Time taken: 17.0772s
+Training set | Epoch 48 | MSE Loss: 0.1079 | Time taken: 17.0697s
+Training set | Epoch 49 | MSE Loss: 0.1028 | Time taken: 17.0638s
+Training set | Epoch 50 | MSE Loss: 0.1034 | Time taken: 17.0786s
+Training set | Epoch 51 | MSE Loss: 0.0984 | Time taken: 17.0707s
+Training set | Epoch 52 | MSE Loss: 0.0987 | Time taken: 17.0497s
+Training set | Epoch 53 | MSE Loss: 0.0954 | Time taken: 17.0374s
+Training set | Epoch 54 | MSE Loss: 0.0966 | Time taken: 17.0422s
+Training set | Epoch 55 | MSE Loss: 0.0927 | Time taken: 17.0434s
+Training set | Epoch 56 | MSE Loss: 0.091 | Time taken: 17.0343s
+Training set | Epoch 57 | MSE Loss: 0.0883 | Time taken: 17.0437s
+Training set | Epoch 58 | MSE Loss: 0.0871 | Time taken: 17.0384s
+Training set | Epoch 59 | MSE Loss: 0.0873 | Time taken: 17.035s
+Training set | Epoch 60 | MSE Loss: 0.0843 | Time taken: 17.0327s
+Training set | Epoch 61 | MSE Loss: 0.0837 | Time taken: 17.0428s
+Training set | Epoch 62 | MSE Loss: 0.0801 | Time taken: 17.0325s
+Training set | Epoch 63 | MSE Loss: 0.0836 | Time taken: 17.0344s
+Training set | Epoch 64 | MSE Loss: 0.0786 | Time taken: 17.0681s
+Training set | Epoch 65 | MSE Loss: 0.0773 | Time taken: 17.0626s
+Training set | Epoch 66 | MSE Loss: 0.076 | Time taken: 16.9929s
+Training set | Epoch 67 | MSE Loss: 0.0735 | Time taken: 16.9934s
+Training set | Epoch 68 | MSE Loss: 0.0736 | Time taken: 17.0201s
+Training set | Epoch 69 | MSE Loss: 0.0744 | Time taken: 17.0426s
+Training set | Epoch 70 | MSE Loss: 0.0714 | Time taken: 17.0377s
+Training set | Epoch 71 | MSE Loss: 0.0713 | Time taken: 17.0382s
+Training set | Epoch 72 | MSE Loss: 0.0681 | Time taken: 17.0369s
+Training set | Epoch 73 | MSE Loss: 0.0694 | Time taken: 17.015s
+Training set | Epoch 74 | MSE Loss: 0.068 | Time taken: 17.042s
+Training set | Epoch 75 | MSE Loss: 0.0674 | Time taken: 17.0171s
+Training set | Epoch 76 | MSE Loss: 0.0649 | Time taken: 17.0259s
+Training set | Epoch 77 | MSE Loss: 0.0659 | Time taken: 17.0341s
+Training set | Epoch 78 | MSE Loss: 0.0646 | Time taken: 17.0378s
+Training set | Epoch 79 | MSE Loss: 0.0637 | Time taken: 17.0423s
+Training set | Epoch 80 | MSE Loss: 0.0613 | Time taken: 17.0468s
+Training set | Epoch 81 | MSE Loss: 0.0621 | Time taken: 17.0351s
+Training set | Epoch 82 | MSE Loss: 0.0615 | Time taken: 17.0175s
+Training set | Epoch 83 | MSE Loss: 0.0586 | Time taken: 17.0086s
+Training set | Epoch 84 | MSE Loss: 0.0584 | Time taken: 17.0249s
+Training set | Epoch 85 | MSE Loss: 0.0585 | Time taken: 17.0715s
+Training set | Epoch 86 | MSE Loss: 0.0581 | Time taken: 17.0156s
+Training set | Epoch 87 | MSE Loss: 0.0583 | Time taken: 17.0103s
+Training set | Epoch 88 | MSE Loss: 0.0559 | Time taken: 17.0187s
+Training set | Epoch 89 | MSE Loss: 0.0561 | Time taken: 17.0279s
+Training set | Epoch 90 | MSE Loss: 0.0549 | Time taken: 17.0381s
+Training set | Epoch 91 | MSE Loss: 0.0571 | Time taken: 17.0408s
+Training set | Epoch 92 | MSE Loss: 0.0541 | Time taken: 17.0398s
+Training set | Epoch 93 | MSE Loss: 0.0532 | Time taken: 17.04s
+Training set | Epoch 94 | MSE Loss: 0.053 | Time taken: 17.0139s
+Training set | Epoch 95 | MSE Loss: 0.0519 | Time taken: 17.0266s
+Training set | Epoch 96 | MSE Loss: 0.0516 | Time taken: 17.0337s
+Training set | Epoch 97 | MSE Loss: 0.0522 | Time taken: 17.03s
+Training set | Epoch 98 | MSE Loss: 0.05 | Time taken: 17.0108s
+Training set | Epoch 99 | MSE Loss: 0.0506 | Time taken: 17.0212s
+Training set | Epoch 100 | MSE Loss: 0.0498 | Time taken: 17.0306s
+
+
+End Training | Total training time taken 1732.6832s
+
+
+Saving model trained_models/transformer_trained_at_2025_04_29_21_32.pt
+Done!
