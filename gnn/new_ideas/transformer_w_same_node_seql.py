@@ -15,11 +15,11 @@ from torch.utils.data import ConcatDataset, DataLoader, random_split, Sampler
 from dataset import (
     logger,
     CVFConfigForTransformerMDataset,
-    CVFConfigForTransformerTestDatasetWName,
 )
 
 
 device = "cuda"
+
 
 class EpochwiseBatchSampler(Sampler):
     def __init__(self, dataset, num_samples, batch_size, drop_last=False):
@@ -35,7 +35,7 @@ class EpochwiseBatchSampler(Sampler):
         random.shuffle(indices)
         # Yield batches
         for i in range(0, len(indices), self.batch_size):
-            batch = indices[i:i + self.batch_size]
+            batch = indices[i : i + self.batch_size]
             if self.drop_last and len(batch) < self.batch_size:
                 continue
             yield batch
@@ -82,25 +82,25 @@ def get_dataset_coll(batch_size):
     #     D=7,
     # )
 
-    # dataset_implicit_n5 = CVFConfigForTransformerMDataset(
-    #     device,
-    #     "implicit_graph_n5",
-    #     "implicit_graph_n5_pt_adj_list.txt",
-    #     "implicit_graph_n5_config_rank_dataset.csv",
-    #     D=5,
-    #     program="dijkstra",
-    # )
-
-    dataset_implicit_n7 = CVFConfigForTransformerMDataset(
+    dataset_implicit_n5 = CVFConfigForTransformerMDataset(
         device,
-        "implicit_graph_n7",
-        "implicit_graph_n7_pt_adj_list.txt",
-        "implicit_graph_n7_config_rank_dataset.csv",
-        D=7,
+        "implicit_graph_n5",
+        "implicit_graph_n5_pt_adj_list.txt",
+        "implicit_graph_n5_config_rank_dataset.csv",
+        D=5,
         program="dijkstra",
     )
 
-    dataset_coll = [dataset_implicit_n7]
+    # dataset_implicit_n7 = CVFConfigForTransformerMDataset(
+    #     device,
+    #     "implicit_graph_n7",
+    #     "implicit_graph_n7_pt_adj_list.txt",
+    #     "implicit_graph_n7_config_rank_dataset.csv",
+    #     D=7,
+    #     program="dijkstra",
+    # )
+
+    dataset_coll = [dataset_implicit_n5]
 
     logger.info(f"Train Datasets: {[i.dataset_name for i in dataset_coll]}")
 
@@ -114,14 +114,14 @@ def get_dataset_coll(batch_size):
 
     train_datasets = [ds[0] for ds in train_test_datasets]
     # test_datasets = [ds[1] for ds in train_test_datasets]
-    subset_size = 100_000
+    subset_size = 20_000
 
     datasets = ConcatDataset(train_datasets)
     batch_sampler = EpochwiseBatchSampler(datasets, subset_size, batch_size)
 
     logger.info(f"Train Dataset size: {len(datasets):,}")
 
-    loader = DataLoader(datasets, batch_sampler=batch_sampler)
+    loader = DataLoader(datasets, batch_size=batch_size)
 
     sequence_length = max(d.sequence_length for d in dataset_coll)
     logger.info(f"Max sequence length: {sequence_length:,}")
@@ -149,7 +149,7 @@ class CausalTransformer(nn.Module):
         self.embedding = EmbeddingProjectionModel(vocab_size, hidden_dim)
         decoder_layer = nn.TransformerDecoderLayer(d_model=hidden_dim, nhead=4)
         self.transformer = nn.TransformerDecoder(decoder_layer, num_layers=num_layers)
-        self.output_head = nn.Linear(hidden_dim, 1)
+        self.output_head = nn.Linear(hidden_dim, 2)
         self.sequence_length = seq_length
         self.spec_emb_dim = sp_emb_dim
 
@@ -181,7 +181,7 @@ class CausalTransformer(nn.Module):
                 out = self(x, padding_mask)
                 optimizer.zero_grad()
                 # loss = criterion(out, y)
-                loss = criterion(out[:, 0].unsqueeze(-1), y)
+                loss = criterion(out[:, :, 0], y)
                 total_loss += loss
                 count += 1
                 loss.backward()
@@ -197,6 +197,7 @@ class CausalTransformer(nn.Module):
             )
 
 
+"""
 def test_model(model, sequence_length, vocab_size, sp_emb_dim):
     model.eval()
 
@@ -293,6 +294,7 @@ def test_model(model, sequence_length, vocab_size, sp_emb_dim):
         )
 
     f.close()
+"""
 
 
 def main(num_epochs, batch_size):
@@ -325,5 +327,5 @@ def main(num_epochs, batch_size):
 
 if __name__ == "__main__":
     num_epochs = int(sys.argv[1])
-    main(num_epochs=num_epochs, batch_size=1024)
+    main(num_epochs=num_epochs, batch_size=256)
     logger.info("Done!")

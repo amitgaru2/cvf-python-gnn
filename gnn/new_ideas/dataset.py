@@ -263,8 +263,9 @@ class CVFConfigForTransformerMDataset(Dataset):
         )
         self.data = pd.read_csv(os.path.join(dataset_dir, pt_dataset_file))
         self.cr_data = pd.read_csv(os.path.join(dataset_dir, config_rank_dataset))
-        self.sp_emb_dim = 2
-        self.sequence_length = self.sp_emb_dim + 1 + len(self.data.loc[0])
+        self.sp_emb_dim = 1
+        self.prepend_size = self.sp_emb_dim
+        self.sequence_length = self.prepend_size + len(self.data.loc[0])
         self.D = D
         self.A = torch.FloatTensor(get_A_of_graph(graph_path))
 
@@ -290,33 +291,30 @@ class CVFConfigForTransformerMDataset(Dataset):
         result = torch.cat(
             [
                 self.spectral_embedding,
-                torch.full((1, result.shape[1]), self.eo_sp_dim_full_value).to(
-                    self.device
-                ),
                 result,
             ]
         )  # add the graph info here at indx 0
         padding_mask = torch.cat(
             [
-                torch.Tensor([False for _ in range(self.sp_emb_dim + 1)]),
+                torch.Tensor([False for _ in range(self.prepend_size)]),
                 na_mask,
             ]
         ).to(
             self.device
         )  # padding  mask for the graph info at indx 0
-        # labels = [
-        #     -1 for _ in range(self.sp_emb_dim + 1)
-        # ]  # spectral dimension + separator
-        # labels.extend(
-        #     [self.cr_data.loc[int(i)]["rank"] if not pd.isna(i) else -1 for i in row]
-        # )
-        label = torch.FloatTensor([self.cr_data.loc[row[0]]["rank"]]).to(self.device)
+        labels = [
+            -1 for _ in range(self.prepend_size)
+        ]  # spectral dimension + separator
+        labels.extend(
+            [self.cr_data.loc[int(i)]["rank"] if not pd.isna(i) else -1 for i in row]
+        )
+        # label = torch.FloatTensor([self.cr_data.loc[row[0]]["rank"]]).to(self.device)
         return (
             (
                 result,
                 padding_mask,
             ),
-            label,
+            torch.FloatTensor(labels).to(self.device),
         )
 
 
