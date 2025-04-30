@@ -216,6 +216,7 @@ def main(program, graph_names, H, batch_size, epochs, num_layers):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
+    parser.add_argument("--program", type=str, default="coloring")
     parser.add_argument("--epochs", type=int, default=10)
     parser.add_argument("--batch-size", type=int, default=64)
     parser.add_argument("--hidden-size", type=int, default=16)
@@ -237,7 +238,7 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
     main(
-        program="coloring",
+        program=args.program,
         epochs=args.epochs,
         batch_size=args.batch_size,
         H=args.hidden_size,
