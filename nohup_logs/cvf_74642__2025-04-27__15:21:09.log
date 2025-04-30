@@ -1,2 +1,30 @@
 Starting for graph_random_regular_graph_n9_d4.
 Total configs: 1,953,125.
+Done CVF Analysis for 1,953,125.
+Done ML CVF Analysis!
+Traceback (most recent call last):
+  File "/home/agaru/research/cvf-python-gnn/gnn/cvf_analysis.py", line 186, in <module>
+  File "/home/agaru/research/cvf-python-gnn/gnn/cvf_analysis.py", line 178, in main
+    
+  File "/home/agaru/research/cvf-python-gnn/gnn/cvf_analysis.py", line 34, in wrapper
+    result = func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/agaru/research/cvf-python-gnn/gnn/cvf_analysis.py", line 143, in get_fa_results
+    f_grp_by_re, ml_grp_by_re, on="rank effect", how="outer"
+              ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/agaru/anaconda3/envs/cvf/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1026, in read_csv
+    return _read(filepath_or_buffer, kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/agaru/anaconda3/envs/cvf/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 620, in _read
+    parser = TextFileReader(filepath_or_buffer, **kwds)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/agaru/anaconda3/envs/cvf/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1620, in __init__
+    self._engine = self._make_engine(f, self.engine)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/agaru/anaconda3/envs/cvf/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1880, in _make_engine
+    self.handles = get_handle(
+                   ^^^^^^^^^^^
+  File "/home/agaru/anaconda3/envs/cvf/lib/python3.12/site-packages/pandas/io/common.py", line 873, in get_handle
+    handle = open(
+             ^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/agaru/research/cvf-python-gnn/cvf-analysis/v2/results/coloring/rank_effects_avg__graph_random_regular_graph_n9_d4.csv'
