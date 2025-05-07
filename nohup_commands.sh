@@ -70,9 +70,9 @@ set -e
 cd gnn
 
 # # graphs=("star_graph_n7" "graph_powerlaw_cluster_graph_n7" "graph_random_regular_graph_n7_d4" "star_graph_n13" "graph_powerlaw_cluster_graph_n8" "graph_random_regular_graph_n8_d4" "star_graph_n15" "graph_powerlaw_cluster_graph_n9")
-graphs=("star_graph_n7" "graph_powerlaw_cluster_graph_n5" "graph_powerlaw_cluster_graph_n7" "graph_powerlaw_cluster_graph_n8" "graph_random_regular_graph_n7_d4")
+graphs=("star_graph_n7" "graph_powerlaw_cluster_graph_n7" "graph_random_regular_graph_n7_d4")
 # # # graphs=("star_graph_n7")
-# joined_graphs_args="${graphs[@]}"
+joined_graphs_args="${graphs[@]}"
 
 epochs=50
 batch_size=64
