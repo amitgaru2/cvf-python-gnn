@@ -1,0 +1,91 @@
+Starting with 50 epochs and 256 batch size.
+Total configs: 2,187.
+Train Datasets: ['implicit_graph_n7']
+Train Dataset size: 77,076,249
+Max sequence length: 45
+Spectral embedding dim: 1
+CausalTransformer(
+  (embedding): EmbeddingProjectionModel(
+    (projection): Linear(in_features=7, out_features=8, bias=True)
+  )
+  (transformer): TransformerDecoder(
+    (layers): ModuleList(
+      (0-1): 2 x TransformerDecoderLayer(
+        (self_attn): MultiheadAttention(
+          (out_proj): NonDynamicallyQuantizableLinear(in_features=8, out_features=8, bias=True)
+        )
+        (multihead_attn): MultiheadAttention(
+          (out_proj): NonDynamicallyQuantizableLinear(in_features=8, out_features=8, bias=True)
+        )
+        (linear1): Linear(in_features=8, out_features=2048, bias=True)
+        (dropout): Dropout(p=0.1, inplace=False)
+        (linear2): Linear(in_features=2048, out_features=8, bias=True)
+        (norm1): LayerNorm((8,), eps=1e-05, elementwise_affine=True)
+        (norm2): LayerNorm((8,), eps=1e-05, elementwise_affine=True)
+        (norm3): LayerNorm((8,), eps=1e-05, elementwise_affine=True)
+        (dropout1): Dropout(p=0.1, inplace=False)
+        (dropout2): Dropout(p=0.1, inplace=False)
+        (dropout3): Dropout(p=0.1, inplace=False)
+      )
+    )
+  )
+  (output_head): Linear(in_features=8, out_features=1, bias=True)
+)
+Total parameters: 70,969
+Training set | Epoch 1 | MSE Loss: 202.87 | Time taken: 46.3093s
+Training set | Epoch 2 | MSE Loss: 69.0483 | Time taken: 45.9171s
+Training set | Epoch 3 | MSE Loss: 18.5108 | Time taken: 45.8218s
+Training set | Epoch 4 | MSE Loss: 9.8578 | Time taken: 45.8996s
+Training set | Epoch 5 | MSE Loss: 8.3558 | Time taken: 45.849s
+Training set | Epoch 6 | MSE Loss: 8.0319 | Time taken: 45.9718s
+Training set | Epoch 7 | MSE Loss: 7.9005 | Time taken: 45.8303s
+Training set | Epoch 8 | MSE Loss: 7.8102 | Time taken: 45.9074s
+Training set | Epoch 9 | MSE Loss: 7.8308 | Time taken: 45.8313s
+Training set | Epoch 10 | MSE Loss: 7.7525 | Time taken: 45.913s
+Training set | Epoch 11 | MSE Loss: 7.7757 | Time taken: 45.8268s
+Training set | Epoch 12 | MSE Loss: 7.7792 | Time taken: 45.9034s
+Training set | Epoch 13 | MSE Loss: 7.7079 | Time taken: 45.8249s
+Training set | Epoch 14 | MSE Loss: 7.7384 | Time taken: 45.8787s
+Training set | Epoch 15 | MSE Loss: 7.6727 | Time taken: 45.8861s
+Training set | Epoch 16 | MSE Loss: 7.7054 | Time taken: 45.8686s
+Training set | Epoch 17 | MSE Loss: 7.6369 | Time taken: 45.8063s
+Training set | Epoch 18 | MSE Loss: 7.6893 | Time taken: 45.814s
+Training set | Epoch 19 | MSE Loss: 7.7448 | Time taken: 45.8092s
+Training set | Epoch 20 | MSE Loss: 7.7005 | Time taken: 46.067s
+Training set | Epoch 21 | MSE Loss: 7.6966 | Time taken: 46.0337s
+Training set | Epoch 22 | MSE Loss: 7.6595 | Time taken: 46.1609s
+Training set | Epoch 23 | MSE Loss: 7.6747 | Time taken: 46.0798s
+Training set | Epoch 24 | MSE Loss: 7.6358 | Time taken: 46.161s
+Training set | Epoch 25 | MSE Loss: 7.6393 | Time taken: 46.0638s
+Training set | Epoch 26 | MSE Loss: 7.6993 | Time taken: 45.9895s
+Training set | Epoch 27 | MSE Loss: 7.7034 | Time taken: 45.5387s
+Training set | Epoch 28 | MSE Loss: 7.651 | Time taken: 45.3665s
+Training set | Epoch 29 | MSE Loss: 7.6723 | Time taken: 45.4533s
+Training set | Epoch 30 | MSE Loss: 7.6551 | Time taken: 45.3795s
+Training set | Epoch 31 | MSE Loss: 7.6835 | Time taken: 45.5056s
+Training set | Epoch 32 | MSE Loss: 7.6443 | Time taken: 45.385s
+Training set | Epoch 33 | MSE Loss: 7.6285 | Time taken: 45.4415s
+Training set | Epoch 34 | MSE Loss: 7.669 | Time taken: 45.3292s
+Training set | Epoch 35 | MSE Loss: 7.6779 | Time taken: 45.0815s
+Training set | Epoch 36 | MSE Loss: 7.6765 | Time taken: 45.0186s
+Training set | Epoch 37 | MSE Loss: 7.6221 | Time taken: 45.046s
+Training set | Epoch 38 | MSE Loss: 7.6643 | Time taken: 45.0099s
+Training set | Epoch 39 | MSE Loss: 7.6517 | Time taken: 45.05s
+Training set | Epoch 40 | MSE Loss: 7.6844 | Time taken: 45.0215s
+Training set | Epoch 41 | MSE Loss: 7.6569 | Time taken: 45.0428s
+Training set | Epoch 42 | MSE Loss: 7.6455 | Time taken: 44.9435s
+Training set | Epoch 43 | MSE Loss: 7.5995 | Time taken: 44.994s
+Training set | Epoch 44 | MSE Loss: 7.6601 | Time taken: 44.9336s
+Training set | Epoch 45 | MSE Loss: 7.6763 | Time taken: 44.9702s
+Training set | Epoch 46 | MSE Loss: 7.6602 | Time taken: 44.9679s
+Training set | Epoch 47 | MSE Loss: 7.6555 | Time taken: 45.0288s
+Training set | Epoch 48 | MSE Loss: 7.6605 | Time taken: 44.9576s
+Training set | Epoch 49 | MSE Loss: 7.6473 | Time taken: 45.0003s
+Training set | Epoch 50 | MSE Loss: 7.6247 | Time taken: 45.0082s
+
+
+End Training | Total training time taken 2277.9431s
+
+
+Saving model trained_models/transformer_trained_at_2025_04_30_15_19.pt
+Done!
