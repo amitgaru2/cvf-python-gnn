@@ -33,26 +33,29 @@ class GraphColoringCVFAnalysisV2(CVFAnalysisV2):
 
     def _get_program_transitions_as_configs(self, start_state):
         for position, color in enumerate(start_state):
+            flag = False
             # check if node already has different color among the neighbors => If yes => no need to perturb that node's value
             neighbor_colors = set(start_state[i] for i in self.graph[position])
-            if color not in neighbor_colors:  # is different color
-                continue
-            transition_color = self._find_min_possible_color(neighbor_colors)
-            if color != transition_color:
-                self.global_pt[position] += 1
-                perturb_state = tuple(
-                    [
-                        *start_state[:position],
-                        transition_color,
-                        *start_state[position + 1 :],
-                    ]
-                )
+            if color in neighbor_colors:  # is different color
+                transition_color = self._find_min_possible_color(neighbor_colors)
+                if color != transition_color:
+                    self.global_pt[position] += 1
+                    perturb_state = tuple(
+                        [
+                            *start_state[:position],
+                            transition_color,
+                            *start_state[position + 1 :],
+                        ]
+                    )
+                    flag = True
+                    yield perturb_state
 
-                yield perturb_state
+            if not flag:
+                yield None
 
     def _get_program_transitions(self, start_state: tuple):
         program_transitions = []
-        for perturb_state in self._get_program_transitions_as_configs(self):
+        for perturb_state in self._get_program_transitions_as_configs(start_state):
             # indx = self.config_to_indx(start_state)
             # for position, color in enumerate(start_state):
             # # check if node already has different color among the neighbors => If yes => no need to perturb that node's value
@@ -69,8 +72,10 @@ class GraphColoringCVFAnalysisV2(CVFAnalysisV2):
             #             *start_state[position + 1 :],
             #         ]
             #     )
-
-            program_transitions.append(self.config_to_indx(perturb_state))
+            if perturb_state is not None:
+                program_transitions.append(self.config_to_indx(perturb_state))
+            else:
+                program_transitions.append(perturb_state)
             # may be yield can save memory
 
         return program_transitions

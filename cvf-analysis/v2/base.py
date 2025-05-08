@@ -219,6 +219,8 @@ class CVFAnalysisV2:
         pt_node = ProgramTransitionTreeNode(indx)
         for child_indx in self._get_program_transitions(config):
             successors.append(child_indx)
+            if child_indx is None:
+                continue
             child_node = ProgramTransitionTreeNode(child_indx)
             pt_node.add_child(child_node)
             child_node.add_parent(pt_node)
@@ -356,7 +358,7 @@ class CVFAnalysisV2:
                     "rank": math.ceil(v[0] / v[1]),
                     "succ": (
                         [
-                            list(self.indx_to_config(i))
+                            list(self.indx_to_config(i)) if i is not None else i
                             for i in self.config_successors[k]
                         ]
                         if k in self.config_successors
