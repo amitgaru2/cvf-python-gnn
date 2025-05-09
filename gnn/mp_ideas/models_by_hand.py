@@ -44,9 +44,8 @@ if __name__ == "__main__":
 
     x = torch.randn((B, N, D))  # B x D x N
     A = torch.randint(2, (B, N, N))  # adjacency matrix ( B x N x N )
+    print("A", A)
     gcn = GCNConvByHand(D, O, bias=True)
-    print("x", x.shape)
-    print("A", A.shape)
     result = gcn(x, A)
     print(x)
     print(result)
