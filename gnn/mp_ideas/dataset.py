@@ -56,6 +56,9 @@ class MessagePassingDataset(Dataset):
         self.data = pd.read_csv(os.path.join(dataset_dir, config_rank_dataset))
         self.D = D
         self.A = torch.FloatTensor(get_A_of_graph(graph_path))
+        self.edge_index = (
+            self.A.nonzero(as_tuple=False).t().contiguous().to(self.device)
+        )
 
     def __len__(self):
         return len(self.data)
@@ -65,12 +68,16 @@ class MessagePassingDataset(Dataset):
         config = [i for i in ast.literal_eval(row["config"])]
         succs = ast.literal_eval(row["succ"])
         if succs:
-            succs = torch.FloatTensor(
-                [i if i is not None else torch.full((len(config),), -1) for i in succs]
-            )
+            temp = []
+            for s in succs:
+                if s is None:
+                    temp.append([-1 for _ in range(len(config))])
+                else:
+                    temp.append(s)
+            succs = torch.FloatTensor(temp)
         else:
             succs = torch.full((len(config), len(config)), -1, dtype=torch.float32)
-        config = torch.LongTensor([config]).T
+        config = torch.FloatTensor([config]).T
         labels = torch.FloatTensor([row["rank"]]).to(self.device)
         return config.to(self.device), succs.to(self.device), labels
 
@@ -80,7 +87,13 @@ if __name__ == "__main__":
     dataset = MessagePassingDataset(
         device, "tiny_graph_test", "tiny_graph_test_config_rank_dataset.csv", 3
     )
-    loader = DataLoader(dataset, batch_size=1, shuffle=True)
+    dataset = MessagePassingDataset(
+        device,
+        "graph_random_regular_graph_n7_d4",
+        "graph_random_regular_graph_n7_d4_config_rank_dataset.csv",
+        D=7,
+    )
+    loader = DataLoader(dataset, batch_size=10, shuffle=True)
 
     for batch in loader:
         print(batch[0])
