@@ -50,8 +50,8 @@ class GraphColoringCVFAnalysisV2(CVFAnalysisV2):
                     flag = True
                     yield perturb_state
 
-            if not flag:
-                yield None
+            # if not flag:
+            #     yield None
 
     def _get_program_transitions(self, start_state: tuple):
         program_transitions = []
@@ -74,8 +74,8 @@ class GraphColoringCVFAnalysisV2(CVFAnalysisV2):
             #     )
             if perturb_state is not None:
                 program_transitions.append(self.config_to_indx(perturb_state))
-            else:
-                program_transitions.append(perturb_state)
+            # else:
+            #     program_transitions.append(perturb_state)
             # may be yield can save memory
 
         return program_transitions

@@ -1,0 +1,30 @@
+Timestamp: 1747063811.070051 | Training with Graphs: implicit_graph_n5, implicit_graph_n6, implicit_graph_n7 | Batch size: 64 | Epochs: 50 | Hidden size: 32 | Num layers: 1.
+
+
+Traceback (most recent call last):
+  File "/home/agaru/research/cvf-python-gnn/gnn/lstm_scratch.py", line 240, in <module>
+    main(
+  File "/home/agaru/research/cvf-python-gnn/gnn/lstm_scratch.py", line 172, in main
+    dataset_coll = get_dataset_coll(program, *graph_names)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/agaru/research/cvf-python-gnn/gnn/lstm_scratch.py", line 99, in get_dataset_coll
+    CVFConfigForGCNWSuccLSTMDataset(
+  File "/home/agaru/research/cvf-python-gnn/gnn/helpers.py", line 323, in __init__
+    self.data = pd.read_csv(os.path.join(dataset_dir, dataset_file))
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/agaru/anaconda3/envs/cvf/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1026, in read_csv
+    return _read(filepath_or_buffer, kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/agaru/anaconda3/envs/cvf/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 620, in _read
+    parser = TextFileReader(filepath_or_buffer, **kwds)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/agaru/anaconda3/envs/cvf/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1620, in __init__
+    self._engine = self._make_engine(f, self.engine)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/agaru/anaconda3/envs/cvf/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1880, in _make_engine
+    self.handles = get_handle(
+                   ^^^^^^^^^^^
+  File "/home/agaru/anaconda3/envs/cvf/lib/python3.12/site-packages/pandas/io/common.py", line 873, in get_handle
+    handle = open(
+             ^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/agaru/research/cvf-python-gnn/cvf-analysis/v2/datasets/dijkstra_token_ring/implicit_graph_n5_config_rank_dataset.csv'

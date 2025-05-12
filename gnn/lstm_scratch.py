@@ -97,9 +97,7 @@ def get_dataset_coll(program, *graph_names):
     for graph_name in graph_names:
         dataset_coll.append(
             CVFConfigForGCNWSuccLSTMDataset(
-                device,
-                f"{graph_name}_config_rank_dataset.csv",
-                program=program
+                device, f"{graph_name}_config_rank_dataset.csv", program=program
             )
         )
 
@@ -160,8 +158,9 @@ def test_model(model, test_concat_datasets, save_result=False):
 
 def main(program, graph_names, H, batch_size, epochs, num_layers):
     logger.info(
-        "Timestamp: %s | Training with Graphs: %s | Batch size: %s | Epochs: %s | Hidden size: %s | Num layers: %s.",
+        "Timestamp: %s | Program: %s | Training with Graphs: %s | Batch size: %s | Epochs: %s | Hidden size: %s | Num layers: %s.",
         datetime.datetime.now().timestamp(),
+        program,
         ", ".join(graph_names),
         batch_size,
         epochs,
