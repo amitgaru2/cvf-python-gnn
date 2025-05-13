@@ -192,8 +192,15 @@ class CVFAnalysisV2:
         self.find_successors()
         self.generate_test_dataset_for_ml()
 
-    def _get_program_transitions(self, start_state):
+    def _get_program_transitions_as_configs(self, start_state: Tuple[int]):
         raise NotImplemented
+
+    def _get_program_transitions(self, start_state):
+        program_transitions = []
+        for perturb_state in self._get_program_transitions_as_configs(start_state):
+            if perturb_state is not None:
+                program_transitions.append(self.config_to_indx(perturb_state))
+        return program_transitions
 
     def is_invariant(self, config: Tuple[int]):
         raise NotImplemented
