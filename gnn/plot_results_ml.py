@@ -6,7 +6,7 @@ import matplotlib.lines as mlines
 from itertools import cycle
 from matplotlib import pyplot as plt
 
-model = "lstm_trained_at_2025_04_26_14_01"
+model = "lstm_trained_at_2025_05_12_21_31"
 
 
 plots_dir = "plots"
@@ -24,17 +24,26 @@ MAX_MATCHING_PROGRAM = "maximal_matching"
 
 
 program = COLORING_PROGRAM
+program = DIJKSTRA_PROGRAM
 
+
+# graphs = [
+#     "star_graph_n7",
+#     "graph_powerlaw_cluster_graph_n7",
+#     "graph_random_regular_graph_n7_d4",
+#     "star_graph_n13",
+#     "graph_powerlaw_cluster_graph_n8",
+#     "graph_powerlaw_cluster_graph_n9",
+#     "graph_random_regular_graph_n8_d4",
+#     "graph_random_regular_graph_n9_d4",
+# ]
 
 graphs = [
-    "star_graph_n7",
-    "graph_powerlaw_cluster_graph_n7",
-    "graph_random_regular_graph_n7_d4",
-    "star_graph_n13",
-    "graph_powerlaw_cluster_graph_n8",
-    "graph_powerlaw_cluster_graph_n9",
-    "graph_random_regular_graph_n8_d4",
-    "graph_random_regular_graph_n9_d4",
+    "implicit_graph_n8",
+    "implicit_graph_n9",
+    "implicit_graph_n10",
+    "implicit_graph_n11",
+    "implicit_graph_n12",
 ]
 
 
