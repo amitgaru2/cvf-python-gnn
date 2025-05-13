@@ -1,4 +1,5 @@
 import os
+import sys
 import pandas as pd
 import seaborn as sns
 import matplotlib.lines as mlines
@@ -6,8 +7,8 @@ import matplotlib.lines as mlines
 from itertools import cycle
 from matplotlib import pyplot as plt
 
-model = "lstm_trained_at_2025_05_13_10_34"
-
+model = sys.argv[1]
+program = sys.argv[2]
 
 plots_dir = "plots"
 
@@ -22,21 +23,26 @@ COLORING_PROGRAM = "coloring"
 DIJKSTRA_PROGRAM = "dijkstra_token_ring"
 MAX_MATCHING_PROGRAM = "maximal_matching"
 
+TITLE_PROGRAM_MAP = {
+    COLORING_PROGRAM: "Graph Coloring",
+    DIJKSTRA_PROGRAM: "Dijkstra Token Ring",
+    MAX_MATCHING_PROGRAM: "Maximal Matching",
+}
 
-program = COLORING_PROGRAM
-program = DIJKSTRA_PROGRAM
-program = MAX_MATCHING_PROGRAM
+# program = COLORING_PROGRAM
+# program = DIJKSTRA_PROGRAM
+# program = MAX_MATCHING_PROGRAM
 
 
 graphs = [
     "star_graph_n7",
-    #     "graph_powerlaw_cluster_graph_n7",
-    #     "graph_random_regular_graph_n7_d4",
-    #     "star_graph_n13",
-    #     "graph_powerlaw_cluster_graph_n8",
-    #     "graph_powerlaw_cluster_graph_n9",
-    #     "graph_random_regular_graph_n8_d4",
-    #     "graph_random_regular_graph_n9_d4",
+    "graph_powerlaw_cluster_graph_n7",
+    "graph_random_regular_graph_n7_d4",
+    "star_graph_n13",
+    "graph_powerlaw_cluster_graph_n8",
+    "graph_powerlaw_cluster_graph_n9",
+    "graph_random_regular_graph_n8_d4",
+    "graph_random_regular_graph_n9_d4",
 ]
 
 # graphs = [
@@ -53,7 +59,7 @@ result_type = "cvf"
 
 def get_title():
     result = " ".join(graph_name.split("_")).title()
-    return result
+    return f"{TITLE_PROGRAM_MAP[program]} - {result}"
 
 
 def main(graph_name):

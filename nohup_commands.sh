@@ -106,9 +106,9 @@ cd gnn
 # python cvf_analysis.py implicit_graph_n12
 # python cvf_analysis.py implicit_graph_n13
 # python cvf_analysis.py implicit_graph_n14
-python cvf_analysis.py lstm_trained_at_2025_05_12_21_31 dijkstra implicit_graph_n12
-python cvf_analysis.py lstm_trained_at_2025_05_12_21_31 dijkstra implicit_graph_n13
-python cvf_analysis.py lstm_trained_at_2025_05_12_21_31 dijkstra implicit_graph_n14
+# python cvf_analysis.py lstm_trained_at_2025_05_12_21_31 dijkstra implicit_graph_n12
+# python cvf_analysis.py lstm_trained_at_2025_05_12_21_31 dijkstra implicit_graph_n13
+# python cvf_analysis.py lstm_trained_at_2025_05_12_21_31 dijkstra implicit_graph_n14
 # python cvf_analysis.py star_graph_n13
 # python cvf_analysis.py lstm_trained_at_2025_05_13_10_34 maximal_matching star_graph_n7
 # python cvf_analysis.py lstm_trained_at_2025_05_13_10_34 maximal_matching graph_powerlaw_cluster_graph_n7
