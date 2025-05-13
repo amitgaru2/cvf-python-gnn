@@ -46,10 +46,12 @@ TITLE_PROGRAM_MAP = {
 # ]
 
 graphs = [
-    "implicit_graph_n8",
-    "implicit_graph_n9",
-    "implicit_graph_n10",
-    "implicit_graph_n11",
+    "implicit_graph_n6",
+    "implicit_graph_n7",
+    # "implicit_graph_n8",
+    # "implicit_graph_n9",
+    # "implicit_graph_n10",
+    # "implicit_graph_n11",
     # "implicit_graph_n12",
 ]
 
