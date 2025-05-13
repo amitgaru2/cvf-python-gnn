@@ -16,10 +16,12 @@ from lstm_scratch import SimpleLSTM
 from helpers import CVFConfigForAnalysisDataset
 
 
-model_name = "lstm_trained_at_2025_05_12_21_31"
+# model_name = "lstm_trained_at_2025_05_12_21_31"
 
-program = "dijkstra"
-# program = "maximal_matching"
+model_name = sys.argv[1]
+
+# program = "dijkstra"
+program = sys.argv[2]
 
 # graph_name = "graph_random_regular_graph_n8_d4"
 
@@ -184,5 +186,5 @@ def main(graph_name, has_fa_analysis=True):
 
 
 if __name__ == "__main__":
-    graph_name = sys.argv[1]
+    graph_name = sys.argv[3]
     main(graph_name)
