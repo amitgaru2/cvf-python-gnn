@@ -155,7 +155,7 @@ for graph_name in graph_names:
     ax.xaxis.label.set_size(fontsize)
     ax.yaxis.label.set_size(fontsize)
     file_name = f"rank_effect_by_node__{analysis_type}__{program}__{graph_name}"
-  
+
     plt.rc("font", size=fontsize)
     plt.legend(fontsize=fontsize * 0.9)  # using a size in points
     plt.savefig(
