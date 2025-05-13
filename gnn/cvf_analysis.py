@@ -16,10 +16,10 @@ from lstm_scratch import SimpleLSTM
 from helpers import CVFConfigForAnalysisDataset
 
 
-model_name = "lstm_trained_at_2025_05_13_10_34"
+model_name = "lstm_trained_at_2025_05_12_21_31"
 
 program = "dijkstra"
-program = "maximal_matching"
+# program = "maximal_matching"
 
 # graph_name = "graph_random_regular_graph_n8_d4"
 
@@ -138,6 +138,10 @@ def get_fa_results(graph_name, ml_grp_by_re, ml_grp_by_node_re):
 
     results_file = f"rank_effects_avg__{graph_name}.csv"
     file_path = os.path.join(results_dir, results_file)
+    if not os.path.exists(file_path):
+        logger.warning("FA results not found for %s.", graph_name)
+        return
+
     f_grp_by_re = pd.read_csv(file_path)
     f_grp_by_re = f_grp_by_re.drop(f_grp_by_re.columns[0], axis=1)
     f_grp_by_re.rename(columns={"count": "fa_count"}, inplace=True)
