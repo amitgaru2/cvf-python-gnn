@@ -15,6 +15,8 @@ sys.path.append(os.path.join(os.getenv("CVF_PROJECT_DIR", ""), "cvf-analysis", "
 
 from cvf_fa_helpers import get_graph
 from graph_coloring import GraphColoringCVFAnalysisV2
+from dijkstra import DijkstraTokenRingCVFAnalysisV2
+from maximal_matching import MaximalMatchingCVFAnalysisV2
 
 
 class CVFConfigDataset(Dataset):
@@ -550,7 +552,12 @@ class CVFConfigForAnalysisDataset(Dataset):
         )
         graph_path = os.path.join(graphs_dir, f"{graph_name}.txt")
         graph = get_graph(graph_path)
-        self.cvf_analysis = GraphColoringCVFAnalysisV2(
+        program_class_map = {
+            "coloring": GraphColoringCVFAnalysisV2,
+            "dijkstra": DijkstraTokenRingCVFAnalysisV2,
+            "maximal_matching": MaximalMatchingCVFAnalysisV2,
+        }
+        self.cvf_analysis = program_class_map[program](
             graph_name,
             graph,
             generate_data_ml=False,

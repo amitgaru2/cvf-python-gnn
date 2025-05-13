@@ -16,9 +16,10 @@ from lstm_scratch import SimpleLSTM
 from helpers import CVFConfigForAnalysisDataset
 
 
-model_name = "lstm_trained_at_2025_05_12_21_31"
+model_name = "lstm_trained_at_2025_05_13_10_34"
 
 program = "dijkstra"
+program = "maximal_matching"
 
 # graph_name = "graph_random_regular_graph_n8_d4"
 
@@ -78,7 +79,7 @@ def group_data(df, grp_by: list):
 def ml_cvf_analysis():
     model = get_model()
 
-    dataset = CVFConfigForAnalysisDataset(device, graph_name)
+    dataset = CVFConfigForAnalysisDataset(device, graph_name, program=program)
 
     result_df = pd.DataFrame(
         {"node": pd.Series(dtype="int"), "rank effect": pd.Series(dtype="float")}
