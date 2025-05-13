@@ -102,10 +102,10 @@ cd gnn
 # python cvf_analysis.py implicit_graph_n8
 # python cvf_analysis.py implicit_graph_n9
 # python cvf_analysis.py implicit_graph_n10
-python cvf_analysis.py implicit_graph_n11
-python cvf_analysis.py implicit_graph_n12
-python cvf_analysis.py implicit_graph_n13
-# python cvf_analysis.py implicit_graph_n14
+# python cvf_analysis.py implicit_graph_n11
+# python cvf_analysis.py implicit_graph_n12
+# python cvf_analysis.py implicit_graph_n13
+python cvf_analysis.py implicit_graph_n14
 # python cvf_analysis.py star_graph_n13
 # python cvf_analysis.py graph_powerlaw_cluster_graph_n7
 # python cvf_analysis.py graph_powerlaw_cluster_graph_n8
