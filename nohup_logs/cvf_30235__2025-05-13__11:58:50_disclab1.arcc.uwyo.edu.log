@@ -1,2 +1,13 @@
 Starting for implicit_graph_n11.
 Total configs: 177,147.
+Done ML CVF Analysis!
+Complete for implicit_graph_n11.
+
+=== Runtime Report ===
+get_model: 0.179413s
+get_perturbed_states: 0.167767s
+get_rank: 77.868128s
+group_data: 0.000227s
+ml_cvf_analysis: 1362.634019s
+get_fa_results: 0.017994s
+./nohup_commands.sh: line 106: 1: command not found
