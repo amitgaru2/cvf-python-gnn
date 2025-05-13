@@ -106,7 +106,9 @@ cd gnn
 # python cvf_analysis.py implicit_graph_n12
 # python cvf_analysis.py implicit_graph_n13
 # python cvf_analysis.py implicit_graph_n14
-# python cvf_analysis.py lstm_trained_at_2025_05_12_21_31 dijkstra implicit_graph_n12
+# python cvf_analysis.py lstm_trained_at_2025_05_12_21_31 dijkstra implicit_graph_n5
+python cvf_analysis.py lstm_trained_at_2025_05_12_21_31 dijkstra implicit_graph_n6
+python cvf_analysis.py lstm_trained_at_2025_05_12_21_31 dijkstra implicit_graph_n7
 # python cvf_analysis.py lstm_trained_at_2025_05_12_21_31 dijkstra implicit_graph_n13
 # python cvf_analysis.py lstm_trained_at_2025_05_12_21_31 dijkstra implicit_graph_n14
 # python cvf_analysis.py star_graph_n13

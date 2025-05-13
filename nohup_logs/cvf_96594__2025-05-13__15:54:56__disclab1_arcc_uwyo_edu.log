@@ -1,0 +1,12 @@
+Starting for implicit_graph_n6.
+Total configs: 729.
+Done ML CVF Analysis!
+Complete for implicit_graph_n6.
+
+=== Runtime Report ===
+get_model: 0.162828s
+get_perturbed_states: 0.000540s
+get_rank: 0.436981s
+group_data: 0.000177s
+ml_cvf_analysis: 2.981124s
+get_fa_results: 0.010370s
