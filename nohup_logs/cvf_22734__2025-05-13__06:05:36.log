@@ -1,0 +1,50 @@
+Starting for implicit_graph_n11.
+Total configs: 177,147.
+Done ML CVF Analysis!
+Complete for implicit_graph_n11.
+
+=== Runtime Report ===
+get_model: 0.182169s
+get_perturbed_states: 0.150908s
+get_rank: 77.923511s
+group_data: 0.000196s
+ml_cvf_analysis: 1401.349367s
+get_fa_results: 0.020333s
+Starting for implicit_graph_n12.
+Total configs: 531,441.
+Done ML CVF Analysis!
+Traceback (most recent call last):
+  File "/home/agaru/research/cvf-python-gnn/gnn/cvf_analysis.py", line 183, in <module>
+    main(graph_name)
+    ~~~~^^^^^^^^^^^^
+  File "/home/agaru/research/cvf-python-gnn/gnn/cvf_analysis.py", line 175, in main
+    get_fa_results(graph_name, ml_grp_by_re, ml_grp_by_node_re)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/agaru/research/cvf-python-gnn/gnn/cvf_analysis.py", line 36, in wrapper
+    result = func(*args, **kwargs)
+  File "/home/agaru/research/cvf-python-gnn/gnn/cvf_analysis.py", line 140, in get_fa_results
+    f_grp_by_re = pd.read_csv(file_path)
+  File "/home/agaru/.conda/envs/cvf/lib/python3.13/site-packages/pandas/io/parsers/readers.py", line 1026, in read_csv
+    return _read(filepath_or_buffer, kwds)
+  File "/home/agaru/.conda/envs/cvf/lib/python3.13/site-packages/pandas/io/parsers/readers.py", line 620, in _read
+    parser = TextFileReader(filepath_or_buffer, **kwds)
+  File "/home/agaru/.conda/envs/cvf/lib/python3.13/site-packages/pandas/io/parsers/readers.py", line 1620, in __init__
+    self._engine = self._make_engine(f, self.engine)
+                   ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/home/agaru/.conda/envs/cvf/lib/python3.13/site-packages/pandas/io/parsers/readers.py", line 1880, in _make_engine
+    self.handles = get_handle(
+                   ~~~~~~~~~~^
+        f,
+        ^^
+    ...<6 lines>...
+        storage_options=self.options.get("storage_options", None),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/agaru/.conda/envs/cvf/lib/python3.13/site-packages/pandas/io/common.py", line 873, in get_handle
+    handle = open(
+        handle,
+    ...<3 lines>...
+        newline="",
+    )
+FileNotFoundError: [Errno 2] No such file or directory: '/home/agaru/research/cvf-python-gnn/cvf-analysis/v2/results/dijkstra/rank_effects_avg__implicit_graph_n12.csv'

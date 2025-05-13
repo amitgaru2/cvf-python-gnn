@@ -16,7 +16,9 @@ from lstm_scratch import SimpleLSTM
 from helpers import CVFConfigForAnalysisDataset
 
 
-model_name = "lstm_trained_at_2025_04_26_14_01"
+model_name = "lstm_trained_at_2025_05_12_21_31"
+
+program = "dijkstra"
 
 # graph_name = "graph_random_regular_graph_n8_d4"
 
@@ -130,7 +132,7 @@ def ml_cvf_analysis():
 @track_runtime
 def get_fa_results(graph_name, ml_grp_by_re, ml_grp_by_node_re):
     results_dir = os.path.join(
-        os.getenv("CVF_PROJECT_DIR", ""), "cvf-analysis", "v2", "results", "coloring"
+        os.getenv("CVF_PROJECT_DIR", ""), "cvf-analysis", "v2", "results", program
     )
 
     results_file = f"rank_effects_avg__{graph_name}.csv"

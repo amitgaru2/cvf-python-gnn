@@ -1,0 +1,37 @@
+Starting for implicit_graph_n8.
+Total configs: 6,561.
+Done ML CVF Analysis!
+Complete for implicit_graph_n8.
+
+=== Runtime Report ===
+get_model: 0.180293s
+get_perturbed_states: 0.004784s
+get_rank: 2.666164s
+group_data: 0.000182s
+ml_cvf_analysis: 22.798228s
+get_fa_results: 0.013317s
+Starting for implicit_graph_n9.
+Total configs: 19,683.
+Done ML CVF Analysis!
+Complete for implicit_graph_n9.
+
+=== Runtime Report ===
+get_model: 0.177871s
+get_perturbed_states: 0.014461s
+get_rank: 7.846451s
+group_data: 0.000190s
+ml_cvf_analysis: 81.568463s
+get_fa_results: 0.015517s
+Starting for implicit_graph_n10.
+Total configs: 59,049.
+Done ML CVF Analysis!
+Complete for implicit_graph_n10.
+
+=== Runtime Report ===
+get_model: 0.177768s
+get_perturbed_states: 0.043587s
+get_rank: 24.094524s
+group_data: 0.000212s
+ml_cvf_analysis: 318.990750s
+get_fa_results: 0.017791s
+./nohup_commands.sh: line 105: h_n10: command not found
