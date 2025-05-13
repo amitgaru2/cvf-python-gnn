@@ -124,9 +124,7 @@ class MaximalMatchingCVFAnalysisV2(CVFAnalysisV2):
 
         return False
 
-    def _get_program_transitions(self, start_state):
-        program_transitions = []
-        # print("start state", [self.possible_node_values[i][j] for i, j in enumerate(start_state)])
+    def _get_program_transitions_as_configs(self, start_state):
 
         for position, node_val_indx in enumerate(start_state):
             current_p_value = self.possible_node_values[position][node_val_indx].p
@@ -148,7 +146,7 @@ class MaximalMatchingCVFAnalysisV2(CVFAnalysisV2):
                     ]
                 )
                 if self._is_program_transition(position, start_state, perturb_state):
-                    program_transitions.append(self.config_to_indx(perturb_state))
+                    yield perturb_state
 
             possible_config_m_val = {True, False} - {current_m_value}
             for perturb_m_val in possible_config_m_val:
@@ -163,11 +161,52 @@ class MaximalMatchingCVFAnalysisV2(CVFAnalysisV2):
                     ]
                 )
                 if self._is_program_transition(position, start_state, perturb_state):
-                    # print("pt", [self.possible_node_values[i][j] for i, j in enumerate(perturb_state)])
-                    program_transitions.append(self.config_to_indx(perturb_state))
+                    yield perturb_state
 
-        # print()
-        return program_transitions
+    # def _get_program_transitions(self, start_state):
+    #     program_transitions = []
+    #     # print("start state", [self.possible_node_values[i][j] for i, j in enumerate(start_state)])
+
+    #     for position, node_val_indx in enumerate(start_state):
+    #         current_p_value = self.possible_node_values[position][node_val_indx].p
+    #         current_m_value = self.possible_node_values[position][node_val_indx].m
+
+    #         possible_config_p_val = {
+    #             i.p for i in self.possible_node_values[position]
+    #         } - {current_p_value}
+
+    #         for perturb_p_val in possible_config_p_val:
+    #             perturb_node_val_indx = self.possible_node_values_mapping[position][
+    #                 MaximalMatchingData(perturb_p_val, current_m_value)
+    #             ]
+    #             perturb_state = tuple(
+    #                 [
+    #                     *start_state[:position],
+    #                     perturb_node_val_indx,
+    #                     *start_state[position + 1 :],
+    #                 ]
+    #             )
+    #             if self._is_program_transition(position, start_state, perturb_state):
+    #                 program_transitions.append(self.config_to_indx(perturb_state))
+
+    #         possible_config_m_val = {True, False} - {current_m_value}
+    #         for perturb_m_val in possible_config_m_val:
+    #             perturb_node_val_indx = self.possible_node_values_mapping[position][
+    #                 MaximalMatchingData(current_p_value, perturb_m_val)
+    #             ]
+    #             perturb_state = tuple(
+    #                 [
+    #                     *start_state[:position],
+    #                     perturb_node_val_indx,
+    #                     *start_state[position + 1 :],
+    #                 ]
+    #             )
+    #             if self._is_program_transition(position, start_state, perturb_state):
+    #                 # print("pt", [self.possible_node_values[i][j] for i, j in enumerate(perturb_state)])
+    #                 program_transitions.append(self.config_to_indx(perturb_state))
+
+    #     # print()
+    #     return program_transitions
 
     def _evaluate_perturbed_pr_married(self, position, state):
         if self.possible_node_values[position][state[position]].p is None:
