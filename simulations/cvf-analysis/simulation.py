@@ -316,11 +316,14 @@ class SimulationMixin:
 
         return results
 
-    def store_raw_result(self, result):
+    def store_raw_result(self, result, *simulation_type_args):
+        simulation_type_args_verbose = "args_" + (
+            "_".join(str(i) for i in simulation_type_args) if simulation_type_args else ""
+        )
         file_path = os.path.join(
             "results",
             self.results_dir,
-            f"{self.graph_name}__{self.scheduler}__{self.simulation_type}__{self.no_of_simulations}__{self.me}__{self.fault_interval}__{datetime.datetime.now().strftime('%Y_%m_%d_%H_%M')}__raw.csv",
+            f"{self.graph_name}__{self.scheduler}__{self.simulation_type}_{simulation_type_args_verbose}__{self.no_of_simulations}__{self.me}__{self.fault_interval}__{datetime.datetime.now().strftime('%Y_%m_%d_%H_%M')}__raw.csv",
         )
         f = open(
             file_path,
@@ -329,7 +332,7 @@ class SimulationMixin:
         )  # from the base class
         logger.info("\nSaving result at %s", file_path)
         writer = csv.writer(f)
-        writer.writerow(["Iteration", *self.nodes])
+        writer.writerow(["Iteration", "Steps"])
         for i, v in enumerate(result, 1):
             writer.writerow([i, *v])  # from the base class
 

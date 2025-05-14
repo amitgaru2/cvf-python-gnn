@@ -86,7 +86,7 @@ def main(
         fault_probability=fault_prob, fault_interval=fault_interval
     )
     result = simulation.start_simulation(*simulation_type_args)
-    simulation.store_raw_result(result)
+    simulation.store_raw_result(result, *simulation_type_args)
     # hist, bin_edges = simulation.aggregate_result(result)
     # logger.info("Result %s", result)
     # simulation.store_result(hist, bin_edges)
