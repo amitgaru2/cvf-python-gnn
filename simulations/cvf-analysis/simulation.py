@@ -253,14 +253,13 @@ class SimulationMixin:
         process: process_id where the fault weight is concentrated
         """
         step = 0
-        # last_fault_interval = 0
-        last_fault_interval = random.randint(0, self.fault_interval)
+        last_fault_duration = 0
         while not self.is_invariant(state):  # from the base class
             # faulty_actions = self.inject_fault(state, process)  # might be faulty or not
             faulty_actions = []
-            if last_fault_interval == self.fault_interval:
+            if last_fault_duration + 1 == self.fault_interval:
                 faulty_actions = self.inject_fault_at_node(state, process)
-                last_fault_interval = -1
+                last_fault_duration = -1
 
             if faulty_actions:
                 state = self.execute(state, faulty_actions)
@@ -268,7 +267,9 @@ class SimulationMixin:
                 actions = self.get_actions(state)
                 state = self.execute(state, actions)
 
-            last_fault_interval += 1
+            logger.debug("Next state: %s.", state)
+
+            last_fault_duration += 1
             step += 1
 
         return step

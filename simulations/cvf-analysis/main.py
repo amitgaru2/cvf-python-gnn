@@ -132,6 +132,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.logging:
+        logger.info("Setting logger level to %s.", args.logging)
         logger.setLevel(getattr(logging, args.logging, "INFO"))
 
     for graph_name, graph in start(graphs_dir, args.graph_names):
