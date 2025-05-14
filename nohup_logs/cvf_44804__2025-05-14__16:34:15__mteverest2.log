@@ -1,0 +1,31 @@
+Timestamp: 1747262056.84848 | Program: maximal_matching | Training with Graphs: star_graph_n7 | Batch size: 64 | Epochs: 50 | Hidden size: 32 | Num layers: 1.
+
+
+Train dataset size: 54,476 | Test dataset size: 2,868
+
+
+Model SimpleLSTM(
+  (lstm): GRU(3, 32, batch_first=True)
+  (norm): LayerNorm((32,), eps=1e-05, elementwise_affine=True)
+  (h2o): Linear(in_features=32, out_features=1, bias=True)
+)
+Total parameters: 3,649
+
+
+Training set | Epoch 1 | MSE Loss: 24.3144 | Time taken: 22.4809s
+Training set | Epoch 2 | MSE Loss: 11.3881 | Time taken: 21.9019s
+Training set | Epoch 3 | MSE Loss: 8.7534 | Time taken: 21.5975s
+Training set | Epoch 4 | MSE Loss: 7.8449 | Time taken: 21.5921s
+Training set | Epoch 5 | MSE Loss: 6.9606 | Time taken: 21.3887s
+Training set | Epoch 6 | MSE Loss: 5.9864 | Time taken: 21.1699s
+Training set | Epoch 7 | MSE Loss: 5.7357 | Time taken: 21.0516s
+Training set | Epoch 8 | MSE Loss: 5.0162 | Time taken: 20.9214s
+Training set | Epoch 9 | MSE Loss: 4.5805 | Time taken: 20.6348s
+Training set | Epoch 10 | MSE Loss: 4.4094 | Time taken: 20.5752s
+Training set | Epoch 11 | MSE Loss: 4.5317 | Time taken: 20.3306s
+Training set | Epoch 12 | MSE Loss: 4.0161 | Time taken: 20.2433s
+Training set | Epoch 13 | MSE Loss: 4.2107 | Time taken: 20.0821s
+Training set | Epoch 14 | MSE Loss: 3.891 | Time taken: 19.9375s
+Training set | Epoch 15 | MSE Loss: 3.9807 | Time taken: 19.7749s
+Training set | Epoch 16 | MSE Loss: 3.0253 | Time taken: 19.4935s
+Training set | Epoch 17 | MSE Loss: 2.5554 | Time taken: 19.5355s
