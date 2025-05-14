@@ -24,7 +24,14 @@ graph_names = [
     # "test_graph_11",
     # "test_graph_12",
     # "test_graph_13",
-    "test"
+    # "test",
+    "graph_powerlaw_cluster_graph_n7",
+    "graph_random_regular_graph_n7_d4",
+    # "star_graph_n13",
+    "graph_powerlaw_cluster_graph_n8",
+    "graph_powerlaw_cluster_graph_n9",
+    "graph_random_regular_graph_n8_d4",
+    "graph_random_regular_graph_n9_d4",
 ]
 
 planar = False

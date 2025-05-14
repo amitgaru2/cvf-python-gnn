@@ -39,15 +39,15 @@ graphs = [
     # "star_graph_n15",
     # "graph_powerlaw_cluster_graph_n7",
     # "graph_random_regular_graph_n7_d4",
-    "star_graph_n13",
+    # "star_graph_n13",
     # "graph_powerlaw_cluster_graph_n8",
     # "graph_powerlaw_cluster_graph_n9",
     # "graph_random_regular_graph_n8_d4",
-    # "graph_random_regular_graph_n9_d4",
+    "graph_random_regular_graph_n9_d4",
 ]
 
 
-selected_nodes = [0, 5]
+selected_nodes = [0, 4, 8]
 
 
 result_type = "cvf_by_node"
@@ -67,9 +67,11 @@ def main(graph_name):
     if "fa_count" in df.columns:
         df = df[["rank effect", "node", "ml_count", "fa_count"]]
         df = df.rename(columns={"ml_count": "ML count", "fa_count": "FA count"})
+        lines_in_pair = 2
     else:
-        df = df[["rank effect", "ml_count"]]
+        df = df[["rank effect", "node", "ml_count"]]
         df = df.rename(columns={"ml_count": "ML count"})
+        lines_in_pair = 1
 
     rank_effects = df["rank effect"].unique()
     rank_effects.sort()
@@ -78,46 +80,61 @@ def main(graph_name):
     nodes = df["node"].unique()
     nodes.sort()
     for node in nodes:
-        col = f"Node {node} FA count"
-        node_data = df.loc[(df["node"] == node)]["FA count"]
-        node_data = node_data.reset_index(drop=True)
-        df_preproc.loc[:, col] = node_data
         col = f"Node {node} ML count"
         node_data = df.loc[(df["node"] == node)]["ML count"]
         node_data = node_data.reset_index(drop=True)
         df_preproc.loc[:, col] = node_data
 
-    # selected_nodes = [0, 2, 4]
+        if "FA count" in df.columns:
+            col = f"Node {node} FA count"
+            node_data = df.loc[(df["node"] == node)]["FA count"]
+            node_data = node_data.reset_index(drop=True)
+            df_preproc.loc[:, col] = node_data
 
     selected_cols = ["Rank Effect"]
     for i in selected_nodes:
-        selected_cols.extend([f"Node {i} FA count", f"Node {i} ML count"])
+        temp = [f"Node {i} ML count"]
+        if "FA count" in df.columns:
+            temp.append(f"Node {i} FA count")
+        selected_cols.extend(temp)
 
     df_preproc = df_preproc[selected_cols]
     df_preproc.set_index("Rank Effect", inplace=True)
 
-    plot_df(df_preproc, selected_cols, graph_name)
+    plot_df(df_preproc, selected_cols, graph_name, lines_in_pair)
 
 
-def plot_df(df_preproc, selected_cols, graph_name):
+def plot_df(df_preproc, selected_cols, graph_name, lines_in_pair):
     plt.figure(figsize=(16, 8))
     ax = sns.lineplot(data=df_preproc, linewidth=1, markersize=10)
-    prev_marker = None
-    next_color = None
-    for i, line in enumerate(ax.lines):
-        if prev_marker is None:
-            marker = next(marker_cycle)
-            color, next_color = next(color_cycle)
-            prev_marker = marker
-            line_style = "solid"
-        else:
-            marker = prev_marker
-            color = next_color
-            prev_marker = None
-            line_style = "dashed"
-        # line.set_marker(marker)
-        line.set_color(color)
-        line.set_linestyle(line_style)
+
+    i = 0
+    no_of_lines = len(ax.lines) // 2
+    while i < no_of_lines:
+        lines = ax.lines[i : i + lines_in_pair]
+        colors = next(color_cycle)
+        line_styles = ("solid", "dashed")
+        for j, line in enumerate(lines):
+            line.set_color(colors[j])
+            line.set_linestyle(line_styles[j])
+        i += lines_in_pair
+
+    # prev_marker = None
+    # next_color = None
+    # for i, line in enumerate(ax.lines):
+    #     if prev_marker is None:
+    #         marker = next(marker_cycle)
+    #         color, next_color = next(color_cycle)
+    #         prev_marker = marker
+    #         line_style = "solid"
+    #     else:
+    #         marker = prev_marker
+    #         color = next_color
+    #         prev_marker = None
+    #         line_style = "dashed"
+    #     # line.set_marker(marker)
+    #     line.set_color(color)
+    #     line.set_linestyle(line_style)
 
     ax.set_xlabel("Rank Effect")
 
