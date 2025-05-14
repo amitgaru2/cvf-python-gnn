@@ -3,6 +3,7 @@ import csv
 import sys
 import time
 import random
+import datetime
 
 import numpy as np
 
@@ -44,41 +45,31 @@ class Action:
 
 class SimulationMixin:
     highest_fault_weight = np.float32(0.6)
+    RANDOM_FAULT_SIMULATION_TYPE = "random"
+    CONTROLLED_FAULT_AT_NODE_SIMULATION_TYPE = "controlled_at_node"
 
     def init_global_rank_map(self):
         """override this when not needed like for simulation"""
         self.global_rank_map = None
 
     def create_simulation_environment(
-        self, no_of_simulations: int, scheduler: int, me: bool
+        self, simulation_type: str, no_of_simulations: int, scheduler: int, me: bool
     ):
         self.no_of_simulations = no_of_simulations
         self.scheduler = scheduler
         self.me = me
+        self.simulation_type = simulation_type
 
     def apply_fault_settings(self, fault_probability: float, fault_interval: int):
         self.fault_probability = fault_probability
         self.fault_interval = fault_interval
         self.fault_weight = None
 
-    def configure_fault_weight(self, process):
-        sm = np.full((len(self.nodes), len(self.nodes) + 1), np.nan)
-        np.fill_diagonal(sm, self.highest_fault_weight)
-        sm[:, -1] = np.float32(1.0 - self.highest_fault_weight)
-
-        for i in self.nodes:
-            temp = self.nodes[:]
-            temp.pop(i)
-            random.shuffle(temp)
-            for j in temp:
-                value = np.random.uniform(0, min(self.highest_fault_weight, sm[i, -1]))
-                sm[i, j] = value
-                sm[i, -1] -= value
-
-            sm[i, j] += sm[i, -1]
-            sm[i, -1] = 0
-
-        self.fault_weight = sm[:, :-1]
+    def configure_fault_weight(self):
+        other_fault_weight = (1.0 - self.highest_fault_weight) / (len(self.nodes) - 1)
+        dsm = np.full((len(self.nodes), len(self.nodes)), other_fault_weight)
+        np.fill_diagonal(dsm, self.highest_fault_weight)
+        self.fault_weight = dsm
 
     def get_random_state(self, avoid_invariant=False):
         def _inner():
@@ -125,8 +116,8 @@ class SimulationMixin:
     def inject_fault(self, state, process):
         fault_count = 1
         faulty_actions = []
-        if self.scheduler == DISTRIBUTED_SCHEDULER:
-            fault_count = random.randint(1, len(self.nodes))  # from the base class
+        # if self.scheduler == DISTRIBUTED_SCHEDULER:
+        #     fault_count = random.randint(1, len(self.nodes))  # from the base class
         random_number = np.random.uniform()
         if random_number <= self.fault_probability:
             randomly_selected_processes = list(
@@ -137,10 +128,10 @@ class SimulationMixin:
                     replace=False,
                 )
             )
-            if self.me:
-                randomly_selected_processes = self.remove_conflicts_betn_processes(
-                    randomly_selected_processes
-                )
+            # if self.me:
+            #     randomly_selected_processes = self.remove_conflicts_betn_processes(
+            #         randomly_selected_processes
+            #     )
 
             for p in randomly_selected_processes:
                 transition_value = random.choice(
@@ -155,8 +146,11 @@ class SimulationMixin:
     def inject_fault_at_node(self, state, process):
         faulty_actions = []
         transition_value = random.choice(
-            list(set(range(len(self.possible_node_values[process]))) - {state[process]})
-        )
+            list(
+                set(i.data for i in self.possible_node_values[process])
+                - {state[process]}
+            )
+        )  # the value of the node cannot remain same for the transition
         faulty_actions.append(
             Action(Action.UPDATE, process, [state[process], transition_value])
         )
@@ -166,26 +160,27 @@ class SimulationMixin:
         fault_count = 1
         faulty_actions = []
 
-        if self.scheduler == DISTRIBUTED_SCHEDULER:
-            fault_count = random.randint(1, len(self.nodes))  # from the base class
+        # if self.scheduler == DISTRIBUTED_SCHEDULER:
+        #     fault_count = random.randint(1, len(self.nodes))  # from the base class
 
         random_number = np.random.uniform()
         if random_number <= self.fault_probability:
-            randomly_selected_processes = list(
+            randomly_selected_nodes = list(
                 np.random.choice(
                     a=self.nodes,
                     size=fault_count,
                     replace=False,
                 )
             )
-            if self.me:
-                randomly_selected_processes = self.remove_conflicts_betn_processes(
-                    randomly_selected_processes
-                )
+            # if self.me:
+            #     randomly_selected_nodes = self.remove_conflicts_betn_processes(
+            #         randomly_selected_nodes
+            #     )
 
-            for p in randomly_selected_processes:
+            logger.debug("Selected random nodes %s.", randomly_selected_nodes)
+            for p in randomly_selected_nodes:
                 transition_value = random.choice(
-                    list(self.possible_node_values[p] - {state[p]})
+                    list(set(i.data for i in self.possible_node_values[p]) - {state[p]})
                 )
                 faulty_actions.append(
                     Action(Action.UPDATE, p, [state[p], transition_value])
@@ -248,18 +243,28 @@ class SimulationMixin:
             step += 1
         return step
 
-    def run_simulations(self, state, process):
+    def get_faulty_actions_random(self, state):
+        faulty_actions = self.inject_fault_w_equal_prob(state)
+        return faulty_actions
+
+    def get_faulty_actions_controlled_at_node(self, state, process):
         """
         process: process_id where the fault weight is concentrated
         """
+        faulty_actions = self.inject_fault_at_node(state, process)
+        return faulty_actions
+
+    def run_simulations(self, state, *extra_args):
         step = 0
         last_fault_duration = 0
+        faulty_action_generator = {
+            self.RANDOM_FAULT_SIMULATION_TYPE: self.get_faulty_actions_random,
+            self.CONTROLLED_FAULT_AT_NODE_SIMULATION_TYPE: self.get_faulty_actions_controlled_at_node,
+        }[self.simulation_type]
         while not self.is_invariant(state):  # from the base class
-            # faulty_actions = self.inject_fault(state, process)  # might be faulty or not
             faulty_actions = []
             if last_fault_duration + 1 == self.fault_interval:
-                faulty_actions = self.inject_fault_at_node(state, process)
-                last_fault_duration = -1
+                faulty_actions = faulty_action_generator(state, *extra_args)
 
             if faulty_actions:
                 state = self.execute(state, faulty_actions)
@@ -280,7 +285,7 @@ class SimulationMixin:
 
         return state
 
-    def start_simulation(self):
+    def start_simulation(self, *simulation_type_args):
         logger.info(
             "Simulation environment: No. of Simulations: %d | Scheduler: %s | ME: %s",
             self.no_of_simulations,
@@ -299,25 +304,30 @@ class SimulationMixin:
                 log_time = time.time()
             inner_results = []
             _, state = self.get_random_state_v2(avoid_invariant=True)
-            self.configure_fault_weight(0)
-            for process in range(len(self.nodes)):  # from the base class
-                inner_results.append(self.run_simulations(state, process))
+            self.configure_fault_weight()
+
+            if self.simulation_type == self.RANDOM_FAULT_SIMULATION_TYPE:
+                inner_results.append(self.run_simulations(state, *simulation_type_args))
+            elif self.simulation_type == self.CONTROLLED_FAULT_AT_NODE_SIMULATION_TYPE:
+                # for process in range(len(self.nodes)):  # from the base class
+                inner_results.append(self.run_simulations(state, *simulation_type_args))
 
             results.append(inner_results)
 
-        # logger.info("results %s", results)
         return results
 
     def store_raw_result(self, result):
+        file_path = os.path.join(
+            "results",
+            self.results_dir,
+            f"{self.graph_name}__{self.scheduler}__{self.simulation_type}__{self.no_of_simulations}__{self.me}__{self.fault_interval}__{datetime.datetime.now().strftime('%Y_%m_%d_%H_%M')}__raw.csv",
+        )
         f = open(
-            os.path.join(
-                "results",
-                self.results_dir,
-                f"{self.graph_name}__{self.scheduler}__{self.no_of_simulations}__{self.me}__{self.fault_interval}__raw.csv",
-            ),
+            file_path,
             "w",
             newline="",
         )  # from the base class
+        logger.info("\nSaving result at %s", file_path)
         writer = csv.writer(f)
         writer.writerow(["Iteration", *self.nodes])
         for i, v in enumerate(result, 1):
@@ -338,12 +348,14 @@ class SimulationMixin:
         return histogram, bin_edges
 
     def store_result(self, histogram, bin_edges):
+        file_path = os.path.join(
+            "results",
+            self.results_dir,
+            f"{self.graph_name}__{self.scheduler}__{self.no_of_simulations}__{self.me}__{self.fault_probability}__{self.highest_fault_weight:.2f}.csv",
+        )
+        logger.info("Saving result at %s", file_path)
         f = open(
-            os.path.join(
-                "results",
-                self.results_dir,
-                f"{self.graph_name}__{self.scheduler}__{self.no_of_simulations}__{self.me}__{self.fault_probability}__{self.highest_fault_weight:.2f}.csv",
-            ),
+            file_path,
             "w",
             newline="",
         )  # from the base class

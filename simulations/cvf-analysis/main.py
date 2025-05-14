@@ -5,8 +5,8 @@ import argparse
 from custom_logger import logger
 from dijkstra_simulation import DijkstraSimulation
 from graph_coloring_simulation import GraphColoringSimulation
-from simulation import CENTRAL_SCHEDULER, DISTRIBUTED_SCHEDULER
 from maximal_matching_simulation import MaximalMatchingSimulation
+from simulation import CENTRAL_SCHEDULER, DISTRIBUTED_SCHEDULER, SimulationMixin
 from maximal_independent_set_simulation import MaximalIndependentSetSimulation
 
 ColoringProgram = "graph_coloring"
@@ -52,19 +52,23 @@ def main(
     graph_name,
     graph,
     program,
+    simulation_type,
     no_simulations,
     scheduler,
     me,
     fault_prob,
     fault_interval,
+    simulation_type_args,
 ):
     if scheduler == CENTRAL_SCHEDULER:
         me = False
 
     logger.info(
-        "Analysis graph: %s | program: %s | No. of Simulations: %s | Scheduler: %s | Mutual Exclusion: %s | Fault Interval: %s",
+        "Analysis graph: %s | program: %s | Simulation Type: %s, Args: %s | No. of Simulations: %s | Scheduler: %s | Mutual Exclusion: %s | Fault Interval: %s",
         graph_name,
         program,
+        simulation_type,
+        simulation_type_args,
         no_simulations,
         scheduler,
         me,
@@ -73,12 +77,15 @@ def main(
     SimulationCVFAnalysisKlass = AnalysisMap[program]
     simulation = SimulationCVFAnalysisKlass(graph_name, graph)
     simulation.create_simulation_environment(
-        no_of_simulations=no_simulations, scheduler=scheduler, me=me
+        simulation_type=simulation_type,
+        no_of_simulations=no_simulations,
+        scheduler=scheduler,
+        me=me,
     )
     simulation.apply_fault_settings(
         fault_probability=fault_prob, fault_interval=fault_interval
     )
-    result = simulation.start_simulation()
+    result = simulation.start_simulation(*simulation_type_args)
     simulation.store_raw_result(result)
     # hist, bin_edges = simulation.aggregate_result(result)
     # logger.info("Result %s", result)
@@ -93,11 +100,18 @@ if __name__ == "__main__":
             ColoringProgram,
             DijkstraProgram,
             MaxMatchingProgram,
-            MaxIndependentSetProgram,
-            # LinearRegressionProgram,
         ],
         required=True,
     )  # coloring, dijkstra, max_matching
+    parser.add_argument(
+        "--simulation-type",
+        choices=[
+            SimulationMixin.RANDOM_FAULT_SIMULATION_TYPE,
+            SimulationMixin.CONTROLLED_FAULT_AT_NODE_SIMULATION_TYPE,
+        ],
+        required=True,
+    )
+    parser.add_argument("--controlled-at-node", type=int, required=False, default=None)
     parser.add_argument(
         "--sched",
         choices=[CENTRAL_SCHEDULER, DISTRIBUTED_SCHEDULER],
@@ -135,16 +149,25 @@ if __name__ == "__main__":
         logger.info("Setting logger level to %s.", args.logging)
         logger.setLevel(getattr(logging, args.logging, "INFO"))
 
+    simulation_type_args = []
+    if args.simulation_type == SimulationMixin.CONTROLLED_FAULT_AT_NODE_SIMULATION_TYPE:
+        if args.controlled_at_node is None:
+            raise Exception('Missing "--controlled-at-node" argument.')
+        else:
+            simulation_type_args = [args.controlled_at_node]
+
     for graph_name, graph in start(graphs_dir, args.graph_names):
         main(
             graph_name,
             graph,
             args.program,
+            args.simulation_type,
             args.no_sim,
             args.sched,
             args.me,
             args.fault_prob,
             args.fault_interval,
+            simulation_type_args,
         )
 
 
