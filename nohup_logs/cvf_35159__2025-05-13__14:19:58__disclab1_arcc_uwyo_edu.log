@@ -1,2 +1,15 @@
 Starting for implicit_graph_n12.
 Total configs: 531,441.
+Done ML CVF Analysis!
+FA results not found for implicit_graph_n12.
+Complete for implicit_graph_n12.
+
+=== Runtime Report ===
+get_model: 0.178342s
+get_perturbed_states: 0.417751s
+get_rank: 221.567897s
+group_data: 0.000281s
+ml_cvf_analysis: 8689.397962s
+get_fa_results: 0.000100s
+Starting for implicit_graph_n13.
+Total configs: 1,594,323.

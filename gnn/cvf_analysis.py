@@ -132,6 +132,16 @@ def ml_cvf_analysis():
     return ml_grp_by_re, ml_grp_by_node_re
 
 
+# def ml_cvf_analysis():
+#     ml_grp_by_node_re = pd.read_csv(
+#         f"ml_predictions/{model_name}__{graph_name}__cvf_by_node.csv"
+#     )
+
+#     ml_grp_by_re = pd.read_csv(f"ml_predictions/{model_name}__{graph_name}__cvf.csv")
+
+#     return ml_grp_by_re, ml_grp_by_node_re
+
+
 @track_runtime
 def get_fa_results(graph_name, ml_grp_by_re, ml_grp_by_node_re):
     results_dir = os.path.join(
