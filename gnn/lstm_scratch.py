@@ -10,7 +10,10 @@ from torch_geometric.nn.pool import global_mean_pool
 from torch.utils.data import ConcatDataset, DataLoader, random_split, Sampler
 
 from custom_logger import logger
-from helpers import CVFConfigForGCNWSuccLSTMDataset
+from helpers import (
+    CVFConfigForGCNWSuccLSTMDataset,
+    CVFConfigForGCNWSuccLSTMDatasetForMM,
+)
 
 
 # device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -93,10 +96,14 @@ class CustomBatchSampler(Sampler):
 
 def get_dataset_coll(program, *graph_names):
     dataset_coll = []
-
+    DatasetKlass = (
+        CVFConfigForGCNWSuccLSTMDatasetForMM
+        if program == "maximal_matching"
+        else CVFConfigForGCNWSuccLSTMDataset
+    )
     for graph_name in graph_names:
         dataset_coll.append(
-            CVFConfigForGCNWSuccLSTMDataset(
+            DatasetKlass(
                 device, f"{graph_name}_config_rank_dataset.csv", program=program
             )
         )

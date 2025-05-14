@@ -1,8 +1,10 @@
+import itertools
 import os
 import sys
 import ast
 import json
 
+import numpy as np
 import torch
 import pandas as pd
 import torch.nn.functional as F
@@ -356,7 +358,7 @@ class CVFConfigForGCNWSuccLSTMDataset(Dataset):
 
 
 class CVFConfigForGCNWSuccLSTMDatasetForMM(Dataset):
-    def __init__(self, device, dataset_file, program="coloring", N=7) -> None:
+    def __init__(self, device, dataset_file, program="coloring") -> None:
         dataset_dir = os.path.join(
             os.getenv("CVF_PROJECT_DIR", ""),
             "cvf-analysis",
@@ -367,27 +369,94 @@ class CVFConfigForGCNWSuccLSTMDatasetForMM(Dataset):
         self.data = pd.read_csv(os.path.join(dataset_dir, dataset_file))
         self.device = device
         self.dataset_name = dataset_file.split("_config_rank_dataset.csv")[0]
-        self.D = N  # input dimension
+        self.D = 3  # input dimension
+        self.combo_dict = self.get_pair_dictionary()
 
     def __len__(self):
         return len(self.data)
 
+    def get_pair_dictionary(self):
+        p_values = [None, 0, 1, 2, 3, 4, 5, 6]  # -1 refers None
+        m_values = [True, False]
+        combinations = list(itertools.product(p_values, m_values))
+        df = pd.DataFrame(combinations, columns=["p", "m"])
+        df["combo"] = df["p"].astype(str) + "_" + df["m"].astype(str)
+        df["combo_index"] = df["combo"].astype("category").cat.codes
+        df = df.drop("combo", axis=1)
+        combo_dict = {
+            (None if pd.isna(p) else p, None if pd.isna(m) else m): idx
+            for p, m, idx in zip(df["p"], df["m"], df["combo_index"])
+        }
+        return combo_dict
+
+    def get_encoding(self, pair):
+        return self.combo_dict[pair]
+        # p, m = pair
+        # if p is None:
+        #     p = -1
+        # result = self.pm_dict.loc[
+        #     (self.pm_dict["p"] == p) & (self.pm_dict["m"] == m), "combo_index"
+        # ]
+        # return result.iloc[0]
+
+    # def get_encoding(self, pair):
+    #     p, m = pair
+    #     if p is None:
+    #         p = -1
+    #     _m = 0.0 if m is True else 0.5
+    #     return p + _m
+
     def __getitem__(self, idx):
         row = self.data.loc[idx]
-        config = [i for i in ast.literal_eval(row["config"])]
+        config = [self.get_encoding(i) for i in ast.literal_eval(row["config"])]
         succ = [i for i in ast.literal_eval(row["succ"])]
         if succ:
-            succ = torch.FloatTensor(succ).to(self.device)
+            # succ = torch.FloatTensor(succ).to(self.device)
+            _succ = []
+            for s in succ:
+                temp = []
+                for v in s:
+                    temp.append(self.get_encoding(v))
+                _succ.append(temp)
+            succ = torch.FloatTensor(_succ).to(self.device)
+            succ1 = torch.mean(succ, dim=0).unsqueeze(0)  # column wise
+            succ2 = torch.mean(succ, dim=1)  # row wise
+            succ2 = torch.sum(succ2).repeat(succ1.shape)
         else:
-            succ = torch.zeros(1, len(config)).to(self.device)
+            succ1 = torch.zeros(1, len(config)).to(self.device)
+            succ2 = succ1.clone()
 
         config = torch.FloatTensor([config]).to(self.device)
         result = (
-            torch.cat((config, succ), dim=0),
+            torch.cat((config, succ1, succ2), dim=0).t(),
             self.dataset_name,
         ), torch.FloatTensor([row["rank"]]).to(self.device)
 
         return result
+
+    # def __getitem__(self, idx):
+    #     row = self.data.loc[idx]
+    #     config = [self.get_encoding(i) for i in ast.literal_eval(row["config"])]
+    #     succ = [i for i in ast.literal_eval(row["succ"])]
+    #     if succ:
+    #         _succ = []
+    #         for s in succ:
+    #             temp = []
+    #             for v in s:
+    #                 temp.append(self.get_encoding(v))
+    #             _succ.append(temp)
+    #         succ = torch.FloatTensor(_succ).to(self.device)
+    #     else:
+    #         succ = []
+    #         # succ = torch.zeros(1, len(config)).to(self.device)
+
+    #     config = torch.FloatTensor([config]).to(self.device)
+    #     result = (
+    #         torch.cat((config, succ), dim=0),
+    #         self.dataset_name,
+    #     ), torch.FloatTensor([row["rank"]]).to(self.device)
+
+    #     return result
 
     def __repr__(self):
         return f"{self.__class__.__name__} {self.dataset_name}"
@@ -914,10 +983,9 @@ if __name__ == "__main__":
     # dataset = CVFConfigForAnalysisV2Dataset(device, "star_graph_n7")
 
     # dataset = CVFConfigForAnalysisDataset("cuda", "star_graph_n7")
-    loader = DataLoader(dataset, batch_size=2, shuffle=False)
+    loader = DataLoader(dataset, batch_size=512, shuffle=True)
 
     for batch in loader:
         x = batch[0]
-        print(x)
-        # print(x[0].shape)
-        break
+        # print(x)
+        # break

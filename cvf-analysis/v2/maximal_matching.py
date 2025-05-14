@@ -125,7 +125,6 @@ class MaximalMatchingCVFAnalysisV2(CVFAnalysisV2):
         return False
 
     def _get_program_transitions_as_configs(self, start_state):
-
         for position, node_val_indx in enumerate(start_state):
             current_p_value = self.possible_node_values[position][node_val_indx].p
             current_m_value = self.possible_node_values[position][node_val_indx].m

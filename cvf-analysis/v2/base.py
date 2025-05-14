@@ -200,6 +200,8 @@ class CVFAnalysisV2:
         for perturb_state in self._get_program_transitions_as_configs(start_state):
             if perturb_state is not None:
                 program_transitions.append(self.config_to_indx(perturb_state))
+            else:
+                program_transitions.append(perturb_state)
         return program_transitions
 
     def is_invariant(self, config: Tuple[int]):
@@ -375,7 +377,15 @@ class CVFAnalysisV2:
                     "rank": math.ceil(v[0] / v[1]),
                     "succ": (
                         [
-                            list(self.get_actual_config_values(self.indx_to_config(i)))
+                            (
+                                list(
+                                    self.get_actual_config_values(
+                                        self.indx_to_config(i)
+                                    )
+                                )
+                                # if i is None
+                                # else None
+                            )
                             for i in self.config_successors[k]
                         ]
                         if k in self.config_successors

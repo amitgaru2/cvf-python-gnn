@@ -1,0 +1,5 @@
+usage: lstm_scratch.py [-h] [--program PROGRAM] [--epochs EPOCHS]
+                       [--batch-size BATCH_SIZE] [--hidden-size HIDDEN_SIZE]
+                       [--num-layers NUM_LAYERS] --graph-names GRAPH_NAMES
+                       [GRAPH_NAMES ...] [--logging {INFO,DEBUG}]
+lstm_scratch.py: error: argument --graph-names: expected at least one argument
