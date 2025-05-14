@@ -355,6 +355,44 @@ class CVFConfigForGCNWSuccLSTMDataset(Dataset):
         return f"{self.__class__.__name__} {self.dataset_name}"
 
 
+class CVFConfigForGCNWSuccLSTMDatasetForMM(Dataset):
+    def __init__(self, device, dataset_file, program="coloring", N=7) -> None:
+        dataset_dir = os.path.join(
+            os.getenv("CVF_PROJECT_DIR", ""),
+            "cvf-analysis",
+            "v2",
+            "datasets",
+            program,
+        )
+        self.data = pd.read_csv(os.path.join(dataset_dir, dataset_file))
+        self.device = device
+        self.dataset_name = dataset_file.split("_config_rank_dataset.csv")[0]
+        self.D = N  # input dimension
+
+    def __len__(self):
+        return len(self.data)
+
+    def __getitem__(self, idx):
+        row = self.data.loc[idx]
+        config = [i for i in ast.literal_eval(row["config"])]
+        succ = [i for i in ast.literal_eval(row["succ"])]
+        if succ:
+            succ = torch.FloatTensor(succ).to(self.device)
+        else:
+            succ = torch.zeros(1, len(config)).to(self.device)
+
+        config = torch.FloatTensor([config]).to(self.device)
+        result = (
+            torch.cat((config, succ), dim=0),
+            self.dataset_name,
+        ), torch.FloatTensor([row["rank"]]).to(self.device)
+
+        return result
+
+    def __repr__(self):
+        return f"{self.__class__.__name__} {self.dataset_name}"
+
+
 class CVFConfigForGCNWSuccLSTMWNormalizationDataset(Dataset):
     def __init__(
         self,
@@ -869,7 +907,11 @@ if __name__ == "__main__":
     #     "tiny_graph_edge_index.json",
     # )
 
-    dataset = CVFConfigForAnalysisV2Dataset(device, "star_graph_n7")
+    dataset = CVFConfigForGCNWSuccLSTMDatasetForMM(
+        device, "star_graph_n7_config_rank_dataset.csv", program="maximal_matching", N=7
+    )
+
+    # dataset = CVFConfigForAnalysisV2Dataset(device, "star_graph_n7")
 
     # dataset = CVFConfigForAnalysisDataset("cuda", "star_graph_n7")
     loader = DataLoader(dataset, batch_size=2, shuffle=False)

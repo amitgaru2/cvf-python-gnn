@@ -36,21 +36,33 @@ class DijkstraTokenRingCVFAnalysisV2(CVFAnalysisV2):
         return tuple(_state)
 
     def _get_program_transitions_as_configs(self, start_state):
+        yielded = set()
         if (start_state[self.bottom] + 1) % 3 == start_state[self.bottom + 1]:
-            yield self.__bottom_eligible_update(start_state)
+            pt_state = self.__bottom_eligible_update(start_state)
+            yield pt_state
+            yielded.add(pt_state)
 
         if (
             start_state[self.top - 1] == start_state[self.bottom]
             and (start_state[self.top - 1] + 1) % 3 != start_state[self.top]
         ):
-            yield self.__top_eligible_update(start_state)
+            pt_state = self.__top_eligible_update(start_state)
+            if pt_state not in yielded:
+                yield pt_state
+                yielded.add(pt_state)
 
         for i in range(self.bottom + 1, self.top):
             if (start_state[i] + 1) % 3 == start_state[i - 1]:
-                yield self.__other_eligible_update(start_state, i, i - 1)
+                pt_state = self.__other_eligible_update(start_state, i, i - 1)
+                if pt_state not in yielded:
+                    yield pt_state
+                    yielded.add(pt_state)
 
             if (start_state[i] + 1) % 3 == start_state[i + 1]:
-                yield self.__other_eligible_update(start_state, i, i + 1)
+                pt_state = self.__other_eligible_update(start_state, i, i + 1)
+                if pt_state not in yielded:
+                    yield pt_state
+                    yielded.add(pt_state)
 
     # def _get_program_transitions(self, start_state):
     #     program_transitions = set()

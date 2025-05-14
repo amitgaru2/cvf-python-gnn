@@ -345,6 +345,15 @@ class CVFAnalysisV2:
             )
         )
 
+    def get_actual_config_node_values(self, position, value):
+        return self.possible_node_values[position][value]
+
+    def get_actual_config_values(self, config):
+        result = []
+        for position, value in enumerate(config):
+            result.append(self.get_actual_config_node_values(position, value))
+        return tuple(result)
+
     def generate_dataset_for_ml(self):
         writer = csv.DictWriter(
             open(
@@ -359,13 +368,14 @@ class CVFAnalysisV2:
         )
         writer.writeheader()
         for k, v in enumerate(self.global_rank_map):
+            config = self.get_actual_config_values(self.indx_to_config(k))
             writer.writerow(
                 {
-                    "config": list(self.indx_to_config(k)),
+                    "config": list(config),
                     "rank": math.ceil(v[0] / v[1]),
                     "succ": (
                         [
-                            list(self.indx_to_config(i)) if i is not None else i
+                            list(self.get_actual_config_values(self.indx_to_config(i)))
                             for i in self.config_successors[k]
                         ]
                         if k in self.config_successors
