@@ -177,7 +177,7 @@ def main(program, graph_names, H, batch_size, epochs, num_layers):
     logger.info("\n")
     dataset_coll = get_dataset_coll(program, *graph_names)
     D = dataset_coll[0].D
-    train_sizes = [int(0.8 * len(ds)) for ds in dataset_coll]
+    train_sizes = [int(0.7 * len(ds)) for ds in dataset_coll]
     test_sizes = [len(ds) - trs for ds, trs in zip(dataset_coll, train_sizes)]
 
     train_test_datasets = [
