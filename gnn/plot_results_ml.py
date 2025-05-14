@@ -35,8 +35,8 @@ TITLE_PROGRAM_MAP = {
 
 
 graphs = [
-    "star_graph_n7",
-    # "star_graph_n15",
+    # "star_graph_n7",
+    "star_graph_n15",
     # "graph_powerlaw_cluster_graph_n7",
     # "graph_random_regular_graph_n7_d4",
     # "star_graph_n13",
