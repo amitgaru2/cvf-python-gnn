@@ -149,8 +149,7 @@ class SimulationMixin:
         faulty_actions = []
         transition_value = random.choice(
             list(
-                set(i.data for i in self.possible_node_values[process])
-                - {state[process]}
+                set(range(len(self.possible_node_values[process]))) - {state[process]}
             )
         )  # the value of the node cannot remain same for the transition
         faulty_actions.append(
@@ -181,7 +180,7 @@ class SimulationMixin:
 
             for p in randomly_selected_processes:
                 transition_value = random.choice(
-                    list(set(i.data for i in self.possible_node_values[p]) - {state[p]})
+                    list(set(range(len(self.possible_node_values[p]))) - {state[p]})
                 )
                 faulty_actions.append(
                     Action(Action.UPDATE, p, [state[p], transition_value])
@@ -213,7 +212,7 @@ class SimulationMixin:
             logger.debug("Selected random nodes %s.", randomly_selected_nodes)
             for p in randomly_selected_nodes:
                 transition_value = random.choice(
-                    list(set(i.data for i in self.possible_node_values[p]) - {state[p]})
+                    list(set(range(len(self.possible_node_values[p]))) - {state[p]})
                 )
                 faulty_actions.append(
                     Action(Action.UPDATE, p, [state[p], transition_value])
