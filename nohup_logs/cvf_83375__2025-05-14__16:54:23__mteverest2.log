@@ -13,3 +13,19 @@ Total parameters: 3,649
 
 
 Training set | Epoch 1 | MSE Loss: 8.5501 | Time taken: 501.3887s
+Training set | Epoch 2 | MSE Loss: 6.9089 | Time taken: 501.2287s
+Training set | Epoch 3 | MSE Loss: 7.2004 | Time taken: 501.4562s
+Training set | Epoch 4 | MSE Loss: 6.721 | Time taken: 501.5845s
+Training set | Epoch 5 | MSE Loss: 6.6654 | Time taken: 501.5387s
+Training set | Epoch 6 | MSE Loss: 6.394 | Time taken: 502.4791s
+Training set | Epoch 7 | MSE Loss: 6.1625 | Time taken: 504.1791s
+Training set | Epoch 8 | MSE Loss: 5.6985 | Time taken: 503.2398s
+Training set | Epoch 9 | MSE Loss: 5.566 | Time taken: 501.8654s
+Training set | Epoch 10 | MSE Loss: 5.8596 | Time taken: 500.8246s
+Training set | Epoch 11 | MSE Loss: 5.2829 | Time taken: 499.9282s
+Training set | Epoch 12 | MSE Loss: 5.4181 | Time taken: 507.1418s
+Training set | Epoch 13 | MSE Loss: 5.3928 | Time taken: 505.0238s
+Training set | Epoch 14 | MSE Loss: 5.1916 | Time taken: 502.0321s
+Training set | Epoch 15 | MSE Loss: 5.0011 | Time taken: 502.2452s
+Training set | Epoch 16 | MSE Loss: 5.0799 | Time taken: 508.2454s
+./nohup_commands.sh: line 89: 216769 Killed                  python lstm_scratch.py --program maximal_matching --epochs $epochs --batch-size $batch_size --hidden-size $hidden_size --num-layers 1 --graph-names $joined_graphs_args
