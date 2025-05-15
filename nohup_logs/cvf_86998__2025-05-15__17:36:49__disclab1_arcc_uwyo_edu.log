@@ -2049,3 +2049,64 @@ Time taken: 1.452s, Running simulation round: 200000
 Time taken: 1.4551s, Running simulation round: 210000
 Time taken: 1.4586s, Running simulation round: 220000
 Time taken: 1.4593s, Running simulation round: 230000
+Time taken: 1.4589s, Running simulation round: 240000
+Time taken: 1.4477s, Running simulation round: 250000
+Time taken: 1.4443s, Running simulation round: 260000
+Time taken: 1.4428s, Running simulation round: 270000
+Time taken: 1.4494s, Running simulation round: 280000
+Time taken: 1.4457s, Running simulation round: 290000
+Time taken: 1.4461s, Running simulation round: 300000
+Time taken: 1.4469s, Running simulation round: 310000
+Time taken: 1.4394s, Running simulation round: 320000
+Time taken: 1.4404s, Running simulation round: 330000
+Time taken: 1.4444s, Running simulation round: 340000
+Time taken: 1.4483s, Running simulation round: 350000
+Time taken: 1.4454s, Running simulation round: 360000
+Time taken: 1.4403s, Running simulation round: 370000
+Time taken: 1.4406s, Running simulation round: 380000
+Time taken: 1.4392s, Running simulation round: 390000
+Time taken: 1.4411s, Running simulation round: 400000
+Time taken: 1.4407s, Running simulation round: 410000
+Time taken: 1.4389s, Running simulation round: 420000
+Time taken: 1.4733s, Running simulation round: 430000
+Time taken: 1.4427s, Running simulation round: 440000
+Time taken: 1.4444s, Running simulation round: 450000
+Time taken: 1.4442s, Running simulation round: 460000
+Time taken: 1.4431s, Running simulation round: 470000
+Time taken: 1.4416s, Running simulation round: 480000
+Time taken: 1.4428s, Running simulation round: 490000
+Time taken: 1.4414s, Running simulation round: 500000
+
+Saving result at results/coloring/graph_powerlaw_cluster_graph_n7__0__controlled_at_node_duong_args_1__500000__False__1.csv
+Locating Graph: "graph_powerlaw_cluster_graph_n7".
+Analysis graph: graph_powerlaw_cluster_graph_n7 | program: graph_coloring | Simulation Type: controlled_at_node_duong, Args: [4] | No. of Simulations: 500000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 1
+Total configs: 27,000.
+Simulation environment: No. of Simulations: 500000 | Scheduler: CENTRAL | ME: False
+Time taken: 7.1496s, Running simulation round: 50000
+Time taken: 7.1512s, Running simulation round: 100000
+Time taken: 7.1641s, Running simulation round: 150000
+Time taken: 7.3002s, Running simulation round: 200000
+Time taken: 7.3183s, Running simulation round: 250000
+Time taken: 7.3246s, Running simulation round: 300000
+Time taken: 7.312s, Running simulation round: 350000
+Time taken: 7.3178s, Running simulation round: 400000
+Time taken: 7.2796s, Running simulation round: 450000
+Time taken: 7.1921s, Running simulation round: 500000
+
+Saving result at results/coloring/graph_powerlaw_cluster_graph_n7__0__controlled_at_node_duong_args_4__500000__False__1.csv
+Locating Graph: "graph_powerlaw_cluster_graph_n7".
+Analysis graph: graph_powerlaw_cluster_graph_n7 | program: graph_coloring | Simulation Type: controlled_at_node_duong, Args: [5] | No. of Simulations: 500000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 1
+Total configs: 27,000.
+Simulation environment: No. of Simulations: 500000 | Scheduler: CENTRAL | ME: False
+Time taken: 7.3207s, Running simulation round: 50000
+Time taken: 7.3115s, Running simulation round: 100000
+Time taken: 7.3105s, Running simulation round: 150000
+Time taken: 7.3147s, Running simulation round: 200000
+Time taken: 7.2982s, Running simulation round: 250000
+Time taken: 7.2914s, Running simulation round: 300000
+Time taken: 7.3005s, Running simulation round: 350000
+Time taken: 7.3047s, Running simulation round: 400000
+Time taken: 7.3003s, Running simulation round: 450000
+Time taken: 7.2613s, Running simulation round: 500000
+
+Saving result at results/coloring/graph_powerlaw_cluster_graph_n7__0__controlled_at_node_duong_args_5__500000__False__1.csv

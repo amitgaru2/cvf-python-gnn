@@ -8,4 +8,5 @@ hostName=$(hostname | sed 's/\./_/g')
 logLocation="nohup_logs/cvf_""$jobID""__""$hostName"".log"
 echo "Log location: ""$logLocation"
 nohup ./nohup_commands.sh > "$logLocation" 2>&1 <&- &
-# echo "\n ----------------- DONE ! ----------------- \n"
+# command_pid=$!
+# wait $command_pid && echo "Process completed successfully!" || echo "Process failed!"

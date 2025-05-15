@@ -1,0 +1,5 @@
+Locating Graph: "graph_powerlaw_cluster_graph_n7".
+Analysis graph: graph_powerlaw_cluster_graph_n7 | program: maximal_matching | Simulation Type: random, Args: [] | No. of Simulations: 500000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 1
+Total configs: 3,456,000.
+Simulation environment: No. of Simulations: 500000 | Scheduler: CENTRAL | ME: False
+Time taken: 54.0627s, Running simulation round: 50000
