@@ -328,7 +328,7 @@ class SimulationMixin:
         results = []
         log_time = time.time()
         for i in range(1, self.no_of_simulations + 1):
-            if i % 10_000 == 0:
+            if i % 50_000 == 0:
                 logger.info(
                     "Time taken: %ss, Running simulation round: %d",
                     round(time.time() - log_time, 4),
