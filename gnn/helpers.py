@@ -391,33 +391,13 @@ class CVFConfigForGCNWSuccLSTMDatasetForMM(Dataset):
 
     def get_encoding(self, pair):
         return self.combo_dict[pair]
-        # p, m = pair
-        # if p is None:
-        #     p = -1
-        # result = self.pm_dict.loc[
-        #     (self.pm_dict["p"] == p) & (self.pm_dict["m"] == m), "combo_index"
-        # ]
-        # return result.iloc[0]
-
-    # def get_encoding(self, pair):
-    #     p, m = pair
-    #     if p is None:
-    #         p = -1
-    #     _m = 0.0 if m is True else 0.5
-    #     return p + _m
 
     def __getitem__(self, idx):
         row = self.data.loc[idx]
         config = [self.get_encoding(i) for i in ast.literal_eval(row["config"])]
         succ = [i for i in ast.literal_eval(row["succ"])]
         if succ:
-            # succ = torch.FloatTensor(succ).to(self.device)
-            _succ = []
-            for s in succ:
-                temp = []
-                for v in s:
-                    temp.append(self.get_encoding(v))
-                _succ.append(temp)
+            _succ = [[self.get_encoding(v) for v in s] for s in succ]
             succ = torch.FloatTensor(_succ).to(self.device)
             succ1 = torch.mean(succ, dim=0).unsqueeze(0)  # column wise
             succ2 = torch.mean(succ, dim=1)  # row wise
@@ -977,15 +957,15 @@ if __name__ == "__main__":
     # )
 
     dataset = CVFConfigForGCNWSuccLSTMDatasetForMM(
-        device, "star_graph_n7_config_rank_dataset.csv", program="maximal_matching", N=7
+        device, "star_graph_n7_config_rank_dataset.csv", program="maximal_matching"
     )
 
     # dataset = CVFConfigForAnalysisV2Dataset(device, "star_graph_n7")
 
     # dataset = CVFConfigForAnalysisDataset("cuda", "star_graph_n7")
-    loader = DataLoader(dataset, batch_size=512, shuffle=True)
+    loader = DataLoader(dataset, batch_size=2, shuffle=True)
 
     for batch in loader:
         x = batch[0]
-        # print(x)
-        # break
+        print(x)
+        break
