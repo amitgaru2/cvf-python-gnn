@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "/home/agaru/research/cvf-python-gnn/simulations/simulate.py", line 5, in <module>
+    from custom_logger import logger
+  File "/home/agaru/research/cvf-python-gnn/simulations/custom_logger.py", line 10, in <module>
+    fh = logging.FileHandler(filename)
+  File "/home/agaru/.conda/envs/cvf/lib/python3.13/logging/__init__.py", line 1218, in __init__
+    StreamHandler.__init__(self, self._open())
+                                 ~~~~~~~~~~^^
+  File "/home/agaru/.conda/envs/cvf/lib/python3.13/logging/__init__.py", line 1247, in _open
+    return open_func(self.baseFilename, self.mode,
+                     encoding=self.encoding, errors=self.errors)
+FileNotFoundError: [Errno 2] No such file or directory: '/home/agaru/research/cvf-python-gnn/simulations/logs/2025-05-15_17:36:24_log.txt'
