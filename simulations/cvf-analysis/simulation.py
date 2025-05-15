@@ -104,6 +104,20 @@ class SimulationMixin:
 
         return indx, state
 
+    def get_all_eligible_actions(self, state):
+        eligible_actions = []
+        for position, program_transition in self._get_program_transitions_as_configs(
+            state
+        ):
+            eligible_actions.append(
+                Action(
+                    Action.UPDATE,
+                    position,
+                    [state[position], program_transition[position]],
+                )
+            )
+        return eligible_actions
+
     def get_actions(self, state):
         eligible_actions = self.get_all_eligible_actions(state)  # from the base class
         if self.scheduler == CENTRAL_SCHEDULER:
@@ -146,11 +160,10 @@ class SimulationMixin:
         return faulty_actions
 
     def inject_fault_at_node(self, state, process):
+        """need rework specially for programs like maximal matching where a fault should follow allowed perturbation"""
         faulty_actions = []
         transition_value = random.choice(
-            list(
-                set(range(len(self.possible_node_values[process]))) - {state[process]}
-            )
+            list(set(range(len(self.possible_node_values[process]))) - {state[process]})
         )  # the value of the node cannot remain same for the transition
         faulty_actions.append(
             Action(Action.UPDATE, process, [state[process], transition_value])
