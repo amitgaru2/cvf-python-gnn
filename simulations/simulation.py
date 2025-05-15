@@ -129,41 +129,16 @@ class SimulationMixin:
 
         return actions
 
-    def inject_fault(self, state, process):
-        fault_count = 1
-        faulty_actions = []
-        # if self.scheduler == DISTRIBUTED_SCHEDULER:
-        #     fault_count = random.randint(1, len(self.nodes))  # from the base class
-        random_number = np.random.uniform()
-        if random_number <= self.fault_probability:
-            randomly_selected_processes = list(
-                np.random.choice(
-                    a=self.nodes,
-                    p=self.fault_weight[process],
-                    size=fault_count,
-                    replace=False,
-                )
-            )
-            # if self.me:
-            #     randomly_selected_processes = self.remove_conflicts_betn_processes(
-            #         randomly_selected_processes
-            #     )
-
-            for p in randomly_selected_processes:
-                transition_value = random.choice(
-                    list(self.possible_node_values[p] - {state[p]})
-                )
-                faulty_actions.append(
-                    Action(Action.UPDATE, p, [state[p], transition_value])
-                )
-
-        return faulty_actions
-
     def inject_fault_at_node(self, state, process):
+        """Amit controlled version where given node has highest possibility of the fault."""
         """need rework specially for programs like maximal matching where a fault should follow allowed perturbation"""
         faulty_actions = []
+        indx = self.config_to_indx(state)
+        possible_transition_values = [
+            i[1] for i in self.possible_perturbed_state_frm(indx)
+        ]
         transition_value = random.choice(
-            list(set(range(len(self.possible_node_values[process]))) - {state[process]})
+            list(set(possible_transition_values) - {state[process]})
         )  # the value of the node cannot remain same for the transition
         faulty_actions.append(
             Action(Action.UPDATE, process, [state[process], transition_value])
@@ -171,6 +146,7 @@ class SimulationMixin:
         return faulty_actions
 
     def inject_least_fault_at_node(self, state, process):
+        """Duong controlled version where given node has least possibility of the fault."""
         fault_count = 1
         faulty_actions = []
 
@@ -191,9 +167,13 @@ class SimulationMixin:
                 )
             )
 
+            indx = self.config_to_indx(state)
+            possible_transition_values = [
+                i[1] for i in self.possible_perturbed_state_frm(indx)
+            ]
             for p in randomly_selected_processes:
                 transition_value = random.choice(
-                    list(set(range(len(self.possible_node_values[p]))) - {state[p]})
+                    list(set(possible_transition_values) - {state[p]})
                 )
                 faulty_actions.append(
                     Action(Action.UPDATE, p, [state[p], transition_value])
@@ -205,9 +185,6 @@ class SimulationMixin:
         fault_count = 1
         faulty_actions = []
 
-        # if self.scheduler == DISTRIBUTED_SCHEDULER:
-        #     fault_count = random.randint(1, len(self.nodes))  # from the base class
-
         random_number = np.random.uniform()
         if random_number <= self.fault_probability:
             randomly_selected_nodes = list(
@@ -217,15 +194,15 @@ class SimulationMixin:
                     replace=False,
                 )
             )
-            # if self.me:
-            #     randomly_selected_nodes = self.remove_conflicts_betn_processes(
-            #         randomly_selected_nodes
-            #     )
 
             logger.debug("Selected random nodes %s.", randomly_selected_nodes)
+            indx = self.config_to_indx(state)
+            possible_transition_values = [
+                i[1] for i in self.possible_perturbed_state_frm(indx)
+            ]
             for p in randomly_selected_nodes:
                 transition_value = random.choice(
-                    list(set(range(len(self.possible_node_values[p]))) - {state[p]})
+                    list(set(possible_transition_values) - {state[p]})
                 )
                 faulty_actions.append(
                     Action(Action.UPDATE, p, [state[p], transition_value])
@@ -357,7 +334,7 @@ class SimulationMixin:
                 log_time = time.time()
             inner_results = []
             _, state = self.get_random_state_v2(avoid_invariant=True)
-            self.configure_fault_weight()
+            # self.configure_fault_weight()
             inner_results.append(self.run_simulations(state, *simulation_type_args))
             results.append(inner_results)
 
