@@ -20,7 +20,7 @@ set -e
 # python vanilla_gcn_generic.py
 
 # cd cvf-analysis/v2
-# cd simulations/cvf-analysis
+cd simulations/cvf-analysis
 # python main.py --program graph_coloring --sched 0 --no-sim 1000000 --fault-prob 0.5 --graph-names graph_powerlaw_cluster_graph_n30
 #python main.py --program graph_coloring --sched 1 --no-sim 100000 --fault-prob 0.5 --graph-names graph_powerlaw_cluster_graph_n30
 #python main.py --program graph_coloring --sched 1 -me --no-sim 100000 --fault-prob 0.5 --graph-names graph_powerlaw_cluster_graph_n30
@@ -67,25 +67,34 @@ set -e
 # python main.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 6 --graph-names graph_7 --fault-prob 1.0
 # python main.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 5 --graph-names graph_powerlaw_cluster_graph_n30 --fault-prob 1.0
 
-cd gnn
+python main.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 2 --graph-names star_graph_n7 --fault-prob 1.0 --simulation-type random
+python main.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 1 --graph-names star_graph_n7 --fault-prob 1.0 --simulation-type random
+python main.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 2 --graph-names star_graph_n7 --fault-prob 1.0 --simulation-type controlled_at_node  --controlled-at-node 0
+python main.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 1 --graph-names star_graph_n7 --fault-prob 1.0 --simulation-type controlled_at_node  --controlled-at-node 0
+python main.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 2 --graph-names star_graph_n7 --fault-prob 1.0 --simulation-type controlled_at_node  --controlled-at-node 3
+python main.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 1 --graph-names star_graph_n7 --fault-prob 1.0 --simulation-type controlled_at_node  --controlled-at-node 3
+python main.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 2 --graph-names star_graph_n7 --fault-prob 1.0 --simulation-type controlled_at_node  --controlled-at-node 6
+python main.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 1 --graph-names star_graph_n7 --fault-prob 1.0 --simulation-type controlled_at_node  --controlled-at-node 6
 
-# # # graphs=("star_graph_n7" "graph_powerlaw_cluster_graph_n7" "graph_random_regular_graph_n7_d4" "star_graph_n13" "graph_powerlaw_cluster_graph_n8" "graph_random_regular_graph_n8_d4" "star_graph_n15" "graph_powerlaw_cluster_graph_n9")
-graphs=("star_graph_n7" "graph_powerlaw_cluster_graph_n7")
-# graphs=("star_graph_n7")
-# graphs=("implicit_graph_n5" "implicit_graph_n6" "implicit_graph_n7" "implicit_graph_n8" "implicit_graph_n9" "implicit_graph_n10")
-joined_graphs_args="${graphs[@]}"
+# cd gnn
 
-epochs=10
-batch_size=1024
-hidden_size=32
+# # # # graphs=("star_graph_n7" "graph_powerlaw_cluster_graph_n7" "graph_random_regular_graph_n7_d4" "star_graph_n13" "graph_powerlaw_cluster_graph_n8" "graph_random_regular_graph_n8_d4" "star_graph_n15" "graph_powerlaw_cluster_graph_n9")
+# graphs=("star_graph_n7" "graph_powerlaw_cluster_graph_n7")
+# # graphs=("star_graph_n7")
+# # graphs=("implicit_graph_n5" "implicit_graph_n6" "implicit_graph_n7" "implicit_graph_n8" "implicit_graph_n9" "implicit_graph_n10")
+# joined_graphs_args="${graphs[@]}"
 
-python lstm_scratch.py \
-    --program maximal_matching \
-    --epochs $epochs \
-    --batch-size $batch_size \
-    --hidden-size $hidden_size \
-    --num-layers 1 \
-    --graph-names $joined_graphs_args \
+# epochs=10
+# batch_size=1024
+# hidden_size=32
+
+# python lstm_scratch.py \
+#     --program maximal_matching \
+#     --epochs $epochs \
+#     --batch-size $batch_size \
+#     --hidden-size $hidden_size \
+#     --num-layers 1 \
+#     --graph-names $joined_graphs_args \
 
 # python gcn_scratch.py \
 #     --epochs $epochs \
