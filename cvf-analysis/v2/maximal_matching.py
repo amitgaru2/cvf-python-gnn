@@ -71,54 +71,107 @@ class MaximalMatchingCVFAnalysisV2(CVFAnalysisV2):
         # print("Invariant", [self.possible_node_values[i][j] for i, j in enumerate(state)])
         return True
 
-    def _is_program_transition(self, perturb_pos, start_state, dest_state) -> bool:
-        j = perturb_pos
-        state = start_state
-        config = self.possible_node_values[perturb_pos][state[perturb_pos]]
-        dest_config = self.possible_node_values[perturb_pos][dest_state[perturb_pos]]
+    # def _is_program_transition(self, perturb_pos, start_state, dest_state) -> bool:
+    #     j = perturb_pos
+    #     state = start_state
+    #     config = self.possible_node_values[perturb_pos][state[perturb_pos]]
+    #     dest_config = self.possible_node_values[perturb_pos][dest_state[perturb_pos]]
 
-        def _pr_married(j, config):
-            for i in self.graph[j]:
-                if self.possible_node_values[i][state[i]].p == j and config.p == i:
+    #     def _pr_married(j, config):
+    #         for i in self.graph[j]:
+    #             if self.possible_node_values[i][state[i]].p == j and config.p == i:
+    #                 return True
+    #         return False
+
+    #     # update m.j
+    #     if config.m != _pr_married(j, config):
+    #         if dest_config.m == _pr_married(j, config):
+    #             return True
+    #     else:
+    #         if config.p is None:
+    #             for i in self.graph[j]:
+    #                 if (
+    #                     self.possible_node_values[i][state[i]].p == j
+    #                     and dest_config.p == i
+    #                 ):
+    #                     return True
+
+    #             # make a proposal
+    #             for i in self.graph[j]:
+    #                 if self.possible_node_values[i][state[i]].p == j:
+    #                     break
+    #             else:
+    #                 max_k = -1
+    #                 for k in self.graph[j]:
+    #                     if (
+    #                         self.possible_node_values[k][state[k]].p is None
+    #                         and k < j
+    #                         and not self.possible_node_values[k][state[k]].m
+    #                     ):
+    #                         if k > max_k:
+    #                             max_k = k
+
+    #                 if max_k >= 0 and dest_config.p == max_k:
+    #                     return True
+    #         else:
+    #             # withdraw a proposal
+    #             i = config.p
+    #             if self.possible_node_values[i][state[i]].p != j and (
+    #                 self.possible_node_values[i][state[i]].m or j <= i
+    #             ):
+    #                 if dest_config.p is None:
+    #                     return True
+
+    #     return False
+
+    def _is_program_transition(self, i, start_state, dest_state) -> bool:
+        """https://inria.hal.science/inria-00127899/document#page=8.52"""
+
+        config = self.possible_node_values[i][start_state[i]]
+        dest_config = self.possible_node_values[i][dest_state[i]]
+
+        def _pr_married(_i):
+            for j in self.graph[_i]:
+                config_j = self.possible_node_values[j][start_state[j]]
+                if config.p == j and config_j.p == _i:
                     return True
             return False
 
-        # update m.j
-        if config.m != _pr_married(j, config):
-            if dest_config.m == _pr_married(j, config):
+        # Update
+        if config.m != _pr_married(i):
+            if dest_config.m == _pr_married(i):
                 return True
-        else:
-            if config.p is None:
-                for i in self.graph[j]:
-                    if (
-                        self.possible_node_values[i][state[i]].p == j
-                        and dest_config.p == i
-                    ):
+
+        # Marriage
+        if config.m == _pr_married(i) and config.p is None:
+            for j in self.graph[i]:
+                config_j = self.possible_node_values[j][start_state[j]]
+                if config_j.p == i:
+                    if dest_config.p == j:
                         return True
 
-                # make a proposal
-                for i in self.graph[j]:
-                    if self.possible_node_values[i][state[i]].p == j:
-                        break
-                else:
-                    max_k = -1
-                    for k in self.graph[j]:
-                        if (
-                            self.possible_node_values[k][state[k]].p is None
-                            and k < j
-                            and not self.possible_node_values[k][state[k]].m
-                        ):
-                            if k > max_k:
-                                max_k = k
-
-                    if max_k >= 0 and dest_config.p == max_k:
-                        return True
+        # Seduction
+        max_j = -1
+        if config.m == _pr_married(i) and config.p is None:
+            for k in self.graph[i]:
+                config_k = self.possible_node_values[k][start_state[k]]
+                if config_k.p == i:
+                    break
             else:
-                # withdraw a proposal
-                i = config.p
-                if self.possible_node_values[i][state[i]].p != j and (
-                    self.possible_node_values[i][state[i]].m or j <= i
-                ):
+                for j in self.graph[i]:
+                    config_j = self.possible_node_values[j][start_state[j]]
+                    if config_j.p is None and j > i and not config_j.m:
+                        max_j = max(max_j, j)
+
+        if max_j >= 0 and dest_config.p == max_j:
+            return True
+
+        # Abandonment
+        if config.m == _pr_married(i):
+            if config.p is not None:
+                j = config.p
+                config_j = self.possible_node_values[j][start_state[j]]
+                if config_j.p != i and (config_j.m or j <= i):
                     if dest_config.p is None:
                         return True
 
@@ -146,6 +199,7 @@ class MaximalMatchingCVFAnalysisV2(CVFAnalysisV2):
                 )
                 if self._is_program_transition(position, start_state, perturb_state):
                     yield perturb_state
+                    break
 
             possible_config_m_val = {True, False} - {current_m_value}
             for perturb_m_val in possible_config_m_val:
@@ -161,6 +215,7 @@ class MaximalMatchingCVFAnalysisV2(CVFAnalysisV2):
                 )
                 if self._is_program_transition(position, start_state, perturb_state):
                     yield perturb_state
+                    break
 
     def _evaluate_perturbed_pr_married(self, position, state):
         if self.possible_node_values[position][state[position]].p is None:

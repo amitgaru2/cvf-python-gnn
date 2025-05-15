@@ -122,8 +122,8 @@ class MaximalMatchingFullAnalysis(CVFAnalysis):
                         return True
 
                 # make a proposal
-                for i in self.graph[j]:
-                    if state[i].p == j:
+                for j in self.graph[i]:
+                    if state[j].p == i:
                         break
                 else:
                     max_k = -1
