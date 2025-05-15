@@ -108,6 +108,7 @@ if __name__ == "__main__":
         choices=[
             SimulationMixin.RANDOM_FAULT_SIMULATION_TYPE,
             SimulationMixin.CONTROLLED_FAULT_AT_NODE_SIMULATION_TYPE,
+            SimulationMixin.CONTROLLED_FAULT_AT_NODE_SIMULATION_TYPE_DUONG,
         ],
         required=True,
     )
@@ -150,7 +151,10 @@ if __name__ == "__main__":
         logger.setLevel(getattr(logging, args.logging, "INFO"))
 
     simulation_type_args = []
-    if args.simulation_type == SimulationMixin.CONTROLLED_FAULT_AT_NODE_SIMULATION_TYPE:
+    if args.simulation_type in {
+        SimulationMixin.CONTROLLED_FAULT_AT_NODE_SIMULATION_TYPE,
+        SimulationMixin.CONTROLLED_FAULT_AT_NODE_SIMULATION_TYPE_DUONG,
+    }:
         if args.controlled_at_node is None:
             raise Exception('Missing "--controlled-at-node" argument.')
         else:

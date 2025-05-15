@@ -45,8 +45,10 @@ class Action:
 
 class SimulationMixin:
     highest_fault_weight = np.float32(0.6)
+    least_fault_weight = np.float32(0.01)
     RANDOM_FAULT_SIMULATION_TYPE = "random"
     CONTROLLED_FAULT_AT_NODE_SIMULATION_TYPE = "controlled_at_node"
+    CONTROLLED_FAULT_AT_NODE_SIMULATION_TYPE_DUONG = "controlled_at_node_duong"
 
     def init_global_rank_map(self):
         """override this when not needed like for simulation"""
@@ -156,6 +158,37 @@ class SimulationMixin:
         )
         return faulty_actions
 
+    def inject_least_fault_at_node(self, state, process):
+        fault_count = 1
+        faulty_actions = []
+
+        other_prob_wts = (1.0 - self.least_fault_weight) / (len(self.nodes) - 1)
+        p = [other_prob_wts for _ in range(len(self.nodes))]
+        p[process] = self.least_fault_weight
+        p = np.array(p)
+        p /= p.sum()
+
+        random_number = np.random.uniform()
+        if random_number <= self.fault_probability:
+            randomly_selected_processes = list(
+                np.random.choice(
+                    a=self.nodes,
+                    p=p,
+                    size=fault_count,
+                    replace=False,
+                )
+            )
+
+            for p in randomly_selected_processes:
+                transition_value = random.choice(
+                    list(set(i.data for i in self.possible_node_values[p]) - {state[p]})
+                )
+                faulty_actions.append(
+                    Action(Action.UPDATE, p, [state[p], transition_value])
+                )
+
+        return faulty_actions
+
     def inject_fault_w_equal_prob(self, state):
         fault_count = 1
         faulty_actions = []
@@ -254,12 +287,20 @@ class SimulationMixin:
         faulty_actions = self.inject_fault_at_node(state, process)
         return faulty_actions
 
+    def get_faulty_actions_controlled_at_node_duong(self, state, process):
+        """
+        process: process_id where the fault weight is concentrated
+        """
+        faulty_actions = self.inject_least_fault_at_node(state, process)
+        return faulty_actions
+
     def run_simulations(self, state, *extra_args):
         step = 0
         last_fault_duration = 0
         faulty_action_generator = {
             self.RANDOM_FAULT_SIMULATION_TYPE: self.get_faulty_actions_random,
             self.CONTROLLED_FAULT_AT_NODE_SIMULATION_TYPE: self.get_faulty_actions_controlled_at_node,
+            self.CONTROLLED_FAULT_AT_NODE_SIMULATION_TYPE_DUONG: self.get_faulty_actions_controlled_at_node_duong,
         }[self.simulation_type]
         while not self.is_invariant(state):  # from the base class
             faulty_actions = []
@@ -305,20 +346,16 @@ class SimulationMixin:
             inner_results = []
             _, state = self.get_random_state_v2(avoid_invariant=True)
             self.configure_fault_weight()
-
-            if self.simulation_type == self.RANDOM_FAULT_SIMULATION_TYPE:
-                inner_results.append(self.run_simulations(state, *simulation_type_args))
-            elif self.simulation_type == self.CONTROLLED_FAULT_AT_NODE_SIMULATION_TYPE:
-                # for process in range(len(self.nodes)):  # from the base class
-                inner_results.append(self.run_simulations(state, *simulation_type_args))
-
+            inner_results.append(self.run_simulations(state, *simulation_type_args))
             results.append(inner_results)
 
         return results
 
     def store_raw_result(self, result, *simulation_type_args):
         simulation_type_args_verbose = "args_" + (
-            "_".join(str(i) for i in simulation_type_args) if simulation_type_args else ""
+            "_".join(str(i) for i in simulation_type_args)
+            if simulation_type_args
+            else ""
         )
         file_path = os.path.join(
             "results",
