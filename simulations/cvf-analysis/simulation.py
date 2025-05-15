@@ -323,7 +323,7 @@ class SimulationMixin:
         file_path = os.path.join(
             "results",
             self.results_dir,
-            f"{self.graph_name}__{self.scheduler}__{self.simulation_type}_{simulation_type_args_verbose}__{self.no_of_simulations}__{self.me}__{self.fault_interval}__{datetime.datetime.now().strftime('%Y_%m_%d_%H_%M')}__raw.csv",
+            f"{self.graph_name}__{self.scheduler}__{self.simulation_type}_{simulation_type_args_verbose}__{self.no_of_simulations}__{self.me}__{self.fault_interval}.csv",
         )
         f = open(
             file_path,

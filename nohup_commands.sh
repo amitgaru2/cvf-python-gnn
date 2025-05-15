@@ -67,14 +67,82 @@ cd simulations/cvf-analysis
 # python main.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 6 --graph-names graph_7 --fault-prob 1.0
 # python main.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 5 --graph-names graph_powerlaw_cluster_graph_n30 --fault-prob 1.0
 
-python main.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 2 --graph-names star_graph_n7 --fault-prob 1.0 --simulation-type random
-python main.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 1 --graph-names star_graph_n7 --fault-prob 1.0 --simulation-type random
-python main.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 2 --graph-names star_graph_n7 --fault-prob 1.0 --simulation-type controlled_at_node  --controlled-at-node 0
-python main.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 1 --graph-names star_graph_n7 --fault-prob 1.0 --simulation-type controlled_at_node  --controlled-at-node 0
-python main.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 2 --graph-names star_graph_n7 --fault-prob 1.0 --simulation-type controlled_at_node  --controlled-at-node 3
-python main.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 1 --graph-names star_graph_n7 --fault-prob 1.0 --simulation-type controlled_at_node  --controlled-at-node 3
-python main.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 2 --graph-names star_graph_n7 --fault-prob 1.0 --simulation-type controlled_at_node  --controlled-at-node 6
-python main.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 1 --graph-names star_graph_n7 --fault-prob 1.0 --simulation-type controlled_at_node  --controlled-at-node 6
+# python main.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 1 --graph-names star_graph_n7 --fault-prob 1.0 --simulation-type random
+# python main.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 1 --graph-names star_graph_n7 --fault-prob 1.0 --simulation-type controlled_at_node  --controlled-at-node 0
+# python main.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 1 --graph-names star_graph_n7 --fault-prob 1.0 --simulation-type controlled_at_node  --controlled-at-node 3
+# python main.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 1 --graph-names star_graph_n7 --fault-prob 1.0 --simulation-type controlled_at_node  --controlled-at-node 6
+
+
+# python main.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 3 --graph-names star_graph_n7 --fault-prob 1.0 --simulation-type random
+# python main.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 3 --graph-names star_graph_n7 --fault-prob 1.0 --simulation-type controlled_at_node  --controlled-at-node 0
+# python main.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 3 --graph-names star_graph_n7 --fault-prob 1.0 --simulation-type controlled_at_node  --controlled-at-node 3
+# python main.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 3 --graph-names star_graph_n7 --fault-prob 1.0 --simulation-type controlled_at_node  --controlled-at-node 6
+
+
+# python main.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 3 --graph-names star_graph_n7 --fault-prob 1.0 --simulation-type random
+# python main.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 3 --graph-names star_graph_n7 --fault-prob 1.0 --simulation-type controlled_at_node  --controlled-at-node 0
+# python main.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 3 --graph-names star_graph_n7 --fault-prob 1.0 --simulation-type controlled_at_node  --controlled-at-node 3
+# python main.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 3 --graph-names star_graph_n7 --fault-prob 1.0 --simulation-type controlled_at_node  --controlled-at-node 6
+
+
+# python main.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 3 --graph-names graph_powerlaw_cluster_graph_n7 --fault-prob 1.0 --simulation-type random
+# python main.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 3 --graph-names graph_powerlaw_cluster_graph_n7 --fault-prob 1.0 --simulation-type controlled_at_node  --controlled-at-node 1
+# python main.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 3 --graph-names graph_powerlaw_cluster_graph_n7 --fault-prob 1.0 --simulation-type controlled_at_node  --controlled-at-node 4
+# python main.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 3 --graph-names graph_powerlaw_cluster_graph_n7 --fault-prob 1.0 --simulation-type controlled_at_node  --controlled-at-node 5
+
+
+# python main.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 1 --graph-names graph_powerlaw_cluster_graph_n7 --fault-prob 1.0 --simulation-type random
+# python main.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 1 --graph-names graph_powerlaw_cluster_graph_n7 --fault-prob 1.0 --simulation-type controlled_at_node  --controlled-at-node 1
+# python main.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 1 --graph-names graph_powerlaw_cluster_graph_n7 --fault-prob 1.0 --simulation-type controlled_at_node  --controlled-at-node 4
+# python main.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 1 --graph-names graph_powerlaw_cluster_graph_n7 --fault-prob 1.0 --simulation-type controlled_at_node  --controlled-at-node 5
+
+
+# python main.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 3 --graph-names graph_random_regular_graph_n7_d4 --fault-prob 1.0 --simulation-type random
+# python main.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 3 --graph-names graph_random_regular_graph_n7_d4 --fault-prob 1.0 --simulation-type controlled_at_node  --controlled-at-node 0
+# python main.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 3 --graph-names graph_random_regular_graph_n7_d4 --fault-prob 1.0 --simulation-type controlled_at_node  --controlled-at-node 2
+# python main.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 3 --graph-names graph_random_regular_graph_n7_d4 --fault-prob 1.0 --simulation-type controlled_at_node  --controlled-at-node 4
+
+
+# python main.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 1 --graph-names graph_random_regular_graph_n7_d4 --fault-prob 1.0 --simulation-type random
+# python main.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 1 --graph-names graph_random_regular_graph_n7_d4 --fault-prob 1.0 --simulation-type controlled_at_node  --controlled-at-node 0
+# python main.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 1 --graph-names graph_random_regular_graph_n7_d4 --fault-prob 1.0 --simulation-type controlled_at_node  --controlled-at-node 2
+# python main.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 1 --graph-names graph_random_regular_graph_n7_d4 --fault-prob 1.0 --simulation-type controlled_at_node  --controlled-at-node 4
+
+# python main.py --program dijkstra_token_ring --sched 0 --no-sim 500000 --fault-interval 1 --graph-names implicit_graph_n8 --fault-prob 1.0 --simulation-type random
+# python main.py --program dijkstra_token_ring --sched 0 --no-sim 500000 --fault-interval 1 --graph-names implicit_graph_n8 --fault-prob 1.0 --simulation-type controlled_at_node  --controlled-at-node 0
+# python main.py --program dijkstra_token_ring --sched 0 --no-sim 500000 --fault-interval 3 --graph-names implicit_graph_n8 --fault-prob 1.0 --simulation-type controlled_at_node  --controlled-at-node 4
+# python main.py --program dijkstra_token_ring --sched 0 --no-sim 500000 --fault-interval 3 --graph-names implicit_graph_n8 --fault-prob 1.0 --simulation-type controlled_at_node  --controlled-at-node 7
+
+
+# python main.py --program dijkstra_token_ring --sched 0 --no-sim 500000 --fault-interval 3 --graph-names implicit_graph_n9 --fault-prob 1.0 --simulation-type random
+# python main.py --program dijkstra_token_ring --sched 0 --no-sim 500000 --fault-interval 3 --graph-names implicit_graph_n9 --fault-prob 1.0 --simulation-type controlled_at_node  --controlled-at-node 0
+# python main.py --program dijkstra_token_ring --sched 0 --no-sim 500000 --fault-interval 3 --graph-names implicit_graph_n9 --fault-prob 1.0 --simulation-type controlled_at_node  --controlled-at-node 2
+# python main.py --program dijkstra_token_ring --sched 0 --no-sim 500000 --fault-interval 3 --graph-names implicit_graph_n9 --fault-prob 1.0 --simulation-type controlled_at_node  --controlled-at-node 8
+
+
+# python main.py --program dijkstra_token_ring --sched 0 --no-sim 500000 --fault-interval 3 --graph-names implicit_graph_n10 --fault-prob 1.0 --simulation-type random
+# python main.py --program dijkstra_token_ring --sched 0 --no-sim 500000 --fault-interval 3 --graph-names implicit_graph_n10 --fault-prob 1.0 --simulation-type controlled_at_node  --controlled-at-node 0
+# python main.py --program dijkstra_token_ring --sched 0 --no-sim 500000 --fault-interval 3 --graph-names implicit_graph_n10 --fault-prob 1.0 --simulation-type controlled_at_node  --controlled-at-node 5
+# python main.py --program dijkstra_token_ring --sched 0 --no-sim 500000 --fault-interval 3 --graph-names implicit_graph_n10 --fault-prob 1.0 --simulation-type controlled_at_node  --controlled-at-node 9
+
+
+# python main.py --program dijkstra_token_ring --sched 0 --no-sim 500000 --fault-interval 3 --graph-names implicit_graph_n11 --fault-prob 1.0 --simulation-type random
+# python main.py --program dijkstra_token_ring --sched 0 --no-sim 500000 --fault-interval 3 --graph-names implicit_graph_n11 --fault-prob 1.0 --simulation-type controlled_at_node  --controlled-at-node 0
+# python main.py --program dijkstra_token_ring --sched 0 --no-sim 500000 --fault-interval 3 --graph-names implicit_graph_n11 --fault-prob 1.0 --simulation-type controlled_at_node  --controlled-at-node 9
+# python main.py --program dijkstra_token_ring --sched 0 --no-sim 500000 --fault-interval 3 --graph-names implicit_graph_n11 --fault-prob 1.0 --simulation-type controlled_at_node  --controlled-at-node 10
+
+
+# python main.py --program dijkstra_token_ring --sched 0 --no-sim 500000 --fault-interval 3 --graph-names implicit_graph_n12 --fault-prob 1.0 --simulation-type random
+# python main.py --program dijkstra_token_ring --sched 0 --no-sim 500000 --fault-interval 3 --graph-names implicit_graph_n12 --fault-prob 1.0 --simulation-type controlled_at_node  --controlled-at-node 0
+# python main.py --program dijkstra_token_ring --sched 0 --no-sim 500000 --fault-interval 3 --graph-names implicit_graph_n12 --fault-prob 1.0 --simulation-type controlled_at_node  --controlled-at-node 7
+# python main.py --program dijkstra_token_ring --sched 0 --no-sim 500000 --fault-interval 3 --graph-names implicit_graph_n12 --fault-prob 1.0 --simulation-type controlled_at_node  --controlled-at-node 11
+
+
+python main.py --program dijkstra_token_ring --sched 0 --no-sim 500000 --fault-interval 1 --graph-names implicit_graph_n8 --fault-prob 1.0 --simulation-type random
+python main.py --program dijkstra_token_ring --sched 0 --no-sim 500000 --fault-interval 1 --graph-names implicit_graph_n8 --fault-prob 1.0 --simulation-type controlled_at_node --controlled-at-node 0
+python main.py --program dijkstra_token_ring --sched 0 --no-sim 500000 --fault-interval 1 --graph-names implicit_graph_n8 --fault-prob 1.0 --simulation-type controlled_at_node --controlled-at-node 2
+python main.py --program dijkstra_token_ring --sched 0 --no-sim 500000 --fault-interval 1 --graph-names implicit_graph_n8 --fault-prob 1.0 --simulation-type controlled_at_node --controlled-at-node 7
+
 
 # cd gnn
 
