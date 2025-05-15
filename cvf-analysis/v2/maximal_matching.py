@@ -222,61 +222,32 @@ class MaximalMatchingCVFAnalysisV2(CVFAnalysisV2):
             return [False]
         return [True, False]
 
-    def find_rank_effect(self):
-
-        def _save_perturbation_implications(_position, _frm_indx, _perturb_state):
-            to_indx = self.config_to_indx(_perturb_state)
-            rank_effect = math.ceil(
-                self.global_rank_map[_frm_indx, 0] / self.global_rank_map[_frm_indx, 1]
-            ) - math.ceil(
-                self.global_rank_map[to_indx, 0] / self.global_rank_map[to_indx, 1]
-            )
-            self.global_avg_rank_effect[rank_effect] += 1
-            if _position not in self.global_avg_node_rank_effect:
-                self.global_avg_node_rank_effect[_position] = defaultdict(lambda: 0)
-            self.global_avg_node_rank_effect[_position][rank_effect] += 1
-
-        for indx in range(self.total_configs):
-            frm_config = self.indx_to_config(indx)
-            for position, value in enumerate(frm_config):
-                config = self.possible_node_values[position][value]
-                for a_pr_married_value in self._evaluate_perturbed_pr_married(
-                    position, frm_config
-                ):
-                    if config.m is not a_pr_married_value:
-                        perturb_node_val_indx = self.possible_node_values_mapping[
-                            position
-                        ][MaximalMatchingData(config.p, a_pr_married_value)]
-                        perturb_state = tuple(
-                            [
-                                *frm_config[:position],
-                                perturb_node_val_indx,
-                                *frm_config[position + 1 :],
-                            ]
-                        )
-                        _save_perturbation_implications(position, indx, perturb_state)
-                    else:
-                        if config.p is None:
-                            for nbr in self.graph[position]:
-                                perturb_node_val_indx = (
-                                    self.possible_node_values_mapping[position][
-                                        MaximalMatchingData(nbr, a_pr_married_value)
-                                    ]
-                                )
-                                perturb_state = tuple(
-                                    [
-                                        *frm_config[:position],
-                                        perturb_node_val_indx,
-                                        *frm_config[position + 1 :],
-                                    ]
-                                )
-                                _save_perturbation_implications(
-                                    position, indx, perturb_state
-                                )
-                        else:
+    def possible_perturbed_state_frm(self, frm_indx):
+        frm_config = self.indx_to_config(frm_indx)
+        for position, value in enumerate(frm_config):
+            config = self.possible_node_values[position][value]
+            for a_pr_married_value in self._evaluate_perturbed_pr_married(
+                position, frm_config
+            ):
+                if config.m is not a_pr_married_value:
+                    perturb_node_val_indx = self.possible_node_values_mapping[position][
+                        MaximalMatchingData(config.p, a_pr_married_value)
+                    ]
+                    perturb_state = tuple(
+                        [
+                            *frm_config[:position],
+                            perturb_node_val_indx,
+                            *frm_config[position + 1 :],
+                        ]
+                    )
+                    to_indx = self.config_to_indx(perturb_state)
+                    yield position, to_indx
+                else:
+                    if config.p is None:
+                        for nbr in self.graph[position]:
                             perturb_node_val_indx = self.possible_node_values_mapping[
                                 position
-                            ][MaximalMatchingData(None, a_pr_married_value)]
+                            ][MaximalMatchingData(nbr, a_pr_married_value)]
                             perturb_state = tuple(
                                 [
                                     *frm_config[:position],
@@ -284,6 +255,84 @@ class MaximalMatchingCVFAnalysisV2(CVFAnalysisV2):
                                     *frm_config[position + 1 :],
                                 ]
                             )
-                            _save_perturbation_implications(
-                                position, indx, perturb_state
-                            )
+                            to_indx = self.config_to_indx(perturb_state)
+                            yield position, to_indx
+                    else:
+                        perturb_node_val_indx = self.possible_node_values_mapping[
+                            position
+                        ][MaximalMatchingData(None, a_pr_married_value)]
+                        perturb_state = tuple(
+                            [
+                                *frm_config[:position],
+                                perturb_node_val_indx,
+                                *frm_config[position + 1 :],
+                            ]
+                        )
+                        to_indx = self.config_to_indx(perturb_state)
+                        yield position, to_indx
+
+    # def find_rank_effect(self):
+
+    #     def _save_perturbation_implications(_position, _frm_indx, _perturb_state):
+    #         to_indx = self.config_to_indx(_perturb_state)
+    #         rank_effect = math.ceil(
+    #             self.global_rank_map[_frm_indx, 0] / self.global_rank_map[_frm_indx, 1]
+    #         ) - math.ceil(
+    #             self.global_rank_map[to_indx, 0] / self.global_rank_map[to_indx, 1]
+    #         )
+    #         self.global_avg_rank_effect[rank_effect] += 1
+    #         if _position not in self.global_avg_node_rank_effect:
+    #             self.global_avg_node_rank_effect[_position] = defaultdict(lambda: 0)
+    #         self.global_avg_node_rank_effect[_position][rank_effect] += 1
+
+    #     for indx in range(self.total_configs):
+    #         frm_config = self.indx_to_config(indx)
+    #         for position, value in enumerate(frm_config):
+    #             config = self.possible_node_values[position][value]
+    #             for a_pr_married_value in self._evaluate_perturbed_pr_married(
+    #                 position, frm_config
+    #             ):
+    #                 if config.m is not a_pr_married_value:
+    #                     perturb_node_val_indx = self.possible_node_values_mapping[
+    #                         position
+    #                     ][MaximalMatchingData(config.p, a_pr_married_value)]
+    #                     perturb_state = tuple(
+    #                         [
+    #                             *frm_config[:position],
+    #                             perturb_node_val_indx,
+    #                             *frm_config[position + 1 :],
+    #                         ]
+    #                     )
+    #                     _save_perturbation_implications(position, indx, perturb_state)
+    #                 else:
+    #                     if config.p is None:
+    #                         for nbr in self.graph[position]:
+    #                             perturb_node_val_indx = (
+    #                                 self.possible_node_values_mapping[position][
+    #                                     MaximalMatchingData(nbr, a_pr_married_value)
+    #                                 ]
+    #                             )
+    #                             perturb_state = tuple(
+    #                                 [
+    #                                     *frm_config[:position],
+    #                                     perturb_node_val_indx,
+    #                                     *frm_config[position + 1 :],
+    #                                 ]
+    #                             )
+    #                             _save_perturbation_implications(
+    #                                 position, indx, perturb_state
+    #                             )
+    #                     else:
+    #                         perturb_node_val_indx = self.possible_node_values_mapping[
+    #                             position
+    #                         ][MaximalMatchingData(None, a_pr_married_value)]
+    #                         perturb_state = tuple(
+    #                             [
+    #                                 *frm_config[:position],
+    #                                 perturb_node_val_indx,
+    #                                 *frm_config[position + 1 :],
+    #                             ]
+    #                         )
+    #                         _save_perturbation_implications(
+    #                             position, indx, perturb_state
+    #                         )
