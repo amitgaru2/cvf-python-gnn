@@ -1,0 +1,16 @@
+Timestamp: 1747262273.075608 | Program: maximal_matching | Training with Graphs: star_graph_n7, graph_powerlaw_cluster_graph_n7, graph_random_regular_graph_n7_d4 | Batch size: 64 | Epochs: 50 | Hidden size: 32 | Num layers: 1.
+
+
+Train dataset size: 10,810,675 | Test dataset size: 2,702,669
+
+
+Model SimpleLSTM(
+  (lstm): GRU(3, 32, batch_first=True)
+  (norm): LayerNorm((32,), eps=1e-05, elementwise_affine=True)
+  (h2o): Linear(in_features=32, out_features=1, bias=True)
+)
+Total parameters: 3,649
+
+
+Training set | Epoch 1 | MSE Loss: 12.2446 | Time taken: 5801.1625s
+./nohup_commands.sh: line 89: 823704 Killed                  python lstm_scratch.py --program maximal_matching --epochs $epochs --batch-size $batch_size --hidden-size $hidden_size --num-layers 1 --graph-names $joined_graphs_args
