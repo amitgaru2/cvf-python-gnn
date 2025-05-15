@@ -12,3 +12,4 @@ Model SimpleLSTM(
 Total parameters: 3,649
 
 
+Training set | Epoch 1 | MSE Loss: 7.6608 | Time taken: 625.2615s
