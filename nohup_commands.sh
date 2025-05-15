@@ -70,13 +70,13 @@ set -e
 cd gnn
 
 # # # graphs=("star_graph_n7" "graph_powerlaw_cluster_graph_n7" "graph_random_regular_graph_n7_d4" "star_graph_n13" "graph_powerlaw_cluster_graph_n8" "graph_random_regular_graph_n8_d4" "star_graph_n15" "graph_powerlaw_cluster_graph_n9")
-graphs=("star_graph_n7" "graph_powerlaw_cluster_graph_n7" "graph_random_regular_graph_n7_d4")
+graphs=("star_graph_n7" "graph_powerlaw_cluster_graph_n7")
 # graphs=("star_graph_n7")
 # graphs=("implicit_graph_n5" "implicit_graph_n6" "implicit_graph_n7" "implicit_graph_n8" "implicit_graph_n9" "implicit_graph_n10")
 joined_graphs_args="${graphs[@]}"
 
-epochs=20
-batch_size=256
+epochs=10
+batch_size=1024
 hidden_size=32
 
 python lstm_scratch.py \
