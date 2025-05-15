@@ -131,17 +131,17 @@ class SimulationMixin:
 
     def inject_fault_at_node(self, state, process):
         """Amit controlled version where given node has highest possibility of the fault."""
-        """need rework specially for programs like maximal matching where a fault should follow allowed perturbation"""
         faulty_actions = []
         indx = self.config_to_indx(state)
-        possible_transition_values = [
-            i[1] for i in self.possible_perturbed_state_frm(indx)
+        possible_transition_indexes = [
+            i[1] for i in self.possible_perturbed_state_frm(indx) if i[0] == process
         ]
-        transition_value = random.choice(
-            list(set(possible_transition_values) - {state[process]})
-        )  # the value of the node cannot remain same for the transition
+        if not possible_transition_indexes:
+            return faulty_actions
+        transition_indx = random.choice(possible_transition_indexes)
+        transition_state = self.indx_to_config(transition_indx)
         faulty_actions.append(
-            Action(Action.UPDATE, process, [state[process], transition_value])
+            Action(Action.UPDATE, process, [state[process], transition_state[process]])
         )
         return faulty_actions
 
@@ -168,15 +168,16 @@ class SimulationMixin:
             )
 
             indx = self.config_to_indx(state)
-            possible_transition_values = [
-                i[1] for i in self.possible_perturbed_state_frm(indx)
-            ]
             for p in randomly_selected_processes:
-                transition_value = random.choice(
-                    list(set(possible_transition_values) - {state[p]})
-                )
+                possible_transition_indexes = [
+                    i[1] for i in self.possible_perturbed_state_frm(indx) if i[0] == p
+                ]
+                if not possible_transition_indexes:
+                    continue
+                transition_indx = random.choice(possible_transition_indexes)
+                transition_state = self.indx_to_config(transition_indx)
                 faulty_actions.append(
-                    Action(Action.UPDATE, p, [state[p], transition_value])
+                    Action(Action.UPDATE, p, [state[p], transition_state[p]])
                 )
 
         return faulty_actions
@@ -197,15 +198,17 @@ class SimulationMixin:
 
             logger.debug("Selected random nodes %s.", randomly_selected_nodes)
             indx = self.config_to_indx(state)
-            possible_transition_values = [
-                i[1] for i in self.possible_perturbed_state_frm(indx)
-            ]
+
             for p in randomly_selected_nodes:
-                transition_value = random.choice(
-                    list(set(possible_transition_values) - {state[p]})
-                )
+                possible_transition_indexes = [
+                    i[1] for i in self.possible_perturbed_state_frm(indx) if i[0] == p
+                ]
+                if not possible_transition_indexes:
+                    continue
+                transition_indx = random.choice(possible_transition_indexes)
+                transition_state = self.indx_to_config(transition_indx)
                 faulty_actions.append(
-                    Action(Action.UPDATE, p, [state[p], transition_value])
+                    Action(Action.UPDATE, p, [state[p], transition_state[p]])
                 )
 
         return faulty_actions
