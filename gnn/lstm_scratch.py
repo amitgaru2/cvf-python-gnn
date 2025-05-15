@@ -1,4 +1,5 @@
 import csv
+import random
 import time
 import datetime
 import argparse
@@ -7,7 +8,7 @@ import torch
 import torch.nn as nn
 
 from torch_geometric.nn.pool import global_mean_pool
-from torch.utils.data import ConcatDataset, DataLoader, random_split, Sampler
+from torch.utils.data import ConcatDataset, DataLoader, random_split, Sampler, Subset
 
 from custom_logger import logger
 from helpers import (
@@ -18,6 +19,8 @@ from helpers import (
 
 # device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 device = "cuda"  # force cuda or exit
+
+subset_size = 200_000
 
 
 class SimpleLSTM(nn.Module):
@@ -37,7 +40,7 @@ class SimpleLSTM(nn.Module):
         output = global_mean_pool(output, torch.zeros(output.size(1)).to(device).long())
         return output
 
-    def fit(self, epochs, dataloader):
+    def fit(self, epochs, train_datasets, batch_size):
         criterion = torch.nn.MSELoss()
         optimizer = torch.optim.Adam(self.parameters(), lr=0.01, weight_decay=0.0001)
         for epoch in range(1, epochs + 1):
@@ -45,6 +48,7 @@ class SimpleLSTM(nn.Module):
             self.train()
             total_loss = 0
             count = 0
+            dataloader = get_subset_sampled_loader(train_datasets, batch_size)
             for batch in dataloader:
                 x = batch[0]
                 y = batch[1]
@@ -163,6 +167,22 @@ def test_model(model, test_concat_datasets, save_result=False):
         f.close()
 
 
+def get_subset_sampled_loader(train_datasets, batch_size):
+    indices = [
+        (
+            random.sample(range(len(ds)), subset_size)
+            if subset_size <= len(ds)
+            else range(len(ds))
+        )
+        for ds in train_datasets
+    ]
+    subsets = [Subset(ds, ind) for (ds, ind) in zip(train_datasets, indices)]
+    datasets = ConcatDataset(subsets)
+    batch_sampler = CustomBatchSampler(datasets, batch_size=batch_size)
+    dataloader = DataLoader(datasets, batch_sampler=batch_sampler)
+    return dataloader
+
+
 def main(program, graph_names, H, batch_size, epochs, num_layers):
     logger.info(
         "Timestamp: %s | Program: %s | Training with Graphs: %s | Batch size: %s | Epochs: %s | Hidden size: %s | Num layers: %s.",
@@ -177,7 +197,7 @@ def main(program, graph_names, H, batch_size, epochs, num_layers):
     logger.info("\n")
     dataset_coll = get_dataset_coll(program, *graph_names)
     D = dataset_coll[0].D
-    train_sizes = [int(0.85 * len(ds)) for ds in dataset_coll]
+    train_sizes = [int(0.98 * len(ds)) for ds in dataset_coll]
     test_sizes = [len(ds) - trs for ds, trs in zip(dataset_coll, train_sizes)]
 
     train_test_datasets = [
@@ -189,22 +209,20 @@ def main(program, graph_names, H, batch_size, epochs, num_layers):
     test_datasets = [ds[1] for ds in train_test_datasets]
 
     datasets = ConcatDataset(train_datasets)
+
     test_concat_datasets = ConcatDataset(test_datasets)
 
     logger.info(
-        f"Train dataset size: {len(datasets):,} | Test dataset size: {len(test_concat_datasets):,}"
+        f"Train dataset size: {len(datasets):,}, Subset size: {subset_size:,} | Test dataset size: {len(test_concat_datasets):,}"
     )
     logger.info("\n")
-
-    batch_sampler = CustomBatchSampler(datasets, batch_size=batch_size)
-    dataloader = DataLoader(datasets, batch_sampler=batch_sampler)
 
     model = SimpleLSTM(D, H, 1, num_layers=num_layers).to(device)
     logger.info("Model %s", model)
     logger.info(f"Total parameters: {sum(p.numel() for p in model.parameters()):,}")
     logger.info("\n")
     start_time = time.time()
-    model.fit(epochs=epochs, dataloader=dataloader)
+    model.fit(epochs=epochs, train_datasets=train_datasets, batch_size=batch_size)
     logger.info("\n")
     logger.info(
         "End Training | Total training time taken %ss",

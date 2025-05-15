@@ -1,0 +1,29 @@
+Timestamp: 1747290199.60415 | Program: maximal_matching | Training with Graphs: star_graph_n7, graph_powerlaw_cluster_graph_n7, graph_random_regular_graph_n7_d4 | Batch size: 256 | Epochs: 5 | Hidden size: 32 | Num layers: 2.
+
+
+Train dataset size: 13,243,077, Subset size: 100,000 | Test dataset size: 270,267
+
+
+Model SimpleLSTM(
+  (lstm): GRU(3, 32, num_layers=2, batch_first=True)
+  (norm): LayerNorm((32,), eps=1e-05, elementwise_affine=True)
+  (h2o): Linear(in_features=32, out_features=1, bias=True)
+)
+Total parameters: 9,985
+
+
+Training set | Epoch 1 | MSE Loss: 26.0073 | Time taken: 176.3007s
+Training set | Epoch 2 | MSE Loss: 13.8414 | Time taken: 173.4955s
+Training set | Epoch 3 | MSE Loss: 12.3231 | Time taken: 126.3128s
+Training set | Epoch 4 | MSE Loss: 11.4139 | Time taken: 126.449s
+Training set | Epoch 5 | MSE Loss: 10.6958 | Time taken: 126.1379s
+
+
+End Training | Total training time taken 728.7019s
+
+
+Saving model trained_models/lstm_trained_at_2025_05_15_00_36.pt
+
+
+Testing model...
+Test set | MSE loss: 14.3344 | Total matched: 29,317 out of 270,267 (Accuracy: 10.85%)

@@ -58,11 +58,8 @@ graph_names_map = {
         # "implicit_graph_n13",
     },
     MAX_MATCHING_PROGRAM: {
-        "graph_1",
-        "graph_2",
-        "graph_3",
-        "graph_6",
-        "graph_6b",
+        "graph_powerlaw_cluster_graph_n7",
+        "graph_random_regular_graph_n7_d4",
     },
     MAX_INDEPENDENT_SET_PROGRAM: {
         "graph_1",

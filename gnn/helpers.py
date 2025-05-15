@@ -382,10 +382,13 @@ class CVFConfigForGCNWSuccLSTMDatasetForMM(Dataset):
         df = pd.DataFrame(combinations, columns=["p", "m"])
         df["combo"] = df["p"].astype(str) + "_" + df["m"].astype(str)
         df["combo_index"] = df["combo"].astype("category").cat.codes
-        df = df.drop("combo", axis=1)
+        df["combo_index_norm"] = (df["combo_index"] - df["combo_index"].min()) / (
+            df["combo_index"].max() - df["combo_index"].min()
+        )
+        df = df.drop(["combo", "combo_index"], axis=1)
         combo_dict = {
             (None if pd.isna(p) else p, None if pd.isna(m) else m): idx
-            for p, m, idx in zip(df["p"], df["m"], df["combo_index"])
+            for p, m, idx in zip(df["p"], df["m"], df["combo_index_norm"])
         }
         return combo_dict
 

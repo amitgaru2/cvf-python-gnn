@@ -1,0 +1,74 @@
+Timestamp: 1747285414.118875 | Program: maximal_matching | Training with Graphs: star_graph_n7, graph_powerlaw_cluster_graph_n7, graph_random_regular_graph_n7_d4 | Batch size: 256 | Epochs: 50 | Hidden size: 32 | Num layers: 1.
+
+
+Train dataset size: 3, Subset size: 20000 | Test dataset size: 270,267
+
+
+Model SimpleLSTM(
+  (lstm): GRU(3, 32, batch_first=True)
+  (norm): LayerNorm((32,), eps=1e-05, elementwise_affine=True)
+  (h2o): Linear(in_features=32, out_features=1, bias=True)
+)
+Total parameters: 3,649
+
+
+Training set | Epoch 1 | MSE Loss: 43.2661 | Time taken: 11.561s
+Training set | Epoch 2 | MSE Loss: 17.6472 | Time taken: 11.4189s
+Training set | Epoch 3 | MSE Loss: 14.0015 | Time taken: 25.8263s
+Training set | Epoch 4 | MSE Loss: 13.126 | Time taken: 25.2862s
+Training set | Epoch 5 | MSE Loss: 12.1326 | Time taken: 23.9035s
+Training set | Epoch 6 | MSE Loss: 11.9244 | Time taken: 22.5746s
+Training set | Epoch 7 | MSE Loss: 11.5517 | Time taken: 21.4319s
+Training set | Epoch 8 | MSE Loss: 11.1958 | Time taken: 21.0219s
+Training set | Epoch 9 | MSE Loss: 11.3373 | Time taken: 20.4452s
+Training set | Epoch 10 | MSE Loss: 11.568 | Time taken: 20.0454s
+Training set | Epoch 11 | MSE Loss: 11.0741 | Time taken: 19.7194s
+Training set | Epoch 12 | MSE Loss: 10.9195 | Time taken: 15.0094s
+Training set | Epoch 13 | MSE Loss: 10.7475 | Time taken: 11.4894s
+Training set | Epoch 14 | MSE Loss: 10.6443 | Time taken: 11.4521s
+Training set | Epoch 15 | MSE Loss: 10.6569 | Time taken: 11.4577s
+Training set | Epoch 16 | MSE Loss: 10.6984 | Time taken: 11.4438s
+Training set | Epoch 17 | MSE Loss: 10.4447 | Time taken: 24.07s
+Training set | Epoch 18 | MSE Loss: 10.2268 | Time taken: 26.2658s
+Training set | Epoch 19 | MSE Loss: 10.5647 | Time taken: 25.836s
+Training set | Epoch 20 | MSE Loss: 10.9335 | Time taken: 24.0994s
+Training set | Epoch 21 | MSE Loss: 10.8569 | Time taken: 23.026s
+Training set | Epoch 22 | MSE Loss: 10.333 | Time taken: 22.5433s
+Training set | Epoch 23 | MSE Loss: 10.602 | Time taken: 21.8295s
+Training set | Epoch 24 | MSE Loss: 10.5063 | Time taken: 21.7168s
+Training set | Epoch 25 | MSE Loss: 10.2086 | Time taken: 21.7041s
+Training set | Epoch 26 | MSE Loss: 10.4981 | Time taken: 21.5859s
+Training set | Epoch 27 | MSE Loss: 10.2321 | Time taken: 21.3548s
+Training set | Epoch 28 | MSE Loss: 10.0984 | Time taken: 21.1084s
+Training set | Epoch 29 | MSE Loss: 11.5402 | Time taken: 21.0039s
+Training set | Epoch 30 | MSE Loss: 12.3102 | Time taken: 20.8678s
+Training set | Epoch 31 | MSE Loss: 11.4581 | Time taken: 20.4064s
+Training set | Epoch 32 | MSE Loss: 13.3171 | Time taken: 20.4243s
+Training set | Epoch 33 | MSE Loss: 12.4518 | Time taken: 20.0886s
+Training set | Epoch 34 | MSE Loss: 11.3217 | Time taken: 19.7729s
+Training set | Epoch 35 | MSE Loss: 15.3381 | Time taken: 19.8011s
+Training set | Epoch 36 | MSE Loss: 12.4367 | Time taken: 19.5136s
+Training set | Epoch 37 | MSE Loss: 12.1371 | Time taken: 19.7363s
+Training set | Epoch 38 | MSE Loss: 11.3608 | Time taken: 19.7203s
+Training set | Epoch 39 | MSE Loss: 11.1635 | Time taken: 19.4356s
+Training set | Epoch 40 | MSE Loss: 11.084 | Time taken: 19.396s
+Training set | Epoch 41 | MSE Loss: 11.055 | Time taken: 19.4315s
+Training set | Epoch 42 | MSE Loss: 10.9871 | Time taken: 19.2568s
+Training set | Epoch 43 | MSE Loss: 10.8216 | Time taken: 19.1462s
+Training set | Epoch 44 | MSE Loss: 10.9526 | Time taken: 19.2101s
+Training set | Epoch 45 | MSE Loss: 11.0658 | Time taken: 19.1148s
+Training set | Epoch 46 | MSE Loss: 10.5856 | Time taken: 18.8761s
+Training set | Epoch 47 | MSE Loss: 11.3591 | Time taken: 18.9372s
+Training set | Epoch 48 | MSE Loss: 10.5728 | Time taken: 18.7965s
+Training set | Epoch 49 | MSE Loss: 10.214 | Time taken: 18.7381s
+Training set | Epoch 50 | MSE Loss: 10.5179 | Time taken: 18.7265s
+
+
+End Training | Total training time taken 989.6317s
+
+
+Saving model trained_models/lstm_trained_at_2025_05_14_23_20.pt
+
+
+Testing model...
+Test set | MSE loss: 17.2561 | Total matched: 27,110 out of 270,267 (Accuracy: 10.03%)
