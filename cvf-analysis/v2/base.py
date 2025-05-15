@@ -197,7 +197,7 @@ class CVFAnalysisV2:
 
     def _get_program_transitions(self, start_state):
         program_transitions = []
-        for perturb_state in self._get_program_transitions_as_configs(start_state):
+        for position, perturb_state in self._get_program_transitions_as_configs(start_state):
             if perturb_state is not None:
                 program_transitions.append(self.config_to_indx(perturb_state))
             else:

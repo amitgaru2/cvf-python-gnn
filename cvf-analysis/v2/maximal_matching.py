@@ -145,7 +145,7 @@ class MaximalMatchingCVFAnalysisV2(CVFAnalysisV2):
                     ]
                 )
                 if self._is_program_transition(position, start_state, perturb_state):
-                    yield perturb_state
+                    yield position, perturb_state
                     break
 
             possible_config_m_val = {True, False} - {current_m_value}
@@ -161,7 +161,7 @@ class MaximalMatchingCVFAnalysisV2(CVFAnalysisV2):
                     ]
                 )
                 if self._is_program_transition(position, start_state, perturb_state):
-                    yield perturb_state
+                    yield position, perturb_state
                     break
 
     def _evaluate_perturbed_pr_married(self, position, state):
