@@ -8,6 +8,8 @@ import matplotlib.lines as mlines
 from matplotlib import pyplot as plt
 
 
+ONLY_FA = True
+
 model = sys.argv[1]
 program = sys.argv[2]
 
@@ -47,13 +49,13 @@ TITLE_PROGRAM_MAP = {
 # ]
 
 graphs = [
-# # "implicit_graph_n6",
-# # "implicit_graph_n7",
-"implicit_graph_n8",
-# # "implicit_graph_n9",
-# # "implicit_graph_n10",
-# # "implicit_graph_n11",
-#     "implicit_graph_n12",
+    # # "implicit_graph_n6",
+    # # "implicit_graph_n7",
+    "implicit_graph_n8",
+    # # "implicit_graph_n9",
+    # # "implicit_graph_n10",
+    # # "implicit_graph_n11",
+    #     "implicit_graph_n12",
 ]
 
 
@@ -74,7 +76,11 @@ def main(graph_name):
     )
     df = pd.read_csv(filepath, index_col=0)
 
-    if "fa_count" in df.columns:
+    if ONLY_FA:
+        df = df[["rank effect", "node", "fa_count"]]
+        df = df.rename(columns={"fa_count": "FA count"})
+        lines_in_pair = 1
+    elif "fa_count" in df.columns:
         df = df[["rank effect", "node", "ml_count", "fa_count"]]
         df = df.rename(columns={"ml_count": "ML count", "fa_count": "FA count"})
         lines_in_pair = 2
@@ -90,10 +96,11 @@ def main(graph_name):
     nodes = df["node"].unique()
     nodes.sort()
     for node in nodes:
-        col = f"Node {node} ML count"
-        node_data = df.loc[(df["node"] == node)]["ML count"]
-        node_data = node_data.reset_index(drop=True)
-        df_preproc.loc[:, col] = node_data
+        if not ONLY_FA:
+            col = f"Node {node} ML count"
+            node_data = df.loc[(df["node"] == node)]["ML count"]
+            node_data = node_data.reset_index(drop=True)
+            df_preproc.loc[:, col] = node_data
 
         if "FA count" in df.columns:
             col = f"Node {node} FA count"
@@ -103,7 +110,7 @@ def main(graph_name):
 
     selected_cols = ["Rank Effect"]
     for i in selected_nodes:
-        temp = [f"Node {i} ML count"]
+        temp = [f"Node {i} ML count"] if not ONLY_FA else []
         if "FA count" in df.columns:
             temp.append(f"Node {i} FA count")
         selected_cols.extend(temp)
@@ -129,23 +136,6 @@ def plot_df(df_preproc, selected_cols, graph_name, lines_in_pair):
             line.set_linestyle(line_styles[j])
         i += lines_in_pair
 
-    # prev_marker = None
-    # next_color = None
-    # for i, line in enumerate(ax.lines):
-    #     if prev_marker is None:
-    #         marker = next(marker_cycle)
-    #         color, next_color = next(color_cycle)
-    #         prev_marker = marker
-    #         line_style = "solid"
-    #     else:
-    #         marker = prev_marker
-    #         color = next_color
-    #         prev_marker = None
-    #         line_style = "dashed"
-    #     # line.set_marker(marker)
-    #     line.set_color(color)
-    #     line.set_linestyle(line_style)
-
     ax.set_xlabel("Rank Effect")
 
     ax.set_yscale("log")
@@ -157,24 +147,22 @@ def plot_df(df_preproc, selected_cols, graph_name, lines_in_pair):
 
     ax.set_title(get_title(graph_name), fontdict={"fontsize": fontsize})
 
-    file_name = f"RE_Node__{program}__{graph_name}__{''.join([str(i) for i in selected_nodes])}__{model}.png"
-
-    dup_markers = []
-    for marker in markers:
-        dup_markers.extend([marker, marker])
+    file_name = f"RE_Node__{program}__{graph_name}__{''.join([str(i) for i in selected_nodes])}__{model}"
+    if ONLY_FA:
+        file_name = f"{file_name}__fa"
+    file_name = f"{file_name}.png"
 
     custom_lines = [
         mlines.Line2D(
             [],
             [],
             color=line.get_color(),
-            # marker=marker,
             label=cat,
             linewidth=1,
             markersize=10,
             linestyle=line.get_linestyle(),
         )
-        for line, marker, cat in zip(ax.lines, dup_markers, selected_cols[1:])
+        for line, cat in zip(ax.lines, selected_cols[1:])
     ]
 
     plt.rc("font", size=fontsize)

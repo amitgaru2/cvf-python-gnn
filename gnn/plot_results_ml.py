@@ -16,6 +16,8 @@ plots_dir = "plots"
 fontsize = 20
 markers = ["*", "o", "h", "v", "P", "s", "p", "x", "D", "8"]
 
+ONLY_FA = False
+
 marker_cycle = cycle(markers)
 
 
@@ -36,14 +38,14 @@ TITLE_PROGRAM_MAP = {
 
 graphs = [
     "star_graph_n7",
-#     # "star_graph_n15",
-#     # "graph_powerlaw_cluster_graph_n7",
-#     # "graph_random_regular_graph_n7_d4",
-#     # "star_graph_n13",
-#     # "graph_powerlaw_cluster_graph_n8",
-#     # "graph_powerlaw_cluster_graph_n9",
-#     # "graph_random_regular_graph_n8_d4",
-#     # "graph_random_regular_graph_n9_d4",
+    #     # "star_graph_n15",
+    #     # "graph_powerlaw_cluster_graph_n7",
+    #     # "graph_random_regular_graph_n7_d4",
+    #     # "star_graph_n13",
+    #     # "graph_powerlaw_cluster_graph_n8",
+    #     # "graph_powerlaw_cluster_graph_n9",
+    #     # "graph_random_regular_graph_n8_d4",
+    #     # "graph_random_regular_graph_n9_d4",
 ]
 
 # graphs = [
@@ -70,7 +72,11 @@ def main(graph_name):
         "ml_predictions", f"{model}__{graph_name}__{result_type}.csv"
     )
     df = pd.read_csv(filepath, index_col=0)
-    if "fa_count" in df.columns:
+    if ONLY_FA:
+        df = df[["rank effect", "fa_count"]]
+        df = df.rename(columns={"fa_count": "FA count"})
+        legends = ["FA count"]
+    elif "fa_count" in df.columns:
         df = df[["rank effect", "ml_count", "fa_count"]]
         df = df.rename(columns={"ml_count": "ML Count", "fa_count": "FA count"})
         legends = ["ML count", "FA count"]
@@ -102,7 +108,10 @@ def plot_df(df, legends):
 
     ax.set_title(get_title(), fontdict={"fontsize": fontsize})
 
-    file_name = f"RE__{program}__{graph_name}__{model}.png"
+    file_name = f"RE__{program}__{graph_name}__{model}"
+    if ONLY_FA:
+        file_name = f"{file_name}__fa"
+    file_name = f"{file_name}.png"
     custom_lines = [
         mlines.Line2D(
             [],
