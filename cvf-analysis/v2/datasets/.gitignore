@@ -4,9 +4,9 @@
 *_config_rank_succ.csv
 
 
-!dijkstra/implicit_graph_n4*/
-!dijkstra/implicit_graph_n5*/
-!coloring/star_graph_n5*/
-!coloring/graph_powerlaw_cluster_graph_n5*/
-!maximal_matching/star_graph_n5*/
-!maximal_matching/graph_powerlaw_cluster_graph_n5*/
+!dijkstra/implicit_graph_n4_*
+!dijkstra/implicit_graph_n5_*
+!coloring/star_graph_n5_*
+!coloring/graph_powerlaw_cluster_graph_n5_*
+!maximal_matching/star_graph_n5_*
+!maximal_matching/graph_powerlaw_cluster_graph_n5_*
