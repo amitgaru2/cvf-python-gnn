@@ -16,9 +16,9 @@ from lstm_scratch import SimpleLSTM
 from helpers import CVFConfigForAnalysisDataset
 
 
-# model_name = "lstm_trained_at_2025_05_12_21_31"
-
 model_name = sys.argv[1]
+
+ONLY_FA = model_name == "fa"
 
 # program = "dijkstra"
 program = sys.argv[2]
@@ -187,7 +187,11 @@ def get_fa_results(graph_name, ml_grp_by_re, ml_grp_by_node_re):
 
 def main(graph_name, has_fa_analysis=True):
     logger.info("Starting for %s.", graph_name)
-    ml_grp_by_re, ml_grp_by_node_re = ml_cvf_analysis()
+    if ONLY_FA:
+        ml_grp_by_re = pd.DataFrame(columns=["rank effect"])
+        ml_grp_by_node_re = pd.DataFrame(columns=["node", "rank effect"])
+    else:
+        ml_grp_by_re, ml_grp_by_node_re = ml_cvf_analysis()
     if has_fa_analysis:
         get_fa_results(graph_name, ml_grp_by_re, ml_grp_by_node_re)
 

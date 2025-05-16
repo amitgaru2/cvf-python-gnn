@@ -8,15 +8,16 @@ import matplotlib.lines as mlines
 from matplotlib import pyplot as plt
 
 
-ONLY_FA = False
-
 model = sys.argv[1]
+
+ONLY_FA = model == "fa"
+
 program = sys.argv[2]
 
 markers = ["*", "o", "h", "v", "P", "s", "p", "x", "D", "8"]
 marker_cycle = cycle(markers)
 
-colors = [sns.cubehelix_palette(5, start=i, rot=0)[2:4] for i in range(5)]
+# colors = [sns.cubehelix_palette(5, start=i, rot=0)[2:4] for i in range(5)]
 colors = [("red", "red"), ("green", "green"), ("blue", "blue"), ("orange", "orange")]
 color_cycle = cycle(colors)
 
@@ -36,30 +37,30 @@ TITLE_PROGRAM_MAP = {
 }
 
 
-# graphs = [
-#     "star_graph_n7",
-#     #     # "star_graph_n15",
-#     #     # "graph_powerlaw_cluster_graph_n7",
-#     #     # "graph_random_regular_graph_n7_d4",
-#     #     # "star_graph_n13",
-#     #     # "graph_powerlaw_cluster_graph_n8",
-#     #     "graph_powerlaw_cluster_graph_n9",
-#     #     # "graph_random_regular_graph_n8_d4",
-#     #     # "graph_random_regular_graph_n9_d4",
-# ]
-
 graphs = [
-    # # "implicit_graph_n6",
-    # # "implicit_graph_n7",
-    "implicit_graph_n8",
-    # # "implicit_graph_n9",
-    # # "implicit_graph_n10",
-    # # "implicit_graph_n11",
-    #     "implicit_graph_n12",
+    #     "star_graph_n7",
+    #     #     # "star_graph_n15",
+    "graph_powerlaw_cluster_graph_n7",
+    #     #     # "graph_random_regular_graph_n7_d4",
+    #     #     # "star_graph_n13",
+    #     #     # "graph_powerlaw_cluster_graph_n8",
+    #     #     "graph_powerlaw_cluster_graph_n9",
+    #     #     # "graph_random_regular_graph_n8_d4",
+    #     #     # "graph_random_regular_graph_n9_d4",
 ]
 
+# graphs = [
+#     # # "implicit_graph_n6",
+#     # # "implicit_graph_n7",
+#     "implicit_graph_n8",
+#     # # "implicit_graph_n9",
+#     # # "implicit_graph_n10",
+#     # # "implicit_graph_n11",
+#     #     "implicit_graph_n12",
+# ]
 
-selected_nodes = [0, 2, 7]
+
+selected_nodes = [1, 4, 5]
 
 
 result_type = "cvf_by_node"
@@ -147,10 +148,7 @@ def plot_df(df_preproc, selected_cols, graph_name, lines_in_pair):
 
     ax.set_title(get_title(graph_name), fontdict={"fontsize": fontsize})
 
-    file_name = f"RE_Node__{program}__{graph_name}__{''.join([str(i) for i in selected_nodes])}__{model}"
-    if ONLY_FA:
-        file_name = f"{file_name}__fa"
-    file_name = f"{file_name}.png"
+    file_name = f"RE_Node__{program}__{graph_name}__{''.join([str(i) for i in selected_nodes])}__{model}.png"
 
     custom_lines = [
         mlines.Line2D(

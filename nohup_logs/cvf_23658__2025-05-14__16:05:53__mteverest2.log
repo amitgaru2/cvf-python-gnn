@@ -1,4 +1,0 @@
-Traceback (most recent call last):
-  File "/home/agaru/research/cvf-python-gnn/gnn/lstm_scratch.py", line 6, in <module>
-    import torch
-ModuleNotFoundError: No module named 'torch'
