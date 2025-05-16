@@ -1,3 +1,4 @@
+
 #!/bin/bash
 set -e
 
@@ -18,13 +19,19 @@ set -e
 
 
 cd simulations
-# python simulate.py --program maximal_matching --sched 0 --no-sim 500000 --fault-interval 1 --graph-names graph_powerlaw_cluster_graph_n7 --fault-prob 1.0 --simulation-type random
+python simulate.py --program dijkstra_token_ring --sched 0 --no-sim 500000 --fault-interval 1 --graph-names implicit_graph_n8 --fault-prob 1.0 --simulation-type random
+python simulate.py --program dijkstra_token_ring --sched 0 --no-sim 500000 --fault-interval 1 --graph-names implicit_graph_n8 --fault-prob 1.0 --simulation-type controlled_at_node --controlled-at-node 0
+python simulate.py --program dijkstra_token_ring --sched 0 --no-sim 500000 --fault-interval 1 --graph-names implicit_graph_n8 --fault-prob 1.0 --simulation-type controlled_at_node --controlled-at-node 2
+python simulate.py --program dijkstra_token_ring --sched 0 --no-sim 500000 --fault-interval 1 --graph-names implicit_graph_n8 --fault-prob 1.0 --simulation-type controlled_at_node --controlled-at-node 7
+python simulate.py --program dijkstra_token_ring --sched 0 --no-sim 500000 --fault-interval 1 --graph-names implicit_graph_n8 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 0
+python simulate.py --program dijkstra_token_ring --sched 0 --no-sim 500000 --fault-interval 1 --graph-names implicit_graph_n8 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 2
+python simulate.py --program dijkstra_token_ring --sched 0 --no-sim 500000 --fault-interval 1 --graph-names implicit_graph_n8 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 7
 # python simulate.py --program maximal_matching --sched 0 --no-sim 500000 --fault-interval 1 --graph-names graph_powerlaw_cluster_graph_n7 --fault-prob 1.0 --simulation-type controlled_at_node --controlled-at-node 1
 # python simulate.py --program maximal_matching --sched 0 --no-sim 500000 --fault-interval 1 --graph-names graph_powerlaw_cluster_graph_n7 --fault-prob 1.0 --simulation-type controlled_at_node --controlled-at-node 4
 # python simulate.py --program maximal_matching --sched 0 --no-sim 500000 --fault-interval 1 --graph-names graph_powerlaw_cluster_graph_n7 --fault-prob 1.0 --simulation-type controlled_at_node --controlled-at-node 5
 # python simulate.py --program maximal_matching --sched 0 --no-sim 500000 --fault-interval 1 --graph-names graph_powerlaw_cluster_graph_n7 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 1
-python simulate.py --program maximal_matching --sched 0 --no-sim 500000 --fault-interval 1 --graph-names graph_powerlaw_cluster_graph_n7 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 4
-python simulate.py --program maximal_matching --sched 0 --no-sim 500000 --fault-interval 1 --graph-names graph_powerlaw_cluster_graph_n7 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 5
+# python simulate.py --program maximal_matching --sched 0 --no-sim 500000 --fault-interval 1 --graph-names graph_powerlaw_cluster_graph_n7 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 4
+# python simulate.py --program maximal_matching --sched 0 --no-sim 500000 --fault-interval 1 --graph-names graph_powerlaw_cluster_graph_n7 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 5
 
 
 # cd gnn
@@ -76,29 +83,5 @@ python simulate.py --program maximal_matching --sched 0 --no-sim 500000 --fault-
 
 # # cd gnn
 
-# # python cvf_analysis.py implicit_graph_n8
-# # python cvf_analysis.py implicit_graph_n9
-# # python cvf_analysis.py implicit_graph_n10
-# # python cvf_analysis.py implicit_graph_n11
-# # python cvf_analysis.py implicit_graph_n12
-# # python cvf_analysis.py implicit_graph_n13
-# # python cvf_analysis.py implicit_graph_n14
 # # python cvf_analysis.py lstm_trained_at_2025_05_12_21_31 dijkstra implicit_graph_n5
-# # python cvf_analysis.py lstm_trained_at_2025_05_12_21_31 dijkstra implicit_graph_n6
-# # python cvf_analysis.py lstm_trained_at_2025_05_12_21_31 dijkstra implicit_graph_n7
-# # python cvf_analysis.py lstm_trained_at_2025_05_12_21_31 dijkstra implicit_graph_n13
-# # python cvf_analysis.py lstm_trained_at_2025_05_12_21_31 dijkstra implicit_graph_n14
-# # python cvf_analysis.py star_graph_n13
-# # python cvf_analysis.py lstm_trained_at_2025_05_13_10_34 maximal_matching star_graph_n7
-# # python cvf_analysis.py lstm_trained_at_2025_05_13_10_34 maximal_matching graph_powerlaw_cluster_graph_n7
-# # python cvf_analysis.py lstm_trained_at_2025_05_13_10_34 maximal_matching graph_random_regular_graph_n7_d4
-# # python cvf_analysis.py graph_powerlaw_cluster_graph_n8
-# # python cvf_analysis.py graph_powerlaw_cluster_graph_n9
-# # # python cvf_analysis.py graph_powerlaw_cluster_graph_n12
-# # python cvf_analysis.py graph_random_regular_graph_n8_d4
-# #python cvf_analysis.py graph_random_regular_graph_n9_d4
-# # # python cvf_analysis.py graph_random_regular_graph_n10_d4
-# # # python cvf_analysis.py graph_random_regular_graph_n11_d4
-# # # python cvf_analysis.py graph_random_regular_graph_n12_d4
-# # # python cvf_analysis.py graph_random_regular_graph_n13_d4
-# # python cvf_analysis.py star_graph_n15
+
