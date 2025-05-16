@@ -137,6 +137,7 @@ class SimulationMixin:
             i[1] for i in self.possible_perturbed_state_frm(indx) if i[0] == process
         ]
         if not possible_transition_indexes:
+            logger.warning("No any possible perturbation found for %s at state %s.", p, state)
             return faulty_actions
         transition_indx = random.choice(possible_transition_indexes)
         transition_state = self.indx_to_config(transition_indx)
@@ -173,6 +174,7 @@ class SimulationMixin:
                     i[1] for i in self.possible_perturbed_state_frm(indx) if i[0] == p
                 ]
                 if not possible_transition_indexes:
+                    logger.warning("No any possible perturbation found for %s at state %s.", p, state)
                     continue
                 transition_indx = random.choice(possible_transition_indexes)
                 transition_state = self.indx_to_config(transition_indx)
@@ -203,8 +205,8 @@ class SimulationMixin:
                 possible_transition_indexes = [
                     i[1] for i in self.possible_perturbed_state_frm(indx) if i[0] == p
                 ]
-                print("posssible transition indexes", possible_transition_indexes, " for ", p)
                 if not possible_transition_indexes:
+                    logger.warning("No any possible perturbation found for %s at state %s.", p, state)
                     continue
                 transition_indx = random.choice(possible_transition_indexes)
                 transition_state = self.indx_to_config(transition_indx)
