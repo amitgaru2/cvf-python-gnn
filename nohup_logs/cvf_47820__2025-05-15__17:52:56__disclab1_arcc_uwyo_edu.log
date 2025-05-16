@@ -69,3 +69,13 @@ Simulation environment: No. of Simulations: 500000 | Scheduler: CENTRAL | ME: Fa
 Time taken: 57.6296s, Running simulation round: 50000
 Time taken: 57.6358s, Running simulation round: 100000
 Time taken: 57.5318s, Running simulation round: 150000
+Time taken: 56.7614s, Running simulation round: 200000
+Time taken: 56.5043s, Running simulation round: 250000
+Time taken: 56.597s, Running simulation round: 300000
+Time taken: 56.6972s, Running simulation round: 350000
+Time taken: 56.5349s, Running simulation round: 400000
+Time taken: 56.586s, Running simulation round: 450000
+Time taken: 56.729s, Running simulation round: 500000
+
+Saving result at results/maximal_matching/graph_powerlaw_cluster_graph_n7__0__controlled_at_node_duong_args_1__500000__False__1.csv
+./nohup_commands.sh: line 26: d-at-node: command not found

@@ -27,7 +27,6 @@ python simulate.py --program maximal_matching --sched 0 --no-sim 500000 --fault-
 python simulate.py --program maximal_matching --sched 0 --no-sim 500000 --fault-interval 1 --graph-names graph_powerlaw_cluster_graph_n7 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 5
 
 
-
 # cd gnn
 # # # # graphs=("star_graph_n7" "graph_powerlaw_cluster_graph_n7" "graph_random_regular_graph_n7_d4" "star_graph_n13" "graph_powerlaw_cluster_graph_n8" "graph_random_regular_graph_n8_d4" "star_graph_n15" "graph_powerlaw_cluster_graph_n9")
 # graphs=("star_graph_n7" "graph_powerlaw_cluster_graph_n7")
