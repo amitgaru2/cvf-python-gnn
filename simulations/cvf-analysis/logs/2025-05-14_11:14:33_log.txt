@@ -1,9 +1,0 @@
-Note: NumExpr detected 24 cores but "NUMEXPR_MAX_THREADS" not set, so enforcing safe limit of 8.
-NumExpr defaulting to 8 threads.
-Locating Graph: "star_graph_n7".
-Analysis graph: star_graph_n7 | program: graph_coloring | Simulation Type: controlled_at_node, Args: [2] | No. of Simulations: 1000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 1
-Total configs: 448.
-Simulation environment: No. of Simulations: 1000 | Scheduler: CENTRAL | ME: False
-Time taken: 0.0191s, Running simulation round: 1000
-
-Saving result at results/coloring/star_graph_n7__0__controlled_at_node__1000__False__1__2025_05_14_11_14__raw.csv

@@ -3,3 +3,19 @@ Analysis graph: graph_powerlaw_cluster_graph_n7 | program: maximal_matching | Si
 Total configs: 3,456,000.
 Simulation environment: No. of Simulations: 500000 | Scheduler: CENTRAL | ME: False
 Time taken: 54.0627s, Running simulation round: 50000
+Time taken: 54.3083s, Running simulation round: 100000
+Time taken: 54.1801s, Running simulation round: 150000
+Time taken: 54.2045s, Running simulation round: 200000
+Time taken: 54.1874s, Running simulation round: 250000
+Time taken: 54.118s, Running simulation round: 300000
+Time taken: 54.2823s, Running simulation round: 350000
+Time taken: 54.29s, Running simulation round: 400000
+Time taken: 54.2834s, Running simulation round: 450000
+Time taken: 54.3854s, Running simulation round: 500000
+
+Saving result at results/maximal_matching/graph_powerlaw_cluster_graph_n7__0__random_args___500000__False__1.csv
+Locating Graph: "graph_powerlaw_cluster_graph_n7".
+Analysis graph: graph_powerlaw_cluster_graph_n7 | program: maximal_matching | Simulation Type: controlled_at_node, Args: [1] | No. of Simulations: 500000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 1
+Total configs: 3,456,000.
+Simulation environment: No. of Simulations: 500000 | Scheduler: CENTRAL | ME: False
+Time taken: 54.1995s, Running simulation round: 50000
