@@ -68,3 +68,4 @@ Total configs: 3,456,000.
 Simulation environment: No. of Simulations: 500000 | Scheduler: CENTRAL | ME: False
 Time taken: 57.6296s, Running simulation round: 50000
 Time taken: 57.6358s, Running simulation round: 100000
+Time taken: 57.5318s, Running simulation round: 150000
