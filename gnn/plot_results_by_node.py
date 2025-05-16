@@ -8,7 +8,7 @@ import matplotlib.lines as mlines
 from matplotlib import pyplot as plt
 
 
-ONLY_FA = True
+ONLY_FA = False
 
 model = sys.argv[1]
 program = sys.argv[2]

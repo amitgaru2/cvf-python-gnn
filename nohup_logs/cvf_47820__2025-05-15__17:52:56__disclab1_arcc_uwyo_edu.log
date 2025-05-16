@@ -19,3 +19,52 @@ Analysis graph: graph_powerlaw_cluster_graph_n7 | program: maximal_matching | Si
 Total configs: 3,456,000.
 Simulation environment: No. of Simulations: 500000 | Scheduler: CENTRAL | ME: False
 Time taken: 54.1995s, Running simulation round: 50000
+Time taken: 53.8539s, Running simulation round: 100000
+Time taken: 53.5006s, Running simulation round: 150000
+Time taken: 54.4465s, Running simulation round: 200000
+Time taken: 54.8533s, Running simulation round: 250000
+Time taken: 54.8068s, Running simulation round: 300000
+Time taken: 54.675s, Running simulation round: 350000
+Time taken: 54.5845s, Running simulation round: 400000
+Time taken: 54.4801s, Running simulation round: 450000
+Time taken: 54.4991s, Running simulation round: 500000
+
+Saving result at results/maximal_matching/graph_powerlaw_cluster_graph_n7__0__controlled_at_node_args_1__500000__False__1.csv
+Locating Graph: "graph_powerlaw_cluster_graph_n7".
+Analysis graph: graph_powerlaw_cluster_graph_n7 | program: maximal_matching | Simulation Type: controlled_at_node, Args: [4] | No. of Simulations: 500000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 1
+Total configs: 3,456,000.
+Simulation environment: No. of Simulations: 500000 | Scheduler: CENTRAL | ME: False
+Time taken: 54.4186s, Running simulation round: 50000
+Time taken: 53.7319s, Running simulation round: 100000
+Time taken: 53.3747s, Running simulation round: 150000
+Time taken: 53.6368s, Running simulation round: 200000
+Time taken: 53.8123s, Running simulation round: 250000
+Time taken: 53.4553s, Running simulation round: 300000
+Time taken: 53.5083s, Running simulation round: 350000
+Time taken: 53.5827s, Running simulation round: 400000
+Time taken: 53.7657s, Running simulation round: 450000
+Time taken: 53.8671s, Running simulation round: 500000
+
+Saving result at results/maximal_matching/graph_powerlaw_cluster_graph_n7__0__controlled_at_node_args_4__500000__False__1.csv
+Locating Graph: "graph_powerlaw_cluster_graph_n7".
+Analysis graph: graph_powerlaw_cluster_graph_n7 | program: maximal_matching | Simulation Type: controlled_at_node, Args: [5] | No. of Simulations: 500000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 1
+Total configs: 3,456,000.
+Simulation environment: No. of Simulations: 500000 | Scheduler: CENTRAL | ME: False
+Time taken: 55.1382s, Running simulation round: 50000
+Time taken: 55.127s, Running simulation round: 100000
+Time taken: 55.2749s, Running simulation round: 150000
+Time taken: 55.2215s, Running simulation round: 200000
+Time taken: 55.1164s, Running simulation round: 250000
+Time taken: 55.1043s, Running simulation round: 300000
+Time taken: 54.8455s, Running simulation round: 350000
+Time taken: 54.987s, Running simulation round: 400000
+Time taken: 54.7434s, Running simulation round: 450000
+Time taken: 54.9289s, Running simulation round: 500000
+
+Saving result at results/maximal_matching/graph_powerlaw_cluster_graph_n7__0__controlled_at_node_args_5__500000__False__1.csv
+Locating Graph: "graph_powerlaw_cluster_graph_n7".
+Analysis graph: graph_powerlaw_cluster_graph_n7 | program: maximal_matching | Simulation Type: controlled_at_node_duong, Args: [1] | No. of Simulations: 500000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 1
+Total configs: 3,456,000.
+Simulation environment: No. of Simulations: 500000 | Scheduler: CENTRAL | ME: False
+Time taken: 57.6296s, Running simulation round: 50000
+Time taken: 57.6358s, Running simulation round: 100000
