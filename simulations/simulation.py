@@ -203,6 +203,7 @@ class SimulationMixin:
                 possible_transition_indexes = [
                     i[1] for i in self.possible_perturbed_state_frm(indx) if i[0] == p
                 ]
+                print("posssible transition indexes", possible_transition_indexes, " for ", p)
                 if not possible_transition_indexes:
                     continue
                 transition_indx = random.choice(possible_transition_indexes)
