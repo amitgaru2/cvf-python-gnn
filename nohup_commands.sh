@@ -8,24 +8,26 @@ set -e
 #python3 main.py --program dijkstra_token_ring --graph-names 13 14 15 16 17 18 19
 # python3 main.py --program linear_regression -f --graph-names test_lr_graph_1 --logging DEBUG
 
-cd simulations
+# cd simulations
 # python simulate.py --program dijkstra_token_ring --sched 0 --no-sim 500000 --fault-interval 1 --graph-names implicit_graph_n8 --fault-prob 1.0 --simulation-type controlled_at_node --controlled-at-node 7
 # python simulate.py --program dijkstra_token_ring --sched 0 --no-sim 500000 --fault-interval 1 --graph-names implicit_graph_n8 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 0
 # python simulate.py --program dijkstra_token_ring --sched 0 --no-sim 500000 --fault-interval 1 --graph-names implicit_graph_n8 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 2
 # python simulate.py --program dijkstra_token_ring --sched 0 --no-sim 500000 --fault-interval 1 --graph-names implicit_graph_n8 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 7
-python simulate.py --program maximal_matching --sched 0 --no-sim 500000 --fault-interval 1 --graph-names star_graph_n7 --fault-prob 1.0 --simulation-type random
-python simulate.py --program maximal_matching --sched 0 --no-sim 500000 --fault-interval 1 --graph-names star_graph_n7 --fault-prob 1.0 --simulation-type controlled_at_node --controlled-at-node 0
-python simulate.py --program maximal_matching --sched 0 --no-sim 500000 --fault-interval 1 --graph-names star_graph_n7 --fault-prob 1.0 --simulation-type controlled_at_node --controlled-at-node 3
-python simulate.py --program maximal_matching --sched 0 --no-sim 500000 --fault-interval 1 --graph-names star_graph_n7 --fault-prob 1.0 --simulation-type controlled_at_node --controlled-at-node 6
-python simulate.py --program maximal_matching --sched 0 --no-sim 500000 --fault-interval 1 --graph-names star_graph_n7 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 0
-python simulate.py --program maximal_matching --sched 0 --no-sim 500000 --fault-interval 1 --graph-names star_graph_n7 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 3
-python simulate.py --program maximal_matching --sched 0 --no-sim 500000 --fault-interval 1 --graph-names star_graph_n7 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 6
+# python simulate.py --program maximal_matching --sched 0 --no-sim 500000 --fault-interval 1 --graph-names star_graph_n7 --fault-prob 1.0 --simulation-type random
+# python simulate.py --program maximal_matching --sched 0 --no-sim 500000 --fault-interval 1 --graph-names star_graph_n7 --fault-prob 1.0 --simulation-type controlled_at_node --controlled-at-node 0
+# python simulate.py --program maximal_matching --sched 0 --no-sim 500000 --fault-interval 1 --graph-names star_graph_n7 --fault-prob 1.0 --simulation-type controlled_at_node --controlled-at-node 3
+# python simulate.py --program maximal_matching --sched 0 --no-sim 500000 --fault-interval 1 --graph-names star_graph_n7 --fault-prob 1.0 --simulation-type controlled_at_node --controlled-at-node 6
+# python simulate.py --program maximal_matching --sched 0 --no-sim 500000 --fault-interval 1 --graph-names star_graph_n7 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 0
+# python simulate.py --program maximal_matching --sched 0 --no-sim 500000 --fault-interval 1 --graph-names star_graph_n7 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 3
+# python simulate.py --program maximal_matching --sched 0 --no-sim 500000 --fault-interval 1 --graph-names star_graph_n7 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 6
 # python simulate.py --program maximal_matching --sched 0 --no-sim 500000 --fault-interval 1 --graph-names graph_powerlaw_cluster_graph_n7 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 1
 # python simulate.py --program maximal_matching --sched 0 --no-sim 500000 --fault-interval 1 --graph-names graph_powerlaw_cluster_graph_n7 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 4
 # python simulate.py --program maximal_matching --sched 0 --no-sim 500000 --fault-interval 1 --graph-names graph_powerlaw_cluster_graph_n7 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 5
 
 
-# cd gnn
+cd gnn
+python cvf_analysis.py lstm_trained_at_2025_05_12_21_31 dijkstra implicit_graph_n13   
+
 # # # # graphs=("star_graph_n7" "graph_powerlaw_cluster_graph_n7" "graph_random_regular_graph_n7_d4" "star_graph_n13" "graph_powerlaw_cluster_graph_n8" "graph_random_regular_graph_n8_d4" "star_graph_n15" "graph_powerlaw_cluster_graph_n9")
 # graphs=("star_graph_n7" "graph_powerlaw_cluster_graph_n7")
 # # graphs=("star_graph_n7")

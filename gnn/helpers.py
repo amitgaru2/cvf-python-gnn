@@ -664,7 +664,7 @@ class CVFConfigForAnalysisDataset(Dataset):
         return self.cvf_analysis.total_configs
 
     def _get_succ_encoding(self, idx, config):
-        succ = list(self.cvf_analysis._get_program_transitions_as_configs(config))
+        succ = list(i[1] for i in self.cvf_analysis._get_program_transitions_as_configs(config))
         # self.cache[idx] = program_transition_idxs
         # succ = [self.cvf_analysis.indx_to_config(i) for i in program_transition_idxs]
         if succ:
