@@ -38,7 +38,8 @@ TITLE_PROGRAM_MAP = {
 
 
 graphs = [
-        "star_graph_n7",
+        # "star_graph_n7",
+        "graph_random_regular_graph_n6_d2",
     #     #     # "star_graph_n15",
     # "graph_powerlaw_cluster_graph_n7",
     #     #     # "graph_random_regular_graph_n7_d4",
@@ -49,19 +50,19 @@ graphs = [
     #     #     # "graph_random_regular_graph_n9_d4",
 ]
 
-graphs = [
-#     # # "implicit_graph_n6",
-#     # # "implicit_graph_n7",
-#     "implicit_graph_n8",
-#     # # "implicit_graph_n9",
-#     # # "implicit_graph_n10",
-#     # # "implicit_graph_n11",
-    #     "implicit_graph_n12",
-        "implicit_graph_n13",
-]
+# graphs = [
+# #     # # "implicit_graph_n6",
+# #     # # "implicit_graph_n7",
+# #     "implicit_graph_n8",
+# #     # # "implicit_graph_n9",
+# #     # # "implicit_graph_n10",
+# #     # # "implicit_graph_n11",
+#     #     "implicit_graph_n12",
+#         "implicit_graph_n13",
+# ]
 
 
-selected_nodes = [0, 2, 12]
+selected_nodes = [0, 3, 6]
 
 
 result_type = "cvf_by_node"
