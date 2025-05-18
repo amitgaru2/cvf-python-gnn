@@ -24,9 +24,9 @@ set -e
 # python simulate.py --program maximal_matching --sched 0 --no-sim 500000 --fault-interval 1 --graph-names graph_powerlaw_cluster_graph_n7 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 4
 # python simulate.py --program maximal_matching --sched 0 --no-sim 500000 --fault-interval 1 --graph-names graph_powerlaw_cluster_graph_n7 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 5
 
-
 cd gnn
-python cvf_analysis.py lstm_trained_at_2025_05_12_21_31 dijkstra implicit_graph_n14
+# python cvf_analysis.py lstm_trained_at_2025_05_12_21_31 dijkstra implicit_graph_n14
+python cvf_analysis.py lstm_trained_at_2025_04_26_14_01 coloring graph_random_regular_graph_n10_d3
 
 # # # # graphs=("star_graph_n7" "graph_powerlaw_cluster_graph_n7" "graph_random_regular_graph_n7_d4" "star_graph_n13" "graph_powerlaw_cluster_graph_n8" "graph_random_regular_graph_n8_d4" "star_graph_n15" "graph_powerlaw_cluster_graph_n9")
 # graphs=("star_graph_n7" "graph_powerlaw_cluster_graph_n7")
@@ -77,4 +77,3 @@ python cvf_analysis.py lstm_trained_at_2025_05_12_21_31 dijkstra implicit_graph_
 # # cd gnn
 
 # # python cvf_analysis.py lstm_trained_at_2025_05_12_21_31 dijkstra implicit_graph_n5
-
