@@ -1,40 +1,45 @@
+import sys
 import networkx as nx
 
 from matplotlib import pyplot as plt
 
-graph_names = [
-    # "graph_1",
-    # "graph_2",
-    # "graph_3",
-    # "graph_6",
-    # "graph_6b",
-    # "graph_7",
-    # "graph_8",
-    # "graph_9",
-    # "graph_10",
-    # "graph_4",
-    # "graph_5",
-    # "test_lr_graph_6",
-    # "implicit_graph_n5",
-    # "graph_powerlaw_cluster_graph_n30",
-    # "random_graph_diff_degree_1",
-    # "random_graph_diff_degree_2",
-    # "graph_random_regular_graph_n8_d4",
-    # "graph_powerlaw_cluster_graph_n9"
-    # "test_graph_11",
-    # "test_graph_12",
-    # "test_graph_13",
-    # "test",
-    # "graph_powerlaw_cluster_graph_n7",
-    # "graph_random_regular_graph_n7_d4",
-    "star_graph_n7",
-    # "star_graph_n13",
-    # "star_graph_n15",
-    # "graph_powerlaw_cluster_graph_n8",
-    # "graph_powerlaw_cluster_graph_n9",
-    # "graph_random_regular_graph_n8_d4",
-    # "graph_random_regular_graph_n9_d4",
-]
+# graph_names = [
+#     # "graph_1",
+#     # "graph_2",
+#     # "graph_3",
+#     # "graph_6",
+#     # "graph_6b",
+#     # "graph_7",
+#     # "graph_8",
+#     # "graph_9",
+#     # "graph_10",
+#     # "graph_4",
+#     # "graph_5",
+#     # "test_lr_graph_6",
+#     # "implicit_graph_n5",
+#     # "graph_powerlaw_cluster_graph_n30",
+#     # "random_graph_diff_degree_1",
+#     # "random_graph_diff_degree_2",
+#     # "graph_random_regular_graph_n8_d4",
+#     # "graph_powerlaw_cluster_graph_n9"
+#     # "test_graph_11",
+#     # "test_graph_12",
+#     # "test_graph_13",
+#     # "test",
+#     # "graph_powerlaw_cluster_graph_n7",
+#     # "graph_random_regular_graph_n7_d4",
+#     # "star_graph_n7",
+#     # "star_graph_n13",
+#     # "star_graph_n15",
+#     # "graph_powerlaw_cluster_graph_n8",
+#     # "graph_powerlaw_cluster_graph_n9",
+#     # "graph_random_regular_graph_n8_d4",
+#     # "graph_random_regular_graph_n9_d4",
+#     # "graph_random_regular_graph_n6_d2"
+#     "graph_random_regular_graph_n6_d3"
+# ]
+
+graph_names = [sys.argv[1]]
 
 planar = False
 fontsize = 25
