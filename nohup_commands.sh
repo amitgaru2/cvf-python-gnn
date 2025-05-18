@@ -26,7 +26,7 @@ set -e
 
 
 cd gnn
-python cvf_analysis.py lstm_trained_at_2025_05_12_21_31 dijkstra implicit_graph_n13   
+python cvf_analysis.py lstm_trained_at_2025_05_12_21_31 dijkstra implicit_graph_n14
 
 # # # # graphs=("star_graph_n7" "graph_powerlaw_cluster_graph_n7" "graph_random_regular_graph_n7_d4" "star_graph_n13" "graph_powerlaw_cluster_graph_n8" "graph_random_regular_graph_n8_d4" "star_graph_n15" "graph_powerlaw_cluster_graph_n9")
 # graphs=("star_graph_n7" "graph_powerlaw_cluster_graph_n7")
