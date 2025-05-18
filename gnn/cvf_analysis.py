@@ -17,17 +17,12 @@ from helpers import CVFConfigForAnalysisDataset
 
 
 model_name = sys.argv[1]
+program = sys.argv[2]
+graph_name = sys.argv[3]
 
 ONLY_FA = model_name == "fa"
 
-# program = "dijkstra"
-program = sys.argv[2]
-
-# graph_name = "graph_random_regular_graph_n8_d4"
-
-
 device = "cuda"
-
 
 function_runtimes = defaultdict(float)
 
@@ -40,9 +35,6 @@ def track_runtime(func):
         end = time.perf_counter()
         duration = end - start
         function_runtimes[func.__name__] += duration
-        # logger.info(
-        #     f"[{func.__name__}] call took {duration:.6f}s, total: {function_runtimes[func.__name__]:.6f}s"
-        # )
         return result
 
     return wrapper
@@ -200,5 +192,4 @@ def main(graph_name, has_fa_analysis=True):
 
 
 if __name__ == "__main__":
-    graph_name = sys.argv[3]
     main(graph_name)
