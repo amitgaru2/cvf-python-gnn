@@ -9,6 +9,7 @@ from matplotlib import pyplot as plt
 
 model = sys.argv[1]
 program = sys.argv[2]
+graph = sys.argv[3]
 
 plots_dir = "plots"
 
@@ -36,29 +37,7 @@ TITLE_PROGRAM_MAP = {
 # program = MAX_MATCHING_PROGRAM
 
 
-graphs = [
-    # "star_graph_n7",
-    "graph_random_regular_graph_n6_d2",
-    #     # "star_graph_n15",
-    # "graph_powerlaw_cluster_graph_n7",
-    #     # "graph_random_regular_graph_n7_d4",
-    # "star_graph_n13",
-    #     # "graph_powerlaw_cluster_graph_n8",
-    #     # "graph_powerlaw_cluster_graph_n9",
-    #     # "graph_random_regular_graph_n8_d4",
-    #     # "graph_random_regular_graph_n9_d4",
-]
-
-# graphs = [
-#     # #     "implicit_graph_n6",
-#     # #     "implicit_graph_n7",
-#     #     "implicit_graph_n8",
-#     # #     # "implicit_graph_n9",
-#     # #     # "implicit_graph_n10",
-#     # #     # "implicit_graph_n11",
-#     #     "implicit_graph_n12",
-#     "implicit_graph_n13",
-# ]
+graphs = [graph]
 
 
 result_type = "cvf"
