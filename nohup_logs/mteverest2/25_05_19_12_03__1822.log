@@ -2,3 +2,10 @@ Note: NumExpr detected 24 cores but "NUMEXPR_MAX_THREADS" not set, so enforcing 
 NumExpr defaulting to 8 threads.
 Locating Graph: "graph_1".
 Total configs: 5,242,880.
+Total Invariants: 9.
+Locating Graph: "graph_2".
+Total configs: 9,175,040.
+Total Invariants: 16.
+Locating Graph: "graph_3".
+Total configs: 9,437,184.
+Total Invariants: 17.
