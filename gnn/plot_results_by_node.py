@@ -41,7 +41,7 @@ TITLE_PROGRAM_MAP = {
 graphs = [graph]
 
 
-selected_nodes = [0, 3, 6]
+selected_nodes = [0, 3, 5]
 
 
 result_type = "cvf_by_node"

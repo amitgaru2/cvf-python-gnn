@@ -1,2 +1,13 @@
 Starting for graph_random_regular_graph_n10_d3.
 Total configs: 1,048,576.
+Done ML CVF Analysis!
+FA results not found for graph_random_regular_graph_n10_d3.
+Complete for graph_random_regular_graph_n10_d3.
+
+=== Runtime Report ===
+get_model: 0.068256s
+get_perturbed_states: 0.717629s
+get_rank: 277.315245s
+group_data: 0.000154s
+ml_cvf_analysis: 29890.907850s
+get_fa_results: 0.000070s
