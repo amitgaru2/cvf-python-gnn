@@ -13,12 +13,14 @@ from torch.utils.data import DataLoader
 
 from custom_logger import logger
 from lstm_scratch import SimpleLSTM
+from arg_parser_helper import generate_parser
 from helpers import CVFConfigForAnalysisDataset
 
+args = generate_parser(takes_model=True)
 
-model_name = sys.argv[1]
-program = sys.argv[2]
-graph_name = sys.argv[3]
+model_name = args.model
+program = args.program
+graph_names = args.graph_names
 
 ONLY_FA = model_name == "fa"
 
@@ -70,7 +72,7 @@ def group_data(df, grp_by: list):
 
 
 @track_runtime
-def ml_cvf_analysis():
+def ml_cvf_analysis(graph_name):
     model = get_model()
 
     dataset = CVFConfigForAnalysisDataset(device, graph_name, program=program)
@@ -183,7 +185,7 @@ def main(graph_name, has_fa_analysis=True):
         ml_grp_by_re = pd.DataFrame(columns=["rank effect"])
         ml_grp_by_node_re = pd.DataFrame(columns=["node", "rank effect"])
     else:
-        ml_grp_by_re, ml_grp_by_node_re = ml_cvf_analysis()
+        ml_grp_by_re, ml_grp_by_node_re = ml_cvf_analysis(graph_name)
     if has_fa_analysis:
         get_fa_results(graph_name, ml_grp_by_re, ml_grp_by_node_re)
 
@@ -192,4 +194,5 @@ def main(graph_name, has_fa_analysis=True):
 
 
 if __name__ == "__main__":
-    main(graph_name)
+    for graph_name in graph_names:
+        main(graph_name)
