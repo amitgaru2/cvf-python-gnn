@@ -3,10 +3,8 @@ set -e
 
 # conda activate cvf
 
-# cd cvf-analysis
-#python3 main.py --program maximal_matching --graph-names graph_5 graph_6 graph_7 graph_8
-#python3 main.py --program dijkstra_token_ring --graph-names 13 14 15 16 17 18 19
-# python3 main.py --program linear_regression -f --graph-names test_lr_graph_1 --logging DEBUG
+cd cvf-analysis/v2
+python main.py --program maximal_matching --graph-names graph_1 graph_2 graph_3 graph_4 graph_5 graph_6 graph_6b graph_7 graph_8 graph_9 graph_10 -ml
 
 # cd simulations
 # python simulate.py --program dijkstra_token_ring --sched 0 --no-sim 500000 --fault-interval 1 --graph-names implicit_graph_n8 --fault-prob 1.0 --simulation-type controlled_at_node --controlled-at-node 7
@@ -24,12 +22,12 @@ set -e
 # python simulate.py --program maximal_matching --sched 0 --no-sim 500000 --fault-interval 1 --graph-names graph_powerlaw_cluster_graph_n7 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 4
 # python simulate.py --program maximal_matching --sched 0 --no-sim 500000 --fault-interval 1 --graph-names graph_powerlaw_cluster_graph_n7 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 5
 
-cd gnn
+# cd gnn
 # python cvf_analysis.py lstm_trained_at_2025_05_12_21_31 dijkstra implicit_graph_n14
 # python cvf_analysis.py lstm_trained_at_2025_04_26_14_01 coloring graph_random_regular_graph_n10_d3
 # python cvf_analysis.py lstm_trained_at_2025_05_15_11_29 maximal_matching star_graph_n7
-python cvf_analysis.py lstm_trained_at_2025_05_15_11_29 maximal_matching graph_powerlaw_cluster_graph_n7
-python cvf_analysis.py lstm_trained_at_2025_05_15_11_29 maximal_matching graph_random_regular_graph_n7_d4
+# python cvf_analysis.py lstm_trained_at_2025_05_15_11_29 maximal_matching graph_powerlaw_cluster_graph_n7
+# python cvf_analysis.py lstm_trained_at_2025_05_15_11_29 maximal_matching graph_random_regular_graph_n7_d4
 
 # # # # graphs=("star_graph_n7" "graph_powerlaw_cluster_graph_n7" "graph_random_regular_graph_n7_d4" "star_graph_n13" "graph_powerlaw_cluster_graph_n8" "graph_random_regular_graph_n8_d4" "star_graph_n15" "graph_powerlaw_cluster_graph_n9")
 # graphs=("star_graph_n7" "graph_powerlaw_cluster_graph_n7")
