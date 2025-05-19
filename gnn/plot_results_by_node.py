@@ -2,15 +2,22 @@ import os
 import sys
 import pandas as pd
 import seaborn as sns
+import matplotlib.lines as mlines
 
 from itertools import cycle
-import matplotlib.lines as mlines
 from matplotlib import pyplot as plt
 
 
-model = sys.argv[1]
-program = sys.argv[2]
-graph = sys.argv[3]
+from arg_parser_helper import generate_parser
+
+
+args = generate_parser(takes_model=True, takes_nodes=True)
+
+model = args.model
+program = args.program
+graph_names = args.graph_names
+selected_nodes = args.nodes
+selected_nodes.sort()
 
 ONLY_FA = model == "fa"
 
@@ -26,7 +33,6 @@ plots_dir = "plots"
 
 fontsize = 20
 
-
 COLORING_PROGRAM = "coloring"
 DIJKSTRA_PROGRAM = "dijkstra_token_ring"
 MAX_MATCHING_PROGRAM = "maximal_matching"
@@ -37,13 +43,6 @@ TITLE_PROGRAM_MAP = {
     MAX_MATCHING_PROGRAM: "Maximal Matching",
 }
 
-
-graphs = [graph]
-
-
-selected_nodes = [1, 2, 3]
-
-selected_nodes.sort()
 
 result_type = "cvf_by_node"
 
@@ -160,5 +159,5 @@ def plot_df(df_preproc, selected_cols, graph_name, lines_in_pair):
 
 
 if __name__ == "__main__":
-    for graph_name in graphs:
+    for graph_name in graph_names:
         main(graph_name)

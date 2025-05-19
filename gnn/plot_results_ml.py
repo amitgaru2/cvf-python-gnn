@@ -7,9 +7,13 @@ import matplotlib.lines as mlines
 from itertools import cycle
 from matplotlib import pyplot as plt
 
-model = sys.argv[1]
-program = sys.argv[2]
-graph = sys.argv[3]
+from arg_parser_helper import generate_parser
+
+
+args = generate_parser(takes_model=True)
+model = args.model
+program = args.program
+graph_names = args.graph_names
 
 plots_dir = "plots"
 
@@ -35,9 +39,6 @@ TITLE_PROGRAM_MAP = {
 # program = COLORING_PROGRAM
 # program = DIJKSTRA_PROGRAM
 # program = MAX_MATCHING_PROGRAM
-
-
-graphs = [graph]
 
 
 result_type = "cvf"
@@ -119,5 +120,5 @@ def plot_df(df, legends):
 
 
 if __name__ == "__main__":
-    for graph_name in graphs:
+    for graph_name in graph_names:
         main(graph_name)
