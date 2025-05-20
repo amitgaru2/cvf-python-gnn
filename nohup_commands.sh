@@ -4,7 +4,7 @@ set -e
 # conda activate cvf
 
 cd cvf-analysis/v2
-python main.py --program maximal_matching --graph-names graph_6 graph_6b graph_7 graph_8 graph_9 graph_10 -ml
+python main.py --program maximal_matching --graph-names graph_10 -ml
 
 # cd simulations
 # python simulate.py --program dijkstra_token_ring --sched 0 --no-sim 500000 --fault-interval 1 --graph-names implicit_graph_n8 --fault-prob 1.0 --simulation-type controlled_at_node --controlled-at-node 7
