@@ -4,3 +4,28 @@ Total Invariants: 15.
 Locating Graph: "graph_6b".
 Total configs: 5,529,600.
 Total Invariants: 15.
+Locating Graph: "graph_7".
+Total configs: 11,796,480.
+Total Invariants: 19.
+Locating Graph: "graph_8".
+Total configs: 18,350,080.
+Total Invariants: 15.
+Locating Graph: "graph_9".
+Total configs: 7,247,757,312.
+Traceback (most recent call last):
+  File "/home/agaru/research/cvf-python-gnn/cvf-analysis/v2/main.py", line 102, in <module>
+    main(
+  File "/home/agaru/research/cvf-python-gnn/cvf-analysis/v2/main.py", line 60, in main
+    cvf_analysis = CVFAnalysisKlass(
+                   ^^^^^^^^^^^^^^^^^
+  File "/home/agaru/research/cvf-python-gnn/cvf-analysis/v2/base.py", line 111, in __init__
+    self.init_rank_calculation_related_configs()
+  File "/home/agaru/research/cvf-python-gnn/cvf-analysis/v2/base.py", line 130, in init_rank_calculation_related_configs
+    self.init_global_rank_map()
+  File "/home/agaru/research/cvf-python-gnn/cvf-analysis/v2/base.py", line 135, in init_global_rank_map
+    self.global_rank_map = np.full([self.total_configs, 3], None)  # L, C, M
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/agaru/anaconda3/envs/cvf/lib/python3.12/site-packages/numpy/core/numeric.py", line 329, in full
+    a = empty(shape, dtype, order)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy.core._exceptions._ArrayMemoryError: Unable to allocate 162. GiB for an array with shape (7247757312, 3) and data type object
