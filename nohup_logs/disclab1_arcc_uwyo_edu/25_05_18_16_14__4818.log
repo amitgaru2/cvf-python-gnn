@@ -1,2 +1,12 @@
 Starting for graph_powerlaw_cluster_graph_n7.
 Total configs: 3,456,000.
+Done ML CVF Analysis!
+Complete for graph_powerlaw_cluster_graph_n7.
+
+=== Runtime Report ===
+get_model: 0.181714s
+get_perturbed_states: 3.271855s
+get_rank: 1587.949789s
+group_data: 0.000257s
+ml_cvf_analysis: 162146.177517s
+get_fa_results: 0.009659s
