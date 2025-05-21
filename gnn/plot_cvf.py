@@ -23,8 +23,6 @@ markers = ["*", "o", "h", "v", "P", "s", "p", "x", "D", "8"]
 
 ONLY_FA = model == "fa"
 
-marker_cycle = cycle(markers)
-
 
 COLORING_PROGRAM = "coloring"
 DIJKSTRA_PROGRAM = "dijkstra_token_ring"
@@ -49,7 +47,7 @@ def get_title():
     return f"{TITLE_PROGRAM_MAP[program]} - {result}"
 
 
-def main(graph_name):
+def main(graph_name, marker_cycle):
     filepath = os.path.join(
         "ml_predictions", f"{model}__{graph_name}__{result_type}.csv"
     )
@@ -69,10 +67,10 @@ def main(graph_name):
 
     df = df.set_index("rank effect", drop=True)
 
-    plot_df(df, legends)
+    plot_df(df, legends, marker_cycle)
 
 
-def plot_df(df, legends):
+def plot_df(df, legends, marker_cycle):
     plt.figure(figsize=(16, 8))
     ax = sns.lineplot(data=df, linewidth=3, markersize=10)
 
@@ -121,4 +119,5 @@ def plot_df(df, legends):
 
 if __name__ == "__main__":
     for graph_name in graph_names:
-        main(graph_name)
+        marker_cycle = cycle(markers)
+        main(graph_name, marker_cycle)
