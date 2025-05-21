@@ -54,7 +54,7 @@ def get_title(graph_name):
 
 def main(graph_name):
     filepath = os.path.join(
-        "ml_predictions", f"{model}__{graph_name}__{result_type}.csv"
+        "ml_predictions", f"{model}__{program}__{graph_name}__{result_type}.csv"
     )
     df = pd.read_csv(filepath, index_col=0)
 
@@ -129,7 +129,7 @@ def plot_df(df_preproc, selected_cols, graph_name, lines_in_pair):
 
     ax.set_title(get_title(graph_name), fontdict={"fontsize": fontsize})
 
-    file_name = f"RE_Node__{program}__{graph_name}__{''.join([str(i) for i in selected_nodes])}__{model}.png"
+    file_name = f"RE_Node__{model}__{program}__{graph_name}__{''.join([str(i) for i in selected_nodes])}__{model}.png"
 
     custom_lines = [
         mlines.Line2D(

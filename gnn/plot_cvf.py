@@ -34,11 +34,6 @@ TITLE_PROGRAM_MAP = {
     MAX_MATCHING_PROGRAM: "Maximal Matching",
 }
 
-# program = COLORING_PROGRAM
-# program = DIJKSTRA_PROGRAM
-# program = MAX_MATCHING_PROGRAM
-
-
 result_type = "cvf"
 
 
@@ -49,7 +44,7 @@ def get_title():
 
 def main(graph_name, marker_cycle):
     filepath = os.path.join(
-        "ml_predictions", f"{model}__{graph_name}__{result_type}.csv"
+        "ml_predictions", f"{model}__{program}__{graph_name}__{result_type}.csv"
     )
     df = pd.read_csv(filepath, index_col=0)
     if ONLY_FA:
@@ -88,7 +83,7 @@ def plot_df(df, legends, marker_cycle):
 
     ax.set_title(get_title(), fontdict={"fontsize": fontsize})
 
-    file_name = f"RE__{program}__{graph_name}__{model}.png"
+    file_name = f"RE__{model}__{program}__{graph_name}__{model}.png"
     custom_lines = [
         mlines.Line2D(
             [],

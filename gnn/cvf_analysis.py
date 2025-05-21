@@ -156,7 +156,9 @@ def get_fa_results(graph_name, ml_grp_by_re, ml_grp_by_node_re):
         f_grp_by_re, ml_grp_by_re, on="rank effect", how="outer"
     ).fillna(0)
 
-    df_grp_by_re.to_csv(f"ml_predictions/{model_name}__{program}__{graph_name}__cvf.csv")
+    df_grp_by_re.to_csv(
+        f"ml_predictions/{model_name}__{program}__{graph_name}__cvf.csv"
+    )
 
     results_file = f"rank_effects_by_node_avg__{graph_name}.csv"
 
@@ -175,7 +177,7 @@ def get_fa_results(graph_name, ml_grp_by_re, ml_grp_by_node_re):
     ).fillna(0)
 
     df_grp_by_node_re.to_csv(
-        f"ml_predictions/{model_name}__{graph_name}__cvf_by_node.csv"
+        f"ml_predictions/{model_name}__{program}__{graph_name}__cvf_by_node.csv"
     )
 
 
