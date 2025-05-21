@@ -16,6 +16,12 @@ from lstm_scratch import SimpleLSTM
 from arg_parser_helper import generate_parser
 from helpers import CVFConfigForAnalysisDataset
 
+utils_path = os.path.join(os.getenv("CVF_PROJECT_DIR", ""), "utils")
+sys.path.append(utils_path)
+
+from common_helpers import create_dir_if_not_exists
+
+
 args = generate_parser(takes_model=True)
 
 model_name = args.model
@@ -156,9 +162,14 @@ def get_fa_results(graph_name, ml_grp_by_re, ml_grp_by_node_re):
         f_grp_by_re, ml_grp_by_re, on="rank effect", how="outer"
     ).fillna(0)
 
-    df_grp_by_re.to_csv(
-        f"ml_predictions/{model_name}__{program}__{graph_name}__cvf.csv"
+    save_to_dir = os.path.join("ml_predictions", program)
+    create_dir_if_not_exists(save_to_dir)
+
+    filepath = os.path.join(
+        save_to_dir, f"{model_name}__{program}__{graph_name}__cvf.csv"
     )
+
+    df_grp_by_re.to_csv(filepath)
 
     results_file = f"rank_effects_by_node_avg__{graph_name}.csv"
 
@@ -176,9 +187,11 @@ def get_fa_results(graph_name, ml_grp_by_re, ml_grp_by_node_re):
         f_grp_by_node_re, ml_grp_by_node_re, on=["node", "rank effect"], how="outer"
     ).fillna(0)
 
-    df_grp_by_node_re.to_csv(
-        f"ml_predictions/{model_name}__{program}__{graph_name}__cvf_by_node.csv"
+    filepath = os.path.join(
+        save_to_dir, f"{model_name}__{program}__{graph_name}__cvf_by_node.csv"
     )
+
+    df_grp_by_node_re.to_csv(filepath)
 
 
 def main(graph_name, has_fa_analysis=True):

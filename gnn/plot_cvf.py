@@ -9,14 +9,18 @@ from matplotlib import pyplot as plt
 
 from arg_parser_helper import generate_parser
 
+utils_path = os.path.join(os.getenv("CVF_PROJECT_DIR", ""), "utils")
+sys.path.append(utils_path)
+
+from common_helpers import create_dir_if_not_exists
 
 args = generate_parser(takes_model=True)
 model = args.model
 program = args.program
 graph_names = args.graph_names
 
-plots_dir = "plots"
-
+plots_dir = os.path.join("plots", program)
+create_dir_if_not_exists(plots_dir)
 
 fontsize = 20
 markers = ["*", "o", "h", "v", "P", "s", "p", "x", "D", "8"]
@@ -100,16 +104,17 @@ def plot_df(df, legends, marker_cycle):
 
     plt.rc("font", size=fontsize)
     plt.legend(handles=custom_lines, fontsize=fontsize * 0.9)  # using a size in points
+    filepath = os.path.join(
+        plots_dir,
+        f"{file_name}",
+    )
     plt.savefig(
-        os.path.join(
-            plots_dir,
-            f"{file_name}",
-        ),
+        filepath,
         bbox_inches="tight",
     )
     plt.close()
 
-    print(f"Saved plot(s) for plots/{file_name}")
+    print(f"Saved plot(s) at %s" % filepath)
 
 
 if __name__ == "__main__":
