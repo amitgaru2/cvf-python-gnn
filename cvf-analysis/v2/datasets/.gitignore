@@ -13,3 +13,5 @@
 !maximal_matching/graph_random_regular_graph_n3_d2_*
 !maximal_matching/graph_random_regular_graph_n4_d2_*
 !maximal_matching/graph_powerlaw_cluster_graph_n5_*
+
+datasets/*
