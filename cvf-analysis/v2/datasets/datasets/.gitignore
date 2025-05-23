@@ -1,0 +1,15 @@
+*_adj_list.txt
+*_config_rank_dataset.csv
+*_config_rank_dataset_v2.csv
+*_config_rank_succ.csv
+
+
+!dijkstra/implicit_graph_n4_*
+!dijkstra/implicit_graph_n5_*
+!coloring/star_graph_n5_*
+!coloring/graph_powerlaw_cluster_graph_n5_*
+!maximal_matching/star_graph_n4_*
+!maximal_matching/star_graph_n5_*
+!maximal_matching/graph_random_regular_graph_n3_d2_*
+!maximal_matching/graph_random_regular_graph_n4_d2_*
+!maximal_matching/graph_powerlaw_cluster_graph_n5_*
