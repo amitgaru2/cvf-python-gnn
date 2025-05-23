@@ -1,7 +1,9 @@
 name: cvf
 channels:
-  - conda-forge
   - defaults
+  - conda-forge
+  - https://repo.anaconda.com/pkgs/main
+  - https://repo.anaconda.com/pkgs/r
 dependencies:
   - _libgcc_mutex=0.1=main
   - _openmp_mutex=5.1=1_gnu
@@ -40,6 +42,7 @@ dependencies:
   - pip=25.0=py313h06a4308_0
   - platformdirs=4.3.7=pyh29332c3_0
   - prompt-toolkit=3.0.51=pyha770c72_0
+  - psutil=5.9.0=py313h5eee18b_1
   - ptyprocess=0.7.0=pyhd8ed1ab_1
   - pure_eval=0.2.3=pyhd8ed1ab_1
   - pygments=2.19.1=pyhd8ed1ab_0
@@ -56,6 +59,7 @@ dependencies:
   - tornado=6.4.2=py313h5eee18b_0
   - traitlets=5.14.3=pyhd8ed1ab_1
   - typing_extensions=4.13.2=pyh29332c3_0
+  - tzdata=2025b=h78e105d_0
   - wcwidth=0.2.13=pyhd8ed1ab_1
   - wheel=0.45.1=py313h06a4308_0
   - xz=5.6.4=h5eee18b_1
@@ -63,26 +67,11 @@ dependencies:
   - zipp=3.21.0=pyhd8ed1ab_1
   - zlib=1.2.13=h5eee18b_1
   - pip:
-      - aiohappyeyeballs==2.6.1
-      - aiohttp==3.11.18
-      - aiosignal==1.3.2
-      - attrs==25.3.0
-      - certifi==2025.4.26
-      - charset-normalizer==3.4.1
-      - contourpy==1.3.2
-      - cycler==0.12.1
       - filelock==3.13.1
-      - fonttools==4.58.0
-      - frozenlist==1.6.0
       - fsspec==2024.6.1
-      - idna==3.10
       - jinja2==3.1.4
-      - joblib==1.4.2
-      - kiwisolver==1.4.8
       - markupsafe==3.0.2
-      - matplotlib==3.10.3
       - mpmath==1.3.0
-      - multidict==6.4.3
       - networkx==3.3
       - numpy==2.1.2
       - nvidia-cublas-cu12==12.8.3.14
@@ -99,26 +88,10 @@ dependencies:
       - nvidia-nccl-cu12==2.26.2
       - nvidia-nvjitlink-cu12==12.8.61
       - nvidia-nvtx-cu12==12.8.55
-      - pandas==2.2.3
       - pillow==11.0.0
-      - propcache==0.3.1
-      - psutil==7.0.0
-      - pyparsing==3.2.3
-      - pytz==2025.2
-      - requests==2.32.3
-      - scikit-learn==1.6.1
-      - scipy==1.15.2
-      - seaborn==0.13.2
       - sympy==1.13.3
-      - threadpoolctl==3.6.0
       - torch==2.7.0+cu128
-      - torch-geometric==2.6.1
       - torchaudio==2.7.0+cu128
       - torchvision==0.22.0+cu128
-      - tqdm==4.67.1
       - triton==3.3.0
-      - typing-extensions==4.12.2
-      - tzdata==2025.2
-      - urllib3==2.4.0
-      - yarl==1.20.0
-prefix: /home/agaru/.conda/envs/cvf
+prefix: /home/agaru/anaconda3/envs/cvf
