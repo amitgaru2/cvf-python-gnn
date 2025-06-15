@@ -3,8 +3,8 @@ set -e
 
 # conda activate cvf
 
-cd cvf-analysis/v2
-python main.py --program maximal_matching --graph-names graph_powerlaw_cluster_graph_n9 -ml
+# cd cvf-analysis/v2
+# python main.py --program maximal_matching --graph-names graph_powerlaw_cluster_graph_n9 -ml
 
 # cd simulations
 # python simulate.py --program dijkstra_token_ring --sched 0 --no-sim 500000 --fault-interval 1 --graph-names implicit_graph_n8 --fault-prob 1.0 --simulation-type controlled_at_node --controlled-at-node 7
@@ -78,3 +78,9 @@ python main.py --program maximal_matching --graph-names graph_powerlaw_cluster_g
 # # cd gnn
 
 # # python cvf_analysis.py lstm_trained_at_2025_05_12_21_31 dijkstra implicit_graph_n5
+
+cd gnn
+
+python cvf_analysis.py --model lstm_trained_at_2025_05_15_11_29 --program maximal_matching --graph-names graph_powerlaw_cluster_graph_n7
+
+python cvf_analysis.py --model lstm_trained_at_2025_05_15_11_29 --program maximal_matching --graph-names graph_random_regular_graph_n7_d4
