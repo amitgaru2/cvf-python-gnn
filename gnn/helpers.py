@@ -370,7 +370,7 @@ class CVFConfigForGCNWSuccLSTMDatasetForMM(Dataset):
         self.device = device
         self.dataset_name = dataset_file.split("_config_rank_dataset.csv")[0]
         self.D = 3  # input dimension
-        self.combo_dict = self.get_pair_dictionary()
+        # self.combo_dict = self.get_pair_dictionary()
 
     def __len__(self):
         return len(self.data)
@@ -417,7 +417,7 @@ class CVFConfigForGCNWSuccLSTMDatasetForMM(Dataset):
             ]
         ).to(self.device)
         if succ:
-            _succ = [[self.get_encoding(v) for v in s] for s in succ]
+            # _succ = [[self.get_encoding(v) for v in s] for s in succ]
             __succ = []
             for s in succ:
                 nv = []
