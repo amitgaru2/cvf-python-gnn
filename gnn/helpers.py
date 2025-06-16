@@ -408,7 +408,7 @@ class CVFConfigForGCNWSuccLSTMDatasetForMM(Dataset):
 
     def __getitem__(self, idx):
         row = self.data.loc[idx]
-        config = [self.get_encoding(i) for i in ast.literal_eval(row["config"])]
+        # config = [self.get_encoding(i) for i in ast.literal_eval(row["config"])]
         succ = [i for i in ast.literal_eval(row["succ"])]
         config_ = torch.stack(
             [
@@ -429,10 +429,10 @@ class CVFConfigForGCNWSuccLSTMDatasetForMM(Dataset):
                     )
                 __succ.append(torch.stack(nv))
 
-            succ = torch.FloatTensor(_succ).to(self.device)
-            succ1 = torch.mean(succ, dim=0).unsqueeze(0)  # column wise
-            succ2 = torch.mean(succ, dim=1)  # row wise
-            succ2 = torch.sum(succ2).repeat(succ1.shape)
+            # succ = torch.FloatTensor(_succ).to(self.device)
+            # succ1 = torch.mean(succ, dim=0).unsqueeze(0)  # column wise
+            # succ2 = torch.mean(succ, dim=1)  # row wise
+            # succ2 = torch.sum(succ2).repeat(succ1.shape)
 
             succ_ = torch.stack(__succ).type(dtype=torch.float32).to(self.device)
             succ1_ = torch.mean(succ_, dim=0)
@@ -440,16 +440,16 @@ class CVFConfigForGCNWSuccLSTMDatasetForMM(Dataset):
             succ2_ = succ2_.unsqueeze(0).repeat(succ1_.shape[0], 1)
 
         else:
-            succ1 = torch.zeros(1, len(config)).to(self.device)
-            succ2 = succ1.clone()
-            succ1_ = torch.zeros(len(config), len(config) + 2).to(self.device)
+            # succ1 = torch.zeros(1, len(config)).to(self.device)
+            # succ2 = succ1.clone()
+            succ1_ = torch.zeros(config_.shape[0], config_.shape[0] + 2).to(self.device)
             succ2_ = succ1_.clone()
 
-        config = torch.FloatTensor([config]).to(self.device)
-        result = (
-            torch.cat((config, succ1, succ2), dim=0).t(),
-            self.dataset_name,
-        ), torch.FloatTensor([row["rank"]]).to(self.device)
+        # config = torch.FloatTensor([config]).to(self.device)
+        # result = (
+        #     torch.cat((config, succ1, succ2), dim=0).t(),
+        #     self.dataset_name,
+        # ), torch.FloatTensor([row["rank"]]).to(self.device)
 
         result_ = (
             torch.stack([config_, succ1_, succ2_]).reshape(3, -1).t(),
@@ -1005,7 +1005,7 @@ if __name__ == "__main__":
         device, "star_graph_n7_config_rank_dataset.csv", program="maximal_matching"
     )
 
-    loader = DataLoader(dataset, batch_size=1, shuffle=True)
+    loader = DataLoader(dataset, batch_size=10, shuffle=True)
 
     for batch in loader:
         x = batch[0]
