@@ -395,19 +395,55 @@ class CVFConfigForGCNWSuccLSTMDatasetForMM(Dataset):
     def get_encoding(self, pair):
         return self.combo_dict[pair]
 
+    def get_p_encoding(self, p_value):
+        highest_p_value = 6
+        if p_value is None:
+            p_value = highest_p_value + 1
+
+        p_value = torch.LongTensor([p_value])
+        return F.one_hot(p_value, num_classes=highest_p_value + 2).squeeze()
+
+    def get_m_encoding(self, m_value):
+        return torch.LongTensor([1]) if m_value else torch.LongTensor([0])
+
     def __getitem__(self, idx):
         row = self.data.loc[idx]
         config = [self.get_encoding(i) for i in ast.literal_eval(row["config"])]
         succ = [i for i in ast.literal_eval(row["succ"])]
+        config_ = torch.stack(
+            [
+                torch.cat([self.get_p_encoding(i[0]), self.get_m_encoding(i[1])])
+                for i in ast.literal_eval(row["config"])
+            ]
+        ).to(self.device)
         if succ:
             _succ = [[self.get_encoding(v) for v in s] for s in succ]
+            __succ = []
+            for s in succ:
+                nv = []
+                for i in s:
+                    nv.append(
+                        torch.cat(
+                            [self.get_p_encoding(i[0]), self.get_m_encoding(i[1])]
+                        )
+                    )
+                __succ.append(torch.stack(nv))
+
             succ = torch.FloatTensor(_succ).to(self.device)
             succ1 = torch.mean(succ, dim=0).unsqueeze(0)  # column wise
             succ2 = torch.mean(succ, dim=1)  # row wise
             succ2 = torch.sum(succ2).repeat(succ1.shape)
+
+            succ_ = torch.stack(__succ).type(dtype=torch.float32).to(self.device)
+            succ1_ = torch.mean(succ_, dim=0)
+            succ2_ = torch.sum(torch.mean(succ_, dim=1), dim=0).to(self.device)
+            succ2_ = succ2_.unsqueeze(0).repeat(succ1_.shape[0], 1)
+
         else:
             succ1 = torch.zeros(1, len(config)).to(self.device)
             succ2 = succ1.clone()
+            succ1_ = torch.zeros(len(config), len(config) + 2).to(self.device)
+            succ2_ = succ1_.clone()
 
         config = torch.FloatTensor([config]).to(self.device)
         result = (
@@ -415,7 +451,12 @@ class CVFConfigForGCNWSuccLSTMDatasetForMM(Dataset):
             self.dataset_name,
         ), torch.FloatTensor([row["rank"]]).to(self.device)
 
-        return result
+        result_ = (
+            torch.stack([config_, succ1_, succ2_]).reshape(3, -1).t(),
+            self.dataset_name,
+        ), torch.FloatTensor([row["rank"]]).to(self.device)
+
+        return result_
 
     # def __getitem__(self, idx):
     #     row = self.data.loc[idx]
@@ -550,7 +591,6 @@ class CVFConfigForGCNWSuccLSTMGCDataset(Dataset):
             succ1 = torch.zeros(len(config), self.num_classes).to(self.device)
             succ2 = succ1.clone()
 
-        # print("config", config.shape, "succ1", succ1.shape, "succ2", succ2.shape)
         result = (
             torch.cat((config, succ1, succ2), dim=1),
             self.dataset_name,
@@ -664,7 +704,9 @@ class CVFConfigForAnalysisDataset(Dataset):
         return self.cvf_analysis.total_configs
 
     def _get_succ_encoding(self, idx, config):
-        succ = list(i[1] for i in self.cvf_analysis._get_program_transitions_as_configs(config))
+        succ = list(
+            i[1] for i in self.cvf_analysis._get_program_transitions_as_configs(config)
+        )
         # self.cache[idx] = program_transition_idxs
         # succ = [self.cvf_analysis.indx_to_config(i) for i in program_transition_idxs]
         if succ:
@@ -963,12 +1005,9 @@ if __name__ == "__main__":
         device, "star_graph_n7_config_rank_dataset.csv", program="maximal_matching"
     )
 
-    # dataset = CVFConfigForAnalysisV2Dataset(device, "star_graph_n7")
-
-    # dataset = CVFConfigForAnalysisDataset("cuda", "star_graph_n7")
-    loader = DataLoader(dataset, batch_size=2, shuffle=True)
+    loader = DataLoader(dataset, batch_size=1, shuffle=True)
 
     for batch in loader:
         x = batch[0]
-        print(x)
+        print(x[0].shape)
         break

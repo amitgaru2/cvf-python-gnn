@@ -61,7 +61,9 @@ def get_title(graph_name):
 
 def main(graph_name):
     filepath = os.path.join(
-        "ml_predictions", f"{model}__{program}__{graph_name}__{result_type}.csv"
+        "ml_predictions",
+        program,
+        f"{model}__{program}__{graph_name}__{result_type}.csv",
     )
     df = pd.read_csv(filepath, index_col=0)
 

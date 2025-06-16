@@ -48,7 +48,9 @@ def get_title():
 
 def main(graph_name, marker_cycle):
     filepath = os.path.join(
-        "ml_predictions", f"{model}__{program}__{graph_name}__{result_type}.csv"
+        "ml_predictions",
+        program,
+        f"{model}__{program}__{graph_name}__{result_type}.csv",
     )
     df = pd.read_csv(filepath, index_col=0)
     if ONLY_FA:

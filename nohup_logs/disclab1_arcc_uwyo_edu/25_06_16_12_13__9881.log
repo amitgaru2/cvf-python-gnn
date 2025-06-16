@@ -1,0 +1,3 @@
+Timestamp: 1750097600.480906 | Program: maximal_matching | Training with Graphs: star_graph_n7, graph_powerlaw_cluster_graph_n7, graph_random_regular_graph_n7_d4 | Batch size: 256 | Epochs: 10 | Hidden size: 32 | Num layers: 2.
+
+
