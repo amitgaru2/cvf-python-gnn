@@ -1,0 +1,39 @@
+Timestamp: 1750164941.077122 | Program: maximal_matching | Training with Graphs: graph_powerlaw_cluster_graph_n7 | Batch size: 256 | Epochs: 15 | Hidden size: 32 | Num layers: 2.
+
+
+Train dataset size: 3,386,880, Subset size: 200,000 | Test dataset size: 69,120
+
+
+Model SimpleLSTM(
+  (lstm): GRU(3, 32, num_layers=2, batch_first=True)
+  (norm): LayerNorm((32,), eps=1e-05, elementwise_affine=True)
+  (h2o): Linear(in_features=32, out_features=1, bias=True)
+)
+Total parameters: 9,985
+
+
+Training set | Epoch 1 | MSE Loss: 15.1222 | Time taken: 268.8449s
+Training set | Epoch 2 | MSE Loss: 3.6185 | Time taken: 238.9302s
+Training set | Epoch 3 | MSE Loss: 1.936 | Time taken: 235.5884s
+Training set | Epoch 4 | MSE Loss: 1.5111 | Time taken: 234.5814s
+Training set | Epoch 5 | MSE Loss: 1.2319 | Time taken: 234.0572s
+Training set | Epoch 6 | MSE Loss: 1.0163 | Time taken: 234.0672s
+Training set | Epoch 7 | MSE Loss: 0.8901 | Time taken: 234.2852s
+Training set | Epoch 8 | MSE Loss: 1.0677 | Time taken: 233.6534s
+Training set | Epoch 9 | MSE Loss: 0.6739 | Time taken: 232.5105s
+Training set | Epoch 10 | MSE Loss: 0.6072 | Time taken: 232.162s
+Training set | Epoch 11 | MSE Loss: 0.5593 | Time taken: 232.0438s
+Training set | Epoch 12 | MSE Loss: 0.519 | Time taken: 231.9534s
+Training set | Epoch 13 | MSE Loss: 0.4801 | Time taken: 232.0504s
+Training set | Epoch 14 | MSE Loss: 1.6544 | Time taken: 231.6946s
+Training set | Epoch 15 | MSE Loss: 0.725 | Time taken: 231.4688s
+
+
+End Training | Total training time taken 3537.9023s
+
+
+Saving model trained_models/lstm_trained_at_2025_06_17_07_54.pt
+
+
+Testing model...
+Test set | MSE loss: 0.6173 | Total matched: 36,075 out of 69,120 (Accuracy: 52.19%)

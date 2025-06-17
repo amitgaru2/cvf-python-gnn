@@ -24,3 +24,26 @@ Training set | Epoch 9 | MSE Loss: 4.0441 | Time taken: 538.6406s
 Training set | Epoch 10 | MSE Loss: 4.2201 | Time taken: 537.2649s
 Training set | Epoch 11 | MSE Loss: 3.2914 | Time taken: 537.4321s
 Training set | Epoch 12 | MSE Loss: 3.3701 | Time taken: 537.1935s
+Training set | Epoch 13 | MSE Loss: 2.7696 | Time taken: 537.1598s
+Training set | Epoch 14 | MSE Loss: 2.8061 | Time taken: 536.8056s
+Training set | Epoch 15 | MSE Loss: 2.2507 | Time taken: 537.3346s
+Training set | Epoch 16 | MSE Loss: 2.6339 | Time taken: 537.5091s
+Training set | Epoch 17 | MSE Loss: 2.273 | Time taken: 536.9847s
+Training set | Epoch 18 | MSE Loss: 2.1226 | Time taken: 537.1252s
+Training set | Epoch 19 | MSE Loss: 2.1032 | Time taken: 537.7199s
+Training set | Epoch 20 | MSE Loss: 3.0871 | Time taken: 536.933s
+Training set | Epoch 21 | MSE Loss: 2.2236 | Time taken: 537.0558s
+Training set | Epoch 22 | MSE Loss: 5.9664 | Time taken: 537.2643s
+Training set | Epoch 23 | MSE Loss: 4.874 | Time taken: 537.4107s
+Training set | Epoch 24 | MSE Loss: 4.4993 | Time taken: 536.9344s
+Training set | Epoch 25 | MSE Loss: 4.2541 | Time taken: 537.3715s
+
+
+End Training | Total training time taken 13485.448s
+
+
+Saving model trained_models/lstm_trained_at_2025_06_16_18_09.pt
+
+
+Testing model...
+Test set | MSE loss: 4.0022 | Total matched: 63,162 out of 270,267 (Accuracy: 23.37%)
