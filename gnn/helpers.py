@@ -396,7 +396,7 @@ class CVFConfigForGCNWSuccLSTMDatasetForMM(Dataset):
         return self.combo_dict[pair]
 
     def get_p_encoding(self, p_value):
-        highest_p_value = 6
+        highest_p_value = 5
         if p_value is None:
             p_value = highest_p_value + 1
 
