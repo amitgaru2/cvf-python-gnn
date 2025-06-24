@@ -207,12 +207,12 @@ def main(program, graph_names, H, batch_size, epochs, num_layers):
     ]
 
     train_datasets = [ds[0] for ds in train_test_datasets]
-    # test_datasets = [ds[1] for ds in train_test_datasets]
+    test_datasets = [ds[1] for ds in train_test_datasets]
 
     datasets = ConcatDataset(train_datasets)
 
-    # test_concat_datasets = ConcatDataset(test_datasets)
-    test_concat_datasets = ConcatDataset(dataset_coll)
+    test_concat_datasets = ConcatDataset(test_datasets)
+    # test_concat_datasets = ConcatDataset(dataset_coll) # for full dataset test
 
     logger.info(
         f"Train dataset size: {len(datasets):,}, Subset size: {subset_size:,} | Test dataset size: {len(test_concat_datasets):,}"
