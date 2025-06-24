@@ -1,0 +1,39 @@
+Starting for star_graph_n6.
+Total configs: 12,288.
+Done ML CVF Analysis!
+Complete for star_graph_n6.
+
+=== Runtime Report ===
+get_model: 0.078317s
+get_perturbed_states: 0.006274s
+get_rank: 2.677714s
+group_data: 0.000177s
+ml_cvf_analysis: 50.233167s
+get_fa_results: 0.006080s
+Starting for graph_powerlaw_cluster_graph_n6.
+Total configs: 196,608.
+Done ML CVF Analysis!
+Complete for graph_powerlaw_cluster_graph_n6.
+
+=== Runtime Report ===
+get_model: 0.082638s
+get_perturbed_states: 0.128948s
+get_rank: 52.367433s
+group_data: 0.000212s
+ml_cvf_analysis: 1369.375820s
+get_fa_results: 0.006073s
+Starting for graph_random_regular_graph_n6_d3.
+Total configs: 262,144.
+Done ML CVF Analysis!
+Complete for graph_random_regular_graph_n6_d3.
+
+=== Runtime Report ===
+get_model: 0.076390s
+get_perturbed_states: 0.167058s
+get_rank: 87.251586s
+group_data: 0.000195s
+ml_cvf_analysis: 2430.069734s
+get_fa_results: 0.006400s
+=== End Report ===
+
+
