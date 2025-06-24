@@ -297,12 +297,6 @@ class CVFConfigForGCNWSuccWEIDataset(Dataset):
             self.dataset_name,
         ), torch.FloatTensor([row["rank"]]).to(self.device)
 
-        # result = (
-        #     config.t(),
-        #     self.A,
-        #     self.dataset_name
-        # ), torch.FloatTensor([row["rank"]]).to(self.device)
-
         return result
 
     def __repr__(self):
@@ -408,7 +402,6 @@ class CVFConfigForGCNWSuccLSTMDatasetForMM(Dataset):
 
     def __getitem__(self, idx):
         row = self.data.loc[idx]
-        # config = [self.get_encoding(i) for i in ast.literal_eval(row["config"])]
         succ = [i for i in ast.literal_eval(row["succ"])]
         config_ = torch.stack(
             [
@@ -417,7 +410,6 @@ class CVFConfigForGCNWSuccLSTMDatasetForMM(Dataset):
             ]
         ).to(self.device)
         if succ:
-            # _succ = [[self.get_encoding(v) for v in s] for s in succ]
             __succ = []
             for s in succ:
                 nv = []
@@ -429,27 +421,14 @@ class CVFConfigForGCNWSuccLSTMDatasetForMM(Dataset):
                     )
                 __succ.append(torch.stack(nv))
 
-            # succ = torch.FloatTensor(_succ).to(self.device)
-            # succ1 = torch.mean(succ, dim=0).unsqueeze(0)  # column wise
-            # succ2 = torch.mean(succ, dim=1)  # row wise
-            # succ2 = torch.sum(succ2).repeat(succ1.shape)
-
             succ_ = torch.stack(__succ).type(dtype=torch.float32).to(self.device)
             succ1_ = torch.mean(succ_, dim=0)
             succ2_ = torch.sum(torch.mean(succ_, dim=1), dim=0).to(self.device)
             succ2_ = succ2_.unsqueeze(0).repeat(succ1_.shape[0], 1)
 
         else:
-            # succ1 = torch.zeros(1, len(config)).to(self.device)
-            # succ2 = succ1.clone()
             succ1_ = torch.zeros(config_.shape[0], config_.shape[0] + 2).to(self.device)
             succ2_ = succ1_.clone()
-
-        # config = torch.FloatTensor([config]).to(self.device)
-        # result = (
-        #     torch.cat((config, succ1, succ2), dim=0).t(),
-        #     self.dataset_name,
-        # ), torch.FloatTensor([row["rank"]]).to(self.device)
 
         result_ = (
             torch.stack([config_, succ1_, succ2_]).reshape(3, -1).t(),
@@ -457,30 +436,6 @@ class CVFConfigForGCNWSuccLSTMDatasetForMM(Dataset):
         ), torch.FloatTensor([row["rank"]]).to(self.device)
 
         return result_
-
-    # def __getitem__(self, idx):
-    #     row = self.data.loc[idx]
-    #     config = [self.get_encoding(i) for i in ast.literal_eval(row["config"])]
-    #     succ = [i for i in ast.literal_eval(row["succ"])]
-    #     if succ:
-    #         _succ = []
-    #         for s in succ:
-    #             temp = []
-    #             for v in s:
-    #                 temp.append(self.get_encoding(v))
-    #             _succ.append(temp)
-    #         succ = torch.FloatTensor(_succ).to(self.device)
-    #     else:
-    #         succ = []
-    #         # succ = torch.zeros(1, len(config)).to(self.device)
-
-    #     config = torch.FloatTensor([config]).to(self.device)
-    #     result = (
-    #         torch.cat((config, succ), dim=0),
-    #         self.dataset_name,
-    #     ), torch.FloatTensor([row["rank"]]).to(self.device)
-
-    #     return result
 
     def __repr__(self):
         return f"{self.__class__.__name__} {self.dataset_name}"
@@ -727,14 +682,127 @@ class CVFConfigForAnalysisDataset(Dataset):
         result = (torch.cat((config, succ1, succ2), dim=0).t(), idx)
         return result
 
-    def get_pts(self, idx):
-        if idx in self.cache:
-            result = self.cache[idx]
-            del self.cache[idx]
-            return result
+
+class CVFConfigForAnalysisDatasetMM(Dataset):
+    def __init__(
+        self,
+        device,
+        graph_name,
+        program="coloring",
+    ) -> None:
+        graphs_dir = os.path.join(
+            os.getenv("CVF_PROJECT_DIR", ""), "cvf-analysis", "graphs"
+        )
+        graph_path = os.path.join(graphs_dir, f"{graph_name}.txt")
+        graph = get_graph(graph_path)
+        program_class_map = {
+            "coloring": GraphColoringCVFAnalysisV2,
+            "dijkstra": DijkstraTokenRingCVFAnalysisV2,
+            "maximal_matching": MaximalMatchingCVFAnalysisV2,
+        }
+        self.cvf_analysis = program_class_map[program](
+            graph_name,
+            graph,
+            generate_data_ml=False,
+            generate_data_embedding=False,
+            generate_test_data_ml=True,
+        )
+
+        self.device = device
+        self.dataset_name = graph_name
+        self.cache = {}
+        self.default_succ1 = torch.zeros(1, len(graph)).to(self.device)
+
+    def __len__(self):
+        return self.cvf_analysis.total_configs
+
+    def get_p_encoding(self, p_value):
+        highest_p_value = 5
+        if p_value is None:
+            p_value = highest_p_value + 1
+
+        p_value = torch.LongTensor([p_value])
+        return F.one_hot(p_value, num_classes=highest_p_value + 2).squeeze()
+
+    def get_m_encoding(self, m_value):
+        return torch.LongTensor([1]) if m_value else torch.LongTensor([0])
+
+    def _get_succ_encoding(self, idx, config):
+        succ = list(
+            i[1] for i in self.cvf_analysis._get_program_transitions_as_configs(config)
+        )
+        if succ:
+            succ = torch.FloatTensor(succ).to(self.device)
+            succ1 = torch.mean(succ, dim=0).unsqueeze(0)  # column wise
+            succ2 = torch.mean(succ, dim=1)  # row wise
+            succ2 = torch.sum(succ2).repeat(succ1.shape)
+        else:
+            succ1 = self.default_succ1.clone()
+            succ2 = self.default_succ1.clone()
+
+        return succ1, succ2
+
+    def __getitem__(self, idx):
         config = self.cvf_analysis.indx_to_config(idx)
-        program_transition_idxs = self.cvf_analysis._get_program_transitions(config)
-        return program_transition_idxs
+        succ = list(
+            i[1] for i in self.cvf_analysis._get_program_transitions_as_configs(config)
+        )
+        config_ = torch.stack(
+            [
+                torch.cat(
+                    [
+                        self.get_p_encoding(
+                            self.cvf_analysis.possible_node_values[i][v].p
+                        ),
+                        self.get_m_encoding(
+                            self.cvf_analysis.possible_node_values[i][v].m
+                        ),
+                    ]
+                )
+                for i, v in enumerate(config)
+            ]
+        ).to(self.device)
+        if succ:
+            __succ = []
+            for s in succ:
+                nv = []
+                for i, v in enumerate(s):
+                    nv.append(
+                        torch.cat(
+                            [
+                                self.get_p_encoding(
+                                    self.cvf_analysis.possible_node_values[i][v].p
+                                ),
+                                self.get_m_encoding(
+                                    self.cvf_analysis.possible_node_values[i][v].m
+                                ),
+                            ]
+                        )
+                    )
+                __succ.append(torch.stack(nv))
+
+            succ_ = torch.stack(__succ).type(dtype=torch.float32).to(self.device)
+            succ1_ = torch.mean(succ_, dim=0)
+            succ2_ = torch.sum(torch.mean(succ_, dim=1), dim=0).to(self.device)
+            succ2_ = succ2_.unsqueeze(0).repeat(succ1_.shape[0], 1)
+
+        else:
+            succ1_ = torch.zeros(config_.shape[0], config_.shape[0] + 2).to(self.device)
+            succ2_ = succ1_.clone()
+
+        result_ = (
+            torch.stack([config_, succ1_, succ2_]).reshape(3, -1).t(),
+            idx,
+        )
+
+        return result_
+
+    # def __getitem__(self, idx):
+    #     config = self.cvf_analysis.indx_to_config(idx)
+    #     succ1, succ2 = self._get_succ_encoding(idx, config)
+    #     config = torch.FloatTensor([config]).to(self.device)
+    #     result = (torch.cat((config, succ1, succ2), dim=0).t(), idx)
+    #     return result
 
 
 class CVFConfigForAnalysisV2Dataset(Dataset):

@@ -14,7 +14,7 @@ from torch.utils.data import DataLoader
 from custom_logger import logger
 from lstm_scratch import SimpleLSTM
 from arg_parser_helper import generate_parser
-from helpers import CVFConfigForAnalysisDataset
+from helpers import CVFConfigForAnalysisDataset, CVFConfigForAnalysisDatasetMM
 
 utils_path = os.path.join(os.getenv("CVF_PROJECT_DIR", ""), "utils")
 sys.path.append(utils_path)
@@ -81,7 +81,11 @@ def group_data(df, grp_by: list):
 def ml_cvf_analysis(graph_name):
     model = get_model()
 
-    dataset = CVFConfigForAnalysisDataset(device, graph_name, program=program)
+    dataset = (
+        CVFConfigForAnalysisDatasetMM(device, graph_name, program)
+        if program == "maximal_matching"
+        else CVFConfigForAnalysisDataset(device, graph_name, program=program)
+    )
 
     result_df = pd.DataFrame(
         {"node": pd.Series(dtype="int"), "rank effect": pd.Series(dtype="float")}
@@ -99,7 +103,7 @@ def ml_cvf_analysis(graph_name):
             perturbed_states_x = [dataset[i[1]][0] for i in perturbed_states]
             x = torch.stack([batch[0][0], *perturbed_states_x])
             ranks = get_rank(model, x)
-            rank_data.append(np.floor(ranks[0].item()) + 0.5)
+            rank_data.append(np.round(ranks[0].item()))
             frm_rank = ranks[0]
             for i, to_rank in enumerate(ranks[1:]):
                 rank_effect = (frm_rank - to_rank).item()
