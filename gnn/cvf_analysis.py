@@ -13,6 +13,7 @@ from torch.utils.data import DataLoader
 
 from custom_logger import logger
 from lstm_scratch import SimpleLSTM
+# from lstm_scratch_2 import SimpleLSTM
 from arg_parser_helper import generate_parser
 from helpers import CVFConfigForAnalysisDataset, CVFConfigForAnalysisDatasetMM
 
@@ -53,6 +54,7 @@ def print_runtime_report():
     logger.info("\n=== Runtime Report ===")
     for func_name, total_time in function_runtimes.items():
         logger.info(f"{func_name}: {total_time:.6f}s")
+    logger.info("=== End Report ===\n\n")
 
 
 @track_runtime
