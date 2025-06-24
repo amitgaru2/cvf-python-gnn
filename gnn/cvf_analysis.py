@@ -12,7 +12,7 @@ from collections import defaultdict
 from torch.utils.data import DataLoader
 
 from custom_logger import logger
-from lstm_scratch_2 import SimpleLSTM
+from lstm_scratch import SimpleLSTM
 from arg_parser_helper import generate_parser
 from helpers import CVFConfigForAnalysisDataset
 
@@ -88,9 +88,10 @@ def ml_cvf_analysis(graph_name):
     )
 
     data = []
+    rank_data = []
     with torch.no_grad():
-        test_dataloader = DataLoader(dataset, batch_size=1)
-        for batch in test_dataloader:
+        dataloader = DataLoader(dataset, batch_size=1)
+        for batch in dataloader:
             frm_idx = batch[1].item()
             perturbed_states = [
                 (p, indx) for (p, indx) in get_perturbed_states(dataset, frm_idx)
@@ -98,6 +99,7 @@ def ml_cvf_analysis(graph_name):
             perturbed_states_x = [dataset[i[1]][0] for i in perturbed_states]
             x = torch.stack([batch[0][0], *perturbed_states_x])
             ranks = get_rank(model, x)
+            rank_data.append(np.floor(ranks[0].item()) + 0.5)
             frm_rank = ranks[0]
             for i, to_rank in enumerate(ranks[1:]):
                 rank_effect = (frm_rank - to_rank).item()
@@ -108,6 +110,11 @@ def ml_cvf_analysis(graph_name):
             temp_df = pd.DataFrame(data, columns=["node", "rank effect"])
             data = []
             result_df = pd.concat([result_df, temp_df], ignore_index=True)
+
+    save_to_dir = os.path.join("ml_predictions", program)
+    create_dir_if_not_exists(save_to_dir)
+
+    result_rank_df = pd.DataFrame(rank_data, columns=["rank"])
 
     result_df["rank effect"] = np.floor(result_df["rank effect"] + 0.5)
 
@@ -120,47 +127,79 @@ def ml_cvf_analysis(graph_name):
     )
 
     ml_grp_by_node_re.to_csv(
-        f"ml_predictions/{model_name}__{graph_name}__cvf_by_node.csv"
+        os.path.join(
+            save_to_dir, f"{model_name}__{program}__{graph_name}__cvf_by_node.csv"
+        )
     )
 
     ml_grp_by_re = (
         group_data(result_df, ["rank effect"]).size().reset_index(name="ml_count")
     )
 
-    ml_grp_by_re.to_csv(f"ml_predictions/{model_name}__{graph_name}__cvf.csv")
+    ml_grp_by_re.to_csv(
+        os.path.join(save_to_dir, f"{model_name}__{program}__{graph_name}__cvf.csv")
+    )
 
-    return ml_grp_by_re, ml_grp_by_node_re
+    ml_grp_by_r = (
+        group_data(result_rank_df, ["rank"]).size().reset_index(name="ml_count")
+    ).astype(int)
+
+    ml_grp_by_r.to_csv(
+        os.path.join(save_to_dir, f"{model_name}__{program}__{graph_name}__rank.csv")
+    )
+
+    return ml_grp_by_r, ml_grp_by_re, ml_grp_by_node_re
 
 
-# def ml_cvf_analysis():
-#     ml_grp_by_node_re = pd.read_csv(
-#         f"ml_predictions/{model_name}__{graph_name}__cvf_by_node.csv"
-#     )
+def get_file_df(dir, file_name):
+    file_path = os.path.join(dir, file_name)
+    if not os.path.exists(file_path):
+        logger.warning("FA results not found for %s.", graph_name)
+        return None
 
-#     ml_grp_by_re = pd.read_csv(f"ml_predictions/{model_name}__{graph_name}__cvf.csv")
-
-#     return ml_grp_by_re, ml_grp_by_node_re
+    return pd.read_csv(file_path)
 
 
 @track_runtime
-def get_fa_results(graph_name, ml_grp_by_re, ml_grp_by_node_re):
+def get_fa_results(graph_name, ml_grp_by_r, ml_grp_by_re, ml_grp_by_node_re):
     results_dir = os.path.join(
         os.getenv("CVF_PROJECT_DIR", ""), "cvf-analysis", "v2", "results", program
     )
 
-    results_file = f"rank_effects_avg__{graph_name}.csv"
-    file_path = os.path.join(results_dir, results_file)
-    if not os.path.exists(file_path):
-        logger.warning("FA results not found for %s.", graph_name)
+    results_file = f"ranks_avg__{graph_name}.csv"
+    f_grp_by_r = get_file_df(results_dir, results_file)
+    if f_grp_by_r is None:
         return
 
-    f_grp_by_re = pd.read_csv(file_path)
+    f_grp_by_r = f_grp_by_r.drop(f_grp_by_r.columns[0], axis=1)
+    f_grp_by_r.rename(columns={"count": "fa_count"}, inplace=True)
+
+    df_grp_by_r = (
+        pd.merge(f_grp_by_r, ml_grp_by_r, on="rank", how="outer").fillna(0).astype(int)
+    )
+
+    save_to_dir = os.path.join("ml_predictions", program)
+    create_dir_if_not_exists(save_to_dir)
+
+    filepath = os.path.join(
+        save_to_dir, f"{model_name}__{program}__{graph_name}__rank.csv"
+    )
+
+    df_grp_by_r.to_csv(filepath)
+
+    results_file = f"rank_effects_avg__{graph_name}.csv"
+    f_grp_by_re = get_file_df(results_dir, results_file)
+    if f_grp_by_re is None:
+        return
+
     f_grp_by_re = f_grp_by_re.drop(f_grp_by_re.columns[0], axis=1)
     f_grp_by_re.rename(columns={"count": "fa_count"}, inplace=True)
 
-    df_grp_by_re = pd.merge(
-        f_grp_by_re, ml_grp_by_re, on="rank effect", how="outer"
-    ).fillna(0)
+    df_grp_by_re = (
+        pd.merge(f_grp_by_re, ml_grp_by_re, on="rank effect", how="outer")
+        .fillna(0)
+        .astype(int)
+    )
 
     save_to_dir = os.path.join("ml_predictions", program)
     create_dir_if_not_exists(save_to_dir)
@@ -173,8 +212,10 @@ def get_fa_results(graph_name, ml_grp_by_re, ml_grp_by_node_re):
 
     results_file = f"rank_effects_by_node_avg__{graph_name}.csv"
 
-    file_path = os.path.join(results_dir, results_file)
-    f_grp_by_node_re = pd.read_csv(file_path)
+    f_grp_by_node_re = get_file_df(results_dir, results_file)
+    if f_grp_by_node_re is None:
+        return
+
     f_grp_by_node_re = f_grp_by_node_re.melt(
         id_vars="node",
         value_vars=set(f_grp_by_node_re.columns) - {"node"},
@@ -183,9 +224,13 @@ def get_fa_results(graph_name, ml_grp_by_re, ml_grp_by_node_re):
     )
     f_grp_by_node_re["rank effect"] = f_grp_by_node_re["rank effect"].astype(float)
 
-    df_grp_by_node_re = pd.merge(
-        f_grp_by_node_re, ml_grp_by_node_re, on=["node", "rank effect"], how="outer"
-    ).fillna(0)
+    df_grp_by_node_re = (
+        pd.merge(
+            f_grp_by_node_re, ml_grp_by_node_re, on=["node", "rank effect"], how="outer"
+        )
+        .fillna(0)
+        .astype(int)
+    )
 
     filepath = os.path.join(
         save_to_dir, f"{model_name}__{program}__{graph_name}__cvf_by_node.csv"
@@ -200,9 +245,10 @@ def main(graph_name, has_fa_analysis=True):
         ml_grp_by_re = pd.DataFrame(columns=["rank effect"])
         ml_grp_by_node_re = pd.DataFrame(columns=["node", "rank effect"])
     else:
-        ml_grp_by_re, ml_grp_by_node_re = ml_cvf_analysis(graph_name)
+        ml_grp_by_r, ml_grp_by_re, ml_grp_by_node_re = ml_cvf_analysis(graph_name)
+
     if has_fa_analysis:
-        get_fa_results(graph_name, ml_grp_by_re, ml_grp_by_node_re)
+        get_fa_results(graph_name, ml_grp_by_r, ml_grp_by_re, ml_grp_by_node_re)
 
     logger.info("Complete for %s.", graph_name)
     print_runtime_report()
