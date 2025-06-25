@@ -364,6 +364,7 @@ class CVFConfigForGCNWSuccLSTMDatasetForMM(Dataset):
         self.device = device
         self.dataset_name = dataset_file.split("_config_rank_dataset.csv")[0]
         self.D = 3  # input dimension
+        self.highest_p_value = 7
         # self.combo_dict = self.get_pair_dictionary()
 
     def __len__(self):
@@ -390,12 +391,11 @@ class CVFConfigForGCNWSuccLSTMDatasetForMM(Dataset):
         return self.combo_dict[pair]
 
     def get_p_encoding(self, p_value):
-        highest_p_value = 5
         if p_value is None:
-            p_value = highest_p_value + 1
+            p_value = self.highest_p_value + 1
 
         p_value = torch.LongTensor([p_value])
-        return F.one_hot(p_value, num_classes=highest_p_value + 2).squeeze()
+        return F.one_hot(p_value, num_classes=self.highest_p_value + 2).squeeze()
 
     def get_m_encoding(self, m_value):
         return torch.LongTensor([1]) if m_value else torch.LongTensor([0])
@@ -403,14 +403,14 @@ class CVFConfigForGCNWSuccLSTMDatasetForMM(Dataset):
     def __getitem__(self, idx):
         row = self.data.loc[idx]
         succ = [i for i in ast.literal_eval(row["succ"])]
-        config_ = torch.stack(
+        config = torch.stack(
             [
                 torch.cat([self.get_p_encoding(i[0]), self.get_m_encoding(i[1])])
                 for i in ast.literal_eval(row["config"])
             ]
         ).to(self.device)
         if succ:
-            __succ = []
+            _succ = []
             for s in succ:
                 nv = []
                 for i in s:
@@ -419,23 +419,22 @@ class CVFConfigForGCNWSuccLSTMDatasetForMM(Dataset):
                             [self.get_p_encoding(i[0]), self.get_m_encoding(i[1])]
                         )
                     )
-                __succ.append(torch.stack(nv))
+                _succ.append(torch.stack(nv))
 
-            succ_ = torch.stack(__succ).type(dtype=torch.float32).to(self.device)
-            succ1_ = torch.mean(succ_, dim=0)
-            succ2_ = torch.sum(torch.mean(succ_, dim=1), dim=0).to(self.device)
-            succ2_ = succ2_.unsqueeze(0).repeat(succ1_.shape[0], 1)
-
+            succ = torch.stack(_succ).type(dtype=torch.float32).to(self.device)
+            succ1 = torch.mean(succ, dim=0)
+            succ2 = torch.sum(torch.mean(succ, dim=1), dim=0).to(self.device)
+            succ2 = succ2.unsqueeze(0).repeat(succ1.shape[0], 1)
         else:
-            succ1_ = torch.zeros(config_.shape[0], config_.shape[0] + 2).to(self.device)
-            succ2_ = succ1_.clone()
+            succ1 = torch.zeros(config.shape[0], config.shape[1]).to(self.device)
+            succ2 = succ1.clone()
 
-        result_ = (
-            torch.stack([config_, succ1_, succ2_]).reshape(3, -1).t(),
+        result = (
+            torch.stack([config, succ1, succ2]).reshape(3, -1).t(),
             self.dataset_name,
         ), torch.FloatTensor([row["rank"]]).to(self.device)
 
-        return result_
+        return result
 
     def __repr__(self):
         return f"{self.__class__.__name__} {self.dataset_name}"
@@ -712,17 +711,17 @@ class CVFConfigForAnalysisDatasetMM(Dataset):
         self.dataset_name = graph_name
         self.cache = {}
         self.default_succ1 = torch.zeros(1, len(graph)).to(self.device)
+        self.highest_p_value = 7
 
     def __len__(self):
         return self.cvf_analysis.total_configs
 
     def get_p_encoding(self, p_value):
-        highest_p_value = 5
         if p_value is None:
-            p_value = highest_p_value + 1
+            p_value = self.highest_p_value + 1
 
         p_value = torch.LongTensor([p_value])
-        return F.one_hot(p_value, num_classes=highest_p_value + 2).squeeze()
+        return F.one_hot(p_value, num_classes=self.highest_p_value + 2).squeeze()
 
     def get_m_encoding(self, m_value):
         return torch.LongTensor([1]) if m_value else torch.LongTensor([0])
@@ -787,7 +786,7 @@ class CVFConfigForAnalysisDatasetMM(Dataset):
             succ2_ = succ2_.unsqueeze(0).repeat(succ1_.shape[0], 1)
 
         else:
-            succ1_ = torch.zeros(config_.shape[0], config_.shape[0] + 2).to(self.device)
+            succ1_ = torch.zeros(config_.shape[0], config_.shape[1]).to(self.device)
             succ2_ = succ1_.clone()
 
         result_ = (
