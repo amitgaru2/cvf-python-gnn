@@ -13,7 +13,6 @@ from torch.utils.data import DataLoader
 
 from custom_logger import logger
 from lstm_scratch import SimpleLSTM
-# from lstm_scratch_2 import SimpleLSTM
 from arg_parser_helper import generate_parser
 from helpers import CVFConfigForAnalysisDataset, CVFConfigForAnalysisDatasetMM
 
@@ -49,6 +48,18 @@ def track_runtime(func):
     return wrapper
 
 
+class CVFConfigForAnalysisDatasetWithTT(CVFConfigForAnalysisDataset):
+    @track_runtime
+    def __getitem__(self, idx):
+        return super().__getitem__(idx)
+
+
+class CVFConfigForAnalysisDatasetMMWithTT(CVFConfigForAnalysisDatasetMM):
+    @track_runtime
+    def __getitem__(self, idx):
+        return super().__getitem__(idx)
+
+
 # Optional utility to print final report
 def print_runtime_report():
     logger.info("\n=== Runtime Report ===")
@@ -80,51 +91,19 @@ def group_data(df, grp_by: list):
 
 
 @track_runtime
-def ml_cvf_analysis(graph_name):
-    model = get_model()
-
+def get_dataset(graph_name):
     dataset = (
-        CVFConfigForAnalysisDatasetMM(device, graph_name, program)
+        CVFConfigForAnalysisDatasetMMWithTT(device, graph_name, program)
         if program == "maximal_matching"
-        else CVFConfigForAnalysisDataset(device, graph_name, program=program)
+        else CVFConfigForAnalysisDatasetWithTT(device, graph_name, program=program)
     )
+    return dataset
 
-    result_df = pd.DataFrame(
-        {"node": pd.Series(dtype="int"), "rank effect": pd.Series(dtype="float")}
-    )
 
-    data = []
-    rank_data = []
-    with torch.no_grad():
-        dataloader = DataLoader(dataset, batch_size=1)
-        for batch in dataloader:
-            frm_idx = batch[1].item()
-            perturbed_states = [
-                (p, indx) for (p, indx) in get_perturbed_states(dataset, frm_idx)
-            ]
-            perturbed_states_x = [dataset[i[1]][0] for i in perturbed_states]
-            x = torch.stack([batch[0][0], *perturbed_states_x])
-            ranks = get_rank(model, x)
-            rank_data.append(np.round(ranks[0].item()))
-            frm_rank = ranks[0]
-            for i, to_rank in enumerate(ranks[1:]):
-                rank_effect = (frm_rank - to_rank).item()
-                data.append(
-                    {"node": perturbed_states[i][0], "rank effect": rank_effect}
-                )
-
-            temp_df = pd.DataFrame(data, columns=["node", "rank effect"])
-            data = []
-            result_df = pd.concat([result_df, temp_df], ignore_index=True)
-
+@track_runtime
+def aggregation_n_save(result_df, result_rank_df):
     save_to_dir = os.path.join("ml_predictions", program)
     create_dir_if_not_exists(save_to_dir)
-
-    result_rank_df = pd.DataFrame(rank_data, columns=["rank"])
-
-    result_df["rank effect"] = np.floor(result_df["rank effect"] + 0.5)
-
-    logger.info("Done ML CVF Analysis!")
 
     ml_grp_by_node_re = (
         group_data(result_df, ["node", "rank effect"])
@@ -155,6 +134,48 @@ def ml_cvf_analysis(graph_name):
     )
 
     return ml_grp_by_r, ml_grp_by_re, ml_grp_by_node_re
+
+
+@track_runtime
+def ml_cvf_analysis(graph_name):
+    model = get_model()
+    dataset = get_dataset(graph_name)
+    result_df = pd.DataFrame(
+        {"node": pd.Series(dtype="int"), "rank effect": pd.Series(dtype="float")}
+    )
+
+    data = []
+    rank_data = []
+    with torch.no_grad():
+        dataloader = DataLoader(dataset, batch_size=1)
+        for n, batch in enumerate(dataloader, 1):
+            frm_idx = batch[1].item()
+            perturbed_states = [
+                (i, indx) for (i, indx) in get_perturbed_states(dataset, frm_idx)
+            ]
+            perturbed_states_x = [dataset[i[1]][0] for i in perturbed_states]
+            x = torch.stack([batch[0][0], *perturbed_states_x])
+            ranks = get_rank(model, x)
+            rank_data.append(np.round(ranks[0].item()))
+            rank_effects = ranks[0] - ranks
+            for i, rank_effect in enumerate(rank_effects[1:]):
+                data.append((perturbed_states[i][0], rank_effect))
+
+            if n % 5000 == 0:
+                temp_df = pd.DataFrame(data, columns=["node", "rank effect"])
+                data = []
+                result_df = pd.concat([result_df, temp_df], ignore_index=True)
+
+    if data:
+        temp_df = pd.DataFrame(data, columns=["node", "rank effect"])
+        data = []
+        result_df = pd.concat([result_df, temp_df], ignore_index=True)
+
+    result_rank_df = pd.DataFrame(rank_data, columns=["rank"])
+    result_df["rank effect"] = np.floor(result_df["rank effect"] + 0.5)
+    logger.info("Done ML CVF Analysis!")
+
+    return aggregation_n_save(result_df, result_rank_df)
 
 
 def get_file_df(dir, file_name):

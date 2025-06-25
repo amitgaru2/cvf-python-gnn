@@ -4,10 +4,12 @@ import sys
 import ast
 import json
 
-import numpy as np
 import torch
+import numpy as np
 import pandas as pd
 import torch.nn.functional as F
+
+from functools import lru_cache
 
 from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
@@ -390,6 +392,7 @@ class CVFConfigForGCNWSuccLSTMDatasetForMM(Dataset):
     def get_encoding(self, pair):
         return self.combo_dict[pair]
 
+    @lru_cache(maxsize=None)
     def get_p_encoding(self, p_value):
         if p_value is None:
             p_value = self.highest_p_value + 1
@@ -397,6 +400,7 @@ class CVFConfigForGCNWSuccLSTMDatasetForMM(Dataset):
         p_value = torch.LongTensor([p_value])
         return F.one_hot(p_value, num_classes=self.highest_p_value + 2).squeeze()
 
+    @lru_cache(maxsize=None)
     def get_m_encoding(self, m_value):
         return torch.LongTensor([1]) if m_value else torch.LongTensor([0])
 
@@ -716,6 +720,7 @@ class CVFConfigForAnalysisDatasetMM(Dataset):
     def __len__(self):
         return self.cvf_analysis.total_configs
 
+    @lru_cache(maxsize=None)
     def get_p_encoding(self, p_value):
         if p_value is None:
             p_value = self.highest_p_value + 1
@@ -723,23 +728,9 @@ class CVFConfigForAnalysisDatasetMM(Dataset):
         p_value = torch.LongTensor([p_value])
         return F.one_hot(p_value, num_classes=self.highest_p_value + 2).squeeze()
 
+    @lru_cache(maxsize=None)
     def get_m_encoding(self, m_value):
         return torch.LongTensor([1]) if m_value else torch.LongTensor([0])
-
-    def _get_succ_encoding(self, idx, config):
-        succ = list(
-            i[1] for i in self.cvf_analysis._get_program_transitions_as_configs(config)
-        )
-        if succ:
-            succ = torch.FloatTensor(succ).to(self.device)
-            succ1 = torch.mean(succ, dim=0).unsqueeze(0)  # column wise
-            succ2 = torch.mean(succ, dim=1)  # row wise
-            succ2 = torch.sum(succ2).repeat(succ1.shape)
-        else:
-            succ1 = self.default_succ1.clone()
-            succ2 = self.default_succ1.clone()
-
-        return succ1, succ2
 
     def __getitem__(self, idx):
         config = self.cvf_analysis.indx_to_config(idx)
@@ -761,6 +752,7 @@ class CVFConfigForAnalysisDatasetMM(Dataset):
                 for i, v in enumerate(config)
             ]
         ).to(self.device)
+
         if succ:
             __succ = []
             for s in succ:
@@ -789,12 +781,12 @@ class CVFConfigForAnalysisDatasetMM(Dataset):
             succ1_ = torch.zeros(config_.shape[0], config_.shape[1]).to(self.device)
             succ2_ = succ1_.clone()
 
-        result_ = (
+        result = (
             torch.stack([config_, succ1_, succ2_]).reshape(3, -1).t(),
             idx,
         )
 
-        return result_
+        return result
 
     # def __getitem__(self, idx):
     #     config = self.cvf_analysis.indx_to_config(idx)
