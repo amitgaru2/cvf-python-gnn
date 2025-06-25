@@ -715,7 +715,7 @@ class CVFConfigForAnalysisDatasetMM(Dataset):
         self.dataset_name = graph_name
         self.cache = {}
         self.default_succ1 = torch.zeros(1, len(graph)).to(self.device)
-        self.highest_p_value = 7
+        self.highest_p_value = 6
 
     def __len__(self):
         return self.cvf_analysis.total_configs
