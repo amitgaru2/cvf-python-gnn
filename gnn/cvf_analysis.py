@@ -159,7 +159,7 @@ def ml_cvf_analysis(graph_name):
             rank_data.append(np.round(ranks[0].item()))
             rank_effects = ranks[0] - ranks
             for i, rank_effect in enumerate(rank_effects[1:]):
-                data.append((perturbed_states[i][0], rank_effect))
+                data.append((perturbed_states[i][0], rank_effect.item()))
 
             if n % 5000 == 0:
                 temp_df = pd.DataFrame(data, columns=["node", "rank effect"])

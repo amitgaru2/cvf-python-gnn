@@ -6,15 +6,15 @@ Done ML CVF Analysis!
 Complete for graph_random_regular_graph_n6_d3.
 
 === Runtime Report ===
-get_model: 0.081322s
-get_dataset: 0.000300s
-__getitem__: 743.027900s
-get_perturbed_states: 0.097502s
-get_rank: 84.597685s
-group_data: 0.000288s
-aggregation_n_save: 0.246020s
-ml_cvf_analysis: 896.646876s
-get_fa_results: 0.006756s
+get_model: 0.085604s
+get_dataset: 0.000228s
+__getitem__: 489.979097s
+get_perturbed_states: 0.099303s
+get_rank: 60.007478s
+group_data: 0.000324s
+aggregation_n_save: 0.260132s
+ml_cvf_analysis: 615.374328s
+get_fa_results: 0.006838s
 === End Report ===
 
 

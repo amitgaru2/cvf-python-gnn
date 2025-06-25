@@ -366,7 +366,7 @@ class CVFConfigForGCNWSuccLSTMDatasetForMM(Dataset):
         self.device = device
         self.dataset_name = dataset_file.split("_config_rank_dataset.csv")[0]
         self.D = 3  # input dimension
-        self.highest_p_value = 7
+        self.highest_p_value = 6
         # self.combo_dict = self.get_pair_dictionary()
 
     def __len__(self):

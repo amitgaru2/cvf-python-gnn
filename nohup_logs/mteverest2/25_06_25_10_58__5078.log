@@ -65,3 +65,20 @@ Training set | Epoch: 42/50 | MSE Loss: 3.7424 | Time taken: 243.5804s
 Training set | Epoch: 43/50 | MSE Loss: 4.9169 | Time taken: 233.3601s
 Training set | Epoch: 44/50 | MSE Loss: 4.5001 | Time taken: 277.1432s
 Training set | Epoch: 45/50 | MSE Loss: 3.1994 | Time taken: 309.176s
+Training set | Epoch: 46/50 | MSE Loss: 2.9897 | Time taken: 316.5993s
+Training set | Epoch: 47/50 | MSE Loss: 2.6125 | Time taken: 308.9308s
+Training set | Epoch: 48/50 | MSE Loss: 2.4265 | Time taken: 308.7637s
+Training set | Epoch: 49/50 | MSE Loss: 2.2057 | Time taken: 233.7269s
+Training set | Epoch: 50/50 | MSE Loss: 2.5625 | Time taken: 209.4232s
+
+
+End Training | Total training time taken 11365.5847s
+
+
+Saving model trained_models/lstm_trained_at_2025_06_25_14_08.pt
+
+
+Testing model...
+Test set | MSE loss: 11.1907 | Total matched: 2,998 out of 10,569 (Accuracy: 28.37%)
++ mes star_graph_n6 star_graph_n7 graph_powerlaw_cluster_graph_n6 graph_random_regular_graph_n6_d3
+./nohup_commands.sh: line 66: mes: command not found
