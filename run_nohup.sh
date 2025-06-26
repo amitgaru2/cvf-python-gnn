@@ -10,6 +10,5 @@ logLocation="nohup_logs/${hostName}/""$jobID"".log"
 echo "Log location: ""$logLocation"
 echo "Started at : "$(date)
 nohup ./nohup_commands.sh > "$logLocation" 2>&1 <&- &
-echo "Completed at : "$(date)
 # command_pid=$!
 # wait $command_pid && echo "Process completed successfully!" || echo "Process failed!"
