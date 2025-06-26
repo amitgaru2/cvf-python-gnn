@@ -2,3 +2,19 @@
 + python cvf_analysis.py --model lstm_trained_at_2025_06_25_19_06 --program maximal_matching --graph-names graph_powerlaw_cluster_graph_n7
 Starting for graph_powerlaw_cluster_graph_n7.
 Total configs: 3,456,000.
+Done ML CVF Analysis!
+Complete for graph_powerlaw_cluster_graph_n7.
+
+=== Runtime Report ===
+get_model: 0.078784s
+get_dataset: 0.000211s
+__getitem__: 7738.942429s
+get_perturbed_states: 1.397900s
+get_rank: 730.453753s
+group_data: 0.000250s
+aggregation_n_save: 1.397805s
+ml_cvf_analysis: 9212.632223s
+get_fa_results: 0.006794s
+=== End Report ===
+
+
