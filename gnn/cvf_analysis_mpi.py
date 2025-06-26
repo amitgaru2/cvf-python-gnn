@@ -245,10 +245,6 @@ def ml_cvf_analysis(graph_name):
     )
 
     sampler = SimpleMPISampler(dataset, frm_indx, to_indx)
-    # dataset = Subset(
-    #     dataset,
-    #     range(frm_indx, to_indx),
-    # )
     ##
 
     result_df, rank_data = get_ml_rank_effect(dataset, sampler)
