@@ -15,6 +15,11 @@ sys.path.append(
     os.path.join(os.getenv("CVF_PROJECT_DIR", "/home"), "cvf-analysis", "v2")
 )
 
+utils_path = os.path.join(os.getenv("CVF_PROJECT_DIR", ""), "utils")
+sys.path.append(utils_path)
+
+from common_helpers import create_dir_if_not_exists
+
 CENTRAL_SCHEDULER = 0
 DISTRIBUTED_SCHEDULER = 1
 
@@ -49,6 +54,7 @@ class SimulationMixin:
     RANDOM_FAULT_SIMULATION_TYPE = "random"
     CONTROLLED_FAULT_AT_NODE_SIMULATION_TYPE = "controlled_at_node"
     CONTROLLED_FAULT_AT_NODE_SIMULATION_TYPE_DUONG = "controlled_at_node_duong"
+    RANDOM_FAULT_START_AT_NODE_SIMULATION_TYPE = "random_start_at_node"
 
     def init_global_rank_map(self):
         """override this when not needed like for simulation"""
@@ -137,7 +143,9 @@ class SimulationMixin:
             i[1] for i in self.possible_perturbed_state_frm(indx) if i[0] == process
         ]
         if not possible_transition_indexes:
-            logger.warning("No any possible perturbation found for %s at state %s.", p, state)
+            logger.warning(
+                "No any possible perturbation found for %s at state %s.", p, state
+            )
             return faulty_actions
         transition_indx = random.choice(possible_transition_indexes)
         transition_state = self.indx_to_config(transition_indx)
@@ -174,7 +182,11 @@ class SimulationMixin:
                     i[1] for i in self.possible_perturbed_state_frm(indx) if i[0] == p
                 ]
                 if not possible_transition_indexes:
-                    logger.warning("No any possible perturbation found for %s at state %s.", p, state)
+                    logger.warning(
+                        "No any possible perturbation found for %s at state %s.",
+                        p,
+                        state,
+                    )
                     continue
                 transition_indx = random.choice(possible_transition_indexes)
                 transition_state = self.indx_to_config(transition_indx)
@@ -206,7 +218,11 @@ class SimulationMixin:
                     i[1] for i in self.possible_perturbed_state_frm(indx) if i[0] == p
                 ]
                 if not possible_transition_indexes:
-                    logger.warning("No any possible perturbation found for %s at state %s.", p, state)
+                    logger.warning(
+                        "No any possible perturbation found for %s at state %s.",
+                        p,
+                        state,
+                    )
                     continue
                 transition_indx = random.choice(possible_transition_indexes)
                 transition_state = self.indx_to_config(transition_indx)
@@ -271,18 +287,25 @@ class SimulationMixin:
             step += 1
         return step
 
-    def get_faulty_actions_random(self, state):
+    def get_faulty_actions_random(self, state, *others):
         faulty_actions = self.inject_fault_w_equal_prob(state)
         return faulty_actions
 
-    def get_faulty_actions_controlled_at_node(self, state, process):
+    def get_faulty_actions_random_start_at_node(self, state, process, step, *others):
+        if step == 0:
+            faulty_actions = self.inject_fault_at_node(state, process)
+        else:
+            faulty_actions = self.inject_fault_w_equal_prob(state)
+        return faulty_actions
+
+    def get_faulty_actions_controlled_at_node(self, state, process, *others):
         """
         process: process_id where the fault weight is concentrated
         """
         faulty_actions = self.inject_fault_at_node(state, process)
         return faulty_actions
 
-    def get_faulty_actions_controlled_at_node_duong(self, state, process):
+    def get_faulty_actions_controlled_at_node_duong(self, state, process, *others):
         """
         process: process_id where the fault weight is concentrated
         """
@@ -294,13 +317,14 @@ class SimulationMixin:
         last_fault_duration = 0
         faulty_action_generator = {
             self.RANDOM_FAULT_SIMULATION_TYPE: self.get_faulty_actions_random,
+            self.RANDOM_FAULT_START_AT_NODE_SIMULATION_TYPE: self.get_faulty_actions_random_start_at_node,
             self.CONTROLLED_FAULT_AT_NODE_SIMULATION_TYPE: self.get_faulty_actions_controlled_at_node,
             self.CONTROLLED_FAULT_AT_NODE_SIMULATION_TYPE_DUONG: self.get_faulty_actions_controlled_at_node_duong,
         }[self.simulation_type]
         while not self.is_invariant(state):  # from the base class
             faulty_actions = []
             if last_fault_duration + 1 == self.fault_interval:
-                faulty_actions = faulty_action_generator(state, *extra_args)
+                faulty_actions = faulty_action_generator(state, *extra_args, step)
 
             if faulty_actions:
                 state = self.execute(state, faulty_actions)
@@ -352,9 +376,11 @@ class SimulationMixin:
             if simulation_type_args
             else ""
         )
+        save_dir = os.path.join("results", self.results_dir)
+        create_dir_if_not_exists(save_dir)
+
         file_path = os.path.join(
-            "results",
-            self.results_dir,
+            save_dir,
             f"{self.graph_name}__{self.scheduler}__{self.simulation_type}_{simulation_type_args_verbose}__{self.no_of_simulations}__{self.me}__{self.fault_interval}.csv",
         )
         f = open(

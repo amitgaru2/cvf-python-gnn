@@ -107,6 +107,7 @@ if __name__ == "__main__":
         "--simulation-type",
         choices=[
             SimulationMixin.RANDOM_FAULT_SIMULATION_TYPE,
+            SimulationMixin.RANDOM_FAULT_START_AT_NODE_SIMULATION_TYPE,
             SimulationMixin.CONTROLLED_FAULT_AT_NODE_SIMULATION_TYPE,
             SimulationMixin.CONTROLLED_FAULT_AT_NODE_SIMULATION_TYPE_DUONG,
         ],
@@ -154,6 +155,7 @@ if __name__ == "__main__":
     if args.simulation_type in {
         SimulationMixin.CONTROLLED_FAULT_AT_NODE_SIMULATION_TYPE,
         SimulationMixin.CONTROLLED_FAULT_AT_NODE_SIMULATION_TYPE_DUONG,
+        SimulationMixin.RANDOM_FAULT_START_AT_NODE_SIMULATION_TYPE,
     }:
         if args.controlled_at_node is None:
             raise Exception('Missing "--controlled-at-node" argument.')
@@ -173,10 +175,3 @@ if __name__ == "__main__":
             args.fault_interval,
             simulation_type_args,
         )
-
-
-"""
-python main.py --program graph_coloring --sched 0 --no-sim 100 --fault-prob 0.5 --graph-names graph_1
-python main.py --program graph_coloring --sched 1 --no-sim 100 --fault-prob 0.5 --graph-names graph_1
-python main.py --program graph_coloring --sched 1 -me --no-sim 100 --fault-prob 0.5 --graph-names graph_1
-"""

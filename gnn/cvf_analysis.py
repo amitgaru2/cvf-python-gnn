@@ -269,6 +269,7 @@ def get_fa_results(graph_name, ml_grp_by_r, ml_grp_by_re, ml_grp_by_node_re):
 def main(graph_name, has_fa_analysis=True):
     logger.info("Starting for %s.", graph_name)
     if ONLY_FA:
+        ml_grp_by_r = pd.DataFrame(columns=["rank"])
         ml_grp_by_re = pd.DataFrame(columns=["rank effect"])
         ml_grp_by_node_re = pd.DataFrame(columns=["node", "rank effect"])
     else:
