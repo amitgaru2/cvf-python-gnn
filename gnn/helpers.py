@@ -720,7 +720,6 @@ class CVFConfigForAnalysisDatasetMM(Dataset):
     def __len__(self):
         return self.cvf_analysis.total_configs
 
-    @lru_cache(maxsize=None)
     def get_p_encoding(self, p_value):
         if p_value is None:
             p_value = self.highest_p_value + 1
@@ -728,9 +727,12 @@ class CVFConfigForAnalysisDatasetMM(Dataset):
         p_value = torch.LongTensor([p_value])
         return F.one_hot(p_value, num_classes=self.highest_p_value + 2).squeeze()
 
-    @lru_cache(maxsize=None)
     def get_m_encoding(self, m_value):
         return torch.LongTensor([1]) if m_value else torch.LongTensor([0])
+
+    @lru_cache(maxsize=None)
+    def get_p_m_encoding(self, p_value, m_value):
+        return torch.cat([self.get_p_encoding(p_value), self.get_m_encoding(m_value)])
 
     def __getitem__(self, idx):
         config = self.cvf_analysis.indx_to_config(idx)
@@ -739,15 +741,9 @@ class CVFConfigForAnalysisDatasetMM(Dataset):
         )
         config_ = torch.stack(
             [
-                torch.cat(
-                    [
-                        self.get_p_encoding(
-                            self.cvf_analysis.possible_node_values[i][v].p
-                        ),
-                        self.get_m_encoding(
-                            self.cvf_analysis.possible_node_values[i][v].m
-                        ),
-                    ]
+                self.get_p_m_encoding(
+                    self.cvf_analysis.possible_node_values[i][v].p,
+                    self.cvf_analysis.possible_node_values[i][v].m,
                 )
                 for i, v in enumerate(config)
             ]
@@ -756,20 +752,13 @@ class CVFConfigForAnalysisDatasetMM(Dataset):
         if succ:
             __succ = []
             for s in succ:
-                nv = []
-                for i, v in enumerate(s):
-                    nv.append(
-                        torch.cat(
-                            [
-                                self.get_p_encoding(
-                                    self.cvf_analysis.possible_node_values[i][v].p
-                                ),
-                                self.get_m_encoding(
-                                    self.cvf_analysis.possible_node_values[i][v].m
-                                ),
-                            ]
-                        )
+                nv = [
+                    self.get_p_m_encoding(
+                        self.cvf_analysis.possible_node_values[i][v].p,
+                        self.cvf_analysis.possible_node_values[i][v].m,
                     )
+                    for i, v in enumerate(s)
+                ]
                 __succ.append(torch.stack(nv))
 
             succ_ = torch.stack(__succ).type(dtype=torch.float32).to(self.device)
@@ -1060,13 +1049,22 @@ if __name__ == "__main__":
     #     "tiny_graph_edge_index.json",
     # )
 
-    dataset = CVFConfigForGCNWSuccLSTMDatasetForMM(
-        device, "star_graph_n7_config_rank_dataset.csv", program="maximal_matching"
+    # dataset = CVFConfigForGCNWSuccLSTMDatasetForMM(
+    #     device, "star_graph_n7_config_rank_dataset.csv", program="maximal_matching"
+    # )
+
+    # loader = DataLoader(dataset, batch_size=10, shuffle=True)
+
+    # for batch in loader:
+    #     x = batch[0]
+    #     print(x[0].shape)
+    #     break
+
+    dataset = CVFConfigForAnalysisDatasetMM(
+        device, "star_graph_n6", program="maximal_matching"
     )
 
-    loader = DataLoader(dataset, batch_size=10, shuffle=True)
+    loader = DataLoader(dataset, batch_size=1, shuffle=True)
 
     for batch in loader:
-        x = batch[0]
-        print(x[0].shape)
         break
