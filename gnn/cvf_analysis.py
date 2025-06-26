@@ -266,6 +266,7 @@ def get_fa_results(graph_name, ml_grp_by_r, ml_grp_by_re, ml_grp_by_node_re):
     df_grp_by_node_re.to_csv(filepath)
 
 
+@track_runtime
 def main(graph_name, has_fa_analysis=True):
     logger.info("Starting for %s.", graph_name)
     if ONLY_FA:
@@ -279,9 +280,9 @@ def main(graph_name, has_fa_analysis=True):
         get_fa_results(graph_name, ml_grp_by_r, ml_grp_by_re, ml_grp_by_node_re)
 
     logger.info("Complete for %s.", graph_name)
-    print_runtime_report()
 
 
 if __name__ == "__main__":
     for graph_name in graph_names:
         main(graph_name)
+        print_runtime_report()
