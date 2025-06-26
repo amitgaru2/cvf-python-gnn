@@ -121,7 +121,7 @@ class GraphColoringS:
         }
         for i in range(1, comm.size):
             new_cursor = cursor + equal_samples
-            self.mpi_config[i] = {"start": cursor, "end": new_cursor}
+            self.mpi_config[i] = {"start":  , "end": new_cursor}
             cursor = new_cursor
 
     @property
