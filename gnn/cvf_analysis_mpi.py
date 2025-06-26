@@ -9,7 +9,7 @@ import pandas as pd
 from functools import wraps
 from collections import defaultdict
 
-from torch.utils.data import DataLoader, Subset
+from torch.utils.data import DataLoader, Sampler
 
 from custom_logger import logger
 from lstm_scratch import SimpleLSTM
@@ -128,6 +128,7 @@ def gather_aggregate(ml_grp_by_r, ml_grp_by_re, ml_grp_by_node_re):
     all_ml_grp_by_r = comm.gather(ml_grp_by_r, root=0)
     all_ml_grp_by_re = comm.gather(ml_grp_by_re, root=0)
     all_ml_grp_by_node_re = comm.gather(ml_grp_by_node_re, root=0)
+
     if program_node_rank == 0:
         all_ml_grp_by_r = pd.concat(all_ml_grp_by_r, ignore_index=True)
         ml_grp_by_r = group_data(all_ml_grp_by_r, ["rank"]).sum()
@@ -176,8 +177,21 @@ def aggregation_n_save(result_df, result_rank_df):
     return ml_grp_by_r, ml_grp_by_re, ml_grp_by_node_re
 
 
+class SimpleMPISampler(Sampler):
+    def __init__(self, data_source, frm_indx, to_indx):
+        self.data_source = data_source
+        self.frm_indx = frm_indx
+        self.to_indx = to_indx
+
+    def __iter__(self):
+        return iter(range(self.frm_indx, self.to_indx))
+
+    def __len__(self):
+        return self.to_indx - self.frm_indx
+
+
 @track_runtime
-def get_ml_rank_effect(dataset):
+def get_ml_rank_effect(dataset, sampler):
     model = get_model()
     result_df = pd.DataFrame(
         {"node": pd.Series(dtype="int"), "rank effect": pd.Series(dtype="float")}
@@ -186,7 +200,7 @@ def get_ml_rank_effect(dataset):
     data = []
     rank_data = []
     with torch.no_grad():
-        dataloader = DataLoader(dataset, batch_size=1)
+        dataloader = DataLoader(dataset, sampler=sampler, batch_size=1)
         for n, batch in enumerate(dataloader, 1):
             frm_idx = batch[1].item()
             perturbed_states = [
@@ -230,13 +244,14 @@ def ml_cvf_analysis(graph_name):
         f"Data indices range: {frm_indx:,} to {to_indx:,}.",
     )
 
-    dataset = Subset(
-        dataset,
-        range(frm_indx, to_indx),
-    ).dataset
+    sampler = SimpleMPISampler(dataset, frm_indx, to_indx)
+    # dataset = Subset(
+    #     dataset,
+    #     range(frm_indx, to_indx),
+    # )
     ##
 
-    result_df, rank_data = get_ml_rank_effect(dataset)
+    result_df, rank_data = get_ml_rank_effect(dataset, sampler)
 
     result_rank_df = pd.DataFrame(rank_data, columns=["rank"])
     result_df["rank effect"] = np.floor(result_df["rank effect"] + 0.5)
