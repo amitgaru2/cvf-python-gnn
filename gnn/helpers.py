@@ -366,7 +366,7 @@ class CVFConfigForGCNWSuccLSTMDatasetForMM(Dataset):
         self.device = device
         self.dataset_name = dataset_file.split("_config_rank_dataset.csv")[0]
         self.D = 3  # input dimension
-        self.highest_p_value = 6
+        self.highest_p_value = 15
         # self.combo_dict = self.get_pair_dictionary()
 
     def __len__(self):
@@ -715,7 +715,7 @@ class CVFConfigForAnalysisDatasetMM(Dataset):
         self.dataset_name = graph_name
         self.cache = {}
         self.default_succ1 = torch.zeros(1, len(graph)).to(self.device)
-        self.highest_p_value = 6
+        self.highest_p_value = 15
 
     def __len__(self):
         return self.cvf_analysis.total_configs

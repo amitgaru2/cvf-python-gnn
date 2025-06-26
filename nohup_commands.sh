@@ -48,15 +48,15 @@ cd gnn
 
 # # # # # graphs=("star_graph_n7" "graph_powerlaw_cluster_graph_n7" "graph_random_regular_graph_n7_d4" "star_graph_n13" "graph_powerlaw_cluster_graph_n8" "graph_random_regular_graph_n8_d4" "star_graph_n15" "graph_powerlaw_cluster_graph_n9")
 # graphs=("star_graph_n7")
-# graphs=("star_graph_n6" "star_graph_n7" "graph_powerlaw_cluster_graph_n6" "graph_random_regular_graph_n6_d3")
-# # # graphs=("implicit_graph_n5" "implicit_graph_n6" "implicit_graph_n7" "implicit_graph_n8" "implicit_graph_n9" "implicit_graph_n10")
+# graphs=("graph_powerlaw_cluster_graph_n6" "graph_random_regular_graph_n6_d3")
+# # # # # graphs=("implicit_graph_n5" "implicit_graph_n6" "implicit_graph_n7" "implicit_graph_n8" "implicit_graph_n9" "implicit_graph_n10")
 # joined_graphs_args="${graphs[@]}"
 
 # epochs=50
 # batch_size=256
 # hidden_size=32
 
-# python lstm_scratch_2.py \
+# python lstm_scratch.py \
 #     --program maximal_matching \
 #     --epochs $epochs \
 #     --batch-size $batch_size \
@@ -78,5 +78,5 @@ cd gnn
 # cd gnn
 
 # python cvf_analysis.py --model lstm_trained_at_2025_06_24_16_47 --program maximal_matching --graph-names star_graph_n6
-# python cvf_analysis.py --model lstm_trained_at_2025_06_24_16_47 --program maximal_matching --graph-names graph_powerlaw_cluster_graph_n6
-python cvf_analysis.py --model lstm_trained_at_2025_06_24_16_47 --program maximal_matching --graph-names graph_random_regular_graph_n6_d3
+python cvf_analysis.py --model lstm_trained_at_2025_06_25_19_06 --program maximal_matching --graph-names graph_powerlaw_cluster_graph_n7
+# python cvf_analysis.py --model lstm_trained_at_2025_06_25_19_06 --program maximal_matching --graph-names graph_random_regular_graph_n6_d3

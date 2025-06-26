@@ -1,0 +1,81 @@
++ cd gnn
++ graphs=("graph_powerlaw_cluster_graph_n6" "graph_random_regular_graph_n6_d3")
++ joined_graphs_args='graph_powerlaw_cluster_graph_n6 graph_random_regular_graph_n6_d3'
++ epochs=50
++ batch_size=256
++ hidden_size=32
++ python lstm_scratch.py --program maximal_matching --epochs 50 --batch-size 256 --hidden-size 32 --num-layers 2 --graph-names graph_powerlaw_cluster_graph_n6 graph_random_regular_graph_n6_d3
+Timestamp: 1750888696.806111 | Program: maximal_matching | Training with Graphs: graph_powerlaw_cluster_graph_n6, graph_random_regular_graph_n6_d3 | Batch size: 256 | Epochs: 50 | Hidden size: 32 | Num layers: 2.
+
+
+Train dataset size: 449,576, Subset size: 200,000 | Test dataset size: 9,176
+
+
+Model SimpleLSTM(
+  (lstm): GRU(3, 32, num_layers=2, batch_first=True)
+  (norm): LayerNorm((32,), eps=1e-05, elementwise_affine=True)
+  (h2o): Linear(in_features=32, out_features=1, bias=True)
+)
+Total parameters: 9,985
+
+
+Training set | Epoch: 1/50 | MSE Loss: 6.5735 | Time taken: 85.9811s
+Training set | Epoch: 2/50 | MSE Loss: 1.2317 | Time taken: 86.1481s
+Training set | Epoch: 3/50 | MSE Loss: 0.9016 | Time taken: 86.2548s
+Training set | Epoch: 4/50 | MSE Loss: 0.7491 | Time taken: 86.4062s
+Training set | Epoch: 5/50 | MSE Loss: 0.6886 | Time taken: 86.3895s
+Training set | Epoch: 6/50 | MSE Loss: 0.5881 | Time taken: 86.2529s
+Training set | Epoch: 7/50 | MSE Loss: 0.5726 | Time taken: 86.3089s
+Training set | Epoch: 8/50 | MSE Loss: 0.5359 | Time taken: 86.4198s
+Training set | Epoch: 9/50 | MSE Loss: 0.8158 | Time taken: 86.1627s
+Training set | Epoch: 10/50 | MSE Loss: 0.5147 | Time taken: 86.1732s
+Training set | Epoch: 11/50 | MSE Loss: 0.4713 | Time taken: 86.1878s
+Training set | Epoch: 12/50 | MSE Loss: 0.607 | Time taken: 86.5283s
+Training set | Epoch: 13/50 | MSE Loss: 0.442 | Time taken: 86.1537s
+Training set | Epoch: 14/50 | MSE Loss: 0.4452 | Time taken: 86.1523s
+Training set | Epoch: 15/50 | MSE Loss: 0.4902 | Time taken: 86.2712s
+Training set | Epoch: 16/50 | MSE Loss: 0.4583 | Time taken: 86.5839s
+Training set | Epoch: 17/50 | MSE Loss: 0.4078 | Time taken: 86.1206s
+Training set | Epoch: 18/50 | MSE Loss: 1.4013 | Time taken: 86.2322s
+Training set | Epoch: 19/50 | MSE Loss: 1.2197 | Time taken: 86.2405s
+Training set | Epoch: 20/50 | MSE Loss: 0.9596 | Time taken: 86.176s
+Training set | Epoch: 21/50 | MSE Loss: 0.817 | Time taken: 86.0502s
+Training set | Epoch: 22/50 | MSE Loss: 0.7233 | Time taken: 86.1915s
+Training set | Epoch: 23/50 | MSE Loss: 0.6471 | Time taken: 86.3718s
+Training set | Epoch: 24/50 | MSE Loss: 0.6025 | Time taken: 86.233s
+Training set | Epoch: 25/50 | MSE Loss: 0.5746 | Time taken: 86.2332s
+Training set | Epoch: 26/50 | MSE Loss: 0.5423 | Time taken: 86.2641s
+Training set | Epoch: 27/50 | MSE Loss: 0.5142 | Time taken: 86.3258s
+Training set | Epoch: 28/50 | MSE Loss: 0.5032 | Time taken: 86.3971s
+Training set | Epoch: 29/50 | MSE Loss: 0.486 | Time taken: 86.0332s
+Training set | Epoch: 30/50 | MSE Loss: 0.4763 | Time taken: 86.1299s
+Training set | Epoch: 31/50 | MSE Loss: 0.466 | Time taken: 86.1119s
+Training set | Epoch: 32/50 | MSE Loss: 0.4629 | Time taken: 86.3921s
+Training set | Epoch: 33/50 | MSE Loss: 0.4473 | Time taken: 86.2758s
+Training set | Epoch: 34/50 | MSE Loss: 0.4384 | Time taken: 86.2097s
+Training set | Epoch: 35/50 | MSE Loss: 0.4354 | Time taken: 86.5157s
+Training set | Epoch: 36/50 | MSE Loss: 0.4282 | Time taken: 86.6009s
+Training set | Epoch: 37/50 | MSE Loss: 0.4251 | Time taken: 86.0624s
+Training set | Epoch: 38/50 | MSE Loss: 0.4152 | Time taken: 86.1997s
+Training set | Epoch: 39/50 | MSE Loss: 0.4076 | Time taken: 86.2315s
+Training set | Epoch: 40/50 | MSE Loss: 0.4125 | Time taken: 86.3962s
+Training set | Epoch: 41/50 | MSE Loss: 0.4005 | Time taken: 86.4898s
+Training set | Epoch: 42/50 | MSE Loss: 0.3958 | Time taken: 86.2229s
+Training set | Epoch: 43/50 | MSE Loss: 0.3931 | Time taken: 86.1265s
+Training set | Epoch: 44/50 | MSE Loss: 0.3863 | Time taken: 86.2526s
+Training set | Epoch: 45/50 | MSE Loss: 0.3874 | Time taken: 86.4907s
+Training set | Epoch: 46/50 | MSE Loss: 0.3829 | Time taken: 86.117s
+Training set | Epoch: 47/50 | MSE Loss: 0.3772 | Time taken: 86.1911s
+Training set | Epoch: 48/50 | MSE Loss: 0.3763 | Time taken: 86.702s
+Training set | Epoch: 49/50 | MSE Loss: 0.3718 | Time taken: 86.2543s
+Training set | Epoch: 50/50 | MSE Loss: 0.3775 | Time taken: 86.3985s
+
+
+End Training | Total training time taken 4313.6256s
+
+
+Saving model trained_models/lstm_trained_at_2025_06_25_17_10.pt
+
+
+Testing model...
+Test set | MSE loss: 0.8405 | Total matched: 5,910 out of 9,176 (Accuracy: 64.41%)
