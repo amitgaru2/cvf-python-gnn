@@ -24,11 +24,6 @@ from common_helpers import create_dir_if_not_exists
 # from mpi_helpers.custom_logger_mpi import logger
 from mpi_helpers.custom_mpi import comm, program_node_rank
 
-# from mpi4py import MPI
-
-# comm = MPI.COMM_WORLD
-# program_node_rank = comm.Get_rank()
-
 logger.info("MPI comm size: %s", comm.size)
 
 args = generate_parser(takes_model=True)
