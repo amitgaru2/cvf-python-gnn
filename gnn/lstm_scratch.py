@@ -37,7 +37,7 @@ class SimpleLSTM(nn.Module):
         output = self.norm(lstm_out)
         output = self.h2o(output)
         output = torch.relu(output)
-        output = global_mean_pool(output, torch.zeros(output.size(1)).to(device).long())
+        output = global_mean_pool(output, torch.zeros(output.size(1)).to(x.device).long())
         return output
 
     def fit(self, epochs, train_datasets, batch_size):
