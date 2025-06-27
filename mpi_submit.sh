@@ -20,6 +20,8 @@ echo "CPUs per Task: "$SLURM_CPUS_PER_TASK
 echo "CPUs on Node:  "$SLURM_CPUS_ON_NODE
 echo "WorkingDir:    "$SLURM_SUBMIT_DIR
 
+set -x
+
 echo "Loading Modules..."
 module load miniconda3/24.3.0
 
