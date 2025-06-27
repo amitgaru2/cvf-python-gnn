@@ -30,7 +30,10 @@ graph_names = args.graph_names
 
 ONLY_FA = model_name == "fa"
 
-device = "cuda"
+# device = "cuda"
+device = "cpu"
+
+logger.info("Using device: %s.", device)
 
 function_runtimes = defaultdict(float)
 
@@ -75,7 +78,7 @@ def get_perturbed_states(dataset, frm_idx):
 
 @track_runtime
 def get_model():
-    model = torch.load(f"trained_models/{model_name}.pt", weights_only=False)
+    model = torch.load(f"trained_models/{model_name}.pt", weights_only=False).to(device)
     model.eval()
     return model
 
