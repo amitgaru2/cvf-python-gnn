@@ -38,6 +38,8 @@ cat hostlist | while read line; do echo ${line} slots=16; done >hostlist_w_slots
 
 export CVF_PROJECT_DIR="/project/cvf-analysis/agaru/cvf-python-gnn"
 
+cd gnn
+
 mpirun --hostfile ../hostlist python cvf_analysis_mpi.py --model lstm_trained_at_2025_06_26_20_32 --program maximal_matching --graph-names graph_random_regular_graph_n7_d4
 
 echo "Done!"
