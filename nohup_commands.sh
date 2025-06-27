@@ -81,4 +81,4 @@ cd gnn
 # python cvf_analysis.py --model lstm_trained_at_2025_06_26_20_32 --program maximal_matching --graph-names graph_random_regular_graph_n5_d4
 # python cvf_analysis.py --model lstm_trained_at_2025_06_26_20_32 --program maximal_matching --graph-names graph_random_regular_graph_n6_d3
 # python cvf_analysis.py --model lstm_trained_at_2025_06_25_19_06 --program maximal_matching --graph-names graph_powerlaw_cluster_graph_n7
-python cvf_analysis.py --model lstm_trained_at_2025_06_26_20_32 --program maximal_matching --graph-names graph_random_regular_graph_n7_d4
+mpirun -n 4 python cvf_analysis.py --model lstm_trained_at_2025_06_26_20_32 --program maximal_matching --graph-names graph_random_regular_graph_n7_d4
