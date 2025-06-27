@@ -34,7 +34,8 @@ graph_names = args.graph_names
 
 ONLY_FA = model_name == "fa"
 
-device = f"cuda:{program_node_rank}"
+# device = f"cuda:{program_node_rank}"
+device = "cuda"
 logger.info("Node: %s | Using device: %s", program_node_rank, device)
 
 function_runtimes = defaultdict(float)
