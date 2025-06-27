@@ -78,3 +78,4 @@ Saving model trained_models/lstm_trained_at_2025_06_26_20_32.pt
 
 
 Testing model...
+Test set | MSE loss: 0.3594 | Total matched: 4,834 out of 7,269 (Accuracy: 66.5%)
