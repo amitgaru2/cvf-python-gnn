@@ -1,12 +1,12 @@
 #!/bin/bash
 #SBATCH --account=cvf-analysis
-#SBATCH --time=72:00:00
+#SBATCH --time=24:00:00
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=agaru@uwyo.edu
 #SBATCH --output=cvf_%A.log
-#SBATCH --nodes=12
-#SBATCH --mem=256G
-#SBATCH --partition=teton-knl
+#SBATCH --nodes=8
+#SBATCH --mem=128G
+#SBATCH --partition=mb-a30
 
 
 echo "JobID:         "$SLURM_JOB_ID
@@ -21,10 +21,9 @@ echo "CPUs on Node:  "$SLURM_CPUS_ON_NODE
 echo "WorkingDir:    "$SLURM_SUBMIT_DIR
 
 echo "Loading Modules..."
-module load miniconda3/23.11.0
+module load miniconda3/24.3.0
 
 echo "Activating virtualenv..."
-#conda activate dml_mpi
 conda activate /project/cvf-analysis/agaru/envs/cvf-env
 
 echo "which python..."
