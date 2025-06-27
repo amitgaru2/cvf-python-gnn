@@ -7,6 +7,7 @@
 #SBATCH --nodes=6
 #SBATCH --mem=128G
 #SBATCH --partition=teton-gpu
+#SBATCH --gres=gpu:1
 
 echo "JobID:         "$SLURM_JOB_ID
 echo "JobName:       "$SLURM_JOB_NAME
