@@ -30,8 +30,8 @@ graph_names = args.graph_names
 
 ONLY_FA = model_name == "fa"
 
-# device = "cuda"
-device = "cpu"
+# device = "cpu"
+device = "cuda"
 
 logger.info("Using device: %s.", device)
 

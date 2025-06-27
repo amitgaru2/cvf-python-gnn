@@ -1,0 +1,85 @@
++ cd gnn
++ python cvf_analysis.py --model lstm_trained_at_2025_06_27_13_36 --program maximal_matching --graph-names star_graph_n4
+Using device: cpu.
+Starting for star_graph_n4.
+Total configs: 512.
+Done ML CVF Analysis!
+Complete for star_graph_n4.
+
+=== Runtime Report ===
+get_model: 0.083434s
+get_dataset: 0.000146s
+__getitem__: 0.282405s
+get_perturbed_states: 0.000220s
+get_rank: 1.485748s
+group_data: 0.000194s
+aggregation_n_save: 0.002963s
+ml_cvf_analysis: 1.918917s
+get_fa_results: 0.005620s
+main: 1.924603s
+=== End Report ===
+
+
++ python cvf_analysis.py --model lstm_trained_at_2025_06_27_13_36 --program maximal_matching --graph-names star_graph_n5
+Using device: cpu.
+Starting for star_graph_n5.
+Total configs: 2,560.
+Done ML CVF Analysis!
+Complete for star_graph_n5.
+
+=== Runtime Report ===
+get_model: 0.084733s
+get_dataset: 0.000151s
+__getitem__: 1.877788s
+get_perturbed_states: 0.001182s
+get_rank: 9.958621s
+group_data: 0.000236s
+aggregation_n_save: 0.004930s
+ml_cvf_analysis: 12.289858s
+get_fa_results: 0.006138s
+main: 12.296054s
+=== End Report ===
+
+
++ python cvf_analysis.py --model lstm_trained_at_2025_06_27_13_36 --program maximal_matching --graph-names star_graph_n6
+Using device: cpu.
+Starting for star_graph_n6.
+Total configs: 12,288.
+Done ML CVF Analysis!
+Complete for star_graph_n6.
+
+=== Runtime Report ===
+get_model: 0.072620s
+get_dataset: 0.000221s
+__getitem__: 17.688580s
+get_perturbed_states: 0.007396s
+get_rank: 87.819967s
+group_data: 0.000211s
+aggregation_n_save: 0.007763s
+ml_cvf_analysis: 108.080295s
+get_fa_results: 0.005421s
+main: 108.085776s
+=== End Report ===
+
+
++ python cvf_analysis.py --model lstm_trained_at_2025_06_27_13_36 --program maximal_matching --graph-names star_graph_n7
+Using device: cpu.
+Starting for star_graph_n7.
+Total configs: 57,344.
+Done ML CVF Analysis!
+Complete for star_graph_n7.
+
+=== Runtime Report ===
+get_model: 0.084793s
+get_dataset: 0.000147s
+__getitem__: 103.937914s
+get_perturbed_states: 0.032836s
+get_rank: 482.369554s
+group_data: 0.000235s
+aggregation_n_save: 0.022795s
+ml_cvf_analysis: 598.899599s
+get_fa_results: 0.005423s
+main: 598.905089s
+=== End Report ===
+
+
