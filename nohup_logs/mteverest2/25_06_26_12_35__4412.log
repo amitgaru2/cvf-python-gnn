@@ -2,3 +2,19 @@
 + python cvf_analysis.py --model lstm_trained_at_2025_06_26_12_01 --program maximal_matching --graph-names graph_random_regular_graph_n7_d4
 Starting for graph_random_regular_graph_n7_d4.
 Total configs: 10,000,000.
+Done ML CVF Analysis!
+Complete for graph_random_regular_graph_n7_d4.
+
+=== Runtime Report ===
+get_model: 0.083023s
+get_dataset: 0.000209s
+__getitem__: 17999.760295s
+get_perturbed_states: 3.820961s
+get_rank: 2174.313016s
+group_data: 0.000282s
+aggregation_n_save: 4.178479s
+ml_cvf_analysis: 22580.317669s
+get_fa_results: 0.007290s
+=== End Report ===
+
+
