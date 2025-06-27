@@ -8,7 +8,6 @@
 #SBATCH --mem=128G
 #SBATCH --partition=mb-a30
 
-
 echo "JobID:         "$SLURM_JOB_ID
 echo "JobName:       "$SLURM_JOB_NAME
 echo "Partition:     "$SLURM_JOB_PARTITION
@@ -33,10 +32,10 @@ echo "Python version..."
 python --version
 
 echo "Creating hostlist file..."
-hostlist --expand $SLURM_JOB_NODELIST > hostlist
-cat hostlist | while read line; do echo ${line} slots=16; done > hostlist_w_slots
+hostlist --expand $SLURM_JOB_NODELIST >hostlist
+cat hostlist | while read line; do echo ${line} slots=16; done >hostlist_w_slots
 
 cd 'cvf-analysis'
-mpirun --hostfile ../hostlist python graph_coloring_v2_mpi.py graph_powerlaw_cluster_graph_n14
+mpirun --hostfile ../hostlist python cvf_analysis.py --model lstm_trained_at_2025_06_26_20_32 --program maximal_matching --graph-names graph_random_regular_graph_n7_d4
 
 echo "Done!"
