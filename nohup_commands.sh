@@ -47,22 +47,22 @@ set -ex
 cd gnn
 
 # # # # # graphs=("star_graph_n7" "graph_powerlaw_cluster_graph_n7" "graph_random_regular_graph_n7_d4" "star_graph_n13" "graph_powerlaw_cluster_graph_n8" "graph_random_regular_graph_n8_d4" "star_graph_n15" "graph_powerlaw_cluster_graph_n9")
-# graphs=("star_graph_n4" "star_graph_n5" "star_graph_n6" "star_graph_n7")
+graphs=("star_graph_n4" "star_graph_n5" "star_graph_n6" "star_graph_n7" "star_graph_n8")
 # # # # # graphs=("graph_powerlaw_cluster_graph_n6" "graph_random_regular_graph_n6_d3")
 # # # # # # # # # graphs=("implicit_graph_n5" "implicit_graph_n6" "implicit_graph_n7" "implicit_graph_n8" "implicit_graph_n9" "implicit_graph_n10")
-# joined_graphs_args="${graphs[@]}"
+joined_graphs_args="${graphs[@]}"
 
-# epochs=50
-# batch_size=256
-# hidden_size=32
+epochs=50
+batch_size=256
+hidden_size=32
 
-# python lstm_scratch.py \
-#     --program maximal_matching \
-#     --epochs $epochs \
-#     --batch-size $batch_size \
-#     --hidden-size $hidden_size \
-#     --num-layers 2 \
-#     --graph-names $joined_graphs_args
+python lstm_scratch.py \
+    --program maximal_matching \
+    --epochs $epochs \
+    --batch-size $batch_size \
+    --hidden-size $hidden_size \
+    --num-layers 2 \
+    --graph-names $joined_graphs_args
 
 # # python gcn_scratch.py \
 # #     --epochs $epochs \
@@ -85,7 +85,7 @@ cd gnn
 # python cvf_analysis.py --model lstm_trained_at_2025_06_27_13_36 --program maximal_matching --graph-names star_graph_n5
 # python cvf_analysis.py --model lstm_trained_at_2025_06_27_13_36 --program maximal_matching --graph-names star_graph_n6
 # python cvf_analysis.py --model lstm_trained_at_2025_06_27_13_36 --program maximal_matching --graph-names star_graph_n7
-python cvf_analysis.py --model lstm_trained_at_2025_06_27_13_36 --program maximal_matching --graph-names star_graph_n8
+# python cvf_analysis.py --model lstm_trained_at_2025_06_27_13_36 --program maximal_matching --graph-names star_graph_n8
 # python cvf_analysis.py --model lstm_trained_at_2025_06_27_13_36 --program maximal_matching --graph-names graph_powerlaw_cluster_graph_n5 graph_powerlaw_cluster_graph_n6
 # python cvf_analysis.py --model lstm_trained_at_2025_06_27_13_36 --program maximal_matching --graph-names graph_powerlaw_cluster_graph_n5 graph_powerlaw_cluster_graph_n6
 # mpirun -n 4 python cvf_analysis_mpi.py --model lstm_trained_at_2025_06_26_20_32 --program maximal_matching --graph-names graph_random_regular_graph_n7_d4

@@ -152,6 +152,8 @@ def aggregation_n_save(result_df, result_rank_df):
         result_df, result_rank_df
     )
 
+    logger.info("Node: %s | Completed aggregation.", program_node_rank)
+
     ml_grp_by_r, ml_grp_by_re, ml_grp_by_node_re = gather_aggregate(
         ml_grp_by_r, ml_grp_by_re, ml_grp_by_node_re
     )
