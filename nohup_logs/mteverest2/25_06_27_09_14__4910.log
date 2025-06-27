@@ -1,0 +1,4 @@
++ cd gnn
++ python cvf_analysis.py --model lstm_trained_at_2025_06_26_20_32 --program maximal_matching --graph-names graph_random_regular_graph_n7_d4
+Starting for graph_random_regular_graph_n7_d4.
+Total configs: 10,000,000.
