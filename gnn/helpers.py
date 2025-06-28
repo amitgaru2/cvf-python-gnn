@@ -367,65 +367,42 @@ class CVFConfigForGCNWSuccLSTMDatasetForMM(Dataset):
         self.dataset_name = dataset_file.split("_config_rank_dataset.csv")[0]
         self.D = 3  # input dimension
         self.highest_p_value = 15
-        # self.combo_dict = self.get_pair_dictionary()
 
     def __len__(self):
         return len(self.data)
 
-    def get_pair_dictionary(self):
-        p_values = [None, 0, 1, 2, 3, 4, 5, 6]  # -1 refers None
-        m_values = [True, False]
-        combinations = list(itertools.product(p_values, m_values))
-        df = pd.DataFrame(combinations, columns=["p", "m"])
-        df["combo"] = df["p"].astype(str) + "_" + df["m"].astype(str)
-        df["combo_index"] = df["combo"].astype("category").cat.codes
-        df["combo_index_norm"] = (df["combo_index"] - df["combo_index"].min()) / (
-            df["combo_index"].max() - df["combo_index"].min()
-        )
-        df = df.drop(["combo", "combo_index"], axis=1)
-        combo_dict = {
-            (None if pd.isna(p) else p, None if pd.isna(m) else m): idx
-            for p, m, idx in zip(df["p"], df["m"], df["combo_index_norm"])
-        }
-        return combo_dict
-
-    def get_encoding(self, pair):
-        return self.combo_dict[pair]
-
-    @lru_cache(maxsize=None)
     def get_p_encoding(self, p_value):
         if p_value is None:
             p_value = self.highest_p_value + 1
 
         p_value = torch.LongTensor([p_value])
-        return F.one_hot(p_value, num_classes=self.highest_p_value + 2).squeeze()
+        return (
+            F.one_hot(p_value, num_classes=self.highest_p_value + 2)
+            .squeeze()
+            .type(torch.float32)
+        )
+
+    def get_m_encoding(self, m_value):
+        return (torch.LongTensor([1]) if m_value else torch.LongTensor([0])).type(
+            torch.float32
+        )
 
     @lru_cache(maxsize=None)
-    def get_m_encoding(self, m_value):
-        return torch.LongTensor([1]) if m_value else torch.LongTensor([0])
+    def get_p_m_encoding(self, p_value, m_value):
+        return torch.cat([self.get_p_encoding(p_value), self.get_m_encoding(m_value)])
+
+    def get_encoded_config(self, config):
+        return torch.stack([self.get_p_m_encoding(v[0], v[1]) for v in config])
 
     def __getitem__(self, idx):
         row = self.data.loc[idx]
         succ = [i for i in ast.literal_eval(row["succ"])]
-        config = torch.stack(
-            [
-                torch.cat([self.get_p_encoding(i[0]), self.get_m_encoding(i[1])])
-                for i in ast.literal_eval(row["config"])
-            ]
-        ).to(self.device)
+        config = self.get_encoded_config(ast.literal_eval(row["config"])).to(
+            self.device
+        )
         if succ:
-            _succ = []
-            for s in succ:
-                nv = []
-                for i in s:
-                    nv.append(
-                        torch.cat(
-                            [self.get_p_encoding(i[0]), self.get_m_encoding(i[1])]
-                        )
-                    )
-                _succ.append(torch.stack(nv))
-
-            succ = torch.stack(_succ).type(dtype=torch.float32).to(self.device)
+            _succ = [self.get_encoded_config(s) for s in succ]
+            succ = torch.stack(_succ).to(self.device)
             succ1 = torch.mean(succ, dim=0)
             succ2 = torch.sum(torch.mean(succ, dim=1), dim=0).to(self.device)
             succ2 = succ2.unsqueeze(0).repeat(succ1.shape[0], 1)
