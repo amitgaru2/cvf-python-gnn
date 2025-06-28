@@ -713,7 +713,6 @@ class CVFConfigForAnalysisDatasetMM(Dataset):
 
         self.device = device
         self.dataset_name = graph_name
-        self.cache = {}
         self.default_succ1 = torch.zeros(1, len(graph)).to(self.device)
         self.highest_p_value = 15
 
@@ -725,10 +724,16 @@ class CVFConfigForAnalysisDatasetMM(Dataset):
             p_value = self.highest_p_value + 1
 
         p_value = torch.LongTensor([p_value])
-        return F.one_hot(p_value, num_classes=self.highest_p_value + 2).squeeze()
+        return (
+            F.one_hot(p_value, num_classes=self.highest_p_value + 2)
+            .squeeze()
+            .to(torch.float32)
+        )
 
     def get_m_encoding(self, m_value):
-        return torch.LongTensor([1]) if m_value else torch.LongTensor([0])
+        return (torch.LongTensor([1]) if m_value else torch.LongTensor([0])).to(
+            torch.float32
+        )
 
     @lru_cache(maxsize=None)
     def get_p_m_encoding(self, p_value, m_value):
@@ -765,14 +770,17 @@ class CVFConfigForAnalysisDatasetMM(Dataset):
         succ2 = succ1.clone()
         return succ1, succ2
 
+    def move_to_device(self, tensor):
+        return tensor.to(self.device)
+
     def __getitem__(self, idx):
         config = self.cvf_analysis_indx_to_config(idx)
         succ = [i[1] for i in self.cvf_analysis_get_transitions_as_configs(config)]
-        config = self.get_encoded_config(config).to(self.device)
+        config = self.move_to_device(self.get_encoded_config(config))
 
         if succ:
             _succ = [self.get_encoded_config(s) for s in succ]
-            succ = torch.stack(_succ).type(dtype=torch.float32).to(self.device)
+            succ = self.move_to_device(torch.stack(_succ))
             succ1, succ2 = self.get_succ1_succ2(succ)
         else:
             succ1, succ2 = self.get_default_succs(config)

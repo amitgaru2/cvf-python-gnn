@@ -60,6 +60,10 @@ class CVFConfigForAnalysisDatasetWithTT(CVFConfigForAnalysisDataset):
 class CVFConfigForAnalysisDatasetMMWithTT(CVFConfigForAnalysisDatasetMM):
 
     @track_runtime
+    def move_to_device(self, tensor):
+        return super().move_to_device(tensor)
+
+    @track_runtime
     def get_x(self, config, succ1, succ2):
         return super().get_x(config, succ1, succ2)
 
