@@ -404,7 +404,7 @@ class CVFConfigForGCNWSuccLSTMDatasetForMM(Dataset):
             _succ = [self.get_encoded_config(s) for s in succ]
             succ = torch.stack(_succ).to(self.device)
             succ1 = torch.mean(succ, dim=0)
-            succ2 = torch.sum(torch.mean(succ, dim=1), dim=0).to(self.device)
+            succ2 = torch.sum(torch.mean(succ, dim=1), dim=0)
             succ2 = succ2.unsqueeze(0).repeat(succ1.shape[0], 1)
         else:
             succ1 = torch.zeros(config.shape[0], config.shape[1]).to(self.device)
@@ -718,7 +718,7 @@ class CVFConfigForAnalysisDatasetMM(Dataset):
 
     def get_succ1_succ2(self, succ):
         succ1 = torch.mean(succ, dim=0)
-        succ2 = torch.sum(torch.mean(succ, dim=1), dim=0).to(self.device)
+        succ2 = torch.sum(torch.mean(succ, dim=1), dim=0)
         succ2 = succ2.unsqueeze(0).repeat(succ1.shape[0], 1)
         return succ1, succ2
 

@@ -1,0 +1,34 @@
++ cd gnn
++ graphs=("star_graph_n4" "star_graph_n5")
++ joined_graphs_args='star_graph_n4 star_graph_n5'
++ epochs=50
++ batch_size=256
++ hidden_size=32
++ python lstm_scratch.py --program maximal_matching --epochs 50 --batch-size 256 --hidden-size 32 --num-layers 2 --graph-names star_graph_n4 star_graph_n5
+Timestamp: 1751127572.928177 | Program: maximal_matching | Training with Graphs: star_graph_n4, star_graph_n5 | Batch size: 256 | Epochs: 50 | Hidden size: 32 | Num layers: 2.
+
+
+Train dataset size: 3,009, Subset size: 200,000 | Test dataset size: 63
+
+
+Model SimpleLSTM(
+  (lstm): GRU(3, 32, num_layers=2, batch_first=True)
+  (norm): LayerNorm((32,), eps=1e-05, elementwise_affine=True)
+  (h2o): Linear(in_features=32, out_features=1, bias=True)
+)
+Total parameters: 9,985
+
+
+Training set | Epoch: 1/50 | MSE Loss: 24.1722 | Time taken: 0.6243s
+Training set | Epoch: 2/50 | MSE Loss: 8.1058 | Time taken: 0.4357s
+Training set | Epoch: 3/50 | MSE Loss: 6.3747 | Time taken: 0.4351s
+Training set | Epoch: 4/50 | MSE Loss: 6.5358 | Time taken: 0.4353s
+Training set | Epoch: 5/50 | MSE Loss: 6.4331 | Time taken: 0.4364s
+Training set | Epoch: 6/50 | MSE Loss: 6.3552 | Time taken: 0.4348s
+Training set | Epoch: 7/50 | MSE Loss: 6.3773 | Time taken: 0.4353s
+Training set | Epoch: 8/50 | MSE Loss: 6.3498 | Time taken: 0.4359s
+Training set | Epoch: 9/50 | MSE Loss: 6.3072 | Time taken: 0.4362s
+Training set | Epoch: 10/50 | MSE Loss: 6.1048 | Time taken: 0.4376s
+Training set | Epoch: 11/50 | MSE Loss: 4.6885 | Time taken: 0.4365s
+Training set | Epoch: 12/50 | MSE Loss: 3.5098 | Time taken: 0.4396s
+Training set | Epoch: 13/50 | MSE Loss: 2.8856 | Time taken: 0.4353s
