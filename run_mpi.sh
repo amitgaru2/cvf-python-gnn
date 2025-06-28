@@ -5,8 +5,6 @@ echo "Hostname: "$(hostname)" | Shell: "$SHELL
 
 source ~/anaconda3/etc/profile.d/conda.sh
 
-git pull origin gnn5 --rebase
-
 conda activate cvf
 
 cd gnn
