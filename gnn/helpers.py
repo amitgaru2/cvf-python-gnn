@@ -1,8 +1,8 @@
-import itertools
 import os
 import sys
 import ast
 import json
+import itertools
 
 import torch
 import numpy as np
