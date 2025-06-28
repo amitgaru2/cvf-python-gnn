@@ -44,7 +44,7 @@ set -ex
 # python main.py --program dijkstra_token_ring --sched 0 --no-sim 500000 --fault-interval 2 --graph-names implicit_graph_n5 --fault-prob 1.0
 # python main.py --program dijkstra_token_ring --sched 0 --no-sim 500000 --fault-interval 4 --graph-names implicit_graph_n5 --fault-prob 1.0
 
-# cd gnn
+cd gnn
 
 # # # # # graphs=("star_graph_n7" "graph_powerlaw_cluster_graph_n7" "graph_random_regular_graph_n7_d4" "star_graph_n13" "graph_powerlaw_cluster_graph_n8" "graph_random_regular_graph_n8_d4" "star_graph_n15" "graph_powerlaw_cluster_graph_n9")
 # graphs=("star_graph_n4" "star_graph_n5" "star_graph_n6" "star_graph_n7" "star_graph_n8")
@@ -75,7 +75,7 @@ set -ex
 # # python bert_scratch.py
 # # python transformer_w_same_node_seql.py 50
 
-cd gnn
+# cd gnn
 
 # python cvf_analysis.py --model lstm_trained_at_2025_06_26_20_32 --program maximal_matching --graph-names graph_random_regular_graph_n4_d2
 # python cvf_analysis.py --model lstm_trained_at_2025_06_26_20_32 --program maximal_matching --graph-names graph_random_regular_graph_n5_d4
