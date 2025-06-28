@@ -734,12 +734,14 @@ class CVFConfigForAnalysisDatasetMM(Dataset):
     def get_p_m_encoding(self, p_value, m_value):
         return torch.cat([self.get_p_encoding(p_value), self.get_m_encoding(m_value)])
 
-    def __getitem__(self, idx):
-        config = self.cvf_analysis.indx_to_config(idx)
-        succ = list(
-            i[1] for i in self.cvf_analysis._get_program_transitions_as_configs(config)
-        )
-        config_ = torch.stack(
+    def get_succ1_succ2(self, succ):
+        succ1 = torch.mean(succ, dim=0)
+        succ2 = torch.sum(torch.mean(succ, dim=1), dim=0).to(self.device)
+        succ2 = succ2.unsqueeze(0).repeat(succ1.shape[0], 1)
+        return succ1, succ2
+
+    def get_encoded_config(self, config):
+        return torch.stack(
             [
                 self.get_p_m_encoding(
                     self.cvf_analysis.possible_node_values[i][v].p,
@@ -747,42 +749,40 @@ class CVFConfigForAnalysisDatasetMM(Dataset):
                 )
                 for i, v in enumerate(config)
             ]
-        ).to(self.device)
+        )
+
+    def cvf_analysis_indx_to_config(self, idx):
+        return self.cvf_analysis.indx_to_config(idx)
+
+    def cvf_analysis_get_transitions_as_configs(self, config):
+        return self.cvf_analysis._get_program_transitions_as_configs(config)
+
+    def get_x(self, config, succ1, succ2):
+        return torch.stack([config, succ1, succ2]).reshape(3, -1).t()
+
+    def get_default_succs(self, config):
+        succ1 = torch.zeros(config.shape[0], config.shape[1]).to(self.device)
+        succ2 = succ1.clone()
+        return succ1, succ2
+
+    def __getitem__(self, idx):
+        config = self.cvf_analysis_indx_to_config(idx)
+        succ = [i[1] for i in self.cvf_analysis_get_transitions_as_configs(config)]
+        config = self.get_encoded_config(config).to(self.device)
 
         if succ:
-            __succ = []
-            for s in succ:
-                nv = [
-                    self.get_p_m_encoding(
-                        self.cvf_analysis.possible_node_values[i][v].p,
-                        self.cvf_analysis.possible_node_values[i][v].m,
-                    )
-                    for i, v in enumerate(s)
-                ]
-                __succ.append(torch.stack(nv))
-
-            succ_ = torch.stack(__succ).type(dtype=torch.float32).to(self.device)
-            succ1_ = torch.mean(succ_, dim=0)
-            succ2_ = torch.sum(torch.mean(succ_, dim=1), dim=0).to(self.device)
-            succ2_ = succ2_.unsqueeze(0).repeat(succ1_.shape[0], 1)
-
+            _succ = [self.get_encoded_config(s) for s in succ]
+            succ = torch.stack(_succ).type(dtype=torch.float32).to(self.device)
+            succ1, succ2 = self.get_succ1_succ2(succ)
         else:
-            succ1_ = torch.zeros(config_.shape[0], config_.shape[1]).to(self.device)
-            succ2_ = succ1_.clone()
+            succ1, succ2 = self.get_default_succs(config)
 
         result = (
-            torch.stack([config_, succ1_, succ2_]).reshape(3, -1).t(),
+            self.get_x(config, succ1, succ2),
             idx,
         )
 
         return result
-
-    # def __getitem__(self, idx):
-    #     config = self.cvf_analysis.indx_to_config(idx)
-    #     succ1, succ2 = self._get_succ_encoding(idx, config)
-    #     config = torch.FloatTensor([config]).to(self.device)
-    #     result = (torch.cat((config, succ1, succ2), dim=0).t(), idx)
-    #     return result
 
 
 class CVFConfigForAnalysisV2Dataset(Dataset):

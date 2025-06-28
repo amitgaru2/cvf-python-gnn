@@ -58,6 +58,31 @@ class CVFConfigForAnalysisDatasetWithTT(CVFConfigForAnalysisDataset):
 
 
 class CVFConfigForAnalysisDatasetMMWithTT(CVFConfigForAnalysisDatasetMM):
+
+    @track_runtime
+    def get_x(self, config, succ1, succ2):
+        return super().get_x(config, succ1, succ2)
+
+    @track_runtime
+    def get_default_succs(self, config):
+        return super().get_default_succs(config)
+
+    @track_runtime
+    def cvf_analysis_indx_to_config(self, idx):
+        return super().cvf_analysis_indx_to_config(idx)
+
+    @track_runtime
+    def cvf_analysis_get_transitions_as_configs(self, config):
+        return super().cvf_analysis_get_transitions_as_configs(config)
+
+    @track_runtime
+    def get_encoded_config(self, config):
+        return super().get_encoded_config(config)
+
+    @track_runtime
+    def get_succ1_succ2(self, succ):
+        return super().get_succ1_succ2(succ)
+
     @track_runtime
     def __getitem__(self, idx):
         return super().__getitem__(idx)
