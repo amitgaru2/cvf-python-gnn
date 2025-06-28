@@ -1,7 +1,9 @@
 #!/usr/bin/zsh
 set -e
 
-echo "Hostname: "$(hostname)" | Shell: "$SHELL
+RANK=$OMPI_COMM_WORLD_RANK
+
+echo "Hostname: "$(hostname)" | Rank: "$RANK" Shell: "$SHELL
 
 source ~/anaconda3/etc/profile.d/conda.sh
 
