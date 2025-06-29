@@ -1,0 +1,86 @@
++ cd simulations
++ python simulate.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 1 --graph-names graph_10 --fault-prob 1.0 --simulation-type random
+Locating Graph: "graph_10".
+Analysis graph: graph_10 | program: graph_coloring | Simulation Type: random, Args: [] | No. of Simulations: 500000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 1
+Total configs: 32,000.
+Simulation environment: No. of Simulations: 500000 | Scheduler: CENTRAL | ME: False
+Time taken: 5.1763s, Running simulation round: 50000
+Time taken: 5.1994s, Running simulation round: 100000
+Time taken: 5.1907s, Running simulation round: 150000
+Time taken: 5.2298s, Running simulation round: 200000
+Time taken: 5.2089s, Running simulation round: 250000
+Time taken: 5.2463s, Running simulation round: 300000
+Time taken: 5.2164s, Running simulation round: 350000
+Time taken: 5.2125s, Running simulation round: 400000
+Time taken: 5.2368s, Running simulation round: 450000
+Time taken: 5.1916s, Running simulation round: 500000
+
+Saving result at results/coloring/graph_10__0__random_args___500000__False__1.csv
++ python simulate.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 1 --graph-names graph_10 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 0
+Locating Graph: "graph_10".
+Analysis graph: graph_10 | program: graph_coloring | Simulation Type: controlled_at_node_duong, Args: [0] | No. of Simulations: 500000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 1
+Total configs: 32,000.
+Simulation environment: No. of Simulations: 500000 | Scheduler: CENTRAL | ME: False
+Time taken: 7.692s, Running simulation round: 50000
+Time taken: 7.6793s, Running simulation round: 100000
+Time taken: 7.681s, Running simulation round: 150000
+Time taken: 7.7323s, Running simulation round: 200000
+Time taken: 7.7131s, Running simulation round: 250000
+Time taken: 7.7148s, Running simulation round: 300000
+Time taken: 7.6969s, Running simulation round: 350000
+Time taken: 7.7044s, Running simulation round: 400000
+Time taken: 7.7468s, Running simulation round: 450000
+Time taken: 7.6989s, Running simulation round: 500000
+
+Saving result at results/coloring/graph_10__0__controlled_at_node_duong_args_0__500000__False__1.csv
++ python simulate.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 1 --graph-names graph_10 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 4
+Locating Graph: "graph_10".
+Analysis graph: graph_10 | program: graph_coloring | Simulation Type: controlled_at_node_duong, Args: [4] | No. of Simulations: 500000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 1
+Total configs: 32,000.
+Simulation environment: No. of Simulations: 500000 | Scheduler: CENTRAL | ME: False
+Time taken: 7.6984s, Running simulation round: 50000
+Time taken: 7.7134s, Running simulation round: 100000
+Time taken: 7.7132s, Running simulation round: 150000
+Time taken: 7.6448s, Running simulation round: 200000
+Time taken: 7.6173s, Running simulation round: 250000
+Time taken: 7.6021s, Running simulation round: 300000
+Time taken: 7.6116s, Running simulation round: 350000
+Time taken: 7.6083s, Running simulation round: 400000
+Time taken: 7.653s, Running simulation round: 450000
+Time taken: 7.6227s, Running simulation round: 500000
+
+Saving result at results/coloring/graph_10__0__controlled_at_node_duong_args_4__500000__False__1.csv
++ python simulate.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 1 --graph-names graph_10 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 7
+Locating Graph: "graph_10".
+Analysis graph: graph_10 | program: graph_coloring | Simulation Type: controlled_at_node_duong, Args: [7] | No. of Simulations: 500000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 1
+Total configs: 32,000.
+Simulation environment: No. of Simulations: 500000 | Scheduler: CENTRAL | ME: False
+Time taken: 7.4603s, Running simulation round: 50000
+Time taken: 7.5359s, Running simulation round: 100000
+Time taken: 7.5199s, Running simulation round: 150000
+Time taken: 7.579s, Running simulation round: 200000
+Time taken: 7.589s, Running simulation round: 250000
+Time taken: 7.5908s, Running simulation round: 300000
+Time taken: 7.5837s, Running simulation round: 350000
+Time taken: 7.5385s, Running simulation round: 400000
+Time taken: 7.5765s, Running simulation round: 450000
+Time taken: 7.5716s, Running simulation round: 500000
+
+Saving result at results/coloring/graph_10__0__controlled_at_node_duong_args_7__500000__False__1.csv
++ python simulate.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 1 --graph-names graph_10 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 9
+Locating Graph: "graph_10".
+Analysis graph: graph_10 | program: graph_coloring | Simulation Type: controlled_at_node_duong, Args: [9] | No. of Simulations: 500000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 1
+Total configs: 32,000.
+Simulation environment: No. of Simulations: 500000 | Scheduler: CENTRAL | ME: False
+Time taken: 7.6128s, Running simulation round: 50000
+Time taken: 7.5943s, Running simulation round: 100000
+Time taken: 7.588s, Running simulation round: 150000
+Time taken: 7.6456s, Running simulation round: 200000
+Time taken: 7.6365s, Running simulation round: 250000
+Time taken: 7.6446s, Running simulation round: 300000
+Time taken: 7.6377s, Running simulation round: 350000
+Time taken: 7.6352s, Running simulation round: 400000
+Time taken: 7.6903s, Running simulation round: 450000
+Time taken: 7.7117s, Running simulation round: 500000
+
+Saving result at results/coloring/graph_10__0__controlled_at_node_duong_args_9__500000__False__1.csv

@@ -12,10 +12,10 @@ from typing import List
 from custom_logger import logger
 
 sys.path.append(
-    os.path.join(os.getenv("CVF_PROJECT_DIR", "/home"), "cvf-analysis", "v2")
+    os.path.join(os.getenv("CVF_PROJECT_DIR", "/home/agaru/research/cvf-python-gnn"), "cvf-analysis", "v2")
 )
 
-utils_path = os.path.join(os.getenv("CVF_PROJECT_DIR", ""), "utils")
+utils_path = os.path.join(os.getenv("CVF_PROJECT_DIR", "/home/agaru/research/cvf-python-gnn"), "utils")
 sys.path.append(utils_path)
 
 from common_helpers import create_dir_if_not_exists

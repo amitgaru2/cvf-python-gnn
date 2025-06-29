@@ -6,7 +6,13 @@ set -ex
 # cd cvf-analysis/v2
 # python main.py --program maximal_matching --graph-names graph_random_regular_graph_n8_d4 -ml
 
-# cd simulations
+cd simulations
+python simulate.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 1 --graph-names graph_10 --fault-prob 1.0 --simulation-type random
+python simulate.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 1 --graph-names graph_10 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 0
+python simulate.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 1 --graph-names graph_10 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 4
+python simulate.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 1 --graph-names graph_10 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 7
+python simulate.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 1 --graph-names graph_10 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 9
+# python simulate.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 1 --graph-names star_graph_0_n7 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 5
 # python simulate.py --program dijkstra_token_ring --sched 0 --no-sim 500000 --fault-interval 1 --graph-names implicit_graph_n8 --fault-prob 1.0 --simulation-type controlled_at_node --controlled-at-node 7
 # python simulate.py --program dijkstra_token_ring --sched 0 --no-sim 500000 --fault-interval 1 --graph-names implicit_graph_n8 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 0
 # python simulate.py --program dijkstra_token_ring --sched 0 --no-sim 500000 --fault-interval 1 --graph-names implicit_graph_n8 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 2
@@ -91,5 +97,5 @@ set -ex
 # python cvf_analysis.py --model lstm_trained_at_2025_06_27_13_36 --program maximal_matching --graph-names graph_powerlaw_cluster_graph_n5 graph_powerlaw_cluster_graph_n6
 # mpirun -n 4 python cvf_analysis_mpi.py --model lstm_trained_at_2025_06_26_20_32 --program maximal_matching --graph-names graph_random_regular_graph_n7_d4
 
-# python cvf_analysis.py --model lstm_trained_at_2025_06_26_20_32 --program maximal_matching --graph-names graph_random_regular_graph_n7_d4
-mpirun --hostfile hosts.txt ./run_mpi.sh cvf_analysis_mpi.py --model lstm_trained_at_2025_06_26_20_32 --program maximal_matching --graph-names graph_random_regular_graph_n8_d4
+# python cvf_analysis.py --model lstm_trained_at_2025_04_26_14_01 --program coloring --graph-names graph_10
+# mpirun --hostfile hosts.txt ./run_mpi.sh cvf_analysis_mpi.py --model lstm_trained_at_2025_06_26_20_32 --program maximal_matching --graph-names graph_random_regular_graph_n8_d4
