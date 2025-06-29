@@ -1,0 +1,25 @@
++ mpirun --hostfile hosts.txt ./run_mpi.sh cvf_analysis_mpi.py --model lstm_trained_at_2025_06_27_17_35 --program maximal_matching --graph-names star_graph_n8
+Hostname: mteverest2 | Rank:  Shell: /usr/bin/zsh
+Hostname: mteverest4 | Rank:  Shell: /usr/bin/zsh
+Hostname: mteverest3 | Rank:  Shell: /usr/bin/zsh
+Hostname: mteverest1 | Rank:  Shell: /usr/bin/zsh
+MPI comm size: 4
+Node: 2 | Using device: cuda
+Starting for star_graph_n8.
+Total configs: 262,144.
+MPI comm size: 4
+MPI comm size: 4
+Node: 1 | Using device: cuda
+Node: 3 | Using device: cuda
+Starting for star_graph_n8.
+Total configs: 262,144.
+Starting for star_graph_n8.
+Total configs: 262,144.
+MPI comm size: 4
+Node: 0 | Using device: cuda
+Starting for star_graph_n8.
+Total configs: 262,144.
+Data indices range: 131,072 to 196,608.
+Data indices range: 196,608 to 262,144.
+Data indices range: 65,536 to 131,072.
+Data indices range: 0 to 65,536.
