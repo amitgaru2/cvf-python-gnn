@@ -1,11 +1,11 @@
 #!/usr/bin/zsh
 set -e
 
-echo "Hostname: "$(hostname)" | Rank: "$RANK" Shell: "$SHELL
-
 host=$(hostname)
 
-if [[ "$host" = "disclab1.arcc" ]]; then
+echo "Hostname: "$host" | Rank: "$RANK" Shell: "$SHELL
+
+if [[ "$host" = "disclab1.arcc.uwyo.edu" ]]; then
 else
     source ~/anaconda3/etc/profile.d/conda.sh
 fi
