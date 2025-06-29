@@ -3,7 +3,12 @@ set -e
 
 echo "Hostname: "$(hostname)" | Rank: "$RANK" Shell: "$SHELL
 
-source ~/anaconda3/etc/profile.d/conda.sh
+host=$(hostname)
+
+if [[ "$host" = "disclab1.arcc" ]]; then
+else
+    source ~/anaconda3/etc/profile.d/conda.sh
+fi
 
 conda activate cvf
 
