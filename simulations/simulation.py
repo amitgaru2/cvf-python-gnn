@@ -141,24 +141,15 @@ class SimulationMixin:
 
         return actions
 
-    def inject_fault_at_node(self, state, process):
-        """Amit controlled version where given node has highest possibility of the fault."""
-        fault_count = 1
+    def select_transitions_for_process(self, p, state, count):
         faulty_actions = []
-
-        other_prob_wts = (1.0 - self.highest_fault_weight) / (len(self.nodes) - 1)
-        p = [other_prob_wts for _ in range(len(self.nodes))]
-        p[process] = self.highest_fault_weight
-        p = np.array(p)
-        p /= p.sum()
-
         random_number = np.random.uniform()
         if random_number <= self.fault_probability:
             randomly_selected_processes = list(
                 np.random.choice(
                     a=self.nodes,
                     p=p,
-                    size=fault_count,
+                    size=count,
                     replace=False,
                 )
             )
@@ -187,10 +178,23 @@ class SimulationMixin:
 
         return faulty_actions
 
+    def inject_fault_at_node(self, state, process):
+        """Amit controlled version where given node has highest possibility of the fault."""
+        fault_count = 1
+
+        other_prob_wts = (1.0 - self.highest_fault_weight) / (len(self.nodes) - 1)
+        p = [other_prob_wts for _ in range(len(self.nodes))]
+        p[process] = self.highest_fault_weight
+        p = np.array(p)
+        p /= p.sum()
+
+        faulty_actions = self.select_transitions_for_process(p, state, fault_count)
+
+        return faulty_actions
+
     def inject_least_fault_at_node(self, state, process):
         """Duong controlled version where given node has least possibility of the fault."""
         fault_count = 1
-        faulty_actions = []
 
         other_prob_wts = (1.0 - self.least_fault_weight) / (len(self.nodes) - 1)
         p = [other_prob_wts for _ in range(len(self.nodes))]
@@ -198,34 +202,7 @@ class SimulationMixin:
         p = np.array(p)
         p /= p.sum()
 
-        random_number = np.random.uniform()
-        if random_number <= self.fault_probability:
-            randomly_selected_processes = list(
-                np.random.choice(
-                    a=self.nodes,
-                    p=p,
-                    size=fault_count,
-                    replace=False,
-                )
-            )
-
-            indx = self.config_to_indx(state)
-            for p in randomly_selected_processes:
-                possible_transition_indexes = [
-                    i[1] for i in self.possible_perturbed_state_frm(indx) if i[0] == p
-                ]
-                if not possible_transition_indexes:
-                    logger.warning(
-                        "No any possible perturbation found for %s at state %s.",
-                        p,
-                        state,
-                    )
-                    continue
-                transition_indx = random.choice(possible_transition_indexes)
-                transition_state = self.indx_to_config(transition_indx)
-                faulty_actions.append(
-                    Action(Action.UPDATE, p, [state[p], transition_state[p]])
-                )
+        faulty_actions = self.select_transitions_for_process(p, state, fault_count)
 
         return faulty_actions
 
