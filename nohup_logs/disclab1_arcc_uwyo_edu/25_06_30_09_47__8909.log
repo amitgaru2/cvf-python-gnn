@@ -1,0 +1,11 @@
++ cd simulations
++ python simulate.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 1 --graph-names graph_7 --fault-prob 1.0 --simulation-type random
+Locating Graph: "graph_7".
+Analysis graph: graph_7 | program: graph_coloring | Simulation Type: random, Args: [] | No. of Simulations: 500000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 1
+Total configs: 11,520.
+Simulation environment: No. of Simulations: 500000 | Scheduler: CENTRAL | ME: False
+Time taken: 47.2766s, Running simulation round: 50000
+Time taken: 46.9733s, Running simulation round: 100000
+Time taken: 46.8542s, Running simulation round: 150000
+Time taken: 46.9678s, Running simulation round: 200000
+./nohup_commands.sh: line 10: 135303 Killed                  python simulate.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 1 --graph-names graph_7 --fault-prob 1.0 --simulation-type random
