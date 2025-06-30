@@ -1,0 +1,28 @@
++ cd simulations
++ python simulate.py --program graph_coloring --sched 0 --no-sim 100000 --fault-interval 1 --graph-names star_graph_0_n7 --fault-prob 1.0 --simulation-type controlled_at_node --controlled-at-node 0
+Locating Graph: "star_graph_0_n7".
+Analysis graph: star_graph_0_n7 | program: graph_coloring | Simulation Type: controlled_at_node, Args: [0] | No. of Simulations: 100000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 1
+Total configs: 448.
+Simulation environment: No. of Simulations: 100000 | Scheduler: CENTRAL | ME: False
+Time taken: 3.4837s, Running simulation round: 50000
+Time taken: 3.4826s, Running simulation round: 100000
+
+Saving result at results/coloring/star_graph_0_n7__0__controlled_at_node_args_0__100000__False__1.csv
++ python simulate.py --program graph_coloring --sched 0 --no-sim 100000 --fault-interval 1 --graph-names star_graph_0_n7 --fault-prob 1.0 --simulation-type controlled_at_node --controlled-at-node 2
+Locating Graph: "star_graph_0_n7".
+Analysis graph: star_graph_0_n7 | program: graph_coloring | Simulation Type: controlled_at_node, Args: [2] | No. of Simulations: 100000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 1
+Total configs: 448.
+Simulation environment: No. of Simulations: 100000 | Scheduler: CENTRAL | ME: False
+Time taken: 63.6765s, Running simulation round: 50000
+Time taken: 64.0472s, Running simulation round: 100000
+
+Saving result at results/coloring/star_graph_0_n7__0__controlled_at_node_args_2__100000__False__1.csv
++ python simulate.py --program graph_coloring --sched 0 --no-sim 100000 --fault-interval 1 --graph-names star_graph_0_n7 --fault-prob 1.0 --simulation-type controlled_at_node --controlled-at-node 5
+Locating Graph: "star_graph_0_n7".
+Analysis graph: star_graph_0_n7 | program: graph_coloring | Simulation Type: controlled_at_node, Args: [5] | No. of Simulations: 100000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 1
+Total configs: 448.
+Simulation environment: No. of Simulations: 100000 | Scheduler: CENTRAL | ME: False
+Time taken: 62.6561s, Running simulation round: 50000
+Time taken: 63.1003s, Running simulation round: 100000
+
+Saving result at results/coloring/star_graph_0_n7__0__controlled_at_node_args_5__100000__False__1.csv

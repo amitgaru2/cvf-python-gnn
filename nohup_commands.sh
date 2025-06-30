@@ -22,6 +22,11 @@ python simulate.py --program graph_coloring --sched 0 --no-sim 100000 --fault-in
 python simulate.py --program graph_coloring --sched 0 --no-sim 100000 --fault-interval 1 --graph-names graph_7 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 4
 python simulate.py --program graph_coloring --sched 0 --no-sim 100000 --fault-interval 1 --graph-names graph_7 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 5
 python simulate.py --program graph_coloring --sched 0 --no-sim 100000 --fault-interval 1 --graph-names graph_7 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 9
+python simulate.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 1 --graph-names star_graph_n13 --fault-prob 1.0 --simulation-type random
+python simulate.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 1 --graph-names star_graph_n13 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 0
+python simulate.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 1 --graph-names star_graph_n13 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 5
+python simulate.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 1 --graph-names star_graph_n13 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 9
+# python simulate.py --program graph_coloring --sched 0 --no-sim 100000 --fault-interval 1 --graph-names star_graph_0_n7 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 9
 # python simulate.py --program graph_coloring --sched 0 --no-sim 500000 --fault-interval 1 --graph-names star_graph_0_n7 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 5
 # python simulate.py --program dijkstra_token_ring --sched 0 --no-sim 500000 --fault-interval 1 --graph-names implicit_graph_n8 --fault-prob 1.0 --simulation-type controlled_at_node --controlled-at-node 7
 # python simulate.py --program dijkstra_token_ring --sched 0 --no-sim 500000 --fault-interval 1 --graph-names implicit_graph_n8 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 0
