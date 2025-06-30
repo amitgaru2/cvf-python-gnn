@@ -12,10 +12,16 @@ from typing import List
 from custom_logger import logger
 
 sys.path.append(
-    os.path.join(os.getenv("CVF_PROJECT_DIR", "/home/agaru/research/cvf-python-gnn"), "cvf-analysis", "v2")
+    os.path.join(
+        os.getenv("CVF_PROJECT_DIR", "/home/agaru/research/cvf-python-gnn"),
+        "cvf-analysis",
+        "v2",
+    )
 )
 
-utils_path = os.path.join(os.getenv("CVF_PROJECT_DIR", "/home/agaru/research/cvf-python-gnn"), "utils")
+utils_path = os.path.join(
+    os.getenv("CVF_PROJECT_DIR", "/home/agaru/research/cvf-python-gnn"), "utils"
+)
 sys.path.append(utils_path)
 
 from common_helpers import create_dir_if_not_exists
@@ -325,6 +331,9 @@ class SimulationMixin:
             faulty_actions = []
             if last_fault_duration + 1 == self.fault_interval:
                 faulty_actions = faulty_action_generator(state, *extra_args, step)
+                last_fault_duration = 0
+            else:
+                last_fault_duration += 1
 
             if faulty_actions:
                 state = self.execute(state, faulty_actions)
@@ -334,7 +343,7 @@ class SimulationMixin:
 
             logger.debug("Next state: %s.", state)
 
-            last_fault_duration += 1
+            # last_fault_duration += 1
             step += 1
 
         return step
