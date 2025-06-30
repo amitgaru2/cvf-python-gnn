@@ -55,7 +55,7 @@ class Action:
 
 
 class SimulationMixin:
-    highest_fault_weight = np.float32(0.6)
+    highest_fault_weight = np.float32(0.8)
     least_fault_weight = np.float32(0.01)
     RANDOM_FAULT_SIMULATION_TYPE = "random"
     CONTROLLED_FAULT_AT_NODE_SIMULATION_TYPE = "controlled_at_node"
@@ -143,21 +143,48 @@ class SimulationMixin:
 
     def inject_fault_at_node(self, state, process):
         """Amit controlled version where given node has highest possibility of the fault."""
+        fault_count = 1
         faulty_actions = []
-        indx = self.config_to_indx(state)
-        possible_transition_indexes = [
-            i[1] for i in self.possible_perturbed_state_frm(indx) if i[0] == process
-        ]
-        if not possible_transition_indexes:
-            logger.warning(
-                "No any possible perturbation found for %s at state %s.", p, state
+
+        other_prob_wts = (1.0 - self.highest_fault_weight) / (len(self.nodes) - 1)
+        p = [other_prob_wts for _ in range(len(self.nodes))]
+        p[process] = self.highest_fault_weight
+        p = np.array(p)
+        p /= p.sum()
+
+        random_number = np.random.uniform()
+        if random_number <= self.fault_probability:
+            randomly_selected_processes = list(
+                np.random.choice(
+                    a=self.nodes,
+                    p=p,
+                    size=fault_count,
+                    replace=False,
+                )
             )
-            return faulty_actions
-        transition_indx = random.choice(possible_transition_indexes)
-        transition_state = self.indx_to_config(transition_indx)
-        faulty_actions.append(
-            Action(Action.UPDATE, process, [state[process], transition_state[process]])
-        )
+
+            indx = self.config_to_indx(state)
+            for p in randomly_selected_processes:
+                possible_transition_indexes = [
+                    i[1] for i in self.possible_perturbed_state_frm(indx) if i[0] == p
+                ]
+                if not possible_transition_indexes:
+                    logger.warning(
+                        "No any possible perturbation found for %s at state %s.",
+                        p,
+                        state,
+                    )
+
+                transition_indx = random.choice(possible_transition_indexes)
+                transition_state = self.indx_to_config(transition_indx)
+                faulty_actions.append(
+                    Action(
+                        Action.UPDATE,
+                        p,
+                        [state[p], transition_state[p]],
+                    )
+                )
+
         return faulty_actions
 
     def inject_least_fault_at_node(self, state, process):
