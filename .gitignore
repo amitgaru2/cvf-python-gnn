@@ -19,3 +19,5 @@ embedding*.dump
 cvf_*.log
 hostlist
 hostlist_w_slots
+
+temp.sh
