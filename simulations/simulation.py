@@ -329,17 +329,16 @@ class SimulationMixin:
         }[self.simulation_type]
         while not self.is_invariant(state):  # from the base class
             faulty_actions = []
-            if last_fault_duration + 1 == self.fault_interval:
+            if last_fault_duration + 1 >= self.fault_interval:
                 faulty_actions = faulty_action_generator(state, *extra_args, step)
-                last_fault_duration = 0
-            else:
-                last_fault_duration += 1
 
             if faulty_actions:
                 state = self.execute(state, faulty_actions)
+                last_fault_duration = 0
             else:
                 actions = self.get_actions(state)
                 state = self.execute(state, actions)
+                last_fault_duration += 1
 
             logger.debug("Next state: %s.", state)
 
