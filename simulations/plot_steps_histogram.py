@@ -32,16 +32,8 @@ plots_dir = "plots"
 colors = [("red", "red"), ("green", "green"), ("blue", "blue"), ("orange", "orange")]
 color_cycle = cycle(colors)
 
-# program = "coloring"
-# graph_name = "star_graph_0_n7"
 sched = 0
 me = False
-# no_simulations = 500000
-# fault_interval = 1
-
-# duong_mode = True
-
-# selected_nodes = [0, 2, 5]
 
 
 def generate_parser():
