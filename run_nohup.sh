@@ -10,6 +10,7 @@ logLocation="nohup_logs/${hostName}/""$jobID"".log"
 echo "Log location: ""$logLocation"
 echo "Started at : "$(date)
 cp nohup_commands.sh temp.sh
+sed -i '/^#/d' temp.sh
 chmod +x temp.sh
 nohup ./temp.sh > "$logLocation" 2>&1 <&- &
 # command_pid=$!
