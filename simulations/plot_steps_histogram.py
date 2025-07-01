@@ -26,9 +26,6 @@ from common_helpers import create_dir_if_not_exists
 
 fontsize = 20
 
-plots_dir = "plots"
-
-
 colors = [("red", "red"), ("green", "green"), ("blue", "blue"), ("orange", "orange")]
 color_cycle = cycle(colors)
 
