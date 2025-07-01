@@ -1,0 +1,39 @@
++ cd gnn
++ python cvf_analysis.py --model lstm_trained_at_2025_06_25_19_06 --program maximal_matching --graph-names graph_powerlaw_cluster_graph_n6
+Starting for graph_powerlaw_cluster_graph_n6.
+Total configs: 196,608.
+Done ML CVF Analysis!
+Complete for graph_powerlaw_cluster_graph_n6.
+
+=== Runtime Report ===
+get_model: 0.083407s
+get_dataset: 0.000209s
+__getitem__: 322.746189s
+get_perturbed_states: 0.074256s
+get_rank: 40.303971s
+group_data: 0.000255s
+aggregation_n_save: 0.080144s
+ml_cvf_analysis: 400.183053s
+get_fa_results: 0.006081s
+=== End Report ===
+
+
++ python cvf_analysis.py --model lstm_trained_at_2025_06_25_19_06 --program maximal_matching --graph-names graph_random_regular_graph_n6_d3
+Starting for graph_random_regular_graph_n6_d3.
+Total configs: 262,144.
+Done ML CVF Analysis!
+Complete for graph_random_regular_graph_n6_d3.
+
+=== Runtime Report ===
+get_model: 0.071572s
+get_dataset: 0.000218s
+__getitem__: 430.141046s
+get_perturbed_states: 0.100149s
+get_rank: 52.506853s
+group_data: 0.000267s
+aggregation_n_save: 0.100035s
+ml_cvf_analysis: 532.000108s
+get_fa_results: 0.006466s
+=== End Report ===
+
+

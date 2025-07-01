@@ -1,0 +1,99 @@
++ cd gnn
++ mpirun -n 4 python cvf_analysis_mpi.py --model lstm_trained_at_2025_06_26_20_32 --program maximal_matching --graph-names graph_random_regular_graph_n7_d4
+MPI comm size: 4
+MPI comm size: 4
+Node: 3 | Using device: cuda:3
+MPI comm size: 4
+MPI comm size: 4
+Starting for graph_random_regular_graph_n7_d4.
+Total configs: 10,000,000.
+Node: 2 | Using device: cuda:2
+Node: 0 | Using device: cuda:0
+Starting for graph_random_regular_graph_n7_d4.
+Node: 1 | Using device: cuda:1
+Starting for graph_random_regular_graph_n7_d4.
+Total configs: 10,000,000.
+Starting for graph_random_regular_graph_n7_d4.
+Total configs: 10,000,000.
+Total configs: 10,000,000.
+Data indices range: 7,500,000 to 10,000,000.
+Data indices range: 0 to 2,500,000.
+Data indices range: 2,500,000 to 5,000,000.
+Data indices range: 5,000,000 to 7,500,000.
+Done ML CVF Analysis!
+Complete for graph_random_regular_graph_n7_d4.
+
+=== Runtime Report : 1 ===
+Node: 1 | get_dataset: 0.458500s
+Node: 1 | get_model: 1.224130s
+Node: 1 | __getitem__: 10189.040508s
+Node: 1 | get_perturbed_states: 1.529617s
+Node: 1 | get_rank: 1043.023498s
+Node: 1 | get_ml_rank_effect: 12227.053355s
+Node: 1 | group_data: 0.000381s
+Node: 1 | aggregation: 1.478566s
+Node: 1 | gather_aggregate: 0.000395s
+Node: 1 | aggregation_n_save: 1.478969s
+Node: 1 | ml_cvf_analysis: 12229.597529s
+Node: 1 | main: 12229.597753s
+=== End Report : 1 ===
+
+
+Done ML CVF Analysis!
+Done ML CVF Analysis!
+Complete for graph_random_regular_graph_n7_d4.
+
+=== Runtime Report : 2 ===
+Node: 2 | get_dataset: 0.462221s
+Node: 2 | get_model: 1.220441s
+Node: 2 | __getitem__: 10248.201257s
+Node: 2 | get_perturbed_states: 1.491145s
+Node: 2 | get_rank: 1045.350767s
+Node: 2 | get_ml_rank_effect: 12288.496967s
+Node: 2 | group_data: 0.000362s
+Node: 2 | aggregation: 1.211145s
+Node: 2 | gather_aggregate: 39.782012s
+Node: 2 | aggregation_n_save: 40.993169s
+Node: 2 | ml_cvf_analysis: 12330.547143s
+Node: 2 | main: 12330.547347s
+=== End Report : 2 ===
+
+
+Complete for graph_random_regular_graph_n7_d4.
+
+=== Runtime Report : 3 ===
+Node: 3 | get_dataset: 0.452654s
+Node: 3 | get_model: 1.225282s
+Node: 3 | __getitem__: 10288.846987s
+Node: 3 | get_perturbed_states: 1.488475s
+Node: 3 | get_rank: 1042.445829s
+Node: 3 | get_ml_rank_effect: 12328.292187s
+Node: 3 | group_data: 0.000368s
+Node: 3 | aggregation: 1.202698s
+Node: 3 | gather_aggregate: 0.000281s
+Node: 3 | aggregation_n_save: 1.202987s
+Node: 3 | ml_cvf_analysis: 12330.548433s
+Node: 3 | main: 12330.548663s
+=== End Report : 3 ===
+
+
+Done ML CVF Analysis!
+Complete for graph_random_regular_graph_n7_d4.
+
+=== Runtime Report : 0 ===
+Node: 0 | get_dataset: 0.457889s
+Node: 0 | get_model: 0.105998s
+Node: 0 | __getitem__: 10374.946958s
+Node: 0 | get_perturbed_states: 1.545119s
+Node: 0 | get_rank: 1021.663226s
+Node: 0 | get_ml_rank_effect: 12390.266244s
+Node: 0 | group_data: 0.000650s
+Node: 0 | aggregation: 1.474692s
+Node: 0 | gather_aggregate: 0.016719s
+Node: 0 | aggregation_n_save: 1.494130s
+Node: 0 | ml_cvf_analysis: 12392.829644s
+Node: 0 | get_fa_results: 0.012483s
+Node: 0 | main: 12392.842285s
+=== End Report : 0 ===
+
+

@@ -1,0 +1,13 @@
+Starting for graph_powerlaw_cluster_graph_n7.
+Total configs: 3,456,000.
+Done ML CVF Analysis!
+Complete for graph_powerlaw_cluster_graph_n7.
+
+=== Runtime Report ===
+get_model: 0.185242s
+get_perturbed_states: 2.992416s
+get_rank: 1543.690974s
+group_data: 0.000266s
+ml_cvf_analysis: 162087.449627s
+get_fa_results: 0.009544s
+./nohup_commands.sh: line 85: alysis.py: command not found

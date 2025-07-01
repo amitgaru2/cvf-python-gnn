@@ -1,0 +1,22 @@
++ cd gnn
++ python cvf_analysis.py --model lstm_trained_at_2025_06_27_17_35 --program maximal_matching --graph-names star_graph_n9
+Using device: cuda.
+Starting for star_graph_n9.
+Total configs: 1,179,648.
+Done ML CVF Analysis!
+Complete for star_graph_n9.
+
+=== Runtime Report ===
+get_model: 0.097513s
+get_dataset: 0.000216s
+__getitem__: 1898.362929s
+get_perturbed_states: 0.444404s
+get_rank: 272.214303s
+group_data: 0.000232s
+aggregation_n_save: 0.480929s
+ml_cvf_analysis: 2423.363106s
+get_fa_results: 0.006803s
+main: 2423.369982s
+=== End Report ===
+
+

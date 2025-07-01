@@ -1,0 +1,5 @@
++ cd cvf-analysis/v2
++ python main.py --program maximal_matching --graph-names graph_powerlaw_cluster_graph_n9 -ml
+Locating Graph: "graph_powerlaw_cluster_graph_n9".
+Total configs: 707,788,800.
+./nohup_commands.sh: line 7: 69261 Killed                  python main.py --program maximal_matching --graph-names graph_powerlaw_cluster_graph_n9 -ml

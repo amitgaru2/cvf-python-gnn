@@ -1,0 +1,22 @@
++ cd gnn
++ python cvf_analysis.py --model lstm_trained_at_2025_04_26_14_01 --program coloring --graph-names graph_7
+Using device: cuda.
+Starting for graph_7.
+Total configs: 11,520.
+Done ML CVF Analysis!
+Complete for graph_7.
+
+=== Runtime Report ===
+get_model: 0.221033s
+get_dataset: 0.000295s
+__getitem__: 25.106509s
+get_perturbed_states: 0.006381s
+get_rank: 4.563566s
+group_data: 0.000276s
+aggregation_n_save: 0.015149s
+ml_cvf_analysis: 34.796724s
+get_fa_results: 0.022314s
+main: 34.819157s
+=== End Report ===
+
+

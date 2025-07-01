@@ -1,0 +1,51 @@
+Timestamp: 1750183952.62594 | Program: maximal_matching | Training with Graphs: graph_random_regular_graph_n7_d4 | Batch size: 256 | Epochs: 25 | Hidden size: 32 | Num layers: 2.
+
+
+Train dataset size: 9,800,000, Subset size: 200,000 | Test dataset size: 200,000
+
+
+/home/agaru/.conda/envs/cvf/lib/python3.13/site-packages/torch/cuda/__init__.py:789: UserWarning: Can't initialize NVML
+  warnings.warn("Can't initialize NVML")
+Model SimpleLSTM(
+  (lstm): GRU(3, 32, num_layers=2, batch_first=True)
+  (norm): LayerNorm((32,), eps=1e-05, elementwise_affine=True)
+  (h2o): Linear(in_features=32, out_features=1, bias=True)
+)
+Total parameters: 9,985
+
+
+Training set | Epoch 1 | MSE Loss: 25.3231 | Time taken: 243.9492s
+Training set | Epoch 2 | MSE Loss: 4.6949 | Time taken: 246.0604s
+Training set | Epoch 3 | MSE Loss: 2.5265 | Time taken: 246.7791s
+Training set | Epoch 4 | MSE Loss: 1.549 | Time taken: 246.8925s
+Training set | Epoch 5 | MSE Loss: 2.7417 | Time taken: 247.1255s
+Training set | Epoch 6 | MSE Loss: 1.3404 | Time taken: 247.1479s
+Training set | Epoch 7 | MSE Loss: 4.5895 | Time taken: 246.6872s
+Training set | Epoch 8 | MSE Loss: 2.4276 | Time taken: 247.2195s
+Training set | Epoch 9 | MSE Loss: 1.3169 | Time taken: 247.0487s
+Training set | Epoch 10 | MSE Loss: 0.9931 | Time taken: 247.0976s
+Training set | Epoch 11 | MSE Loss: 0.8889 | Time taken: 246.162s
+Training set | Epoch 12 | MSE Loss: 0.9642 | Time taken: 245.3744s
+Training set | Epoch 13 | MSE Loss: 0.7823 | Time taken: 245.0417s
+Training set | Epoch 14 | MSE Loss: 0.5675 | Time taken: 242.7164s
+Training set | Epoch 15 | MSE Loss: 0.5899 | Time taken: 242.4011s
+Training set | Epoch 16 | MSE Loss: 1.5736 | Time taken: 242.6227s
+Training set | Epoch 17 | MSE Loss: 0.7719 | Time taken: 242.4798s
+Training set | Epoch 18 | MSE Loss: 0.5001 | Time taken: 242.5802s
+Training set | Epoch 19 | MSE Loss: 0.4882 | Time taken: 242.8434s
+Training set | Epoch 20 | MSE Loss: 0.6138 | Time taken: 246.0275s
+Training set | Epoch 21 | MSE Loss: 0.507 | Time taken: 287.974s
+Training set | Epoch 22 | MSE Loss: 0.4071 | Time taken: 300.8094s
+Training set | Epoch 23 | MSE Loss: 4.8459 | Time taken: 292.2905s
+Training set | Epoch 24 | MSE Loss: 6.589 | Time taken: 292.2378s
+Training set | Epoch 25 | MSE Loss: 3.979 | Time taken: 292.326s
+
+
+End Training | Total training time taken 6369.9068s
+
+
+Saving model trained_models/lstm_trained_at_2025_06_17_13_59.pt
+
+
+Testing model...
+Test set | MSE loss: 3.3434 | Total matched: 48,019 out of 200,000 (Accuracy: 24.01%)
