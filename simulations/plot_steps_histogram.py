@@ -147,7 +147,7 @@ def plot_save_fig(
     df, program, graph_name, selected_nodes, no_simulations, fault_interval, duong_mode
 ):
     plt.figure(figsize=(16, 8))
-    ax = sns.lineplot(data=df, linewidth=3)
+    ax = sns.lineplot(data=df, linewidth=1)
     ax.set_title(
         get_title(program, graph_name, no_simulations, fault_interval),
         fontdict={"fontsize": fontsize},
@@ -185,7 +185,6 @@ def plot_save_fig(
             color=line.get_color(),
             # marker=marker,
             label=cat,
-            linewidth=1,
             linestyle=line.get_linestyle(),
         )
         for line, cat in zip(ax.lines, labels)
