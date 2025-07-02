@@ -2,7 +2,7 @@ from base import ProgramData, CVFAnalysisV2
 
 
 class GraphColoringCVFAnalysisV2(CVFAnalysisV2):
-    results_dir = "coloring"
+    results_dir = "graph_coloring"
 
     def get_possible_node_values(self):
         result = list()

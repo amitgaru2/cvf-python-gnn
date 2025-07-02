@@ -3,7 +3,6 @@ import csv
 import sys
 import time
 import random
-import datetime
 
 import numpy as np
 
@@ -61,6 +60,13 @@ class SimulationMixin:
     CONTROLLED_FAULT_AT_NODE_SIMULATION_TYPE = "controlled_at_node"
     CONTROLLED_FAULT_AT_NODE_SIMULATION_TYPE_DUONG = "controlled_at_node_duong"
     RANDOM_FAULT_START_AT_NODE_SIMULATION_TYPE = "random_start_at_node"
+
+    SIMULATION_TYPES = [
+        RANDOM_FAULT_SIMULATION_TYPE,
+        CONTROLLED_FAULT_AT_NODE_SIMULATION_TYPE,
+        CONTROLLED_FAULT_AT_NODE_SIMULATION_TYPE_DUONG,
+        RANDOM_FAULT_START_AT_NODE_SIMULATION_TYPE,
+    ]
 
     def init_global_rank_map(self):
         """override this when not needed like for simulation"""

@@ -72,7 +72,11 @@ def generate_parser():
         required=True,
     )
 
-    parser.add_argument("--duong-mode", action="store_true")
+    parser.add_argument(
+        "--simulation-type", choices=SimulationMixin.SIMULATION_TYPES, required=True
+    )
+
+    parser.add_argument("--include-random", action="store_true")
 
     args = parser.parse_args()
 
@@ -86,49 +90,43 @@ def get_sim_data_filename(
 
 
 def get_filenames(
-    graph_name, selected_nodes, no_simulations, fault_interval, duong_mode
+    graph_name,
+    selected_nodes,
+    simulation_type,
+    no_simulations,
+    fault_interval,
+    include_random,
 ):
-    filenames = [
-        get_sim_data_filename(
-            graph_name,
-            sched,
-            SimulationMixin.RANDOM_FAULT_SIMULATION_TYPE,
-            "",
-            no_simulations,
-            me,
-            fault_interval,
-        )
-    ]
-    if duong_mode:
-        filenames.extend(
-            [
-                get_sim_data_filename(
-                    graph_name,
-                    sched,
-                    SimulationMixin.CONTROLLED_FAULT_AT_NODE_SIMULATION_TYPE_DUONG,
-                    arg,
-                    no_simulations,
-                    me,
-                    fault_interval,
-                )
-                for arg in selected_nodes
-            ]
-        )
-    else:
-        filenames.extend(
-            [
-                get_sim_data_filename(
-                    graph_name,
-                    sched,
-                    SimulationMixin.CONTROLLED_FAULT_AT_NODE_SIMULATION_TYPE,
-                    arg,
-                    no_simulations,
-                    me,
-                    fault_interval,
-                )
-                for arg in selected_nodes
-            ]
-        )
+    filenames = (
+        [
+            get_sim_data_filename(
+                graph_name,
+                sched,
+                SimulationMixin.RANDOM_FAULT_SIMULATION_TYPE,
+                "",
+                no_simulations,
+                me,
+                fault_interval,
+            )
+        ]
+        if include_random
+        else []
+    )
+
+    filenames.extend(
+        [
+            get_sim_data_filename(
+                graph_name,
+                sched,
+                simulation_type,
+                arg,
+                no_simulations,
+                me,
+                fault_interval,
+            )
+            for arg in selected_nodes
+        ]
+    )
 
     return filenames
 
@@ -137,14 +135,39 @@ def get_title(program, graph_name, no_simulations, fault_interval):
     return f"Simulation - {program} | {graph_name} | Sched: {sched} | N: {no_simulations:,} | FI: {fault_interval}"
 
 
-def get_filename(
-    program, graph_name, selected_nodes, no_simulations, fault_interval, duong_mode
+def get_save_filename(
+    program,
+    graph_name,
+    selected_nodes,
+    simulation_type,
+    no_simulations,
+    fault_interval,
 ):
-    return f"{program}__{graph_name}__{sched}__{no_simulations}__{fault_interval}__{''.join([str(i) for i in selected_nodes])}{'__duong' if duong_mode else ''}"
+    return f"{program}__{graph_name}__{sched}__{simulation_type}__{no_simulations}__{fault_interval}__{''.join([str(i) for i in selected_nodes])}"
+
+
+def get_label(simulation_type, node):
+    return (
+        {
+            SimulationMixin.RANDOM_FAULT_SIMULATION_TYPE: "Random Fault",
+            SimulationMixin.CONTROLLED_FAULT_AT_NODE_SIMULATION_TYPE: "Controlled at node %s",
+            SimulationMixin.CONTROLLED_FAULT_AT_NODE_SIMULATION_TYPE_DUONG: "Controlled (duong) at node %s",
+            SimulationMixin.RANDOM_FAULT_START_AT_NODE_SIMULATION_TYPE: "Random started at node %s",
+        }
+        .get(simulation_type, simulation_type)
+        .format(node)
+    )
 
 
 def plot_save_fig(
-    df, program, graph_name, selected_nodes, no_simulations, fault_interval, duong_mode
+    df,
+    program,
+    graph_name,
+    selected_nodes,
+    simulation_type,
+    no_simulations,
+    fault_interval,
+    include_random,
 ):
     plt.figure(figsize=(16, 8))
     ax = sns.lineplot(data=df, linewidth=1)
@@ -171,13 +194,8 @@ def plot_save_fig(
     ax.set_xlabel("Steps")
     ax.set_ylabel("Count")
 
-    labels = ["Random Fault"]
-    labels.extend(
-        [
-            f'Controlled {"(duong)" if duong_mode else ""} at node {n}'
-            for n in selected_nodes
-        ]
-    )
+    labels = ["Random Fault"] if include_random else []
+    labels.extend([get_label(simulation_type, n) for n in selected_nodes])
     custom_lines = [
         mlines.Line2D(
             [],
@@ -195,7 +213,7 @@ def plot_save_fig(
     create_dir_if_not_exists(plots_dir)
     file_path = os.path.join(
         plots_dir,
-        f"{get_filename(program, graph_name, selected_nodes, no_simulations, fault_interval, duong_mode)}.png",
+        f"{get_save_filename(program, graph_name, selected_nodes, simulation_type, no_simulations, fault_interval)}.png",
     )
     plt.savefig(
         file_path,
@@ -222,7 +240,7 @@ def save_agg_data(
     create_dir_if_not_exists(results_dir)
     file_path = os.path.join(
         results_dir,
-        f"agg_{get_filename(program, graph_name, selected_nodes, no_simulations, fault_interval, duong_mode)}.csv",
+        f"agg_{get_save_filename(program, graph_name, selected_nodes, simulation_type, no_simulations, fault_interval)}.csv",
     )
     df.to_csv(file_path)
 
@@ -230,12 +248,27 @@ def save_agg_data(
 
 
 def main(
-    program, graph_name, selected_nodes, no_simulations, fault_interval, duong_mode
+    program,
+    graph_name,
+    selected_nodes,
+    simulation_type,
+    no_simulations,
+    fault_interval,
+    include_random,
 ):
+    duong_mode = (
+        simulation_type
+        == SimulationMixin.CONTROLLED_FAULT_AT_NODE_SIMULATION_TYPE_DUONG
+    )
     dfs = [
         pd.read_csv(os.path.join("results", program, f"{fn}.csv"))
         for fn in get_filenames(
-            graph_name, selected_nodes, no_simulations, fault_interval, duong_mode
+            graph_name,
+            selected_nodes,
+            simulation_type,
+            no_simulations,
+            fault_interval,
+            include_random,
         )
     ]
     max_steps = max(df["Steps"].max() for df in dfs)
@@ -279,7 +312,8 @@ if __name__ == "__main__":
         args.program,
         args.graph_name,
         args.nodes,
+        args.simulation_type,
         args.no_simulations,
         args.fault_interval,
-        args.duong_mode,
+        args.include_random,
     )
