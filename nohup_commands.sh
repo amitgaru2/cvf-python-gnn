@@ -8,7 +8,9 @@ set -ex
 
 cd simulations
 # python simulate.py --program graph_coloring --sched 0 --no-sim 10000 --fault-interval 2 --graph-names graph_10 --fault-prob 1.0 --simulation-type random
-python simulate.py --program graph_coloring --sched 0 --no-sim 10000 --fault-interval 1 --graph-names star_graph_0_n7 --fault-prob 1.0 --simulation-type random_start_at_node --controlled-at-node 0
+# python simulate.py --program graph_coloring --sched 0 --no-sim 10000 --fault-interval 1 --graph-names star_graph_0_n7 --fault-prob 1.0 --simulation-type random_start_at_node --controlled-at-node 0
+python simulate.py --program graph_coloring --sched 0 --no-sim 10000 --fault-interval 1 --graph-names star_graph_0_n7 --fault-prob 1.0 --simulation-type random_start_at_node --controlled-at-node 2
+python simulate.py --program graph_coloring --sched 0 --no-sim 10000 --fault-interval 1 --graph-names star_graph_0_n7 --fault-prob 1.0 --simulation-type random_start_at_node --controlled-at-node 5
 # python simulate.py --program graph_coloring --sched 0 --no-sim 10000 --fault-interval 2 --graph-names graph_10 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 0
 # python simulate.py --program graph_coloring --sched 0 --no-sim 10000 --fault-interval 2 --graph-names graph_10 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 4
 # python simulate.py --program graph_coloring --sched 0 --no-sim 10000 --fault-interval 2 --graph-names graph_10 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 7

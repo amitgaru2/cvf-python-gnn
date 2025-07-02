@@ -1,0 +1,19 @@
++ cd simulations
++ python simulate.py --program graph_coloring --sched 0 --no-sim 10000 --fault-interval 1 --graph-names star_graph_0_n7 --fault-prob 1.0 --simulation-type random_start_at_node --controlled-at-node 2
+Note: NumExpr detected 24 cores but "NUMEXPR_MAX_THREADS" not set, so enforcing safe limit of 8.
+NumExpr defaulting to 8 threads.
+Locating Graph: "star_graph_0_n7".
+Analysis graph: star_graph_0_n7 | program: graph_coloring | Simulation Type: random_start_at_node, Args: [2] | No. of Simulations: 10000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 1
+Total configs: 448.
+Simulation environment: No. of Simulations: 10000 | Scheduler: CENTRAL | ME: False
+
+Saving result at results/coloring/star_graph_0_n7__0__random_start_at_node_args_2__10000__False__1.csv
++ python simulate.py --program graph_coloring --sched 0 --no-sim 10000 --fault-interval 1 --graph-names star_graph_0_n7 --fault-prob 1.0 --simulation-type random_start_at_node --controlled-at-node 5
+Note: NumExpr detected 24 cores but "NUMEXPR_MAX_THREADS" not set, so enforcing safe limit of 8.
+NumExpr defaulting to 8 threads.
+Locating Graph: "star_graph_0_n7".
+Analysis graph: star_graph_0_n7 | program: graph_coloring | Simulation Type: random_start_at_node, Args: [5] | No. of Simulations: 10000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 1
+Total configs: 448.
+Simulation environment: No. of Simulations: 10000 | Scheduler: CENTRAL | ME: False
+
+Saving result at results/coloring/star_graph_0_n7__0__random_start_at_node_args_5__10000__False__1.csv

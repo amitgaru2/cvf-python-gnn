@@ -147,16 +147,12 @@ def get_save_filename(
 
 
 def get_label(simulation_type, node):
-    return (
-        {
-            SimulationMixin.RANDOM_FAULT_SIMULATION_TYPE: "Random Fault",
-            SimulationMixin.CONTROLLED_FAULT_AT_NODE_SIMULATION_TYPE: "Controlled at node %s",
-            SimulationMixin.CONTROLLED_FAULT_AT_NODE_SIMULATION_TYPE_DUONG: "Controlled (duong) at node %s",
-            SimulationMixin.RANDOM_FAULT_START_AT_NODE_SIMULATION_TYPE: "Random started at node %s",
-        }
-        .get(simulation_type, simulation_type)
-        .format(node)
-    )
+    return {
+        SimulationMixin.RANDOM_FAULT_SIMULATION_TYPE: "Random Fault",
+        SimulationMixin.CONTROLLED_FAULT_AT_NODE_SIMULATION_TYPE: "Controlled at node %s",
+        SimulationMixin.CONTROLLED_FAULT_AT_NODE_SIMULATION_TYPE_DUONG: "Controlled (duong) at node %s",
+        SimulationMixin.RANDOM_FAULT_START_AT_NODE_SIMULATION_TYPE: "Random started at node %s",
+    }.get(simulation_type, simulation_type) % (node)
 
 
 def plot_save_fig(
@@ -178,12 +174,12 @@ def plot_save_fig(
 
     # ax.set_yscale("log")
     for i, line in enumerate(ax.lines):
-        if i >= 1:
-            line_style = "solid"
-            line.set_color(next(color_cycle)[0])
-        else:
+        if i == 0 and include_random:
             line_style = "dashed"
             line.set_color("goldenrod")
+        else:
+            line_style = "solid"
+            line.set_color(next(color_cycle)[0])
         line.set_linestyle(line_style)
 
     ax.tick_params(axis="x", labelsize=fontsize)
@@ -225,16 +221,18 @@ def plot_save_fig(
 
 
 def save_agg_data(
-    df, program, graph_name, selected_nodes, no_simulations, fault_interval, duong_mode
+    df,
+    program,
+    graph_name,
+    selected_nodes,
+    simulation_type,
+    no_simulations,
+    fault_interval,
+    include_random,
 ):
-    # Save to file
-    df.columns = [
-        "Random",
-        *[
-            f'Controlled {"(duong)" if duong_mode else ""} at node {n}'
-            for n in selected_nodes
-        ],
-    ]
+    cols = ["Random Fault"] if include_random else []
+    cols.extend([get_label(simulation_type, n) for n in selected_nodes])
+    df.columns = cols
     df.index = df.index.astype(int)
     results_dir = os.path.join("results", program)
     create_dir_if_not_exists(results_dir)
@@ -291,18 +289,20 @@ def main(
         program,
         graph_name,
         selected_nodes,
+        simulation_type,
         no_simulations,
         fault_interval,
-        duong_mode,
+        include_random,
     )
     save_agg_data(
         df_merged,
         program,
         graph_name,
         selected_nodes,
+        simulation_type,
         no_simulations,
         fault_interval,
-        duong_mode,
+        include_random,
     )
 
 
