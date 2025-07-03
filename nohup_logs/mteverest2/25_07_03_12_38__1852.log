@@ -1,0 +1,37 @@
++ cd simulations
++ python simulate.py --program graph_coloring --sched 0 --no-sim 100000 --fault-interval 1 --graph-names graph_7 --fault-prob 1.0 --simulation-type random
+Locating Graph: "graph_7".
+Analysis graph: graph_7 | program: graph_coloring | Simulation Type: random, Args: [] | No. of Simulations: 100000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 1
+Total configs: 11,520.
+Simulation environment: No. of Simulations: 100000 | Scheduler: CENTRAL | ME: False
+Time taken: 27.0054s, Running simulation round: 50000
+Time taken: 26.8432s, Running simulation round: 100000
+
+Saving result at results/graph_coloring/graph_7__0__random_args___100000__False__1.csv
++ python simulate.py --program graph_coloring --sched 0 --no-sim 100000 --fault-interval 1 --graph-names graph_7 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 0
+Locating Graph: "graph_7".
+Analysis graph: graph_7 | program: graph_coloring | Simulation Type: controlled_at_node_duong, Args: [0] | No. of Simulations: 100000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 1
+Total configs: 11,520.
+Simulation environment: No. of Simulations: 100000 | Scheduler: CENTRAL | ME: False
+Time taken: 77.3114s, Running simulation round: 50000
+Time taken: 78.2081s, Running simulation round: 100000
+
+Saving result at results/graph_coloring/graph_7__0__controlled_at_node_duong_args_0__100000__False__1.csv
++ python simulate.py --program graph_coloring --sched 0 --no-sim 100000 --fault-interval 1 --graph-names graph_7 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 4
+Locating Graph: "graph_7".
+Analysis graph: graph_7 | program: graph_coloring | Simulation Type: controlled_at_node_duong, Args: [4] | No. of Simulations: 100000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 1
+Total configs: 11,520.
+Simulation environment: No. of Simulations: 100000 | Scheduler: CENTRAL | ME: False
+Time taken: 44.4065s, Running simulation round: 50000
+Time taken: 44.2582s, Running simulation round: 100000
+
+Saving result at results/graph_coloring/graph_7__0__controlled_at_node_duong_args_4__100000__False__1.csv
++ python simulate.py --program graph_coloring --sched 0 --no-sim 100000 --fault-interval 1 --graph-names graph_7 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 9
+Locating Graph: "graph_7".
+Analysis graph: graph_7 | program: graph_coloring | Simulation Type: controlled_at_node_duong, Args: [9] | No. of Simulations: 100000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 1
+Total configs: 11,520.
+Simulation environment: No. of Simulations: 100000 | Scheduler: CENTRAL | ME: False
+Time taken: 38.2673s, Running simulation round: 50000
+Time taken: 38.6033s, Running simulation round: 100000
+
+Saving result at results/graph_coloring/graph_7__0__controlled_at_node_duong_args_9__100000__False__1.csv

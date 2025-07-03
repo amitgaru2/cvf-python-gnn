@@ -1,0 +1,29 @@
++ cd simulations
++ python simulate.py --program maximal_matching --sched 0 --no-sim 10000 --fault-interval 2 --graph-names star_graph_0_n7 --fault-prob 1.0 --simulation-type random
+Locating Graph: "star_graph_0_n7".
+Analysis graph: star_graph_0_n7 | program: maximal_matching | Simulation Type: random, Args: [] | No. of Simulations: 10000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 2
+Total configs: 57,344.
+Simulation environment: No. of Simulations: 10000 | Scheduler: CENTRAL | ME: False
+
+Saving result at results/maximal_matching/star_graph_0_n7__0__random_args___10000__False__2.csv
++ python simulate.py --program maximal_matching --sched 0 --no-sim 10000 --fault-interval 2 --graph-names star_graph_0_n7 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 0
+Locating Graph: "star_graph_0_n7".
+Analysis graph: star_graph_0_n7 | program: maximal_matching | Simulation Type: controlled_at_node_duong, Args: [0] | No. of Simulations: 10000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 2
+Total configs: 57,344.
+Simulation environment: No. of Simulations: 10000 | Scheduler: CENTRAL | ME: False
+
+Saving result at results/maximal_matching/star_graph_0_n7__0__controlled_at_node_duong_args_0__10000__False__2.csv
++ python simulate.py --program maximal_matching --sched 0 --no-sim 10000 --fault-interval 2 --graph-names star_graph_0_n7 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 3
+Locating Graph: "star_graph_0_n7".
+Analysis graph: star_graph_0_n7 | program: maximal_matching | Simulation Type: controlled_at_node_duong, Args: [3] | No. of Simulations: 10000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 2
+Total configs: 57,344.
+Simulation environment: No. of Simulations: 10000 | Scheduler: CENTRAL | ME: False
+
+Saving result at results/maximal_matching/star_graph_0_n7__0__controlled_at_node_duong_args_3__10000__False__2.csv
++ python simulate.py --program maximal_matching --sched 0 --no-sim 10000 --fault-interval 2 --graph-names star_graph_0_n7 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 6
+Locating Graph: "star_graph_0_n7".
+Analysis graph: star_graph_0_n7 | program: maximal_matching | Simulation Type: controlled_at_node_duong, Args: [6] | No. of Simulations: 10000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 2
+Total configs: 57,344.
+Simulation environment: No. of Simulations: 10000 | Scheduler: CENTRAL | ME: False
+
+Saving result at results/maximal_matching/star_graph_0_n7__0__controlled_at_node_duong_args_6__10000__False__2.csv

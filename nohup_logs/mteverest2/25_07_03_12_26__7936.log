@@ -1,0 +1,29 @@
++ cd simulations
++ python simulate.py --program graph_coloring --sched 0 --no-sim 10000 --fault-interval 2 --graph-names star_graph_0_n7 --fault-prob 1.0 --simulation-type random
+Locating Graph: "star_graph_0_n7".
+Analysis graph: star_graph_0_n7 | program: graph_coloring | Simulation Type: random, Args: [] | No. of Simulations: 10000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 2
+Total configs: 448.
+Simulation environment: No. of Simulations: 10000 | Scheduler: CENTRAL | ME: False
+
+Saving result at results/graph_coloring/star_graph_0_n7__0__random_args___10000__False__2.csv
++ python simulate.py --program graph_coloring --sched 0 --no-sim 10000 --fault-interval 2 --graph-names star_graph_0_n7 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 0
+Locating Graph: "star_graph_0_n7".
+Analysis graph: star_graph_0_n7 | program: graph_coloring | Simulation Type: controlled_at_node_duong, Args: [0] | No. of Simulations: 10000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 2
+Total configs: 448.
+Simulation environment: No. of Simulations: 10000 | Scheduler: CENTRAL | ME: False
+
+Saving result at results/graph_coloring/star_graph_0_n7__0__controlled_at_node_duong_args_0__10000__False__2.csv
++ python simulate.py --program graph_coloring --sched 0 --no-sim 10000 --fault-interval 2 --graph-names star_graph_0_n7 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 3
+Locating Graph: "star_graph_0_n7".
+Analysis graph: star_graph_0_n7 | program: graph_coloring | Simulation Type: controlled_at_node_duong, Args: [3] | No. of Simulations: 10000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 2
+Total configs: 448.
+Simulation environment: No. of Simulations: 10000 | Scheduler: CENTRAL | ME: False
+
+Saving result at results/graph_coloring/star_graph_0_n7__0__controlled_at_node_duong_args_3__10000__False__2.csv
++ python simulate.py --program graph_coloring --sched 0 --no-sim 10000 --fault-interval 2 --graph-names star_graph_0_n7 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 6
+Locating Graph: "star_graph_0_n7".
+Analysis graph: star_graph_0_n7 | program: graph_coloring | Simulation Type: controlled_at_node_duong, Args: [6] | No. of Simulations: 10000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 2
+Total configs: 448.
+Simulation environment: No. of Simulations: 10000 | Scheduler: CENTRAL | ME: False
+
+Saving result at results/graph_coloring/star_graph_0_n7__0__controlled_at_node_duong_args_6__10000__False__2.csv

@@ -1,0 +1,15 @@
++ cd simulations
++ python simulate.py --program dijkstra_token_ring --sched 0 --no-sim 100000 --fault-interval 1 --graph-names implicit_graph_n8 --fault-prob 1.0 --simulation-type random
+Locating Graph: "implicit_graph_n8".
+Analysis graph: implicit_graph_n8 | program: dijkstra_token_ring | Simulation Type: random, Args: [] | No. of Simulations: 100000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 1
+Total configs: 6,561.
+Simulation environment: No. of Simulations: 100000 | Scheduler: CENTRAL | ME: False
+Time taken: 175.7894s, Running simulation round: 50000
+Time taken: 177.6866s, Running simulation round: 100000
+
+Saving result at results/dijkstra_token_ring/implicit_graph_n8__0__random_args___100000__False__1.csv
++ python simulate.py --program dijkstra_token_ring --sched 0 --no-sim 100000 --fault-interval 1 --graph-names implicit_graph_n8 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 0
+Locating Graph: "implicit_graph_n8".
+Analysis graph: implicit_graph_n8 | program: dijkstra_token_ring | Simulation Type: controlled_at_node_duong, Args: [0] | No. of Simulations: 100000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 1
+Total configs: 6,561.
+Simulation environment: No. of Simulations: 100000 | Scheduler: CENTRAL | ME: False
