@@ -7,12 +7,11 @@ set -ex
 # python main.py --program maximal_matching --graph-names graph_10 -ml
 
 cd simulations
-python simulate.py --program dijkstra_token_ring --sched 0 --no-sim 100000 --fault-interval 1 --graph-names implicit_graph_n8 --fault-prob 1.0 --simulation-type random
-python simulate.py --program dijkstra_token_ring --sched 0 --no-sim 100000 --fault-interval 1 --graph-names implicit_graph_n8 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 0
-python simulate.py --program dijkstra_token_ring --sched 0 --no-sim 100000 --fault-interval 1 --graph-names implicit_graph_n8 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 1
-python simulate.py --program dijkstra_token_ring --sched 0 --no-sim 100000 --fault-interval 1 --graph-names implicit_graph_n8 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 3
-python simulate.py --program dijkstra_token_ring --sched 0 --no-sim 100000 --fault-interval 1 --graph-names implicit_graph_n8 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 6
-python simulate.py --program dijkstra_token_ring --sched 0 --no-sim 100000 --fault-interval 1 --graph-names implicit_graph_n8 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 7
+python simulate.py --program maximal_matching --sched 0 --no-sim 100000 --fault-interval 2 --graph-names graph_10 --fault-prob 1.0 --simulation-type random
+python simulate.py --program maximal_matching --sched 0 --no-sim 100000 --fault-interval 2 --graph-names graph_10 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 0
+python simulate.py --program maximal_matching --sched 0 --no-sim 100000 --fault-interval 2 --graph-names graph_10 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 4
+python simulate.py --program maximal_matching --sched 0 --no-sim 100000 --fault-interval 2 --graph-names graph_10 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 7
+python simulate.py --program maximal_matching --sched 0 --no-sim 100000 --fault-interval 2 --graph-names graph_10 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 9
 # python simulate.py --program maximal_matching --sched 0 --no-sim 10000 --fault-interval 2 --graph-names graph_7 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 6
 # python simulate.py --program graph_coloring --sched 0 --no-sim 10000 --fault-interval 2 --graph-names graph_10 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 0
 # python simulate.py --program graph_coloring --sched 0 --no-sim 10000 --fault-interval 2 --graph-names graph_10 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 4

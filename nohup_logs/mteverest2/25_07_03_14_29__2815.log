@@ -1,0 +1,43 @@
++ cd simulations
++ python simulate.py --program maximal_matching --sched 0 --no-sim 100000 --fault-interval 2 --graph-names graph_10 --fault-prob 1.0 --simulation-type random
+Locating Graph: "graph_10".
+Analysis graph: graph_10 | program: maximal_matching | Simulation Type: random, Args: [] | No. of Simulations: 100000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 2
+Total configs: 65,536,000.
+Simulation environment: No. of Simulations: 100000 | Scheduler: CENTRAL | ME: False
+Time taken: 1021.8671s, Running simulation round: 50000
+Time taken: 1014.9547s, Running simulation round: 100000
+
+Saving result at results/maximal_matching/graph_10__0__random_args___100000__False__2.csv
++ python simulate.py --program maximal_matching --sched 0 --no-sim 100000 --fault-interval 2 --graph-names graph_10 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 0
+Locating Graph: "graph_10".
+Analysis graph: graph_10 | program: maximal_matching | Simulation Type: controlled_at_node_duong, Args: [0] | No. of Simulations: 100000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 2
+Total configs: 65,536,000.
+Simulation environment: No. of Simulations: 100000 | Scheduler: CENTRAL | ME: False
+Time taken: 896.1034s, Running simulation round: 50000
+Time taken: 908.2364s, Running simulation round: 100000
+
+Saving result at results/maximal_matching/graph_10__0__controlled_at_node_duong_args_0__100000__False__2.csv
++ python simulate.py --program maximal_matching --sched 0 --no-sim 100000 --fault-interval 2 --graph-names graph_10 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 4
+Locating Graph: "graph_10".
+Analysis graph: graph_10 | program: maximal_matching | Simulation Type: controlled_at_node_duong, Args: [4] | No. of Simulations: 100000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 2
+Total configs: 65,536,000.
+Simulation environment: No. of Simulations: 100000 | Scheduler: CENTRAL | ME: False
+Time taken: 940.0987s, Running simulation round: 50000
+Time taken: 930.8864s, Running simulation round: 100000
+
+Saving result at results/maximal_matching/graph_10__0__controlled_at_node_duong_args_4__100000__False__2.csv
++ python simulate.py --program maximal_matching --sched 0 --no-sim 100000 --fault-interval 2 --graph-names graph_10 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 7
+Locating Graph: "graph_10".
+Analysis graph: graph_10 | program: maximal_matching | Simulation Type: controlled_at_node_duong, Args: [7] | No. of Simulations: 100000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 2
+Total configs: 65,536,000.
+Simulation environment: No. of Simulations: 100000 | Scheduler: CENTRAL | ME: False
+Time taken: 931.0966s, Running simulation round: 50000
+Time taken: 928.1039s, Running simulation round: 100000
+
+Saving result at results/maximal_matching/graph_10__0__controlled_at_node_duong_args_7__100000__False__2.csv
++ python simulate.py --program maximal_matching --sched 0 --no-sim 100000 --fault-interval 2 --graph-names graph_10 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 9
+Locating Graph: "graph_10".
+Analysis graph: graph_10 | program: maximal_matching | Simulation Type: controlled_at_node_duong, Args: [9] | No. of Simulations: 100000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 2
+Total configs: 65,536,000.
+Simulation environment: No. of Simulations: 100000 | Scheduler: CENTRAL | ME: False
+Time taken: 1095.9224s, Running simulation round: 50000
