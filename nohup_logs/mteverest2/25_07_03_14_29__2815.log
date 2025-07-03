@@ -41,3 +41,6 @@ Analysis graph: graph_10 | program: maximal_matching | Simulation Type: controll
 Total configs: 65,536,000.
 Simulation environment: No. of Simulations: 100000 | Scheduler: CENTRAL | ME: False
 Time taken: 1095.9224s, Running simulation round: 50000
+Time taken: 1114.3038s, Running simulation round: 100000
+
+Saving result at results/maximal_matching/graph_10__0__controlled_at_node_duong_args_9__100000__False__2.csv
