@@ -13,3 +13,39 @@ Locating Graph: "implicit_graph_n8".
 Analysis graph: implicit_graph_n8 | program: dijkstra_token_ring | Simulation Type: controlled_at_node_duong, Args: [0] | No. of Simulations: 100000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 1
 Total configs: 6,561.
 Simulation environment: No. of Simulations: 100000 | Scheduler: CENTRAL | ME: False
+Time taken: 297.8817s, Running simulation round: 50000
+Time taken: 295.2989s, Running simulation round: 100000
+
+Saving result at results/dijkstra_token_ring/implicit_graph_n8__0__controlled_at_node_duong_args_0__100000__False__1.csv
++ python simulate.py --program dijkstra_token_ring --sched 0 --no-sim 100000 --fault-interval 1 --graph-names implicit_graph_n8 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 1
+Locating Graph: "implicit_graph_n8".
+Analysis graph: implicit_graph_n8 | program: dijkstra_token_ring | Simulation Type: controlled_at_node_duong, Args: [1] | No. of Simulations: 100000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 1
+Total configs: 6,561.
+Simulation environment: No. of Simulations: 100000 | Scheduler: CENTRAL | ME: False
+Time taken: 298.5151s, Running simulation round: 50000
+Time taken: 300.4464s, Running simulation round: 100000
+
+Saving result at results/dijkstra_token_ring/implicit_graph_n8__0__controlled_at_node_duong_args_1__100000__False__1.csv
++ python simulate.py --program dijkstra_token_ring --sched 0 --no-sim 100000 --fault-interval 1 --graph-names implicit_graph_n8 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 3
+Locating Graph: "implicit_graph_n8".
+Analysis graph: implicit_graph_n8 | program: dijkstra_token_ring | Simulation Type: controlled_at_node_duong, Args: [3] | No. of Simulations: 100000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 1
+Total configs: 6,561.
+Simulation environment: No. of Simulations: 100000 | Scheduler: CENTRAL | ME: False
+Time taken: 299.3736s, Running simulation round: 50000
+Time taken: 296.9183s, Running simulation round: 100000
+
+Saving result at results/dijkstra_token_ring/implicit_graph_n8__0__controlled_at_node_duong_args_3__100000__False__1.csv
++ python simulate.py --program dijkstra_token_ring --sched 0 --no-sim 100000 --fault-interval 1 --graph-names implicit_graph_n8 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 6
+Locating Graph: "implicit_graph_n8".
+Analysis graph: implicit_graph_n8 | program: dijkstra_token_ring | Simulation Type: controlled_at_node_duong, Args: [6] | No. of Simulations: 100000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 1
+Total configs: 6,561.
+Simulation environment: No. of Simulations: 100000 | Scheduler: CENTRAL | ME: False
+Time taken: 292.7386s, Running simulation round: 50000
+Time taken: 294.6493s, Running simulation round: 100000
+
+Saving result at results/dijkstra_token_ring/implicit_graph_n8__0__controlled_at_node_duong_args_6__100000__False__1.csv
++ python simulate.py --program dijkstra_token_ring --sched 0 --no-sim 100000 --fault-interval 1 --graph-names implicit_graph_n8 --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 7
+Locating Graph: "implicit_graph_n8".
+Analysis graph: implicit_graph_n8 | program: dijkstra_token_ring | Simulation Type: controlled_at_node_duong, Args: [7] | No. of Simulations: 100000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 1
+Total configs: 6,561.
+Simulation environment: No. of Simulations: 100000 | Scheduler: CENTRAL | ME: False

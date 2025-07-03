@@ -6,3 +6,4 @@ Locating Graph: "graph_7".
 Analysis graph: graph_7 | program: maximal_matching | Simulation Type: random, Args: [] | No. of Simulations: 10000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 1
 Total configs: 11,796,480.
 Simulation environment: No. of Simulations: 10000 | Scheduler: CENTRAL | ME: False
+Killed
