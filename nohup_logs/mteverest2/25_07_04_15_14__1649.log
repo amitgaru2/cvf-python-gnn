@@ -1,0 +1,48 @@
++ cd simulations
++ python simulate.py --program graph_coloring --sched 0 --no-sim 100000 --fault-interval 1 --graph-names random_graph_1 --fault-prob 1.0 --simulation-type random
+Locating Graph: "random_graph_1".
+Analysis graph: random_graph_1 | program: graph_coloring | Simulation Type: random, Args: [] | No. of Simulations: 100000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 1
+Total configs: 36.
+Simulation environment: No. of Simulations: 100000 | Scheduler: CENTRAL | ME: False
+Time taken: 2.9514s, Running simulation round: 50000
+Time taken: 2.9341s, Running simulation round: 100000
+
+Saving result at results/graph_coloring/random_graph_1__0__random_args___100000__False__1.csv
++ python simulate.py --program graph_coloring --sched 0 --no-sim 100000 --fault-interval 1 --graph-names random_graph_1 --fault-prob 1.0 --simulation-type random_start_at_node --controlled-at-node 0
+Locating Graph: "random_graph_1".
+Analysis graph: random_graph_1 | program: graph_coloring | Simulation Type: random_start_at_node, Args: [0] | No. of Simulations: 100000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 1
+Total configs: 36.
+Simulation environment: No. of Simulations: 100000 | Scheduler: CENTRAL | ME: False
+Time taken: 4.3489s, Running simulation round: 50000
+Time taken: 4.3396s, Running simulation round: 100000
+
+Saving result at results/graph_coloring/random_graph_1__0__random_start_at_node_args_0__100000__False__1.csv
++ python simulate.py --program graph_coloring --sched 0 --no-sim 100000 --fault-interval 1 --graph-names random_graph_1 --fault-prob 1.0 --simulation-type random_start_at_node --controlled-at-node 4
+Locating Graph: "random_graph_1".
+Analysis graph: random_graph_1 | program: graph_coloring | Simulation Type: random_start_at_node, Args: [4] | No. of Simulations: 100000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 1
+Total configs: 36.
+Simulation environment: No. of Simulations: 100000 | Scheduler: CENTRAL | ME: False
+Traceback (most recent call last):
+  File "/home/agaru/research/cvf-python-gnn/simulations/simulate.py", line 166, in <module>
+    main(
+    ~~~~^
+        graph_name,
+        ^^^^^^^^^^^
+    ...<8 lines>...
+        simulation_type_args,
+        ^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/agaru/research/cvf-python-gnn/simulations/simulate.py", line 88, in main
+    result = simulation.start_simulation(*simulation_type_args)
+  File "/home/agaru/research/cvf-python-gnn/simulations/simulation.py", line 386, in start_simulation
+    inner_results.append(self.run_simulations(state, *simulation_type_args))
+                         ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/agaru/research/cvf-python-gnn/simulations/simulation.py", line 343, in run_simulations
+    faulty_actions = faulty_action_generator(state, *extra_args, step)
+  File "/home/agaru/research/cvf-python-gnn/simulations/simulation.py", line 312, in get_faulty_actions_random_start_at_node
+    faulty_actions = self.inject_fault_at_node(state, process)
+  File "/home/agaru/research/cvf-python-gnn/simulations/simulation.py", line 193, in inject_fault_at_node
+    p[process] = self.highest_fault_weight
+    ~^^^^^^^^^
+IndexError: list assignment index out of range
