@@ -1,9 +1,14 @@
+import os
+import sys
 import argparse
 
+utils_path = os.path.join(
+    os.getenv("CVF_PROJECT_DIR", "/home/agaru/research/cvf-python-gnn"), "utils"
+)
 
-ColoringProgram = "coloring"
-DijkstraProgram = "dijkstra_token_ring"
-MaxMatchingProgram = "maximal_matching"
+sys.path.append(utils_path)
+
+from command_line_helpers import PROGRAM_CHOICES
 
 
 def generate_parser(
@@ -20,11 +25,7 @@ def generate_parser(
     if takes_program:
         parser.add_argument(
             "--program",
-            choices=[
-                ColoringProgram,
-                DijkstraProgram,
-                MaxMatchingProgram,
-            ],
+            choices=PROGRAM_CHOICES,
             required=True,
         )
 

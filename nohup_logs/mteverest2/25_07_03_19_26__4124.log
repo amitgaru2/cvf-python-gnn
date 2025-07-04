@@ -1,0 +1,37 @@
++ cd simulations
++ python simulate.py --program maximal_matching --sched 0 --no-sim 100000 --fault-interval 2 --graph-names star_graph_0_n7 --fault-prob 1.0 --simulation-type random_start_at_node --controlled-at-node 0
+Locating Graph: "star_graph_0_n7".
+Analysis graph: star_graph_0_n7 | program: maximal_matching | Simulation Type: random_start_at_node, Args: [0] | No. of Simulations: 100000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 2
+Total configs: 57,344.
+Simulation environment: No. of Simulations: 100000 | Scheduler: CENTRAL | ME: False
+Time taken: 83.8724s, Running simulation round: 50000
+Time taken: 84.2842s, Running simulation round: 100000
+
+Saving result at results/maximal_matching/star_graph_0_n7__0__random_start_at_node_args_0__100000__False__2.csv
++ python simulate.py --program maximal_matching --sched 0 --no-sim 100000 --fault-interval 2 --graph-names star_graph_0_n7 --fault-prob 1.0 --simulation-type random_start_at_node --controlled-at-node 4
+Locating Graph: "star_graph_0_n7".
+Analysis graph: star_graph_0_n7 | program: maximal_matching | Simulation Type: random_start_at_node, Args: [4] | No. of Simulations: 100000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 2
+Total configs: 57,344.
+Simulation environment: No. of Simulations: 100000 | Scheduler: CENTRAL | ME: False
+Time taken: 85.7683s, Running simulation round: 50000
+Time taken: 85.3049s, Running simulation round: 100000
+
+Saving result at results/maximal_matching/star_graph_0_n7__0__random_start_at_node_args_4__100000__False__2.csv
++ python simulate.py --program maximal_matching --sched 0 --no-sim 100000 --fault-interval 2 --graph-names star_graph_0_n7 --fault-prob 1.0 --simulation-type random_start_at_node --controlled-at-node 7
+Locating Graph: "star_graph_0_n7".
+Analysis graph: star_graph_0_n7 | program: maximal_matching | Simulation Type: random_start_at_node, Args: [7] | No. of Simulations: 100000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 2
+Total configs: 57,344.
+Simulation environment: No. of Simulations: 100000 | Scheduler: CENTRAL | ME: False
+Time taken: 86.2608s, Running simulation round: 50000
+Time taken: 86.808s, Running simulation round: 100000
+
+Saving result at results/maximal_matching/star_graph_0_n7__0__random_start_at_node_args_7__100000__False__2.csv
++ python simulate.py --program maximal_matching --sched 0 --no-sim 100000 --fault-interval 2 --graph-names star_graph_0_n7 --fault-prob 1.0 --simulation-type random_start_at_node --controlled-at-node 9
+Locating Graph: "star_graph_0_n7".
+Analysis graph: star_graph_0_n7 | program: maximal_matching | Simulation Type: random_start_at_node, Args: [9] | No. of Simulations: 100000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 2
+Total configs: 57,344.
+Simulation environment: No. of Simulations: 100000 | Scheduler: CENTRAL | ME: False
+Time taken: 85.0702s, Running simulation round: 50000
+Time taken: 84.7734s, Running simulation round: 100000
+
+Saving result at results/maximal_matching/star_graph_0_n7__0__random_start_at_node_args_9__100000__False__2.csv
