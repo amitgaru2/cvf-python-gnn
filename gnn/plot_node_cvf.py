@@ -14,6 +14,7 @@ utils_path = os.path.join(os.getenv("CVF_PROJECT_DIR", ""), "utils")
 sys.path.append(utils_path)
 
 from common_helpers import create_dir_if_not_exists
+from command_line_helpers import ColoringProgram, DijkstraProgram, MaxMatchingProgram
 
 
 args = generate_parser(takes_model=True, takes_nodes=True)
@@ -40,14 +41,10 @@ color_cycle = cycle(colors)
 
 fontsize = 20
 
-COLORING_PROGRAM = "coloring"
-DIJKSTRA_PROGRAM = "dijkstra_token_ring"
-MAX_MATCHING_PROGRAM = "maximal_matching"
-
 TITLE_PROGRAM_MAP = {
-    COLORING_PROGRAM: "Graph Coloring",
-    DIJKSTRA_PROGRAM: "Dijkstra Token Ring",
-    MAX_MATCHING_PROGRAM: "Maximal Matching",
+    ColoringProgram: "Graph Coloring",
+    DijkstraProgram: "Dijkstra Token Ring",
+    MaxMatchingProgram: "Maximal Matching",
 }
 
 

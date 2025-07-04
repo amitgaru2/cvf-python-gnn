@@ -610,7 +610,7 @@ class CVFConfigForAnalysisDataset(Dataset):
         self,
         device,
         graph_name,
-        program="coloring",
+        program="graph_coloring",
     ) -> None:
         graphs_dir = os.path.join(
             os.getenv("CVF_PROJECT_DIR", ""), "cvf-analysis", "graphs"
@@ -618,8 +618,8 @@ class CVFConfigForAnalysisDataset(Dataset):
         graph_path = os.path.join(graphs_dir, f"{graph_name}.txt")
         graph = get_graph(graph_path)
         program_class_map = {
-            "coloring": GraphColoringCVFAnalysisV2,
-            "dijkstra": DijkstraTokenRingCVFAnalysisV2,
+            "graph_coloring": GraphColoringCVFAnalysisV2,
+            "dijkstra_token_ring": DijkstraTokenRingCVFAnalysisV2,
             "maximal_matching": MaximalMatchingCVFAnalysisV2,
         }
         self.cvf_analysis = program_class_map[program](
