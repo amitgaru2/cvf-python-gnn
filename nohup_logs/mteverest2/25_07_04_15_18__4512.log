@@ -13,3 +13,34 @@ Locating Graph: "random_graph_1".
 Analysis graph: random_graph_1 | program: graph_coloring | Simulation Type: random_start_at_node, Args: [0] | No. of Simulations: 100000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 1
 Total configs: 36.
 Simulation environment: No. of Simulations: 100000 | Scheduler: CENTRAL | ME: False
+Time taken: 4.4225s, Running simulation round: 50000
+Time taken: 4.4016s, Running simulation round: 100000
+
+Saving result at results/graph_coloring/random_graph_1__0__random_start_at_node_args_0__100000__False__1.csv
++ python simulate.py --program graph_coloring --sched 0 --no-sim 100000 --fault-interval 1 --graph-names random_graph_1 --fault-prob 1.0 --simulation-type random_start_at_node --controlled-at-node 1
+Locating Graph: "random_graph_1".
+Analysis graph: random_graph_1 | program: graph_coloring | Simulation Type: random_start_at_node, Args: [1] | No. of Simulations: 100000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 1
+Total configs: 36.
+Simulation environment: No. of Simulations: 100000 | Scheduler: CENTRAL | ME: False
+Time taken: 4.164s, Running simulation round: 50000
+Time taken: 4.1748s, Running simulation round: 100000
+
+Saving result at results/graph_coloring/random_graph_1__0__random_start_at_node_args_1__100000__False__1.csv
++ python simulate.py --program graph_coloring --sched 0 --no-sim 100000 --fault-interval 1 --graph-names random_graph_1 --fault-prob 1.0 --simulation-type random_start_at_node --controlled-at-node 2
+Locating Graph: "random_graph_1".
+Analysis graph: random_graph_1 | program: graph_coloring | Simulation Type: random_start_at_node, Args: [2] | No. of Simulations: 100000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 1
+Total configs: 36.
+Simulation environment: No. of Simulations: 100000 | Scheduler: CENTRAL | ME: False
+Time taken: 4.1573s, Running simulation round: 50000
+Time taken: 4.153s, Running simulation round: 100000
+
+Saving result at results/graph_coloring/random_graph_1__0__random_start_at_node_args_2__100000__False__1.csv
++ python simulate.py --program graph_coloring --sched 0 --no-sim 100000 --fault-interval 1 --graph-names random_graph_1 --fault-prob 1.0 --simulation-type random_start_at_node --controlled-at-node 3
+Locating Graph: "random_graph_1".
+Analysis graph: random_graph_1 | program: graph_coloring | Simulation Type: random_start_at_node, Args: [3] | No. of Simulations: 100000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 1
+Total configs: 36.
+Simulation environment: No. of Simulations: 100000 | Scheduler: CENTRAL | ME: False
+Time taken: 4.2522s, Running simulation round: 50000
+Time taken: 4.2539s, Running simulation round: 100000
+
+Saving result at results/graph_coloring/random_graph_1__0__random_start_at_node_args_3__100000__False__1.csv
