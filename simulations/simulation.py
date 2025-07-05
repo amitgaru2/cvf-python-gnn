@@ -362,9 +362,9 @@ class SimulationMixin:
             step += 1
             if self.limit_steps and step >= self.limit_steps:
                 # limit steps explicitly to stop the non-convergent chain or limit the steps for convergence
-                break
+                return step, True
 
-        return step
+        return step, False
 
     def execute(self, state, actions: List[Action]):
         for action in actions:
@@ -389,10 +389,9 @@ class SimulationMixin:
                     i,
                 )
                 log_time = time.time()
-            inner_results = []
             _, state = self.get_random_state_v2(avoid_invariant=True)
             # self.configure_fault_weight()
-            inner_results.append(self.run_simulations(state, *simulation_type_args))
+            inner_results = self.run_simulations(state, *simulation_type_args)
             results.append(inner_results)
 
         return results
@@ -417,9 +416,9 @@ class SimulationMixin:
         )  # from the base class
         logger.info("\nSaving result at %s", file_path)
         writer = csv.writer(f)
-        writer.writerow(["Iteration", "Steps"])
+        writer.writerow(["Iteration", "Steps", "Limit Reached"])
         for i, v in enumerate(result, 1):
-            writer.writerow([i, *v])  # from the base class
+            writer.writerow([i, *v])
 
     def aggregate_result(self, result):
         result = np.array(result)
