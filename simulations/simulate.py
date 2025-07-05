@@ -6,8 +6,8 @@ from custom_logger import logger
 from dijkstra_simulation import DijkstraSimulation
 from graph_coloring_simulation import GraphColoringSimulation
 from maximal_matching_simulation import MaximalMatchingSimulation
-from simulation import CENTRAL_SCHEDULER, DISTRIBUTED_SCHEDULER, SimulationMixin
 from maximal_independent_set_simulation import MaximalIndependentSetSimulation
+from simulation import CENTRAL_SCHEDULER, DISTRIBUTED_SCHEDULER, SimulationMixin
 
 ColoringProgram = "graph_coloring"
 DijkstraProgram = "dijkstra_token_ring"
@@ -58,6 +58,7 @@ def main(
     me,
     fault_prob,
     fault_interval,
+    limit_steps,
     simulation_type_args,
 ):
     if scheduler == CENTRAL_SCHEDULER:
@@ -81,6 +82,7 @@ def main(
         no_of_simulations=no_simulations,
         scheduler=scheduler,
         me=me,
+        limit_steps=limit_steps,
     )
     simulation.apply_fault_settings(
         fault_probability=fault_prob, fault_interval=fault_interval
@@ -123,6 +125,7 @@ if __name__ == "__main__":
     parser.add_argument("-me", "--me", action="store_true")
     parser.add_argument("--no-sim", type=int, required=True)  # number of simulations
     parser.add_argument("--fault-prob", type=float, required=True)  # fault probability
+    parser.add_argument("--limit-steps", type=int, default=None)
     parser.add_argument(
         "--fault-interval", type=int, required=True
     )  # fault probability
@@ -173,5 +176,6 @@ if __name__ == "__main__":
             args.me,
             args.fault_prob,
             args.fault_interval,
+            args.limit_steps,
             simulation_type_args,
         )

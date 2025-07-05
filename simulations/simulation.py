@@ -73,12 +73,18 @@ class SimulationMixin:
         self.global_rank_map = None
 
     def create_simulation_environment(
-        self, simulation_type: str, no_of_simulations: int, scheduler: int, me: bool
+        self,
+        simulation_type: str,
+        no_of_simulations: int,
+        scheduler: int,
+        me: bool,
+        limit_steps: int,
     ):
         self.no_of_simulations = no_of_simulations
         self.scheduler = scheduler
         self.me = me
         self.simulation_type = simulation_type
+        self.limit_steps = limit_steps
 
     def apply_fault_settings(self, fault_probability: float, fault_interval: int):
         self.fault_probability = fault_probability
@@ -354,6 +360,9 @@ class SimulationMixin:
 
             # last_fault_duration += 1
             step += 1
+            if self.limit_steps and step >= self.limit_steps:
+                # limit steps explicitly to stop the non-convergent chain or limit the steps for convergence
+                break
 
         return step
 
