@@ -1,37 +1,37 @@
 + cd simulations
-+ python simulate.py --program graph_coloring --sched 0 --no-sim 100000 --fault-interval 1 --graph-names random_graph_1 --fault-prob 1.0 --simulation-type controlled_at_node --controlled-at-node 0
++ python simulate.py --program graph_coloring --sched 0 --no-sim 100000 --fault-interval 1 --graph-names random_graph_1 --fault-prob 0.5 --simulation-type controlled_at_node --controlled-at-node 0
 Locating Graph: "random_graph_1".
 Analysis graph: random_graph_1 | program: graph_coloring | Simulation Type: controlled_at_node, Args: [0] | No. of Simulations: 100000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 1
 Total configs: 36.
 Simulation environment: No. of Simulations: 100000 | Scheduler: CENTRAL | ME: False
-Time taken: 15.3455s, Running simulation round: 50000
-Time taken: 15.156s, Running simulation round: 100000
+Time taken: 2.4549s, Running simulation round: 50000
+Time taken: 2.4455s, Running simulation round: 100000
 
 Saving result at results/graph_coloring/random_graph_1__0__controlled_at_node_args_0__100000__False__1.csv
-+ python simulate.py --program graph_coloring --sched 0 --no-sim 100000 --fault-interval 1 --graph-names random_graph_1 --fault-prob 1.0 --simulation-type controlled_at_node --controlled-at-node 1
++ python simulate.py --program graph_coloring --sched 0 --no-sim 100000 --fault-interval 1 --graph-names random_graph_1 --fault-prob 0.5 --simulation-type controlled_at_node --controlled-at-node 1
 Locating Graph: "random_graph_1".
 Analysis graph: random_graph_1 | program: graph_coloring | Simulation Type: controlled_at_node, Args: [1] | No. of Simulations: 100000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 1
 Total configs: 36.
 Simulation environment: No. of Simulations: 100000 | Scheduler: CENTRAL | ME: False
-Time taken: 9.2471s, Running simulation round: 50000
-Time taken: 9.2623s, Running simulation round: 100000
+Time taken: 2.2807s, Running simulation round: 50000
+Time taken: 2.2769s, Running simulation round: 100000
 
 Saving result at results/graph_coloring/random_graph_1__0__controlled_at_node_args_1__100000__False__1.csv
-+ python simulate.py --program graph_coloring --sched 0 --no-sim 100000 --fault-interval 1 --graph-names random_graph_1 --fault-prob 1.0 --simulation-type controlled_at_node --controlled-at-node 2
++ python simulate.py --program graph_coloring --sched 0 --no-sim 100000 --fault-interval 1 --graph-names random_graph_1 --fault-prob 0.5 --simulation-type controlled_at_node --controlled-at-node 2
 Locating Graph: "random_graph_1".
 Analysis graph: random_graph_1 | program: graph_coloring | Simulation Type: controlled_at_node, Args: [2] | No. of Simulations: 100000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 1
 Total configs: 36.
 Simulation environment: No. of Simulations: 100000 | Scheduler: CENTRAL | ME: False
-Time taken: 9.3045s, Running simulation round: 50000
-Time taken: 9.2821s, Running simulation round: 100000
+Time taken: 2.3114s, Running simulation round: 50000
+Time taken: 2.309s, Running simulation round: 100000
 
 Saving result at results/graph_coloring/random_graph_1__0__controlled_at_node_args_2__100000__False__1.csv
-+ python simulate.py --program graph_coloring --sched 0 --no-sim 100000 --fault-interval 1 --graph-names random_graph_1 --fault-prob 1.0 --simulation-type controlled_at_node --controlled-at-node 3
++ python simulate.py --program graph_coloring --sched 0 --no-sim 100000 --fault-interval 1 --graph-names random_graph_1 --fault-prob 0.5 --simulation-type controlled_at_node --controlled-at-node 3
 Locating Graph: "random_graph_1".
 Analysis graph: random_graph_1 | program: graph_coloring | Simulation Type: controlled_at_node, Args: [3] | No. of Simulations: 100000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 1
 Total configs: 36.
 Simulation environment: No. of Simulations: 100000 | Scheduler: CENTRAL | ME: False
-Time taken: 15.5668s, Running simulation round: 50000
-Time taken: 15.4023s, Running simulation round: 100000
+Time taken: 2.4865s, Running simulation round: 50000
+Time taken: 2.4881s, Running simulation round: 100000
 
 Saving result at results/graph_coloring/random_graph_1__0__controlled_at_node_args_3__100000__False__1.csv

@@ -8,10 +8,10 @@ set -ex
 
 cd simulations
 # python simulate.py --program graph_coloring --sched 0 --no-sim 100000 --fault-interval 1 --graph-names random_graph_1 --fault-prob 1.0 --simulation-type random
-python simulate.py --program graph_coloring --sched 0 --no-sim 100000 --fault-interval 1 --graph-names random_graph_1 --fault-prob 1.0 --simulation-type controlled_at_node --controlled-at-node 0
-python simulate.py --program graph_coloring --sched 0 --no-sim 100000 --fault-interval 1 --graph-names random_graph_1 --fault-prob 1.0 --simulation-type controlled_at_node --controlled-at-node 1
-python simulate.py --program graph_coloring --sched 0 --no-sim 100000 --fault-interval 1 --graph-names random_graph_1 --fault-prob 1.0 --simulation-type controlled_at_node --controlled-at-node 2
-python simulate.py --program graph_coloring --sched 0 --no-sim 100000 --fault-interval 1 --graph-names random_graph_1 --fault-prob 1.0 --simulation-type controlled_at_node --controlled-at-node 3
+python simulate.py --program graph_coloring --sched 0 --no-sim 100000 --fault-interval 1 --graph-names random_graph_1 --fault-prob 0.15 --simulation-type controlled_at_node --controlled-at-node 0
+python simulate.py --program graph_coloring --sched 0 --no-sim 100000 --fault-interval 1 --graph-names random_graph_1 --fault-prob 0.15 --simulation-type controlled_at_node --controlled-at-node 1
+python simulate.py --program graph_coloring --sched 0 --no-sim 100000 --fault-interval 1 --graph-names random_graph_1 --fault-prob 0.15 --simulation-type controlled_at_node --controlled-at-node 2
+python simulate.py --program graph_coloring --sched 0 --no-sim 100000 --fault-interval 1 --graph-names random_graph_1 --fault-prob 0.15 --simulation-type controlled_at_node --controlled-at-node 3
 
 # cd gnn
 # python cvf_analysis.py lstm_trained_at_2025_05_12_21_31 dijkstra implicit_graph_n14
