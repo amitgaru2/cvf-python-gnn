@@ -11,88 +11,24 @@ cd simulations
 # PROGRAM="graph_coloring"
 PROGRAM="dijkstra_token_ring"
 
-GRAPH="implicit_graph_n7"
+GRAPH="implicit_graph_n10"
 
-python simulate.py --program $PROGRAM --sched 0 --no-sim 10000 --fault-interval 1 --graph-names $GRAPH --fault-prob 1.0 --simulation-type random --limit-steps 100
-python simulate.py --program $PROGRAM --sched 0 --no-sim 10000 --fault-interval 1 --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 0 --limit-steps 100
-python simulate.py --program $PROGRAM --sched 0 --no-sim 10000 --fault-interval 1 --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 1 --limit-steps 100
-python simulate.py --program $PROGRAM --sched 0 --no-sim 10000 --fault-interval 1 --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 2 --limit-steps 100
-python simulate.py --program $PROGRAM --sched 0 --no-sim 10000 --fault-interval 1 --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 3 --limit-steps 100
-python simulate.py --program $PROGRAM --sched 0 --no-sim 10000 --fault-interval 1 --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 4 --limit-steps 100
-python simulate.py --program $PROGRAM --sched 0 --no-sim 10000 --fault-interval 1 --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 5 --limit-steps 100
-python simulate.py --program $PROGRAM --sched 0 --no-sim 10000 --fault-interval 1 --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 6 --limit-steps 100
+NO_SIMS=100000
+FAULT_INTERVAL=2
+LIMIT_STEPS=1000
 
-python simulate.py --program $PROGRAM --sched 0 --no-sim 10000 --fault-interval 2 --graph-names $GRAPH --fault-prob 1.0 --simulation-type random --limit-steps 100
-python simulate.py --program $PROGRAM --sched 0 --no-sim 10000 --fault-interval 2 --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 0 --limit-steps 100
-python simulate.py --program $PROGRAM --sched 0 --no-sim 10000 --fault-interval 2 --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 1 --limit-steps 100
-python simulate.py --program $PROGRAM --sched 0 --no-sim 10000 --fault-interval 2 --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 2 --limit-steps 100
-python simulate.py --program $PROGRAM --sched 0 --no-sim 10000 --fault-interval 2 --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 3 --limit-steps 100
-python simulate.py --program $PROGRAM --sched 0 --no-sim 10000 --fault-interval 2 --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 4 --limit-steps 100
-python simulate.py --program $PROGRAM --sched 0 --no-sim 10000 --fault-interval 2 --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 5 --limit-steps 100
-python simulate.py --program $PROGRAM --sched 0 --no-sim 10000 --fault-interval 2 --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 6 --limit-steps 100
-
-python simulate.py --program $PROGRAM --sched 0 --no-sim 10000 --fault-interval 3 --graph-names $GRAPH --fault-prob 1.0 --simulation-type random --limit-steps 100
-python simulate.py --program $PROGRAM --sched 0 --no-sim 10000 --fault-interval 3 --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 0 --limit-steps 100
-python simulate.py --program $PROGRAM --sched 0 --no-sim 10000 --fault-interval 3 --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 1 --limit-steps 100
-python simulate.py --program $PROGRAM --sched 0 --no-sim 10000 --fault-interval 3 --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 2 --limit-steps 100
-python simulate.py --program $PROGRAM --sched 0 --no-sim 10000 --fault-interval 3 --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 3 --limit-steps 100
-python simulate.py --program $PROGRAM --sched 0 --no-sim 10000 --fault-interval 3 --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 4 --limit-steps 100
-python simulate.py --program $PROGRAM --sched 0 --no-sim 10000 --fault-interval 3 --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 5 --limit-steps 100
-python simulate.py --program $PROGRAM --sched 0 --no-sim 10000 --fault-interval 3 --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 6 --limit-steps 100
-
-python simulate.py --program $PROGRAM --sched 0 --no-sim 10000 --fault-interval 4 --graph-names $GRAPH --fault-prob 1.0 --simulation-type random --limit-steps 100
-python simulate.py --program $PROGRAM --sched 0 --no-sim 10000 --fault-interval 4 --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 0 --limit-steps 100
-python simulate.py --program $PROGRAM --sched 0 --no-sim 10000 --fault-interval 4 --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 1 --limit-steps 100
-python simulate.py --program $PROGRAM --sched 0 --no-sim 10000 --fault-interval 4 --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 2 --limit-steps 100
-python simulate.py --program $PROGRAM --sched 0 --no-sim 10000 --fault-interval 4 --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 3 --limit-steps 100
-python simulate.py --program $PROGRAM --sched 0 --no-sim 10000 --fault-interval 4 --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 4 --limit-steps 100
-python simulate.py --program $PROGRAM --sched 0 --no-sim 10000 --fault-interval 4 --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 5 --limit-steps 100
-python simulate.py --program $PROGRAM --sched 0 --no-sim 10000 --fault-interval 4 --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 6 --limit-steps 100
-
-
-GRAPH="implicit_graph_n8"
-python simulate.py --program $PROGRAM --sched 0 --no-sim 10000 --fault-interval 1 --graph-names $GRAPH --fault-prob 1.0 --simulation-type random --limit-steps 100
-python simulate.py --program $PROGRAM --sched 0 --no-sim 10000 --fault-interval 1 --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 0 --limit-steps 100
-python simulate.py --program $PROGRAM --sched 0 --no-sim 10000 --fault-interval 1 --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 1 --limit-steps 100
-python simulate.py --program $PROGRAM --sched 0 --no-sim 10000 --fault-interval 1 --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 2 --limit-steps 100
-python simulate.py --program $PROGRAM --sched 0 --no-sim 10000 --fault-interval 1 --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 3 --limit-steps 100
-python simulate.py --program $PROGRAM --sched 0 --no-sim 10000 --fault-interval 1 --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 4 --limit-steps 100
-python simulate.py --program $PROGRAM --sched 0 --no-sim 10000 --fault-interval 1 --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 5 --limit-steps 100
-python simulate.py --program $PROGRAM --sched 0 --no-sim 10000 --fault-interval 1 --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 6 --limit-steps 100
-python simulate.py --program $PROGRAM --sched 0 --no-sim 10000 --fault-interval 1 --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 7 --limit-steps 100
-
-python simulate.py --program $PROGRAM --sched 0 --no-sim 10000 --fault-interval 2 --graph-names $GRAPH --fault-prob 1.0 --simulation-type random --limit-steps 100
-python simulate.py --program $PROGRAM --sched 0 --no-sim 10000 --fault-interval 2 --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 0 --limit-steps 100
-python simulate.py --program $PROGRAM --sched 0 --no-sim 10000 --fault-interval 2 --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 1 --limit-steps 100
-python simulate.py --program $PROGRAM --sched 0 --no-sim 10000 --fault-interval 2 --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 2 --limit-steps 100
-python simulate.py --program $PROGRAM --sched 0 --no-sim 10000 --fault-interval 2 --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 3 --limit-steps 100
-python simulate.py --program $PROGRAM --sched 0 --no-sim 10000 --fault-interval 2 --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 4 --limit-steps 100
-python simulate.py --program $PROGRAM --sched 0 --no-sim 10000 --fault-interval 2 --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 5 --limit-steps 100
-python simulate.py --program $PROGRAM --sched 0 --no-sim 10000 --fault-interval 2 --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 6 --limit-steps 100
-python simulate.py --program $PROGRAM --sched 0 --no-sim 10000 --fault-interval 2 --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 7 --limit-steps 100
-
-
-python simulate.py --program $PROGRAM --sched 0 --no-sim 10000 --fault-interval 3 --graph-names $GRAPH --fault-prob 1.0 --simulation-type random --limit-steps 100
-python simulate.py --program $PROGRAM --sched 0 --no-sim 10000 --fault-interval 3 --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 0 --limit-steps 100
-python simulate.py --program $PROGRAM --sched 0 --no-sim 10000 --fault-interval 3 --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 1 --limit-steps 100
-python simulate.py --program $PROGRAM --sched 0 --no-sim 10000 --fault-interval 3 --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 2 --limit-steps 100
-python simulate.py --program $PROGRAM --sched 0 --no-sim 10000 --fault-interval 3 --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 3 --limit-steps 100
-python simulate.py --program $PROGRAM --sched 0 --no-sim 10000 --fault-interval 3 --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 4 --limit-steps 100
-python simulate.py --program $PROGRAM --sched 0 --no-sim 10000 --fault-interval 3 --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 5 --limit-steps 100
-python simulate.py --program $PROGRAM --sched 0 --no-sim 10000 --fault-interval 3 --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 6 --limit-steps 100
-python simulate.py --program $PROGRAM --sched 0 --no-sim 10000 --fault-interval 3 --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 7 --limit-steps 100
-
-
-python simulate.py --program $PROGRAM --sched 0 --no-sim 10000 --fault-interval 4 --graph-names $GRAPH --fault-prob 1.0 --simulation-type random --limit-steps 100
-python simulate.py --program $PROGRAM --sched 0 --no-sim 10000 --fault-interval 4 --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 0 --limit-steps 100
-python simulate.py --program $PROGRAM --sched 0 --no-sim 10000 --fault-interval 4 --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 1 --limit-steps 100
-python simulate.py --program $PROGRAM --sched 0 --no-sim 10000 --fault-interval 4 --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 2 --limit-steps 100
-python simulate.py --program $PROGRAM --sched 0 --no-sim 10000 --fault-interval 4 --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 3 --limit-steps 100
-python simulate.py --program $PROGRAM --sched 0 --no-sim 10000 --fault-interval 4 --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 4 --limit-steps 100
-python simulate.py --program $PROGRAM --sched 0 --no-sim 10000 --fault-interval 4 --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 5 --limit-steps 100
-python simulate.py --program $PROGRAM --sched 0 --no-sim 10000 --fault-interval 4 --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 6 --limit-steps 100
-python simulate.py --program $PROGRAM --sched 0 --no-sim 10000 --fault-interval 4 --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 7 --limit-steps 100
-
+# python simulate.py --program $PROGRAM --sched 0 --no-sim $NO_SIMS --fault-interval $FAULT_INTERVAL --graph-names $GRAPH --fault-prob 1.0 --simulation-type random --limit-steps $LIMIT_STEPS
+python simulate.py --program $PROGRAM --sched 0 --no-sim $NO_SIMS --fault-interval $FAULT_INTERVAL --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 0 --limit-steps $LIMIT_STEPS
+python simulate.py --program $PROGRAM --sched 0 --no-sim $NO_SIMS --fault-interval $FAULT_INTERVAL --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 1 --limit-steps $LIMIT_STEPS
+# python simulate.py --program $PROGRAM --sched 0 --no-sim $NO_SIMS --fault-interval $FAULT_INTERVAL --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 2 --limit-steps $LIMIT_STEPS
+# python simulate.py --program $PROGRAM --sched 0 --no-sim $NO_SIMS --fault-interval $FAULT_INTERVAL --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 3 --limit-steps $LIMIT_STEPS
+# python simulate.py --program $PROGRAM --sched 0 --no-sim $NO_SIMS --fault-interval $FAULT_INTERVAL --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 4 --limit-steps $LIMIT_STEPS
+# python simulate.py --program $PROGRAM --sched 0 --no-sim $NO_SIMS --fault-interval $FAULT_INTERVAL --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 5 --limit-steps $LIMIT_STEPS
+# python simulate.py --program $PROGRAM --sched 0 --no-sim $NO_SIMS --fault-interval $FAULT_INTERVAL --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 6 --limit-steps $LIMIT_STEPS
+# python simulate.py --program $PROGRAM --sched 0 --no-sim $NO_SIMS --fault-interval $FAULT_INTERVAL --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 7 --limit-steps $LIMIT_STEPS
+# python simulate.py --program $PROGRAM --sched 0 --no-sim $NO_SIMS --fault-interval $FAULT_INTERVAL --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 7 --limit-steps $LIMIT_STEPS
+# python simulate.py --program $PROGRAM --sched 0 --no-sim $NO_SIMS --fault-interval $FAULT_INTERVAL --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 8 --limit-steps $LIMIT_STEPS
+python simulate.py --program $PROGRAM --sched 0 --no-sim $NO_SIMS --fault-interval $FAULT_INTERVAL --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 9 --limit-steps $LIMIT_STEPS
 
 
 # cd gnn

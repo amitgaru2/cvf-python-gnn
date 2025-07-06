@@ -403,12 +403,13 @@ class SimulationMixin:
             if simulation_type_args
             else ""
         )
+        limit_steps_verbose = f"limits_{self.limit_steps}" if self.limit_steps else ""
         save_dir = os.path.join("results", self.results_dir)
         create_dir_if_not_exists(save_dir)
 
         file_path = os.path.join(
             save_dir,
-            f"{self.graph_name}__{self.scheduler}__{self.simulation_type}_{simulation_type_args_verbose}__{self.no_of_simulations}__{self.me}__{self.fault_interval}.csv",
+            f"{self.graph_name}__{self.scheduler}__{self.simulation_type}_{simulation_type_args_verbose}__{self.no_of_simulations}__{self.me}__{self.fault_interval}__{limit_steps_verbose}.csv",
         )
         f = open(
             file_path,
