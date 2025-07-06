@@ -1,8 +1,0 @@
-+ cd simulations
-+ python simulate.py --program graph_coloring --sched 0 --no-sim 100000 --fault-interval 1 --graph-names graph_7 --fault-prob 1.0 --simulation-type random --limit-steps 1000
-Note: NumExpr detected 24 cores but "NUMEXPR_MAX_THREADS" not set, so enforcing safe limit of 8.
-NumExpr defaulting to 8 threads.
-Locating Graph: "graph_7".
-Analysis graph: graph_7 | program: graph_coloring | Simulation Type: random, Args: [] | No. of Simulations: 100000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 1
-Total configs: 11,520.
-Simulation environment: No. of Simulations: 100000 | Scheduler: CENTRAL | ME: False

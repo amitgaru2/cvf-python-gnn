@@ -362,7 +362,7 @@ class SimulationMixin:
             step += 1
             if self.limit_steps and step >= self.limit_steps:
                 # limit steps explicitly to stop the non-convergent chain or limit the steps for convergence
-                logger.info("Limit step reached!")
+                logger.debug("Limit step reached!")
                 return step, True
 
         return step, False
