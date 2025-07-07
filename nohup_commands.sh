@@ -8,21 +8,31 @@ set -ex
 
 cd simulations
 
-# PROGRAM="graph_coloring"
-PROGRAM="dijkstra_token_ring"
+PROGRAM="graph_coloring"
+# PROGRAM="dijkstra_token_ring"
 # PROGRAM="maximal_matching"
 
-# GRAPH="graph_7"
-GRAPH="implicit_graph_n10"
+GRAPH="graph_7"
+# GRAPH="implicit_graph_n10"
 
 NO_SIMS=10000
 FAULT_INTERVAL=1
-LIMIT_STEPS=1000
+LIMIT_STEPS=100
 SIMULATION_TYPES=("controlled_at_node_amit_v1" "controlled_at_node_amit_v2")
 
 for simType in "${SIMULATION_TYPES[@]}"; do
     python simulate.py --program $PROGRAM --sched 0 --no-sim $NO_SIMS --fault-interval $FAULT_INTERVAL --graph-names $GRAPH --fault-prob 1.0 --simulation-type $simType --controlled-at-node 0 --limit-steps $LIMIT_STEPS
-    python simulate.py --program $PROGRAM --sched 0 --no-sim $NO_SIMS --fault-interval $FAULT_INTERVAL --graph-names $GRAPH --fault-prob 1.0 --simulation-type $simType --controlled-at-node 1 --limit-steps $LIMIT_STEPS
+    python simulate.py --program $PROGRAM --sched 0 --no-sim $NO_SIMS --fault-interval $FAULT_INTERVAL --graph-names $GRAPH --fault-prob 1.0 --simulation-type $simType --controlled-at-node 4 --limit-steps $LIMIT_STEPS
+    python simulate.py --program $PROGRAM --sched 0 --no-sim $NO_SIMS --fault-interval $FAULT_INTERVAL --graph-names $GRAPH --fault-prob 1.0 --simulation-type $simType --controlled-at-node 5 --limit-steps $LIMIT_STEPS
+    python simulate.py --program $PROGRAM --sched 0 --no-sim $NO_SIMS --fault-interval $FAULT_INTERVAL --graph-names $GRAPH --fault-prob 1.0 --simulation-type $simType --controlled-at-node 9 --limit-steps $LIMIT_STEPS
+done
+
+GRAPH="graph_10"
+
+for simType in "${SIMULATION_TYPES[@]}"; do
+    python simulate.py --program $PROGRAM --sched 0 --no-sim $NO_SIMS --fault-interval $FAULT_INTERVAL --graph-names $GRAPH --fault-prob 1.0 --simulation-type $simType --controlled-at-node 0 --limit-steps $LIMIT_STEPS
+    python simulate.py --program $PROGRAM --sched 0 --no-sim $NO_SIMS --fault-interval $FAULT_INTERVAL --graph-names $GRAPH --fault-prob 1.0 --simulation-type $simType --controlled-at-node 4 --limit-steps $LIMIT_STEPS
+    python simulate.py --program $PROGRAM --sched 0 --no-sim $NO_SIMS --fault-interval $FAULT_INTERVAL --graph-names $GRAPH --fault-prob 1.0 --simulation-type $simType --controlled-at-node 7 --limit-steps $LIMIT_STEPS
     python simulate.py --program $PROGRAM --sched 0 --no-sim $NO_SIMS --fault-interval $FAULT_INTERVAL --graph-names $GRAPH --fault-prob 1.0 --simulation-type $simType --controlled-at-node 9 --limit-steps $LIMIT_STEPS
 done
 
