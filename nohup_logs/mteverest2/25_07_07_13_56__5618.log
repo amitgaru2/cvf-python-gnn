@@ -1,0 +1,65 @@
++ cd simulations
++ PROGRAM=maximal_matching
++ GRAPH=graph_10
++ NO_SIMS=10000
++ FAULT_INTERVAL=2
++ LIMIT_STEPS=100
++ SIMULATION_TYPES=("controlled_at_node_amit_v1" "controlled_at_node_amit_v2")
++ for simType in "${SIMULATION_TYPES[@]}"
++ python simulate.py --program maximal_matching --sched 0 --no-sim 10000 --fault-interval 2 --graph-names graph_10 --fault-prob 1.0 --simulation-type controlled_at_node_amit_v1 --controlled-at-node 0 --limit-steps 100
+Locating Graph: "graph_10".
+Analysis graph: graph_10 | program: maximal_matching | Simulation Type: controlled_at_node_amit_v1, Args: [0] | No. of Simulations: 10000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 2
+Total configs: 65,536,000.
+Simulation environment: No. of Simulations: 10000 | Scheduler: CENTRAL | ME: False
+
+Saving result at results/maximal_matching/graph_10__0__controlled_at_node_amit_v1_args_0__10000__False__2__limits_100.csv
++ python simulate.py --program maximal_matching --sched 0 --no-sim 10000 --fault-interval 2 --graph-names graph_10 --fault-prob 1.0 --simulation-type controlled_at_node_amit_v1 --controlled-at-node 4 --limit-steps 100
+Locating Graph: "graph_10".
+Analysis graph: graph_10 | program: maximal_matching | Simulation Type: controlled_at_node_amit_v1, Args: [4] | No. of Simulations: 10000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 2
+Total configs: 65,536,000.
+Simulation environment: No. of Simulations: 10000 | Scheduler: CENTRAL | ME: False
+
+Saving result at results/maximal_matching/graph_10__0__controlled_at_node_amit_v1_args_4__10000__False__2__limits_100.csv
++ python simulate.py --program maximal_matching --sched 0 --no-sim 10000 --fault-interval 2 --graph-names graph_10 --fault-prob 1.0 --simulation-type controlled_at_node_amit_v1 --controlled-at-node 7 --limit-steps 100
+Locating Graph: "graph_10".
+Analysis graph: graph_10 | program: maximal_matching | Simulation Type: controlled_at_node_amit_v1, Args: [7] | No. of Simulations: 10000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 2
+Total configs: 65,536,000.
+Simulation environment: No. of Simulations: 10000 | Scheduler: CENTRAL | ME: False
+
+Saving result at results/maximal_matching/graph_10__0__controlled_at_node_amit_v1_args_7__10000__False__2__limits_100.csv
++ python simulate.py --program maximal_matching --sched 0 --no-sim 10000 --fault-interval 2 --graph-names graph_10 --fault-prob 1.0 --simulation-type controlled_at_node_amit_v1 --controlled-at-node 9 --limit-steps 100
+Locating Graph: "graph_10".
+Analysis graph: graph_10 | program: maximal_matching | Simulation Type: controlled_at_node_amit_v1, Args: [9] | No. of Simulations: 10000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 2
+Total configs: 65,536,000.
+Simulation environment: No. of Simulations: 10000 | Scheduler: CENTRAL | ME: False
+
+Saving result at results/maximal_matching/graph_10__0__controlled_at_node_amit_v1_args_9__10000__False__2__limits_100.csv
++ for simType in "${SIMULATION_TYPES[@]}"
++ python simulate.py --program maximal_matching --sched 0 --no-sim 10000 --fault-interval 2 --graph-names graph_10 --fault-prob 1.0 --simulation-type controlled_at_node_amit_v2 --controlled-at-node 0 --limit-steps 100
+Locating Graph: "graph_10".
+Analysis graph: graph_10 | program: maximal_matching | Simulation Type: controlled_at_node_amit_v2, Args: [0] | No. of Simulations: 10000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 2
+Total configs: 65,536,000.
+Simulation environment: No. of Simulations: 10000 | Scheduler: CENTRAL | ME: False
+
+Saving result at results/maximal_matching/graph_10__0__controlled_at_node_amit_v2_args_0__10000__False__2__limits_100.csv
++ python simulate.py --program maximal_matching --sched 0 --no-sim 10000 --fault-interval 2 --graph-names graph_10 --fault-prob 1.0 --simulation-type controlled_at_node_amit_v2 --controlled-at-node 4 --limit-steps 100
+Locating Graph: "graph_10".
+Analysis graph: graph_10 | program: maximal_matching | Simulation Type: controlled_at_node_amit_v2, Args: [4] | No. of Simulations: 10000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 2
+Total configs: 65,536,000.
+Simulation environment: No. of Simulations: 10000 | Scheduler: CENTRAL | ME: False
+
+Saving result at results/maximal_matching/graph_10__0__controlled_at_node_amit_v2_args_4__10000__False__2__limits_100.csv
++ python simulate.py --program maximal_matching --sched 0 --no-sim 10000 --fault-interval 2 --graph-names graph_10 --fault-prob 1.0 --simulation-type controlled_at_node_amit_v2 --controlled-at-node 7 --limit-steps 100
+Locating Graph: "graph_10".
+Analysis graph: graph_10 | program: maximal_matching | Simulation Type: controlled_at_node_amit_v2, Args: [7] | No. of Simulations: 10000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 2
+Total configs: 65,536,000.
+Simulation environment: No. of Simulations: 10000 | Scheduler: CENTRAL | ME: False
+
+Saving result at results/maximal_matching/graph_10__0__controlled_at_node_amit_v2_args_7__10000__False__2__limits_100.csv
++ python simulate.py --program maximal_matching --sched 0 --no-sim 10000 --fault-interval 2 --graph-names graph_10 --fault-prob 1.0 --simulation-type controlled_at_node_amit_v2 --controlled-at-node 9 --limit-steps 100
+Locating Graph: "graph_10".
+Analysis graph: graph_10 | program: maximal_matching | Simulation Type: controlled_at_node_amit_v2, Args: [9] | No. of Simulations: 10000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 2
+Total configs: 65,536,000.
+Simulation environment: No. of Simulations: 10000 | Scheduler: CENTRAL | ME: False
+
+Saving result at results/maximal_matching/graph_10__0__controlled_at_node_amit_v2_args_9__10000__False__2__limits_100.csv
