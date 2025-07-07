@@ -57,7 +57,8 @@ class SimulationMixin:
     highest_fault_weight = np.float32(0.8)
     least_fault_weight = np.float32(0.01)
     RANDOM_FAULT_SIMULATION_TYPE = "random"
-    CONTROLLED_FAULT_AT_NODE_SIMULATION_TYPE = "controlled_at_node"
+    CONTROLLED_FAULT_AT_NODE_SIMULATION_TYPE = "controlled_at_node_amit_v1"
+    CONTROLLED_FAULT_AT_NODE_SIMULATION_TYPE_AMIT_V2 = "controlled_at_node_amit_v2"
     CONTROLLED_FAULT_AT_NODE_SIMULATION_TYPE_DUONG = "controlled_at_node_duong"
     RANDOM_FAULT_START_AT_NODE_SIMULATION_TYPE = "random_start_at_node"
 
@@ -204,6 +205,18 @@ class SimulationMixin:
 
         return faulty_actions
 
+    def inject_fault_at_node_v2(self, state, process):
+        """Amit controlled version v2. Fault occurs at only targetted nodes."""
+        fault_count = 1
+
+        other_prob_wts = 0.0
+        p = [other_prob_wts for _ in range(len(self.nodes))]
+        p[process] = 1.0
+
+        faulty_actions = self.select_transitions_for_process(p, state, fault_count)
+
+        return faulty_actions
+
     def inject_least_fault_at_node(self, state, process):
         """Duong controlled version where given node has least possibility of the fault."""
         fault_count = 1
@@ -327,6 +340,13 @@ class SimulationMixin:
         faulty_actions = self.inject_fault_at_node(state, process)
         return faulty_actions
 
+    def get_faulty_actions_controlled_at_node_v2(self, state, process, *others):
+        """
+        process: process_id where the fault weight is concentrated
+        """
+        faulty_actions = self.inject_fault_at_node_v2(state, process)
+        return faulty_actions
+
     def get_faulty_actions_controlled_at_node_duong(self, state, process, *others):
         """
         process: process_id where the fault weight is concentrated
@@ -341,6 +361,7 @@ class SimulationMixin:
             self.RANDOM_FAULT_SIMULATION_TYPE: self.get_faulty_actions_random,
             self.RANDOM_FAULT_START_AT_NODE_SIMULATION_TYPE: self.get_faulty_actions_random_start_at_node,
             self.CONTROLLED_FAULT_AT_NODE_SIMULATION_TYPE: self.get_faulty_actions_controlled_at_node,
+            self.CONTROLLED_FAULT_AT_NODE_SIMULATION_TYPE_AMIT_V2: self.get_faulty_actions_controlled_at_node_v2,
             self.CONTROLLED_FAULT_AT_NODE_SIMULATION_TYPE_DUONG: self.get_faulty_actions_controlled_at_node_duong,
         }[self.simulation_type]
         while not self.is_invariant(state):  # from the base class

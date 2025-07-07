@@ -1,0 +1,7 @@
++ cd simulations
++ PROGRAM=dijkstra_token_ring
++ GRAPH=implicit_graph_n10
++ NO_SIMS=10000
++ FAULT_INTERVAL=1
++ LIMIT_STEPS=1000
+./temp.sh: 8: Syntax error: "(" unexpected

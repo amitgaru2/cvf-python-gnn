@@ -111,6 +111,7 @@ if __name__ == "__main__":
             SimulationMixin.RANDOM_FAULT_SIMULATION_TYPE,
             SimulationMixin.RANDOM_FAULT_START_AT_NODE_SIMULATION_TYPE,
             SimulationMixin.CONTROLLED_FAULT_AT_NODE_SIMULATION_TYPE,
+            SimulationMixin.CONTROLLED_FAULT_AT_NODE_SIMULATION_TYPE_AMIT_V2,
             SimulationMixin.CONTROLLED_FAULT_AT_NODE_SIMULATION_TYPE_DUONG,
         ],
         required=True,
@@ -157,6 +158,7 @@ if __name__ == "__main__":
     simulation_type_args = []
     if args.simulation_type in {
         SimulationMixin.CONTROLLED_FAULT_AT_NODE_SIMULATION_TYPE,
+        SimulationMixin.CONTROLLED_FAULT_AT_NODE_SIMULATION_TYPE_AMIT_V2,
         SimulationMixin.CONTROLLED_FAULT_AT_NODE_SIMULATION_TYPE_DUONG,
         SimulationMixin.RANDOM_FAULT_START_AT_NODE_SIMULATION_TYPE,
     }:

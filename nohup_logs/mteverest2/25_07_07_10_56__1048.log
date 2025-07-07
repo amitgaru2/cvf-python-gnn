@@ -1,0 +1,8 @@
++ cd simulations
++ PROGRAM=dijkstra_token_ring
++ GRAPH=implicit_graph_n10
++ NO_SIMS=10000
++ FAULT_INTERVAL=1
++ LIMIT_STEPS=1000
++ SIMULATION_TYPES=("controlled_at_node_amit_v1" "controlled_at_node_amit_v2")
+./temp.sh: line 15: syntax error: unexpected end of file
