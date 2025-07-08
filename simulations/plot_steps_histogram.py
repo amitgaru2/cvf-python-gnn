@@ -73,6 +73,13 @@ def generate_parser():
     )
 
     parser.add_argument(
+        "--limit-steps",
+        type=int,
+        help="limit steps",
+        default=None,
+    )
+
+    parser.add_argument(
         "--simulation-type", choices=SimulationMixin.SIMULATION_TYPES, required=True
     )
 
@@ -84,9 +91,17 @@ def generate_parser():
 
 
 def get_sim_data_filename(
-    graph_name, sched, simulation_type, args, no_simulations, me, fault_interval
+    graph_name,
+    sched,
+    simulation_type,
+    args,
+    no_simulations,
+    me,
+    fault_interval,
+    limit_steps,
 ):
-    return f"{graph_name}__{sched}__{simulation_type}_args_{args}__{no_simulations}__{me}__{fault_interval}"
+    limits_text = f"__limits_{limit_steps}" if limit_steps else ""
+    return f"{graph_name}__{sched}__{simulation_type}_args_{args}__{no_simulations}__{me}__{fault_interval}{limits_text}"
 
 
 def get_filenames(
@@ -96,6 +111,7 @@ def get_filenames(
     no_simulations,
     fault_interval,
     include_random,
+    limit_steps,
 ):
     filenames = (
         [
@@ -107,6 +123,7 @@ def get_filenames(
                 no_simulations,
                 me,
                 fault_interval,
+                limit_steps,
             )
         ]
         if include_random
@@ -123,6 +140,7 @@ def get_filenames(
                 no_simulations,
                 me,
                 fault_interval,
+                limit_steps,
             )
             for arg in selected_nodes
         ]
@@ -149,7 +167,8 @@ def get_save_filename(
 def get_label(simulation_type, node):
     return {
         SimulationMixin.RANDOM_FAULT_SIMULATION_TYPE: "Random Fault",
-        SimulationMixin.CONTROLLED_FAULT_AT_NODE_SIMULATION_TYPE: "Controlled at node %s",
+        SimulationMixin.CONTROLLED_FAULT_AT_NODE_SIMULATION_TYPE: "Controlled (amit v1) at node %s",
+        SimulationMixin.CONTROLLED_FAULT_AT_NODE_SIMULATION_TYPE_AMIT_V2: "Controlled (amit v2) at node %s",
         SimulationMixin.CONTROLLED_FAULT_AT_NODE_SIMULATION_TYPE_DUONG: "Controlled (duong) at node %s",
         SimulationMixin.RANDOM_FAULT_START_AT_NODE_SIMULATION_TYPE: "Random started at node %s",
     }.get(simulation_type, simulation_type) % (node)
@@ -253,11 +272,8 @@ def main(
     no_simulations,
     fault_interval,
     include_random,
+    limit_steps,
 ):
-    duong_mode = (
-        simulation_type
-        == SimulationMixin.CONTROLLED_FAULT_AT_NODE_SIMULATION_TYPE_DUONG
-    )
     dfs = [
         pd.read_csv(os.path.join("results", program, f"{fn}.csv"))
         for fn in get_filenames(
@@ -267,6 +283,7 @@ def main(
             no_simulations,
             fault_interval,
             include_random,
+            limit_steps,
         )
     ]
     max_steps = max(df["Steps"].max() for df in dfs)
@@ -316,4 +333,5 @@ if __name__ == "__main__":
         args.no_simulations,
         args.fault_interval,
         args.include_random,
+        args.limit_steps,
     )
