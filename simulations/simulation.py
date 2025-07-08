@@ -364,7 +364,7 @@ class SimulationMixin:
             self.CONTROLLED_FAULT_AT_NODE_SIMULATION_TYPE_AMIT_V2: self.get_faulty_actions_controlled_at_node_v2,
             self.CONTROLLED_FAULT_AT_NODE_SIMULATION_TYPE_DUONG: self.get_faulty_actions_controlled_at_node_duong,
         }[self.simulation_type]
-        while not self.is_invariant(state):  # from the base class
+        while step == 0 or not self.is_invariant(state):  # from the base class
             faulty_actions = []
             if last_fault_duration + 1 >= self.fault_interval:
                 faulty_actions = faulty_action_generator(state, *extra_args, step)
