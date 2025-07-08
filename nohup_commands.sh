@@ -12,13 +12,8 @@ PROGRAM="graph_coloring"
 # PROGRAM="dijkstra_token_ring"
 # PROGRAM="maximal_matching"
 
-<<<<<<< HEAD
-GRAPH="graph_7"
-# GRAPH="implicit_graph_n10"
-=======
 GRAPH="graph_10"
 # GRAPH="implicit_graph_n4"
->>>>>>> 4d48f8b (updates)
 
 NO_SIMS=100000
 FAULT_INTERVAL=2
