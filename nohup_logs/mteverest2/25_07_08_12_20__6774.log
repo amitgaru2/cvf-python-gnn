@@ -1,0 +1,31 @@
++ cd simulations
++ PROGRAM=graph_coloring
++ GRAPH=graph_10
++ NO_SIMS=100000
++ FAULT_INTERVAL=1
++ LIMIT_STEPS=1000
++ SIMULATION_TYPES=("controlled_at_node_amit_v2")
++ for simType in "${SIMULATION_TYPES[@]}"
++ python simulate.py --program graph_coloring --sched 0 --no-sim 100000 --fault-interval 1 --graph-names graph_10 --fault-prob 1.0 --simulation-type controlled_at_node_amit_v2 --controlled-at-node 1 --limit-steps 1000
+Locating Graph: "graph_10".
+Analysis graph: graph_10 | program: graph_coloring | Simulation Type: controlled_at_node_amit_v2, Args: [1] | No. of Simulations: 100000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 1
+Total configs: 32,000.
+Simulation environment: No. of Simulations: 100000 | Scheduler: CENTRAL | ME: False
+Time taken: 2706.8462s, Running simulation round: 50000
+Time taken: 2705.9866s, Running simulation round: 100000
+
+Saving result at results/graph_coloring/graph_10__0__controlled_at_node_amit_v2_args_1__100000__False__1__limits_1000.csv
++ python simulate.py --program graph_coloring --sched 0 --no-sim 100000 --fault-interval 1 --graph-names graph_10 --fault-prob 1.0 --simulation-type controlled_at_node_amit_v2 --controlled-at-node 2 --limit-steps 1000
+Locating Graph: "graph_10".
+Analysis graph: graph_10 | program: graph_coloring | Simulation Type: controlled_at_node_amit_v2, Args: [2] | No. of Simulations: 100000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 1
+Total configs: 32,000.
+Simulation environment: No. of Simulations: 100000 | Scheduler: CENTRAL | ME: False
+Time taken: 2748.6353s, Running simulation round: 50000
+Time taken: 2746.1761s, Running simulation round: 100000
+
+Saving result at results/graph_coloring/graph_10__0__controlled_at_node_amit_v2_args_2__100000__False__1__limits_1000.csv
++ python simulate.py --program graph_coloring --sched 0 --no-sim 100000 --fault-interval 1 --graph-names graph_10 --fault-prob 1.0 --simulation-type controlled_at_node_amit_v2 --controlled-at-node 3 --limit-steps 1000
+Locating Graph: "graph_10".
+Analysis graph: graph_10 | program: graph_coloring | Simulation Type: controlled_at_node_amit_v2, Args: [3] | No. of Simulations: 100000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 1
+Total configs: 32,000.
+Simulation environment: No. of Simulations: 100000 | Scheduler: CENTRAL | ME: False
