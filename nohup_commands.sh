@@ -12,12 +12,12 @@ PROGRAM="graph_coloring"
 # PROGRAM="dijkstra_token_ring"
 # PROGRAM="maximal_matching"
 
-GRAPH="graph_10"
+GRAPH="graph_7"
 # GRAPH="implicit_graph_n10"
 
 NO_SIMS=10000
-FAULT_INTERVAL=1
-LIMIT_STEPS=1000
+FAULT_INTERVAL=2
+LIMIT_STEPS=100
 SIMULATION_TYPES=("controlled_at_node_amit_v2")
 
 for simType in "${SIMULATION_TYPES[@]}"; do

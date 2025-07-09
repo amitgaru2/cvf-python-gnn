@@ -1,3 +1,7 @@
+"""
+The core simulation code.
+"""
+
 import os
 import csv
 import sys
@@ -56,6 +60,7 @@ class Action:
 class SimulationMixin:
     highest_fault_weight = np.float32(0.8)
     least_fault_weight = np.float32(0.01)
+
     RANDOM_FAULT_SIMULATION_TYPE = "random"
     CONTROLLED_FAULT_AT_NODE_SIMULATION_TYPE = "controlled_at_node_amit_v1"
     CONTROLLED_FAULT_AT_NODE_SIMULATION_TYPE_AMIT_V2 = "controlled_at_node_amit_v2"
@@ -69,6 +74,9 @@ class SimulationMixin:
         CONTROLLED_FAULT_AT_NODE_SIMULATION_TYPE_DUONG,
         RANDOM_FAULT_START_AT_NODE_SIMULATION_TYPE,
     ]
+
+    def init_pt_count(self):
+        self.pt_count = {i: 0 for i in self.nodes}
 
     def init_global_rank_map(self):
         """override this when not needed like for simulation"""
@@ -99,25 +107,30 @@ class SimulationMixin:
         np.fill_diagonal(dsm, self.highest_fault_weight)
         self.fault_weight = dsm
 
+    # def get_random_state(self, avoid_invariant=False):
+    #     def _inner():
+    #         _state = []
+    #         for i in range(len(self.nodes)):  # from the base class
+    #             _state.append(
+    #                 random.choice(list(self.possible_node_values[i]))
+    #             )  # from the base class
+    #         _state = tuple(_state)
+
+    #         return _state
+
+    #     state = _inner()
+    #     if avoid_invariant:
+    #         while self.is_invariant(state):  # from the base class
+    #             state = _inner()
+
+    #     return state
+
     def get_random_state(self, avoid_invariant=False):
-        def _inner():
-            _state = []
-            for i in range(len(self.nodes)):  # from the base class
-                _state.append(
-                    random.choice(list(self.possible_node_values[i]))
-                )  # from the base class
-            _state = tuple(_state)
+        """
+        avoid_invariant: True will return the random state that is not an Invariant.
+        avoid_invariant: False will return the random state that may be an Invariant.
+        """
 
-            return _state
-
-        state = _inner()
-        if avoid_invariant:
-            while self.is_invariant(state):  # from the base class
-                state = _inner()
-
-        return state
-
-    def get_random_state_v2(self, avoid_invariant=False):
         def _inner():
             _indx = random.randint(0, self.total_configs - 1)
             _state = self.indx_to_config(_indx)
@@ -131,6 +144,7 @@ class SimulationMixin:
         return indx, state
 
     def get_all_eligible_actions(self, state):
+        """get the program transitions from state."""
         eligible_actions = []
         for position, program_transition in self._get_program_transitions_as_configs(
             state
@@ -145,15 +159,10 @@ class SimulationMixin:
         return eligible_actions
 
     def get_actions(self, state):
+        """get a random action from all eligible actions of the state."""
         eligible_actions = self.get_all_eligible_actions(state)  # from the base class
-        if self.scheduler == CENTRAL_SCHEDULER:
-            actions = self.get_one_random_action(eligible_actions)
-        else:
-            actions = self.get_subset_of_actions(eligible_actions)
-            if self.me:
-                actions = self.remove_conflicts_betn_actions(actions)
-
-        return actions
+        action = self.get_one_random_action(eligible_actions)
+        return action
 
     def select_transitions_for_process(self, p, state, count):
         faulty_actions = []
@@ -268,60 +277,60 @@ class SimulationMixin:
 
         return faulty_actions
 
-    def remove_conflicts_betn_actions(self, actions: List[Action]) -> List[Action]:
-        checked_actions = []
-        remaining_actions = actions[:]
-        while remaining_actions:
-            indx = random.randint(0, len(remaining_actions) - 1)
-            action = remaining_actions[indx]
-            # remove the conflicting actions from "action" i.e. remove all the actions that are neighbors to the process producing "action"
-            neighbors = self.graph[action.process]  # from the base class
-            remaining_actions.pop(indx)
+    # def remove_conflicts_betn_actions(self, actions: List[Action]) -> List[Action]:
+    #     checked_actions = []
+    #     remaining_actions = actions[:]
+    #     while remaining_actions:
+    #         indx = random.randint(0, len(remaining_actions) - 1)
+    #         action = remaining_actions[indx]
+    #         # remove the conflicting actions from "action" i.e. remove all the actions that are neighbors to the process producing "action"
+    #         neighbors = self.graph[action.process]  # from the base class
+    #         remaining_actions.pop(indx)
 
-            new_remaining_actions = []
-            for i, act in enumerate(remaining_actions):
-                if act.process not in neighbors:
-                    new_remaining_actions.append(act)
+    #         new_remaining_actions = []
+    #         for i, act in enumerate(remaining_actions):
+    #             if act.process not in neighbors:
+    #                 new_remaining_actions.append(act)
 
-            remaining_actions = new_remaining_actions[:]
-            checked_actions.append(action)
+    #         remaining_actions = new_remaining_actions[:]
+    #         checked_actions.append(action)
 
-        return checked_actions
+    #     return checked_actions
 
-    def remove_conflicts_betn_processes(self, processes: List) -> List:
-        checked_processes = []
-        remaining_processes = processes[:]
-        while remaining_processes:
-            indx = random.randint(0, len(remaining_processes) - 1)
-            process = remaining_processes[indx]
-            neighbors = self.graph[process]  # from the base class
-            remaining_processes.pop(indx)
+    # def remove_conflicts_betn_processes(self, processes: List) -> List:
+    #     checked_processes = []
+    #     remaining_processes = processes[:]
+    #     while remaining_processes:
+    #         indx = random.randint(0, len(remaining_processes) - 1)
+    #         process = remaining_processes[indx]
+    #         neighbors = self.graph[process]  # from the base class
+    #         remaining_processes.pop(indx)
 
-            new_remaining_processes = []
-            for p in remaining_processes:
-                if p not in neighbors:
-                    new_remaining_processes.append(p)
+    #         new_remaining_processes = []
+    #         for p in remaining_processes:
+    #             if p not in neighbors:
+    #                 new_remaining_processes.append(p)
 
-            remaining_processes = new_remaining_processes[:]
-            checked_processes.append(process)
+    #         remaining_processes = new_remaining_processes[:]
+    #         checked_processes.append(process)
 
-        return checked_processes
+    #     return checked_processes
 
     def get_one_random_action(self, actions: List[Action]):
         return random.sample(actions, 1)
 
-    def get_subset_of_actions(self, actions: List[Action]):
-        count = len(actions)
-        subset_size = random.randint(1, count)
-        return random.sample(actions, subset_size)
+    # def get_subset_of_actions(self, actions: List[Action]):
+    #     count = len(actions)
+    #     subset_size = random.randint(1, count)
+    #     return random.sample(actions, subset_size)
 
-    def get_steps_to_convergence(self, state):
-        step = 0
-        while not self.is_invariant(state):  # from the base class
-            actions = self.get_actions(state)
-            state = self.execute(state, actions)
-            step += 1
-        return step
+    # def get_steps_to_convergence(self, state):
+    #     step = 0
+    #     while not self.is_invariant(state):  # from the base class
+    #         actions = self.get_actions(state)
+    #         state = self.execute(state, actions)
+    #         step += 1
+    #     return step
 
     def get_faulty_actions_random(self, state, *others):
         faulty_actions = self.inject_fault_w_equal_prob(state)
@@ -355,7 +364,20 @@ class SimulationMixin:
         faulty_actions = self.inject_least_fault_at_node(state, process)
         return faulty_actions
 
+    def log_pt_count(self, actions):
+        """
+        log the program transition and aggregate it for current simulation round.
+        """
+        for action in actions:
+            self.pt_count[action.process] += 1
+
     def run_simulations(self, state, *extra_args):
+        """
+        Fault occurs once in every fault interval (in the last step).
+        If fault interval is 1 then fault happens in each step.
+        If fault interval is 3 then fault happens after 2 program transitions.
+        """
+
         step = 0
         last_fault_duration = 0
         faulty_action_generator = {
@@ -376,11 +398,11 @@ class SimulationMixin:
             else:
                 actions = self.get_actions(state)
                 state = self.execute(state, actions)
+                self.log_pt_count(actions)
                 last_fault_duration += 1
 
             logger.debug("Next state: %s.", state)
 
-            # last_fault_duration += 1
             step += 1
             if self.limit_steps and step >= self.limit_steps:
                 # limit steps explicitly to stop the non-convergent chain or limit the steps for convergence
@@ -394,6 +416,9 @@ class SimulationMixin:
             state = action.execute(state)
 
         return state
+
+    def prepare_simulation_round(self):
+        self.init_pt_count()
 
     def start_simulation(self, *simulation_type_args):
         logger.info(
@@ -412,10 +437,10 @@ class SimulationMixin:
                     i,
                 )
                 log_time = time.time()
-            _, state = self.get_random_state_v2(avoid_invariant=True)
-            # self.configure_fault_weight()
+            self.prepare_simulation_round()
+            _, state = self.get_random_state(avoid_invariant=True)
             inner_results = self.run_simulations(state, *simulation_type_args)
-            results.append(inner_results)
+            results.append([*inner_results, *self.pt_count.values()])
 
         return results
 
@@ -440,37 +465,39 @@ class SimulationMixin:
         )  # from the base class
         logger.info("\nSaving result at %s", file_path)
         writer = csv.writer(f)
-        writer.writerow(["Iteration", "Steps", "Limit Reached"])
+        headers = ["Iteration", "Steps", "Limit Reached"]
+        headers.extend([f"PT {i}" for i in self.nodes])
+        writer.writerow(headers)
         for i, v in enumerate(result, 1):
             writer.writerow([i, *v])
 
-    def aggregate_result(self, result):
-        result = np.array(result)
-        # _, bin_edges = np.histogram(result.flatten())
-        # bin_edges = bin_edges.astype(int)
-        bin_edges = [1, 2, 3, 4, 5, 10]
-        bin_edges += [(i + 1) * 10 for i in range(1, np.max(result) // 10)]
-        # bin_edges = [1, 5, 10, 15, 20]
-        result = result.transpose()
-        histogram = []
-        for p in range(len(self.nodes)):
-            hist, _ = np.histogram(result[p], bins=bin_edges)
-            histogram.append(hist)
-        return histogram, bin_edges
+    # def aggregate_result(self, result):
+    #     result = np.array(result)
+    #     # _, bin_edges = np.histogram(result.flatten())
+    #     # bin_edges = bin_edges.astype(int)
+    #     bin_edges = [1, 2, 3, 4, 5, 10]
+    #     bin_edges += [(i + 1) * 10 for i in range(1, np.max(result) // 10)]
+    #     # bin_edges = [1, 5, 10, 15, 20]
+    #     result = result.transpose()
+    #     histogram = []
+    #     for p in range(len(self.nodes)):
+    #         hist, _ = np.histogram(result[p], bins=bin_edges)
+    #         histogram.append(hist)
+    #     return histogram, bin_edges
 
-    def store_result(self, histogram, bin_edges):
-        file_path = os.path.join(
-            "results",
-            self.results_dir,
-            f"{self.graph_name}__{self.scheduler}__{self.no_of_simulations}__{self.me}__{self.fault_probability}__{self.highest_fault_weight:.2f}.csv",
-        )
-        logger.info("Saving result at %s", file_path)
-        f = open(
-            file_path,
-            "w",
-            newline="",
-        )  # from the base class
-        writer = csv.writer(f)
-        writer.writerow(["Node", *bin_edges])
-        for p, v in enumerate(histogram):
-            writer.writerow([p, *v])  # from the base class
+    # def store_result(self, histogram, bin_edges):
+    #     file_path = os.path.join(
+    #         "results",
+    #         self.results_dir,
+    #         f"{self.graph_name}__{self.scheduler}__{self.no_of_simulations}__{self.me}__{self.fault_probability}__{self.highest_fault_weight:.2f}.csv",
+    #     )
+    #     logger.info("Saving result at %s", file_path)
+    #     f = open(
+    #         file_path,
+    #         "w",
+    #         newline="",
+    #     )  # from the base class
+    #     writer = csv.writer(f)
+    #     writer.writerow(["Node", *bin_edges])
+    #     for p, v in enumerate(histogram):
+    #         writer.writerow([p, *v])  # from the base class
