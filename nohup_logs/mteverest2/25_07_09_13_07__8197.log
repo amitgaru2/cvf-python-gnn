@@ -1,0 +1,13 @@
++ cd simulations
++ PROGRAM=dijkstra_token_ring
++ GRAPH=implicit_graph_n10
++ NO_SIMS=100000
++ LIMIT_STEPS=100
++ FAULT_INTERVALS=(2 3 4 5)
++ SIMULATION_TYPE=controlled_at_node_amit_v2
++ for FI in "${FAULT_INTERVALS[@]}"
++ python simulate.py --program dijkstra_token_ring --sched 0 --no-sim 100000 --fault-interval 2 --graph-names implicit_graph_n10 --fault-prob 1.0 --simulation-type controlled_at_node_amit_v2 --controlled-at-node 0 --limit-steps 100
+Locating Graph: "implicit_graph_n10".
+Analysis graph: implicit_graph_n10 | program: dijkstra_token_ring | Simulation Type: controlled_at_node_amit_v2, Args: [0] | No. of Simulations: 100000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 2
+Total configs: 59,049.
+Simulation environment: No. of Simulations: 100000 | Scheduler: CENTRAL | ME: False
