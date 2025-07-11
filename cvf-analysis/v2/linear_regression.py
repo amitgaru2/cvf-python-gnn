@@ -54,7 +54,8 @@ class LinearRegressionCVFAnalysisV2(CVFAnalysisV2):
             self.lr_config.config.c_step_decimals,
         )
         possible_values_for_each_node = [
-            i for i in product(possible_m_values, possible_c_values)
+            LinearRegressionData(*i)
+            for i in product(possible_m_values, possible_c_values)
         ]  # same for all the nodes
         values_mapping_for_each_node = {
             v: i for i, v in enumerate(possible_values_for_each_node)
@@ -81,47 +82,62 @@ class LinearRegressionCVFAnalysisV2(CVFAnalysisV2):
         return True
 
     def __get_node_data_df(self, node_id):
-        return self.lr_config.df[self.config.df["node"] == node_id]
+        return self.lr_config.df[self.lr_config.df["node"] == node_id]
 
-    def __clean_to_step_size(self, slope):
-        quotient = np.divide(slope, self.config.slope_step)
+    def __clean_m_to_step_size(self, m):
+        quotient = np.divide(m, self.lr_config.config.m_step)
         if quotient == int(quotient):
-            return np.round(slope, self.config.slope_step_decimals)
+            return np.round(m, self.lr_config.config.m_step_decimals)
         return np.round(
-            np.int64(quotient) * self.config.slope_step, self.config.slope_step_decimals
+            np.int64(quotient) * self.lr_config.config.m_step,
+            self.lr_config.config.m_step_decimals,
         )
 
-    # def __copy_replace_indx_value(self, lst, indx, value):
-    #     lst_copy = lst.copy()
-    #     lst_copy[indx] = value
-    #     return lst_copy
+    def __clean_c_to_step_size(self, c):
+        quotient = np.divide(c, self.lr_config.config.c_step)
+        if quotient == int(quotient):
+            return np.round(c, self.lr_config.config.c_step_decimals)
+        return np.round(
+            np.int64(quotient) * self.lr_config.config.c_step,
+            self.lr_config.config.c_step_decimals,
+        )
 
     def _get_program_transitions_as_configs(self, start_state):
 
         for position in range(len(self.nodes)):
             data = self.get_actual_config_node_values(position, start_state[position])
 
-            for _ in range(1, self.config.iterations + 1):
+            for _ in range(1, self.lr_config.config.iterations + 1):
                 m = torch.tensor(data.m, requires_grad=True)
                 c = torch.tensor(data.c, requires_grad=True)
 
                 node_df = self.__get_node_data_df(position)
                 X_node = torch.tensor(node_df["X"].array)
-                y = m * X_node + c
-                y.backward()
+                y_true = torch.tensor(node_df["y"].array)
+                y_pred = m * X_node + c
+                loss = ((y_pred - y_true) ** 2).mean()
+                loss.backward()
 
                 # new values to update
                 doubly_st_mt = self.lr_config.config.doubly_stochastic_matrix[position]
                 new_m = (
                     sum(wt * data.m for wt in doubly_st_mt)
-                    - self.learning_rate * m.grad
+                    - self.lr_config.config.learning_rate * m.grad
                 )
                 new_c = (
                     sum(wt * data.c for wt in doubly_st_mt)
-                    - self.learning_rate * c.grad
+                    - self.lr_config.config.learning_rate * c.grad
                 )
 
+                if new_m > self.lr_config.config.max_m:
+                    new_m = self.lr_config.config.max_m
+
+                if new_c > self.lr_config.config.max_c:
+                    new_c = self.lr_config.config.max_c
+
                 # need to first normalize and check the values
+                new_m = self.__clean_m_to_step_size(new_m)
+                new_c = self.__clean_c_to_step_size(new_c)
                 #
 
                 perturb_node_val_indx = self.possible_node_values_mapping[position][
@@ -135,25 +151,25 @@ class LinearRegressionCVFAnalysisV2(CVFAnalysisV2):
                     ]
                 )
 
-                yield position, perturb_state
+            yield position, perturb_state
 
-                # start_state_cpy = list(start_state)
-                # start_state_cpy[node_id] = m.item()
+            # start_state_cpy = list(start_state)
+            # start_state_cpy[node_id] = m.item()
 
-                # new_slope = (
-                #     sum(
-                #         frac * start_state_cpy[j] for j, frac in enumerate(doubly_st_mt)
-                #     )
-                #     - self.learning_rate * m.grad
-                # )
+            # new_slope = (
+            #     sum(
+            #         frac * start_state_cpy[j] for j, frac in enumerate(doubly_st_mt)
+            #     )
+            #     - self.learning_rate * m.grad
+            # )
 
-                # if new_slope > self.config.max_slope:
-                #     new_slope = self.config.max_slope
+            # if new_slope > self.config.max_slope:
+            #     new_slope = self.config.max_slope
 
-                # node_params[node_id] = new_slope
+            # node_params[node_id] = new_slope
 
-                # if abs(m - new_slope) <= self.config.iteration_stop_threshold:
-                #     break
+            # if abs(m - new_slope) <= self.config.iteration_stop_threshold:
+            #     break
 
         # for node_id, new_slope in enumerate(node_params):
         #     new_slope_cleaned = self.__clean_float_to_step_size_single(new_slope)
@@ -179,5 +195,11 @@ if __name__ == "__main__":
         lr = LinearRegressionCVFAnalysisV2(graph_name, graph)
         for v in lr.possible_node_values[0]:
             mapped_v = lr.possible_node_values_mapping[0][v]
-            if lr.is_invariant([mapped_v for _ in lr.nodes]):
-                print(v, mapped_v)
+            # if lr.is_invariant([mapped_v for _ in lr.nodes]):
+            #     print(v, mapped_v)
+            print("mapped_v", mapped_v)
+            for i in lr._get_program_transitions_as_configs(
+                [mapped_v for _ in lr.nodes]
+            ):
+                print(i)
+            break
