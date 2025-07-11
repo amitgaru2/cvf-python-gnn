@@ -33,17 +33,32 @@ AnalysisMap = {
 }
 
 
+def parse_extra_kwargs(extra_kwargs):
+    result = {}
+    for kwarg in extra_kwargs:
+        kw_split = kwarg.split("=")
+        result[kw_split[0]] = kw_split[1]
+
+    return result
+
+
 def main(
+    program,
     graph_name,
     graph,
-    program,
+    extra_kwargs,
     generate_data_ml,
     generate_data_emb,
     generate_test_data_ml,
 ):
     CVFAnalysisKlass = AnalysisMap[program]
     cvf_analysis = CVFAnalysisKlass(
-        graph_name, graph, generate_data_ml, generate_data_emb, generate_test_data_ml
+        graph_name,
+        graph,
+        extra_kwargs,
+        generate_data_ml,
+        generate_data_emb,
+        generate_test_data_ml,
     )
     cvf_analysis.start()
 
@@ -75,6 +90,12 @@ if __name__ == "__main__":
         ],
         required=False,
     )
+    parser.add_argument(
+        "--extra-kwargs",
+        type=str,
+        nargs="*",
+        help="any extra kwargs for the given program",
+    )
     parser.add_argument("-ml", "--generate-data-ml", action="store_true")
     parser.add_argument("-emb", "--generate-data-emb", action="store_true")
     parser.add_argument("-test-ml", "--generate-test-data-ml", action="store_true")
@@ -82,11 +103,13 @@ if __name__ == "__main__":
     if args.logging:
         logger.setLevel(getattr(logging, args.logging, "INFO"))
 
+    extra_kwargs = parse_extra_kwargs(args.extra_kwargs) if args.extra_kwargs else {}
     for graph_name, graph in get_graph(args.graph_names, logger):
         main(
+            args.program,
             graph_name,
             graph,
-            args.program,
+            extra_kwargs,
             args.generate_data_ml,
             args.generate_data_emb,
             args.generate_test_data_ml,

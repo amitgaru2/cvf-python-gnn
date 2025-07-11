@@ -2,7 +2,7 @@ import os
 
 import numpy as np
 
-learning_rate = 0.001
+learning_rate = 0.01
 iteration_stop_threshold = 0.0001  # stop when, either complete `iterations` or there is no improvement above this threshold
 
 data_path = os.path.join("datasets", "custom_data__m2_35__c10_5.csv")
@@ -15,7 +15,7 @@ invariant = (invariant_m[0], invariant_c[0]), (invariant_m[1], invariant_c[1])
 # m configs
 m_step = np.float64(0.1)
 m_step_decimals = 2
-min_m = np.float64(1.80)
+min_m = np.float64(2.00)
 max_m = np.float64(2.60)
 
 # c configs

@@ -75,6 +75,7 @@ class CVFAnalysisV2:
         self,
         graph_name: str,
         graph: dict,
+        extra_kwargs: dict = dict(),
         generate_data_ml: bool = False,
         generate_data_embedding: bool = False,
         generate_test_data_ml: bool = False,
@@ -85,6 +86,7 @@ class CVFAnalysisV2:
         self.generate_data_embedding = generate_data_embedding
         self.generate_test_data_ml = generate_test_data_ml
         self.pt_graph_adj_list = {None: set()}
+        self.extra_kwargs = extra_kwargs
 
         self.nodes = list(self.graph.keys())
         self.degree_of_nodes = {n: len(self.graph[n]) for n in self.nodes}

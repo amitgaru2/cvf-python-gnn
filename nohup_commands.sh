@@ -3,36 +3,36 @@ set -ex
 
 # conda activate cvf
 
-# cd cvf-analysis/v2
-# python main.py --program maximal_matching --graph-names graph_10 -ml
+cd cvf-analysis/v2
+python main.py --program linear_regression --graph-names star_graph_n4 -ml --extra-kwargs config_file=matrix_1
 
-cd simulations
+# cd simulations
 
-# PROGRAM="graph_coloring"
-# PROGRAM="dijkstra_token_ring"
-PROGRAM="maximal_matching"
+# # PROGRAM="graph_coloring"
+# # PROGRAM="dijkstra_token_ring"
+# PROGRAM="maximal_matching"
 
-GRAPH="graph_7"
+# GRAPH="graph_7"
 # GRAPH="implicit_graph_n10"
 
-NO_SIMS=10000
-LIMIT_STEPS=100
-FAULT_INTERVALS=(2 3 4 5)
-SIMULATION_TYPE="controlled_at_node_amit_v2"
+# NO_SIMS=10000
+# LIMIT_STEPS=100
+# FAULT_INTERVALS=(2 3 4 5)
+# SIMULATION_TYPE="controlled_at_node_amit_v2"
 
-for FI in "${FAULT_INTERVALS[@]}"; do
-    python simulate.py --program $PROGRAM --sched 0 --no-sim $NO_SIMS --fault-interval $FI --graph-names $GRAPH --fault-prob 1.0 --simulation-type $SIMULATION_TYPE --controlled-at-node 0 --limit-steps $LIMIT_STEPS
-    python simulate.py --program $PROGRAM --sched 0 --no-sim $NO_SIMS --fault-interval $FI --graph-names $GRAPH --fault-prob 1.0 --simulation-type $SIMULATION_TYPE --controlled-at-node 4 --limit-steps $LIMIT_STEPS
-    python simulate.py --program $PROGRAM --sched 0 --no-sim $NO_SIMS --fault-interval $FI --graph-names $GRAPH --fault-prob 1.0 --simulation-type $SIMULATION_TYPE --controlled-at-node 9 --limit-steps $LIMIT_STEPS
-done
+# for FI in "${FAULT_INTERVALS[@]}"; do
+#     python simulate.py --program $PROGRAM --sched 0 --no-sim $NO_SIMS --fault-interval $FI --graph-names $GRAPH --fault-prob 1.0 --simulation-type $SIMULATION_TYPE --controlled-at-node 0 --limit-steps $LIMIT_STEPS
+#     python simulate.py --program $PROGRAM --sched 0 --no-sim $NO_SIMS --fault-interval $FI --graph-names $GRAPH --fault-prob 1.0 --simulation-type $SIMULATION_TYPE --controlled-at-node 4 --limit-steps $LIMIT_STEPS
+#     python simulate.py --program $PROGRAM --sched 0 --no-sim $NO_SIMS --fault-interval $FI --graph-names $GRAPH --fault-prob 1.0 --simulation-type $SIMULATION_TYPE --controlled-at-node 9 --limit-steps $LIMIT_STEPS
+# done
 
-GRAPH="graph_10"
+# GRAPH="graph_10"
 
-for FI in "${FAULT_INTERVALS[@]}"; do
-    python simulate.py --program $PROGRAM --sched 0 --no-sim $NO_SIMS --fault-interval $FI --graph-names $GRAPH --fault-prob 1.0 --simulation-type $SIMULATION_TYPE --controlled-at-node 0 --limit-steps $LIMIT_STEPS
-    python simulate.py --program $PROGRAM --sched 0 --no-sim $NO_SIMS --fault-interval $FI --graph-names $GRAPH --fault-prob 1.0 --simulation-type $SIMULATION_TYPE --controlled-at-node 4 --limit-steps $LIMIT_STEPS
-    python simulate.py --program $PROGRAM --sched 0 --no-sim $NO_SIMS --fault-interval $FI --graph-names $GRAPH --fault-prob 1.0 --simulation-type $SIMULATION_TYPE --controlled-at-node 9 --limit-steps $LIMIT_STEPS
-done
+# for FI in "${FAULT_INTERVALS[@]}"; do
+#     python simulate.py --program $PROGRAM --sched 0 --no-sim $NO_SIMS --fault-interval $FI --graph-names $GRAPH --fault-prob 1.0 --simulation-type $SIMULATION_TYPE --controlled-at-node 0 --limit-steps $LIMIT_STEPS
+#     python simulate.py --program $PROGRAM --sched 0 --no-sim $NO_SIMS --fault-interval $FI --graph-names $GRAPH --fault-prob 1.0 --simulation-type $SIMULATION_TYPE --controlled-at-node 4 --limit-steps $LIMIT_STEPS
+#     python simulate.py --program $PROGRAM --sched 0 --no-sim $NO_SIMS --fault-interval $FI --graph-names $GRAPH --fault-prob 1.0 --simulation-type $SIMULATION_TYPE --controlled-at-node 9 --limit-steps $LIMIT_STEPS
+# done
 
 # SIMULATION_TYPE="controlled_at_node_amit_v2"
 

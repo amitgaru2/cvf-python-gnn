@@ -27,8 +27,8 @@ class LinearRegressionCVFAnalysisV2(CVFAnalysisV2):
     results_dir = "linear_regression"
 
     def pre_initialize_program_helpers(self):
-        self.config_file = "matrix_1"
-        self.lr_config = LRConfig(self.config_file)
+        # self.config_file = "matrix_1"
+        self.lr_config = LRConfig(self.extra_kwargs["config_file"])
 
     def get_possible_node_values(self):
         """
@@ -39,7 +39,7 @@ class LinearRegressionCVFAnalysisV2(CVFAnalysisV2):
         mapping = []
         possible_m_values = np.round(
             np.arange(
-                self.lr_config.config.min_m + self.lr_config.config.m_step,
+                self.lr_config.config.min_m,
                 self.lr_config.config.max_m + self.lr_config.config.m_step,
                 self.lr_config.config.m_step,
             ),
@@ -47,7 +47,7 @@ class LinearRegressionCVFAnalysisV2(CVFAnalysisV2):
         )
         possible_c_values = np.round(
             np.arange(
-                self.lr_config.config.min_c + self.lr_config.config.c_step,
+                self.lr_config.config.min_c,
                 self.lr_config.config.max_c + self.lr_config.config.c_step,
                 self.lr_config.config.c_step,
             ),
@@ -62,6 +62,7 @@ class LinearRegressionCVFAnalysisV2(CVFAnalysisV2):
         }
         result = [possible_values_for_each_node for _ in self.nodes]
         mapping = [values_mapping_for_each_node for _ in self.nodes]
+
         return result, mapping
 
     def is_invariant(self, config: Tuple[int]):
@@ -70,10 +71,10 @@ class LinearRegressionCVFAnalysisV2(CVFAnalysisV2):
         for node_value in actual_config:
             if (
                 self.lr_config.config.invariant[0][0]
-                <= node_value[0]
+                <= node_value.m
                 <= self.lr_config.config.invariant[1][0]
                 and self.lr_config.config.invariant[0][1]
-                <= node_value[1]
+                <= node_value.c
                 <= self.lr_config.config.invariant[1][1]
             ):
                 pass
@@ -107,33 +108,47 @@ class LinearRegressionCVFAnalysisV2(CVFAnalysisV2):
         for position in range(len(self.nodes)):
             data = self.get_actual_config_node_values(position, start_state[position])
 
-            # for _ in range(1, self.lr_config.config.iterations + 1):
-            m = torch.tensor(data.m, requires_grad=True)
-            c = torch.tensor(data.c, requires_grad=True)
+            for _ in range(1, self.lr_config.config.iterations + 1):
+                m = torch.tensor(data.m, requires_grad=True)
+                c = torch.tensor(data.c, requires_grad=True)
 
-            node_df = self.__get_node_data_df(position)
-            X_node = torch.tensor(node_df["X"].array)
-            y_true = torch.tensor(node_df["y"].array)
-            y_pred = m * X_node + c
-            loss = ((y_pred - y_true) ** 2).mean()
-            loss.backward()
+                node_df = self.__get_node_data_df(position)
+                X_node = torch.tensor(node_df["X"].array)
+                y_true = torch.tensor(node_df["y"].array)
+                y_pred = m * X_node + c
+                loss = ((y_pred - y_true) ** 2).mean()
+                loss.backward()
 
-            # new values to update
-            doubly_st_mt = self.lr_config.config.doubly_stochastic_matrix[position]
-            new_m = (
-                sum(wt * data.m for wt in doubly_st_mt)
-                - self.lr_config.config.learning_rate * m.grad
-            )
-            new_c = (
-                sum(wt * data.c for wt in doubly_st_mt)
-                - self.lr_config.config.learning_rate * c.grad
-            )
+                # new values to update
+                doubly_st_mt = self.lr_config.config.doubly_stochastic_matrix[position]
+                new_m = (
+                    sum(wt * data.m for wt in doubly_st_mt)
+                    - self.lr_config.config.learning_rate * m.grad
+                )
+                new_c = (
+                    sum(wt * data.c for wt in doubly_st_mt)
+                    - self.lr_config.config.learning_rate * c.grad
+                )
+
+                if (
+                    abs(m - new_m) <= self.lr_config.config.iteration_stop_threshold
+                    and abs(c - new_c) <= self.lr_config.config.iteration_stop_threshold
+                ):
+                    break
+
+                data = LinearRegressionData(new_m, new_c)
 
             if new_m > self.lr_config.config.max_m:
                 new_m = self.lr_config.config.max_m
 
+            if new_m < self.lr_config.config.min_m:
+                new_m = self.lr_config.config.min_m
+
             if new_c > self.lr_config.config.max_c:
                 new_c = self.lr_config.config.max_c
+
+            if new_c < self.lr_config.config.min_c:
+                new_c = self.lr_config.config.min_c
 
             # need to first normalize and check the values
             new_m = self.__clean_m_to_step_size(new_m)
@@ -144,16 +159,16 @@ class LinearRegressionCVFAnalysisV2(CVFAnalysisV2):
                 LinearRegressionData(new_m, new_c)
             ]
 
-            if perturb_node_val_indx != start_state[position]:
-                perturb_state = tuple(
-                    [
-                        *start_state[:position],
-                        perturb_node_val_indx,
-                        *start_state[position + 1 :],
-                    ]
-                )
+            # if perturb_node_val_indx != start_state[position]:
+            perturb_state = tuple(
+                [
+                    *start_state[:position],
+                    perturb_node_val_indx,
+                    *start_state[position + 1 :],
+                ]
+            )
 
-                yield position, perturb_state
+            yield position, perturb_state
 
 
 if __name__ == "__main__":
