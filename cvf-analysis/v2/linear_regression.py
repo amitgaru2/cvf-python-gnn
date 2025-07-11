@@ -121,7 +121,7 @@ class LinearRegressionCVFAnalysisV2(CVFAnalysisV2):
                 X_node = torch.tensor(node_df["X"].array)
                 y_true = torch.tensor(node_df["y"].array)
                 y_pred = m * X_node + c
-                loss = ((y_pred - y_true) ** 2).mean()
+                loss = ((y_pred - y_true) ** 2).mean()  # mse
                 loss.backward()
 
                 # new values to update
