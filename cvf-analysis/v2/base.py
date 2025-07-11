@@ -89,6 +89,8 @@ class CVFAnalysisV2:
         self.nodes = list(self.graph.keys())
         self.degree_of_nodes = {n: len(self.graph[n]) for n in self.nodes}
 
+        self.pre_initialize_program_helpers()
+
         self.possible_node_values, self.possible_node_values_mapping = (
             self.get_possible_node_values()
         )
@@ -112,6 +114,9 @@ class CVFAnalysisV2:
 
         self.initialize_helpers()
         self.initialize_program_helpers()
+
+    def pre_initialize_program_helpers(self):
+        pass
 
     def get_possible_node_values(self) -> List:
         raise NotImplemented

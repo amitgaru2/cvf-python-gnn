@@ -32,10 +32,6 @@ AnalysisMap = {
     LinearRegressionProgram: LinearRegressionCVFAnalysisV2,
 }
 
-graphs_dir = os.path.join(
-    os.getenv("CVF_PROJECT_DIR", "/home"), "cvf-analysis", "graphs"
-)
-
 
 def main(
     graph_name,
@@ -86,7 +82,7 @@ if __name__ == "__main__":
     if args.logging:
         logger.setLevel(getattr(logging, args.logging, "INFO"))
 
-    for graph_name, graph in get_graph(logger, graphs_dir, args.graph_names):
+    for graph_name, graph in get_graph(args.graph_names, logger):
         main(
             graph_name,
             graph,

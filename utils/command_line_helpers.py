@@ -1,4 +1,5 @@
 import os
+import logging
 
 
 ColoringProgram = "graph_coloring"
@@ -15,11 +16,16 @@ PROGRAM_CHOICES = [
     LinearRegressionProgram,
 ]
 
+GRAPHS_DIR = os.path.join(os.getenv("CVF_PROJECT_DIR", ""), "cvf-analysis", "graphs")
 
-def get_graph(logger, graphs_dir, graph_names):
+
+def get_graph(graph_names, logger=None):
+    if logger is None:
+        logger = logging.getLogger()
+
     for graph_name in graph_names:
         logger.info('Locating Graph: "%s".', graph_name)
-        full_path = os.path.join(graphs_dir, f"{graph_name}.txt")
+        full_path = os.path.join(GRAPHS_DIR, f"{graph_name}.txt")
         if not os.path.exists(full_path):
             logger.warning("Graph file: %s not found! Skipping the graph.", full_path)
             continue

@@ -26,8 +26,9 @@ class LinearRegressionData(ProgramData):
 class LinearRegressionCVFAnalysisV2(CVFAnalysisV2):
     results_dir = "linear_regression"
 
-    def initialize_program_helpers(self):
-        self.config = LRConfig.generate_config(self.config_file)
+    def pre_initialize_program_helpers(self):
+        self.config_file = "matrix_1"
+        self.lr_config = LRConfig(self.config_file)
 
     def get_possible_node_values(self):
         """
@@ -38,19 +39,19 @@ class LinearRegressionCVFAnalysisV2(CVFAnalysisV2):
         mapping = []
         possible_m_values = np.round(
             np.arange(
-                self.config.min_m + self.config.m_step,
-                self.config.max_m + self.config.m_step,
-                self.config.m_step,
+                self.lr_config.config.min_m + self.lr_config.config.m_step,
+                self.lr_config.config.max_m + self.lr_config.config.m_step,
+                self.lr_config.config.m_step,
             ),
-            self.config.m_step_decimals,
+            self.lr_config.config.m_step_decimals,
         )
         possible_c_values = np.round(
             np.arange(
-                self.config.min_c + self.config.c_step,
-                self.config.max_c + self.config.c_step,
-                self.config.c_step,
+                self.lr_config.config.min_c + self.lr_config.config.c_step,
+                self.lr_config.config.max_c + self.lr_config.config.c_step,
+                self.lr_config.config.c_step,
             ),
-            self.config.c_step_decimals,
+            self.lr_config.config.c_step_decimals,
         )
         possible_values_for_each_node = [
             i for i in product(possible_m_values, possible_c_values)
@@ -128,4 +129,14 @@ class LinearRegressionCVFAnalysisV2(CVFAnalysisV2):
 
 
 if __name__ == "__main__":
-    lr = LinearRegressionCVFAnalysisV2("")
+    import os
+    import sys
+
+    utils_path = os.path.join(os.getenv("CVF_PROJECT_DIR", ""), "utils")
+    sys.path.append(utils_path)
+
+    from command_line_helpers import get_graph
+
+    graph_names = ["star_graph_n5"]
+    for graph_name, graph in get_graph(graph_names):
+        lr = LinearRegressionCVFAnalysisV2(graph_name, graph)
