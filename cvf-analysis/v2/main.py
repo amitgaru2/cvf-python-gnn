@@ -1,4 +1,9 @@
+"""
+CLI program to execute the CVF full analysis.
+"""
+
 import os
+import sys
 import logging
 import argparse
 
@@ -6,46 +11,30 @@ from custom_logger import logger
 from dijkstra import DijkstraTokenRingCVFAnalysisV2
 from graph_coloring import GraphColoringCVFAnalysisV2
 from maximal_matching import MaximalMatchingCVFAnalysisV2
-from maximal_independent_set import MaximalIndependentSetCVFAnalysisV2
+from linear_regression import LinearRegressionCVFAnalysisV2
 
+utils_path = os.path.join(os.getenv("CVF_PROJECT_DIR", ""), "utils")
+sys.path.append(utils_path)
 
-ColoringProgram = "graph_coloring"
-DijkstraProgram = "dijkstra_token_ring"
-MaxMatchingProgram = "maximal_matching"
-MaxIndependentSetProgram = "maximal_independent_set"
-LinearRegressionProgram = "linear_regression"
+from command_line_helpers import (
+    get_graph,
+    ColoringProgram,
+    DijkstraProgram,
+    MaxMatchingProgram,
+    LinearRegressionProgram,
+)
+
 
 AnalysisMap = {
     ColoringProgram: GraphColoringCVFAnalysisV2,
     DijkstraProgram: DijkstraTokenRingCVFAnalysisV2,
     MaxMatchingProgram: MaximalMatchingCVFAnalysisV2,
-    MaxIndependentSetProgram: MaximalIndependentSetCVFAnalysisV2,
+    LinearRegressionProgram: LinearRegressionCVFAnalysisV2,
 }
 
 graphs_dir = os.path.join(
     os.getenv("CVF_PROJECT_DIR", "/home"), "cvf-analysis", "graphs"
 )
-
-
-def start(graphs_dir, graph_names):
-    for graph_name in graph_names:
-        logger.info('Locating Graph: "%s".', graph_name)
-        full_path = os.path.join(graphs_dir, f"{graph_name}.txt")
-        if not os.path.exists(full_path):
-            logger.warning("Graph file: %s not found! Skipping the graph.", full_path)
-            continue
-
-        graph = {}
-        with open(full_path, "r") as f:
-            line = f.readline()
-            while line:
-                node_edges = [int(i) for i in line.split()]
-                node = node_edges[0]
-                edges = node_edges[1:]
-                graph[node] = set(edges)
-                line = f.readline()
-
-        yield graph_name, graph
 
 
 def main(
@@ -71,8 +60,7 @@ if __name__ == "__main__":
             ColoringProgram,
             DijkstraProgram,
             MaxMatchingProgram,
-            MaxIndependentSetProgram,
-            # LinearRegressionProgram,
+            LinearRegressionProgram,
         ],
         required=True,
     )
@@ -98,7 +86,7 @@ if __name__ == "__main__":
     if args.logging:
         logger.setLevel(getattr(logging, args.logging, "INFO"))
 
-    for graph_name, graph in start(graphs_dir, args.graph_names):
+    for graph_name, graph in get_graph(logger, graphs_dir, args.graph_names):
         main(
             graph_name,
             graph,

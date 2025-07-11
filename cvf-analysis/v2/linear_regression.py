@@ -1,8 +1,26 @@
 import torch
 import numpy as np
 
-from base import CVFAnalysisV2
+from typing import Tuple
+from itertools import product
+
+from base import CVFAnalysisV2, ProgramData
 from lr_configs.config_adapter import LRConfig
+
+
+class LinearRegressionData(ProgramData):
+    def __init__(self, m: np.float64, c: np.float64):
+        self.m = m  # slope
+        self.c = c  # y-intercept
+        self.data = (self.m, self.c)
+
+    @staticmethod
+    def get_m(data):
+        return data[0]
+
+    @staticmethod
+    def get_c(data):
+        return data[1]
 
 
 class LinearRegressionCVFAnalysisV2(CVFAnalysisV2):
@@ -11,25 +29,42 @@ class LinearRegressionCVFAnalysisV2(CVFAnalysisV2):
     def initialize_program_helpers(self):
         self.config = LRConfig.generate_config(self.config_file)
 
-    def __get_node_data_df(self, node_id):
-        return self.config.df[self.config.df["node"] == node_id]
-
     def get_possible_node_values(self):
+        """
+        result: [ [0.5, 1.0, 1.5], [0.5, 1.0, 1.5], ... ]
+        mapping: [ {0.5: 0, 1.0: 1, 1.5: 2}, {0.5: 0, 1.0: 1, 1.5: 2}, ... ]
+        """
         result = []
         mapping = []
-        for _ in self.nodes:
-            possible_values = np.round(
-                np.arange(
-                    self.config.min_slope + self.config.slope_step,
-                    self.config.max_slope + self.config.slope_step,
-                    self.config.slope_step,
-                ),
-                self.config.slope_step_decimals,
-            )
-            result.append(tuple(possible_values))
-            mapping.append({v: i for i, v in enumerate(possible_values)})
-
+        possible_m_values = np.round(
+            np.arange(
+                self.config.min_m + self.config.m_step,
+                self.config.max_m + self.config.m_step,
+                self.config.m_step,
+            ),
+            self.config.m_step_decimals,
+        )
+        possible_c_values = np.round(
+            np.arange(
+                self.config.min_c + self.config.c_step,
+                self.config.max_c + self.config.c_step,
+                self.config.c_step,
+            ),
+            self.config.c_step_decimals,
+        )
+        possible_values_for_each_node = [
+            i for i in product(possible_m_values, possible_c_values)
+        ]  # same for all the nodes
+        values_mapping_for_each_node = {
+            v: i for i, v in enumerate(possible_values_for_each_node)
+        }
+        result = [possible_values_for_each_node for _ in self.nodes]
+        mapping = [values_mapping_for_each_node for _ in self.nodes]
         return result, mapping
+
+    """
+    def __get_node_data_df(self, node_id):
+        return self.config.df[self.config.df["node"] == node_id]
 
     def __clean_float_to_step_size_single(self, slope):
         quotient = np.divide(slope, self.config.slope_step)
@@ -44,8 +79,9 @@ class LinearRegressionCVFAnalysisV2(CVFAnalysisV2):
         lst_copy[indx] = value
         return lst_copy
 
-    def is_invariant(self, config):
+    def is_invariant(self, config: Tuple[int]):
         return super().is_invariant(config)
+
 
     def _get_program_transitions_as_configs(self, start_state):
         node_params = list(start_state)
@@ -53,6 +89,7 @@ class LinearRegressionCVFAnalysisV2(CVFAnalysisV2):
         for node_id in range(self.nodes):
             for _ in range(1, self.config.iterations + 1):
                 m = torch.tensor(node_params[node_id], requires_grad=True)
+                c = torch.tensor(node_params[node_id], requires_grad=True)
 
                 start_state_cpy = list(start_state)
                 start_state_cpy[node_id] = m.item()
@@ -76,7 +113,7 @@ class LinearRegressionCVFAnalysisV2(CVFAnalysisV2):
 
                 node_params[node_id] = new_slope
 
-                if abs(m - new_slope) <= self.config.stop_threshold:
+                if abs(m - new_slope) <= self.config.iteration_stop_threshold:
                     break
 
         for node_id, new_slope in enumerate(node_params):
@@ -87,3 +124,8 @@ class LinearRegressionCVFAnalysisV2(CVFAnalysisV2):
                 )
                 new_node_params = tuple(new_node_params)
                 yield node_id, new_node_params
+    """
+
+
+if __name__ == "__main__":
+    lr = LinearRegressionCVFAnalysisV2("")

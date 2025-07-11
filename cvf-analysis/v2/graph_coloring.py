@@ -5,6 +5,7 @@ class GraphColoringCVFAnalysisV2(CVFAnalysisV2):
     results_dir = "graph_coloring"
 
     def get_possible_node_values(self):
+        """mapping is same to the values in the nodes that is v in value is the index in the mapping."""
         result = list()
         for node in self.nodes:
             possible_values = [

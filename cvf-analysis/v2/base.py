@@ -172,6 +172,13 @@ class CVFAnalysisV2:
                 s.append(0)
         return tuple(s)
 
+    def get_actual_node_value(self, node, indx_value):
+        """
+        Given the mappings from the method `get_possible_node_values`, we use this method to decode the index value of the node in any given configuration.
+        Eg: Configuration (2, 0, 1, 4) will map to the third, first, second, and fifth value from the possible values of the nodes 0, 1, 2, 3 respectively.
+        """
+        return self.possible_node_values[node][indx_value]
+
     def start(self):
         if self.generate_test_data_ml:
             self.start_test_data_generation_ml()
@@ -197,7 +204,9 @@ class CVFAnalysisV2:
 
     def _get_program_transitions(self, start_state):
         program_transitions = []
-        for position, perturb_state in self._get_program_transitions_as_configs(start_state):
+        for position, perturb_state in self._get_program_transitions_as_configs(
+            start_state
+        ):
             if perturb_state is not None:
                 program_transitions.append(self.config_to_indx(perturb_state))
             else:
