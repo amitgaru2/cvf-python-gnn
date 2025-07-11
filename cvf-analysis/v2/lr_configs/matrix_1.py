@@ -2,27 +2,27 @@ import os
 
 import numpy as np
 
-learning_rate = 0.0001
+learning_rate = 0.001
 iteration_stop_threshold = 0.0001  # stop when, either complete `iterations` or there is no improvement above this threshold
 
-data_path = os.path.join("datasets", "SOCR-HeightWeight-XY.csv")
+data_path = os.path.join("datasets", "custom_data__m2_35__c10_5.csv")
 
 # got this by fitting our data at https://www.graphpad.com/quickcalcs/linear2/
-invariant_m = 3.042 - 0.1672, 3.042 + 0.1672
-invariant_c = -79.54 - 11.38, -79.54 + 11.38
+invariant_m = 2.30, 2.40
+invariant_c = 10.0, 11.0
 invariant = (invariant_m[0], invariant_c[0]), (invariant_m[1], invariant_c[1])
 
 # m configs
 m_step = np.float64(0.1)
 m_step_decimals = 2
-min_m = np.float64(2.70)
-max_m = np.float64(3.30)
+min_m = np.float64(1.80)
+max_m = np.float64(2.60)
 
 # c configs
-c_step = np.float64(5.0)
-c_step_decimals = 1
-min_c = np.float64(-100.0)
-max_c = np.float64(-60.0)
+c_step = np.float64(0.2)
+c_step_decimals = 2
+min_c = np.float64(8.0)
+max_c = np.float64(12.0)
 
 
 iterations = 100

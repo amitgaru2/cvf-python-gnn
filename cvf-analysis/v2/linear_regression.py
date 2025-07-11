@@ -172,7 +172,6 @@ if __name__ == "__main__":
             mapped_v = lr.possible_node_values_mapping[0][v]
             # if lr.is_invariant([mapped_v for _ in lr.nodes]):
             #     print(v, mapped_v)
-            print("mapped_v", mapped_v)
             for i in lr._get_program_transitions_as_configs(
                 [mapped_v for _ in lr.nodes]
             ):
