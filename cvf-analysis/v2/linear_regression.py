@@ -121,7 +121,9 @@ class LinearRegressionCVFAnalysisV2(CVFAnalysisV2):
                     - self.learning_rate * c.grad
                 )
 
-                # need to first normalize the values
+                # need to first normalize and check the values
+                #
+
                 perturb_node_val_indx = self.possible_node_values_mapping[position][
                     LinearRegressionData(new_m, new_c)
                 ]
