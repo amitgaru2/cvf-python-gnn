@@ -22,7 +22,7 @@ SIMULATION_TYPE="controlled_at_node_amit_v2"
 
 for FI in "${FAULT_INTERVALS[@]}"; do
     python simulate.py --program $PROGRAM --sched 0 --no-sim $NO_SIMS --fault-interval $FI --graph-names $GRAPH --fault-prob 1.0 --simulation-type $SIMULATION_TYPE --controlled-at-node 0 --limit-steps $LIMIT_STEPS
-    python simulate.py --program $PROGRAM --sched 0 --no-sim $NO_SIMS --fault-interval $FI --graph-names $GRAPH --fault-prob 1.0 --simulation-type $SIMULATION_TYPE --controlled-at-node 1 --limit-steps $LIMIT_STEPS
+    python simulate.py --program $PROGRAM --sched 0 --no-sim $NO_SIMS --fault-interval $FI --graph-names $GRAPH --fault-prob 1.0 --simulation-type $SIMULATION_TYPE --controlled-at-node 4 --limit-steps $LIMIT_STEPS
     python simulate.py --program $PROGRAM --sched 0 --no-sim $NO_SIMS --fault-interval $FI --graph-names $GRAPH --fault-prob 1.0 --simulation-type $SIMULATION_TYPE --controlled-at-node 9 --limit-steps $LIMIT_STEPS
 done
 
@@ -30,10 +30,9 @@ GRAPH="graph_10"
 
 for FI in "${FAULT_INTERVALS[@]}"; do
     python simulate.py --program $PROGRAM --sched 0 --no-sim $NO_SIMS --fault-interval $FI --graph-names $GRAPH --fault-prob 1.0 --simulation-type $SIMULATION_TYPE --controlled-at-node 0 --limit-steps $LIMIT_STEPS
-    python simulate.py --program $PROGRAM --sched 0 --no-sim $NO_SIMS --fault-interval $FI --graph-names $GRAPH --fault-prob 1.0 --simulation-type $SIMULATION_TYPE --controlled-at-node 1 --limit-steps $LIMIT_STEPS
+    python simulate.py --program $PROGRAM --sched 0 --no-sim $NO_SIMS --fault-interval $FI --graph-names $GRAPH --fault-prob 1.0 --simulation-type $SIMULATION_TYPE --controlled-at-node 4 --limit-steps $LIMIT_STEPS
     python simulate.py --program $PROGRAM --sched 0 --no-sim $NO_SIMS --fault-interval $FI --graph-names $GRAPH --fault-prob 1.0 --simulation-type $SIMULATION_TYPE --controlled-at-node 9 --limit-steps $LIMIT_STEPS
 done
-
 
 # SIMULATION_TYPE="controlled_at_node_amit_v2"
 
