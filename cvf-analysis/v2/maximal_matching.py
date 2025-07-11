@@ -1,7 +1,4 @@
-import math
-
 from typing import Tuple
-from collections import defaultdict
 from base import ProgramData, CVFAnalysisV2
 
 

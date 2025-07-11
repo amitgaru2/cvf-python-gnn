@@ -1,7 +1,7 @@
 import torch
 import numpy as np
 
-from base import ProgramData, CVFAnalysisV2
+from base import CVFAnalysisV2
 from lr_configs.config_adapter import LRConfig
 
 
@@ -10,13 +10,13 @@ class LinearRegressionCVFAnalysisV2(CVFAnalysisV2):
 
     def initialize_program_helpers(self):
         self.config = LRConfig.generate_config(self.config_file)
-        self.cache = {"p": {}, "q": {}, "r": {}}
 
     def __get_node_data_df(self, node_id):
         return self.config.df[self.config.df["node"] == node_id]
 
     def get_possible_node_values(self):
-        result = list()
+        result = []
+        mapping = []
         for _ in self.nodes:
             possible_values = np.round(
                 np.arange(
@@ -27,8 +27,9 @@ class LinearRegressionCVFAnalysisV2(CVFAnalysisV2):
                 self.config.slope_step_decimals,
             )
             result.append(tuple(possible_values))
+            mapping.append({v: i for i, v in enumerate(possible_values)})
 
-        return result, []
+        return result, mapping
 
     def __clean_float_to_step_size_single(self, slope):
         quotient = np.divide(slope, self.config.slope_step)
@@ -46,8 +47,7 @@ class LinearRegressionCVFAnalysisV2(CVFAnalysisV2):
     def is_invariant(self, config):
         return super().is_invariant(config)
 
-    def _get_program_transitions(self, start_state):
-        program_transitions = []
+    def _get_program_transitions_as_configs(self, start_state):
         node_params = list(start_state)
 
         for node_id in range(self.nodes):
@@ -78,10 +78,6 @@ class LinearRegressionCVFAnalysisV2(CVFAnalysisV2):
 
                 if abs(m - new_slope) <= self.config.stop_threshold:
                     break
-            # else:
-            #     logger.debug(
-            #         "Couldn't converge node %s for the state %s", node_id, start_state
-            #     )
 
         for node_id, new_slope in enumerate(node_params):
             new_slope_cleaned = self.__clean_float_to_step_size_single(new_slope)
@@ -90,10 +86,4 @@ class LinearRegressionCVFAnalysisV2(CVFAnalysisV2):
                     list(start_state), node_id, new_slope_cleaned
                 )
                 new_node_params = tuple(new_node_params)
-                program_transitions.append(new_node_params)
-
-        # if not program_transitions:
-        #     self._add_to_invariants(start_state)
-        #     # logger.debug("No program transition found for %s !", start_state)
-
-        return program_transitions
+                yield node_id, new_node_params
