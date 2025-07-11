@@ -98,20 +98,20 @@ class LinearRegressionCVFAnalysisV2(CVFAnalysisV2):
 
     def _get_program_transitions_as_configs(self, start_state):
 
-        for i in range(len(self.nodes)):
-            data = self.get_actual_config_node_values(i, start_state[i])
+        for position in range(len(self.nodes)):
+            data = self.get_actual_config_node_values(position, start_state[position])
 
             for _ in range(1, self.config.iterations + 1):
                 m = torch.tensor(data.m, requires_grad=True)
                 c = torch.tensor(data.c, requires_grad=True)
 
-                node_df = self.__get_node_data_df(i)
+                node_df = self.__get_node_data_df(position)
                 X_node = torch.tensor(node_df["X"].array)
                 y = m * X_node + c
                 y.backward()
 
                 # new values to update
-                doubly_st_mt = self.lr_config.config.doubly_stochastic_matrix[i]
+                doubly_st_mt = self.lr_config.config.doubly_stochastic_matrix[position]
                 new_m = (
                     sum(wt * data.m for wt in doubly_st_mt)
                     - self.learning_rate * m.grad
@@ -120,6 +120,20 @@ class LinearRegressionCVFAnalysisV2(CVFAnalysisV2):
                     sum(wt * data.c for wt in doubly_st_mt)
                     - self.learning_rate * c.grad
                 )
+
+                # need to first normalize the values
+                perturb_node_val_indx = self.possible_node_values_mapping[position][
+                    LinearRegressionData(new_m, new_c)
+                ]
+                perturb_state = tuple(
+                    [
+                        *start_state[:position],
+                        perturb_node_val_indx,
+                        *start_state[position + 1 :],
+                    ]
+                )
+
+                yield position, perturb_state
 
                 # start_state_cpy = list(start_state)
                 # start_state_cpy[node_id] = m.item()
