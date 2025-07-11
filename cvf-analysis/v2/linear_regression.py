@@ -24,6 +24,11 @@ class LinearRegressionData(ProgramData):
 
 
 class LinearRegressionCVFAnalysisV2(CVFAnalysisV2):
+    """
+    --extra-kwargs config_file=matrix_1
+    --graph-names graph_1 graph_2 ; option doesn't really matter for this, as the graphs need to be associated with DSM which is in config file itself
+    """
+
     results_dir = "linear_regression"
 
     def pre_initialize_program_helpers(self):
