@@ -64,6 +64,7 @@ class LinearRegressionCVFAnalysisV2(CVFAnalysisV2):
         return result, mapping
 
     def is_invariant(self, config: Tuple[int]):
+        """if the m and c value lies in the given range of the values, in all the nodes, then consider the config as invariant"""
         actual_config = self.get_actual_config_values(config)
         for node_value in actual_config:
             if (
@@ -79,23 +80,22 @@ class LinearRegressionCVFAnalysisV2(CVFAnalysisV2):
                 return False
         return True
 
-    # def __get_node_data_df(self, node_id):
-    #     return self.config.df[self.config.df["node"] == node_id]
+    def __get_node_data_df(self, node_id):
+        return self.lr_config.df[self.config.df["node"] == node_id]
 
-    # def __clean_float_to_step_size_single(self, slope):
-    #     quotient = np.divide(slope, self.config.slope_step)
-    #     if quotient == int(quotient):
-    #         return np.round(slope, self.config.slope_step_decimals)
-    #     return np.round(
-    #         np.int64(quotient) * self.config.slope_step, self.config.slope_step_decimals
-    #     )
+    def __clean_float_to_step_size_single(self, slope):
+        quotient = np.divide(slope, self.config.slope_step)
+        if quotient == int(quotient):
+            return np.round(slope, self.config.slope_step_decimals)
+        return np.round(
+            np.int64(quotient) * self.config.slope_step, self.config.slope_step_decimals
+        )
 
-    # def __copy_replace_indx_value(self, lst, indx, value):
-    #     lst_copy = lst.copy()
-    #     lst_copy[indx] = value
-    #     return lst_copy
+    def __copy_replace_indx_value(self, lst, indx, value):
+        lst_copy = lst.copy()
+        lst_copy[indx] = value
+        return lst_copy
 
-    """
     def _get_program_transitions_as_configs(self, start_state):
         node_params = list(start_state)
 
@@ -137,7 +137,6 @@ class LinearRegressionCVFAnalysisV2(CVFAnalysisV2):
                 )
                 new_node_params = tuple(new_node_params)
                 yield node_id, new_node_params
-    """
 
 
 if __name__ == "__main__":
