@@ -2,7 +2,7 @@ import os
 
 import numpy as np
 
-learning_rate = 0.001
+learning_rate = 0.0001
 iteration_stop_threshold = 0.0001  # stop when, either complete `iterations` or there is no improvement above this threshold
 
 data_path = os.path.join("datasets", "SOCR-HeightWeight-XY.csv")

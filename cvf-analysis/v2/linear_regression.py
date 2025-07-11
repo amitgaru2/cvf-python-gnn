@@ -107,42 +107,44 @@ class LinearRegressionCVFAnalysisV2(CVFAnalysisV2):
         for position in range(len(self.nodes)):
             data = self.get_actual_config_node_values(position, start_state[position])
 
-            for _ in range(1, self.lr_config.config.iterations + 1):
-                m = torch.tensor(data.m, requires_grad=True)
-                c = torch.tensor(data.c, requires_grad=True)
+            # for _ in range(1, self.lr_config.config.iterations + 1):
+            m = torch.tensor(data.m, requires_grad=True)
+            c = torch.tensor(data.c, requires_grad=True)
 
-                node_df = self.__get_node_data_df(position)
-                X_node = torch.tensor(node_df["X"].array)
-                y_true = torch.tensor(node_df["y"].array)
-                y_pred = m * X_node + c
-                loss = ((y_pred - y_true) ** 2).mean()
-                loss.backward()
+            node_df = self.__get_node_data_df(position)
+            X_node = torch.tensor(node_df["X"].array)
+            y_true = torch.tensor(node_df["y"].array)
+            y_pred = m * X_node + c
+            loss = ((y_pred - y_true) ** 2).mean()
+            loss.backward()
 
-                # new values to update
-                doubly_st_mt = self.lr_config.config.doubly_stochastic_matrix[position]
-                new_m = (
-                    sum(wt * data.m for wt in doubly_st_mt)
-                    - self.lr_config.config.learning_rate * m.grad
-                )
-                new_c = (
-                    sum(wt * data.c for wt in doubly_st_mt)
-                    - self.lr_config.config.learning_rate * c.grad
-                )
+            # new values to update
+            doubly_st_mt = self.lr_config.config.doubly_stochastic_matrix[position]
+            new_m = (
+                sum(wt * data.m for wt in doubly_st_mt)
+                - self.lr_config.config.learning_rate * m.grad
+            )
+            new_c = (
+                sum(wt * data.c for wt in doubly_st_mt)
+                - self.lr_config.config.learning_rate * c.grad
+            )
 
-                if new_m > self.lr_config.config.max_m:
-                    new_m = self.lr_config.config.max_m
+            if new_m > self.lr_config.config.max_m:
+                new_m = self.lr_config.config.max_m
 
-                if new_c > self.lr_config.config.max_c:
-                    new_c = self.lr_config.config.max_c
+            if new_c > self.lr_config.config.max_c:
+                new_c = self.lr_config.config.max_c
 
-                # need to first normalize and check the values
-                new_m = self.__clean_m_to_step_size(new_m)
-                new_c = self.__clean_c_to_step_size(new_c)
-                #
+            # need to first normalize and check the values
+            new_m = self.__clean_m_to_step_size(new_m)
+            new_c = self.__clean_c_to_step_size(new_c)
+            #
 
-                perturb_node_val_indx = self.possible_node_values_mapping[position][
-                    LinearRegressionData(new_m, new_c)
-                ]
+            perturb_node_val_indx = self.possible_node_values_mapping[position][
+                LinearRegressionData(new_m, new_c)
+            ]
+
+            if perturb_node_val_indx != start_state[position]:
                 perturb_state = tuple(
                     [
                         *start_state[:position],
@@ -151,34 +153,7 @@ class LinearRegressionCVFAnalysisV2(CVFAnalysisV2):
                     ]
                 )
 
-            yield position, perturb_state
-
-            # start_state_cpy = list(start_state)
-            # start_state_cpy[node_id] = m.item()
-
-            # new_slope = (
-            #     sum(
-            #         frac * start_state_cpy[j] for j, frac in enumerate(doubly_st_mt)
-            #     )
-            #     - self.learning_rate * m.grad
-            # )
-
-            # if new_slope > self.config.max_slope:
-            #     new_slope = self.config.max_slope
-
-            # node_params[node_id] = new_slope
-
-            # if abs(m - new_slope) <= self.config.iteration_stop_threshold:
-            #     break
-
-        # for node_id, new_slope in enumerate(node_params):
-        #     new_slope_cleaned = self.__clean_float_to_step_size_single(new_slope)
-        #     if new_slope_cleaned != start_state[node_id]:
-        #         new_node_params = self.__copy_replace_indx_value(
-        #             list(start_state), node_id, new_slope_cleaned
-        #         )
-        #         new_node_params = tuple(new_node_params)
-        #         yield node_id, new_node_params
+                yield position, perturb_state
 
 
 if __name__ == "__main__":
@@ -201,5 +176,6 @@ if __name__ == "__main__":
             for i in lr._get_program_transitions_as_configs(
                 [mapped_v for _ in lr.nodes]
             ):
-                print(i)
+                print("i", i)
+                print(lr.get_actual_config_values(i[1]))
             break
