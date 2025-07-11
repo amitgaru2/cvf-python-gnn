@@ -63,27 +63,39 @@ class LinearRegressionCVFAnalysisV2(CVFAnalysisV2):
         mapping = [values_mapping_for_each_node for _ in self.nodes]
         return result, mapping
 
-    """
-    def __get_node_data_df(self, node_id):
-        return self.config.df[self.config.df["node"] == node_id]
-
-    def __clean_float_to_step_size_single(self, slope):
-        quotient = np.divide(slope, self.config.slope_step)
-        if quotient == int(quotient):
-            return np.round(slope, self.config.slope_step_decimals)
-        return np.round(
-            np.int64(quotient) * self.config.slope_step, self.config.slope_step_decimals
-        )
-
-    def __copy_replace_indx_value(self, lst, indx, value):
-        lst_copy = lst.copy()
-        lst_copy[indx] = value
-        return lst_copy
-
     def is_invariant(self, config: Tuple[int]):
-        return super().is_invariant(config)
+        actual_config = self.get_actual_config_values(config)
+        for node_value in actual_config:
+            if (
+                self.lr_config.config.invariant[0][0]
+                <= node_value[0]
+                <= self.lr_config.config.invariant[1][0]
+                and self.lr_config.config.invariant[0][1]
+                <= node_value[1]
+                <= self.lr_config.config.invariant[1][1]
+            ):
+                pass
+            else:
+                return False
+        return True
 
+    # def __get_node_data_df(self, node_id):
+    #     return self.config.df[self.config.df["node"] == node_id]
 
+    # def __clean_float_to_step_size_single(self, slope):
+    #     quotient = np.divide(slope, self.config.slope_step)
+    #     if quotient == int(quotient):
+    #         return np.round(slope, self.config.slope_step_decimals)
+    #     return np.round(
+    #         np.int64(quotient) * self.config.slope_step, self.config.slope_step_decimals
+    #     )
+
+    # def __copy_replace_indx_value(self, lst, indx, value):
+    #     lst_copy = lst.copy()
+    #     lst_copy[indx] = value
+    #     return lst_copy
+
+    """
     def _get_program_transitions_as_configs(self, start_state):
         node_params = list(start_state)
 
@@ -137,6 +149,10 @@ if __name__ == "__main__":
 
     from command_line_helpers import get_graph
 
-    graph_names = ["star_graph_n5"]
+    graph_names = ["star_graph_n4"]
     for graph_name, graph in get_graph(graph_names):
         lr = LinearRegressionCVFAnalysisV2(graph_name, graph)
+        for v in lr.possible_node_values[0]:
+            mapped_v = lr.possible_node_values_mapping[0][v]
+            if lr.is_invariant([mapped_v for _ in lr.nodes]):
+                print(v, mapped_v)
