@@ -211,6 +211,9 @@ class CVFAnalysisV2:
                 program_transitions.append(self.config_to_indx(perturb_state))
             else:
                 program_transitions.append(perturb_state)
+
+        if not program_transitions:
+            print("not foudn for", start_state, self.get_actual_config_values(start_state))
         return program_transitions
 
     def is_invariant(self, config: Tuple[int]):

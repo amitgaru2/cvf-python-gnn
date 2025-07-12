@@ -113,6 +113,7 @@ class LinearRegressionCVFAnalysisV2(CVFAnalysisV2):
         for position in range(len(self.nodes)):
             data = self.get_actual_config_node_values(position, start_state[position])
 
+            # print("initial", data.m, data.c)
             for _ in range(1, self.lr_config.config.iterations + 1):
                 m = torch.tensor(data.m, requires_grad=True)
                 c = torch.tensor(data.c, requires_grad=True)
@@ -142,7 +143,7 @@ class LinearRegressionCVFAnalysisV2(CVFAnalysisV2):
                 #     break
 
                 data = LinearRegressionData(new_m, new_c)
-
+            
             if new_m > self.lr_config.config.max_m:
                 new_m = self.lr_config.config.max_m
             elif new_m < self.lr_config.config.min_m:
@@ -153,25 +154,29 @@ class LinearRegressionCVFAnalysisV2(CVFAnalysisV2):
             elif new_c < self.lr_config.config.min_c:
                 new_c = self.lr_config.config.min_c
 
+            # print("before step", new_m, new_c)
             # need to first normalize and check the values
             new_m = self.__clean_m_to_step_size(new_m)
             new_c = self.__clean_c_to_step_size(new_c)
             #
 
+            # print("after step", new_m, new_c)
+            # print()
             perturb_node_val_indx = self.possible_node_values_mapping[position][
                 LinearRegressionData(new_m, new_c)
             ]
+            # print(start_state[position], perturb_node_val_indx)
 
-            # if perturb_node_val_indx != start_state[position]:
-            perturb_state = tuple(
-                [
-                    *start_state[:position],
-                    perturb_node_val_indx,
-                    *start_state[position + 1 :],
-                ]
-            )
-
-            yield position, perturb_state
+            if perturb_node_val_indx != start_state[position]:
+                perturb_state = tuple(
+                    [
+                        *start_state[:position],
+                        perturb_node_val_indx,
+                        *start_state[position + 1 :],
+                    ]
+                )
+                # print('here...')
+                yield position, perturb_state
 
 
 if __name__ == "__main__":
@@ -185,14 +190,16 @@ if __name__ == "__main__":
 
     graph_names = ["star_graph_n4"]
     for graph_name, graph in get_graph(graph_names):
-        lr = LinearRegressionCVFAnalysisV2(graph_name, graph)
+        lr = LinearRegressionCVFAnalysisV2(
+            graph_name, graph, extra_kwargs={"config_file": "matrix_1"}
+        )
         for v in lr.possible_node_values[0]:
             mapped_v = lr.possible_node_values_mapping[0][v]
             # if lr.is_invariant([mapped_v for _ in lr.nodes]):
             #     print(v, mapped_v)
             for i in lr._get_program_transitions_as_configs(
-                [mapped_v for _ in lr.nodes]
+                ((np.float64(2.322), np.float64(0.0)), (np.float64(2.324), np.float64(0.0)), (np.float64(2.3215), np.float64(0.0)), (np.float64(2.321), np.float64(0.0)))
             ):
-                print("i", i)
+                print("mapped_v", mapped_v, "i", i)
                 print(lr.get_actual_config_values(i[1]))
-            break
+            # break
