@@ -1,57 +1,48 @@
 import os
+import sys
 import logging
 import argparse
 
 from custom_logger import logger
 from dijkstra_simulation import DijkstraSimulation
+from linear_regression_simulation import LinearRegressionSimulation
 from graph_coloring_simulation import GraphColoringSimulation
 from maximal_matching_simulation import MaximalMatchingSimulation
-from maximal_independent_set_simulation import MaximalIndependentSetSimulation
 from simulation import CENTRAL_SCHEDULER, DISTRIBUTED_SCHEDULER, SimulationMixin
 
-ColoringProgram = "graph_coloring"
-DijkstraProgram = "dijkstra_token_ring"
-MaxMatchingProgram = "maximal_matching"
-MaxIndependentSetProgram = "maximal_independent_set"
-LinearRegressionProgram = "linear_regression"
+utils_path = os.path.join(os.getenv("CVF_PROJECT_DIR", ""), "utils")
+sys.path.append(utils_path)
+
+from command_line_helpers import (
+    get_graph,
+    ColoringProgram,
+    DijkstraProgram,
+    MaxMatchingProgram,
+    LinearRegressionProgram,
+)
 
 AnalysisMap = {
     ColoringProgram: GraphColoringSimulation,
     DijkstraProgram: DijkstraSimulation,
     MaxMatchingProgram: MaximalMatchingSimulation,
-    MaxIndependentSetProgram: MaximalIndependentSetSimulation,
+    LinearRegressionProgram: LinearRegressionSimulation,
 }
 
-graphs_dir = os.path.join(
-    os.getenv("CVF_PROJECT_DIR", "/home"), "cvf-analysis", "graphs"
-)
 
+def parse_extra_kwargs(extra_kwargs):
+    result = {}
+    for kwarg in extra_kwargs:
+        kw_split = kwarg.split("=")
+        result[kw_split[0]] = kw_split[1]
 
-def start(graphs_dir, graph_names):
-    for graph_name in graph_names:
-        logger.info('Locating Graph: "%s".', graph_name)
-        full_path = os.path.join(graphs_dir, f"{graph_name}.txt")
-        if not os.path.exists(full_path):
-            logger.warning("Graph file: %s not found! Skipping the graph.", full_path)
-            continue
-
-        graph = {}
-        with open(full_path, "r") as f:
-            line = f.readline()
-            while line:
-                node_edges = [int(i) for i in line.split()]
-                node = node_edges[0]
-                edges = node_edges[1:]
-                graph[node] = set(edges)
-                line = f.readline()
-
-        yield graph_name, graph
+    return result
 
 
 def main(
+    program,
     graph_name,
     graph,
-    program,
+    extra_kwargs,
     simulation_type,
     no_simulations,
     scheduler,
@@ -76,7 +67,7 @@ def main(
         fault_interval,
     )
     SimulationCVFAnalysisKlass = AnalysisMap[program]
-    simulation = SimulationCVFAnalysisKlass(graph_name, graph)
+    simulation = SimulationCVFAnalysisKlass(graph_name, graph, extra_kwargs)
     simulation.create_simulation_environment(
         simulation_type=simulation_type,
         no_of_simulations=no_simulations,
@@ -102,6 +93,7 @@ if __name__ == "__main__":
             ColoringProgram,
             DijkstraProgram,
             MaxMatchingProgram,
+            LinearRegressionProgram,
         ],
         required=True,
     )  # coloring, dijkstra, max_matching
@@ -146,8 +138,10 @@ if __name__ == "__main__":
         required=False,
     )
     parser.add_argument(
-        "--config-file",
-        required=False,
+        "--extra-kwargs",
+        type=str,
+        nargs="*",
+        help="any extra kwargs for the given program",
     )
     args = parser.parse_args()
 
@@ -167,11 +161,13 @@ if __name__ == "__main__":
         else:
             simulation_type_args = [args.controlled_at_node]
 
-    for graph_name, graph in start(graphs_dir, args.graph_names):
+    extra_kwargs = parse_extra_kwargs(args.extra_kwargs) if args.extra_kwargs else {}
+    for graph_name, graph in get_graph(args.graph_names):
         main(
+            args.program,
             graph_name,
             graph,
-            args.program,
+            extra_kwargs,
             args.simulation_type,
             args.no_sim,
             args.sched,
