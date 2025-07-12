@@ -154,8 +154,8 @@ class LinearRegressionCVFAnalysisV2(CVFAnalysisV2):
                 ):
                     break
 
-                m = torch.tensor(new_m, requires_grad=True)
-                c = torch.tensor(new_c, requires_grad=True)
+                m = new_m.detach().clone().requires_grad_(True)
+                c = new_c.detach().clone().requires_grad_(True)
 
             if new_m > self.lr_config.config.max_m:
                 new_m = self.lr_config.config.max_m
