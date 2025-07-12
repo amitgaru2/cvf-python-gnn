@@ -114,10 +114,14 @@ class LinearRegressionCVFAnalysisV2(CVFAnalysisV2):
             data = self.get_actual_config_node_values(position, start_state[position])
 
             # print("initial", data.m, data.c)
-            for _ in range(1, self.lr_config.config.iterations + 1):
-                m = torch.tensor(data.m, requires_grad=True)
-                c = torch.tensor(data.c, requires_grad=True)
+            init_m = data.m
+            init_c = data.c
 
+            m = torch.tensor(init_m, requires_grad=True)
+            c = torch.tensor(init_c, requires_grad=True)
+
+            # while True:
+            for _ in range(1, self.lr_config.config.iterations + 1):
                 node_df = self.__get_node_data_df(position)
                 X_node = torch.tensor(node_df["X"].array)
                 y_true = torch.tensor(node_df["y"].array)
@@ -127,23 +131,32 @@ class LinearRegressionCVFAnalysisV2(CVFAnalysisV2):
 
                 # new values to update
                 doubly_st_mt = self.lr_config.config.doubly_stochastic_matrix[position]
-                new_m = (
-                    sum(wt * data.m for wt in doubly_st_mt)
-                    - self.lr_config.config.learning_rate * m.grad
-                )
-                new_c = (
-                    sum(wt * data.c for wt in doubly_st_mt)
-                    - self.lr_config.config.learning_rate * c.grad
-                )
 
+                with torch.no_grad():
+                    new_m = (
+                        sum(wt * m for wt in doubly_st_mt)
+                        - self.lr_config.config.learning_rate * m.grad
+                    )
+                    new_c = (
+                        sum(wt * c for wt in doubly_st_mt)
+                        - self.lr_config.config.learning_rate * c.grad
+                    )
+                    m.grad.zero_()
+                    c.grad.zero_()
                 # if (
                 #     abs(m - new_m) <= self.lr_config.config.iteration_stop_threshold
                 #     and abs(c - new_c) <= self.lr_config.config.iteration_stop_threshold
                 # ):
                 #     break
+                if (
+                    abs(init_m - new_m) >= self.lr_config.config.m_step
+                    or abs(init_c - new_c) >= self.lr_config.config.c_step
+                ):
+                    break
 
-                data = LinearRegressionData(new_m, new_c)
-            
+                m = torch.tensor(new_m, requires_grad=True)
+                c = torch.tensor(new_c, requires_grad=True)
+
             if new_m > self.lr_config.config.max_m:
                 new_m = self.lr_config.config.max_m
             elif new_m < self.lr_config.config.min_m:
@@ -198,7 +211,12 @@ if __name__ == "__main__":
             # if lr.is_invariant([mapped_v for _ in lr.nodes]):
             #     print(v, mapped_v)
             for i in lr._get_program_transitions_as_configs(
-                ((np.float64(2.322), np.float64(0.0)), (np.float64(2.324), np.float64(0.0)), (np.float64(2.3215), np.float64(0.0)), (np.float64(2.321), np.float64(0.0)))
+                (
+                    (np.float64(2.322), np.float64(0.0)),
+                    (np.float64(2.324), np.float64(0.0)),
+                    (np.float64(2.3215), np.float64(0.0)),
+                    (np.float64(2.321), np.float64(0.0)),
+                )
             ):
                 print("mapped_v", mapped_v, "i", i)
                 print(lr.get_actual_config_values(i[1]))

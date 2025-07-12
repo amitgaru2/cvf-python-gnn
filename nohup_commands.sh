@@ -3,10 +3,16 @@ set -ex
 
 # conda activate cvf
 
-cd cvf-analysis/v2
-python main.py --program linear_regression --graph-names star_graph_n4 -ml --extra-kwargs config_file=matrix_1
+# cd cvf-analysis/v2
+# python main.py --program linear_regression --graph-names star_graph_n4 -ml --extra-kwargs config_file=matrix_1
 
-# cd simulations
+cd simulations
+python simulate.py --program linear_regression --sched 0 --no-sim 1000 --fault-interval 2 --graph-names star_graph_n4 --fault-prob 1.0 --simulation-type controlled_at_node_amit_v2 --controlled-at-node 0 --extra-kwargs config_file=matrix_1
+python simulate.py --program linear_regression --sched 0 --no-sim 1000 --fault-interval 3 --graph-names star_graph_n4 --fault-prob 1.0 --simulation-type controlled_at_node_amit_v2 --controlled-at-node 0 --extra-kwargs config_file=matrix_1
+python simulate.py --program linear_regression --sched 0 --no-sim 1000 --fault-interval 4 --graph-names star_graph_n4 --fault-prob 1.0 --simulation-type controlled_at_node_amit_v2 --controlled-at-node 0 --extra-kwargs config_file=matrix_1
+python simulate.py --program linear_regression --sched 0 --no-sim 1000 --fault-interval 2 --graph-names star_graph_n4 --fault-prob 1.0 --simulation-type controlled_at_node_amit_v2 --controlled-at-node 2 --extra-kwargs config_file=matrix_1
+python simulate.py --program linear_regression --sched 0 --no-sim 1000 --fault-interval 3 --graph-names star_graph_n4 --fault-prob 1.0 --simulation-type controlled_at_node_amit_v2 --controlled-at-node 2 --extra-kwargs config_file=matrix_1
+python simulate.py --program linear_regression --sched 0 --no-sim 1000 --fault-interval 4 --graph-names star_graph_n4 --fault-prob 1.0 --simulation-type controlled_at_node_amit_v2 --controlled-at-node 2 --extra-kwargs config_file=matrix_1
 
 # # PROGRAM="graph_coloring"
 # # PROGRAM="dijkstra_token_ring"

@@ -2,10 +2,10 @@ import os
 
 import numpy as np
 
-learning_rate = 0.001
+learning_rate = 0.01
 iteration_stop_threshold = 0.0001  # stop when, either complete `iterations` or there is no improvement above this threshold
 
-data_path = os.path.join("datasets", "custom_data__m105__c0.csv")
+data_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "datasets", "custom_data__m105__c0.csv")
 
 # got this by fitting our data at https://www.graphpad.com/quickcalcs/linear2/
 invariant_m = 103,107

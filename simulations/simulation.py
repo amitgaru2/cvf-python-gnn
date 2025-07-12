@@ -161,7 +161,15 @@ class SimulationMixin:
     def get_actions(self, state):
         """get a random action from all eligible actions of the state."""
         eligible_actions = self.get_all_eligible_actions(state)  # from the base class
-        action = self.get_one_random_action(eligible_actions)
+        if not eligible_actions:
+            logger.warning(
+                "No eligible action for %s : %s",
+                state,
+                self.get_actual_config_values(state),
+            )
+        action = (
+            self.get_one_random_action(eligible_actions) if eligible_actions else []
+        )
         return action
 
     def select_transitions_for_process(self, p, state, count):
@@ -387,7 +395,7 @@ class SimulationMixin:
             self.CONTROLLED_FAULT_AT_NODE_SIMULATION_TYPE_AMIT_V2: self.get_faulty_actions_controlled_at_node_v2,
             self.CONTROLLED_FAULT_AT_NODE_SIMULATION_TYPE_DUONG: self.get_faulty_actions_controlled_at_node_duong,
         }[self.simulation_type]
-        while step == 0 or not self.is_invariant(state):  # from the base class
+        while not self.is_invariant(state):  # from the base class
             faulty_actions = []
             if last_fault_duration + 1 >= self.fault_interval:
                 faulty_actions = faulty_action_generator(state, *extra_args, step)
