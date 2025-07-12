@@ -135,24 +135,22 @@ class LinearRegressionCVFAnalysisV2(CVFAnalysisV2):
                     - self.lr_config.config.learning_rate * c.grad
                 )
 
-                if (
-                    abs(m - new_m) <= self.lr_config.config.iteration_stop_threshold
-                    and abs(c - new_c) <= self.lr_config.config.iteration_stop_threshold
-                ):
-                    break
+                # if (
+                #     abs(m - new_m) <= self.lr_config.config.iteration_stop_threshold
+                #     and abs(c - new_c) <= self.lr_config.config.iteration_stop_threshold
+                # ):
+                #     break
 
                 data = LinearRegressionData(new_m, new_c)
 
             if new_m > self.lr_config.config.max_m:
                 new_m = self.lr_config.config.max_m
-
-            if new_m < self.lr_config.config.min_m:
+            elif new_m < self.lr_config.config.min_m:
                 new_m = self.lr_config.config.min_m
 
             if new_c > self.lr_config.config.max_c:
                 new_c = self.lr_config.config.max_c
-
-            if new_c < self.lr_config.config.min_c:
+            elif new_c < self.lr_config.config.min_c:
                 new_c = self.lr_config.config.min_c
 
             # need to first normalize and check the values
