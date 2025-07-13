@@ -35,8 +35,12 @@ class NodeVarHistory:
     def add_history(self, value):
         self.hist.append(value)
         if len(self.hist) > self.size:
-            self.hist.pop(0)  # remove oldest element
-        self.cur_indx += 1
+            self.hist.pop(
+                0
+            )  # maintain the size of history to self.size by removing oldest element
+        self.cur_indx += (
+            1  # keep track of the number of history of variable added to the node
+        )
 
     def get_history_from(self, indx):
         if indx > self.cur_indx:
