@@ -8,32 +8,29 @@ set -ex
 
 cd simulations
 
-python simulate.py --program maximal_matching --no-sim 10000 --fault-interval 3 --graph-names graph_10 --fault-prob 1.0 --simulation-type controlled_at_node_amit_v2 --controlled-at-nodes 0 1 --node-sel-strategy random --limit-steps 100
-python simulate.py --program maximal_matching --no-sim 10000 --fault-interval 3 --graph-names graph_10 --fault-prob 1.0 --simulation-type controlled_at_node_amit_v2 --controlled-at-nodes 0 1 --node-sel-strategy round-robin --limit-steps 100
-python simulate.py --program maximal_matching --no-sim 10000 --fault-interval 3 --graph-names graph_10 --fault-prob 1.0 --simulation-type controlled_at_node_amit_v2 --controlled-at-nodes 0 1 --node-sel-strategy reduced-wt --limit-steps 100
-
-
-python simulate.py --program maximal_matching --no-sim 10000 --fault-interval 3 --graph-names graph_10 --fault-prob 1.0 --simulation-type controlled_at_node_amit_v2 --controlled-at-nodes 0 4 --node-sel-strategy random --limit-steps 100
-python simulate.py --program maximal_matching --no-sim 10000 --fault-interval 3 --graph-names graph_10 --fault-prob 1.0 --simulation-type controlled_at_node_amit_v2 --controlled-at-nodes 0 4 --node-sel-strategy round-robin --limit-steps 100
-python simulate.py --program maximal_matching --no-sim 10000 --fault-interval 3 --graph-names graph_10 --fault-prob 1.0 --simulation-type controlled_at_node_amit_v2 --controlled-at-nodes 0 4 --node-sel-strategy reduced-wt --limit-steps 100
-
-
-python simulate.py --program maximal_matching --no-sim 10000 --fault-interval 3 --graph-names graph_10 --fault-prob 1.0 --simulation-type controlled_at_node_amit_v2 --controlled-at-nodes 0 4 7 --node-sel-strategy random --limit-steps 100
-python simulate.py --program maximal_matching --no-sim 10000 --fault-interval 3 --graph-names graph_10 --fault-prob 1.0 --simulation-type controlled_at_node_amit_v2 --controlled-at-nodes 0 4 7 --node-sel-strategy round-robin --limit-steps 100
-python simulate.py --program maximal_matching --no-sim 10000 --fault-interval 3 --graph-names graph_10 --fault-prob 1.0 --simulation-type controlled_at_node_amit_v2 --controlled-at-nodes 0 4 7 --node-sel-strategy reduced-wt --limit-steps 100
-
-
 # # PROGRAM="graph_coloring"
-# # PROGRAM="dijkstra_token_ring"
+PROGRAM="dijkstra_token_ring"
 # PROGRAM="maximal_matching"
 
 # GRAPH="graph_7"
-# GRAPH="implicit_graph_n10"
+GRAPH="implicit_graph_n10"
 
-# NO_SIMS=10000
-# LIMIT_STEPS=100
-# FAULT_INTERVALS=(2 3 4 5)
-# SIMULATION_TYPE="controlled_at_node_amit_v2"
+NO_SIMS=10000
+LIMIT_STEPS=100
+FAULT_INTERVALS=(2)
+SIMULATION_TYPE="controlled_at_node_amit_v2"
+
+for FI in "${FAULT_INTERVALS[@]}"; do
+    python simulate.py --program $PROGRAM --no-sim $NO_SIMS --fault-interval $FI  --graph-names $GRAPH --fault-prob 1.0 --simulation-type $SIMULATION_TYPE --controlled-at-nodes 8 9 --node-sel-strategy random --limit-steps $LIMIT_STEPS
+    python simulate.py --program $PROGRAM --no-sim $NO_SIMS --fault-interval $FI --graph-names $GRAPH --fault-prob 1.0 --simulation-type $SIMULATION_TYPE --controlled-at-nodes 8 9 --node-sel-strategy round-robin --limit-steps $LIMIT_STEPS
+    python simulate.py --program $PROGRAM --no-sim $NO_SIMS --fault-interval $FI --graph-names $GRAPH --fault-prob 1.0 --simulation-type $SIMULATION_TYPE --controlled-at-nodes 8 9 --node-sel-strategy reduced-wt --limit-steps $LIMIT_STEPS
+done
+
+for FI in "${FAULT_INTERVALS[@]}"; do
+    python simulate.py --program $PROGRAM --no-sim $NO_SIMS --fault-interval $FI  --graph-names $GRAPH --fault-prob 1.0 --simulation-type $SIMULATION_TYPE --controlled-at-nodes 4 5 --node-sel-strategy random --limit-steps $LIMIT_STEPS
+    python simulate.py --program $PROGRAM --no-sim $NO_SIMS --fault-interval $FI --graph-names $GRAPH --fault-prob 1.0 --simulation-type $SIMULATION_TYPE --controlled-at-nodes 4 5 --node-sel-strategy round-robin --limit-steps $LIMIT_STEPS
+    python simulate.py --program $PROGRAM --no-sim $NO_SIMS --fault-interval $FI --graph-names $GRAPH --fault-prob 1.0 --simulation-type $SIMULATION_TYPE --controlled-at-nodes 4 5 --node-sel-strategy reduced-wt --limit-steps $LIMIT_STEPS
+done
 
 # for FI in "${FAULT_INTERVALS[@]}"; do
 #     python simulate.py --program $PROGRAM --sched 0 --no-sim $NO_SIMS --fault-interval $FI --graph-names $GRAPH --fault-prob 1.0 --simulation-type $SIMULATION_TYPE --controlled-at-node 0 --limit-steps $LIMIT_STEPS
