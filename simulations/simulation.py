@@ -447,14 +447,11 @@ class SimulationMixin:
         faulty_actions = self.inject_fault_at_node(state, controlled_at_nodes)
         return faulty_actions
 
-    def get_faulty_actions_controlled_at_node_v2(
-        self, state, step, controlled_at_nodes, node_sel_strategy
-    ):
+    def get_faulty_actions_controlled_at_node_v2(self, state, step, strategy):
         """
         process: process_id where the fault weight is concentrated
         """
-        NodeSelStrategyKlass = NodeSelectionStrategyMap[node_sel_strategy]
-        strategy = NodeSelStrategyKlass(self.nodes, controlled_at_nodes)
+
         faulty_actions = self.inject_fault_at_node_v2(state, strategy)
         return faulty_actions
 
@@ -483,16 +480,22 @@ class SimulationMixin:
         step = 0
         last_fault_duration = 0
         faulty_action_generator = {
-            self.RANDOM_FAULT_SIMULATION_TYPE: self.get_faulty_actions_random,
-            self.RANDOM_FAULT_START_AT_NODE_SIMULATION_TYPE: self.get_faulty_actions_random_start_at_node,
-            self.CONTROLLED_FAULT_AT_NODE_SIMULATION_TYPE: self.get_faulty_actions_controlled_at_node,
+            # self.RANDOM_FAULT_SIMULATION_TYPE: self.get_faulty_actions_random,
+            # self.RANDOM_FAULT_START_AT_NODE_SIMULATION_TYPE: self.get_faulty_actions_random_start_at_node,
+            # self.CONTROLLED_FAULT_AT_NODE_SIMULATION_TYPE: self.get_faulty_actions_controlled_at_node,
             self.CONTROLLED_FAULT_AT_NODE_SIMULATION_TYPE_AMIT_V2: self.get_faulty_actions_controlled_at_node_v2,
-            self.CONTROLLED_FAULT_AT_NODE_SIMULATION_TYPE_DUONG: self.get_faulty_actions_controlled_at_node_duong,
+            # self.CONTROLLED_FAULT_AT_NODE_SIMULATION_TYPE_DUONG: self.get_faulty_actions_controlled_at_node_duong,
         }[self.simulation_type]
+
+        NodeSelStrategyKlass = NodeSelectionStrategyMap[
+            extra_kwargs["node_sel_strategy"]
+        ]
+        strategy = NodeSelStrategyKlass(self.nodes, extra_kwargs["controlled_at_nodes"])
+
         while not self.is_invariant(state):  # from the base class
             faulty_actions = []
             if last_fault_duration + 1 >= self.fault_interval:
-                faulty_actions = faulty_action_generator(state, step, **extra_kwargs)
+                faulty_actions = faulty_action_generator(state, step, strategy)
 
             if faulty_actions:
                 state = self.execute(state, faulty_actions)
