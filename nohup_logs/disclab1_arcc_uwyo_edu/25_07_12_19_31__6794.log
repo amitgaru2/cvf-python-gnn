@@ -1,0 +1,8 @@
++ cd simulations
++ python simulate.py --program graph_coloring --sched 0 --no-sim 10000 --fault-interval 2 --graph-names graph_7 --fault-prob 1.0 --simulation-type controlled_at_node_amit_v2 --controlled-at-nodes-w-wt 0=0.3333 4=0.3333 5=0.3333
+Locating Graph: "graph_7".
+Analysis graph: graph_7 | program: graph_coloring | Simulation Type: controlled_at_node_amit_v2, Args: {'controlled_at_nodes_w_wt': {0: 0.3333, 4: 0.3333, 5: 0.3333}} | No. of Simulations: 10000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 2
+Total configs: 11,520.
+Simulation environment: No. of Simulations: 10000 | Scheduler: CENTRAL | ME: False
+
+Saving result at results/graph_coloring/graph_7__controlled_at_node_amit_v2__ARGS_0=0-3333_4=0-3333_5=0-3333__N10000__FI2__.csv

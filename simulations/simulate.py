@@ -60,16 +60,11 @@ def main(
     extra_kwargs,
     simulation_type,
     no_simulations,
-    scheduler,
-    me,
     fault_prob,
     fault_interval,
     limit_steps,
     simulation_type_kwargs,
 ):
-    if scheduler == CENTRAL_SCHEDULER:
-        me = False
-
     logger.info(
         "Analysis graph: %s | program: %s | Simulation Type: %s, Args: %s | No. of Simulations: %s | Scheduler: %s | Mutual Exclusion: %s | Fault Interval: %s",
         graph_name,
@@ -77,8 +72,8 @@ def main(
         simulation_type,
         simulation_type_kwargs,
         no_simulations,
-        scheduler,
-        me,
+        0,
+        False,
         fault_interval,
     )
     SimulationCVFAnalysisKlass = AnalysisMap[program]
@@ -86,8 +81,8 @@ def main(
     simulation.create_simulation_environment(
         simulation_type=simulation_type,
         no_of_simulations=no_simulations,
-        scheduler=scheduler,
-        me=me,
+        scheduler=0,
+        me=False,
         limit_steps=limit_steps,
     )
     simulation.apply_fault_settings(
@@ -95,9 +90,6 @@ def main(
     )
     result = simulation.start_simulation(simulation_type_kwargs)
     simulation.store_raw_result(result, simulation_type_kwargs)
-    # hist, bin_edges = simulation.aggregate_result(result)
-    # logger.info("Result %s", result)
-    # simulation.store_result(hist, bin_edges)
 
 
 if __name__ == "__main__":
@@ -124,13 +116,13 @@ if __name__ == "__main__":
         required=True,
     )
     parser.add_argument("--controlled-at-nodes-w-wt", type=str, nargs="*")
-    parser.add_argument(
-        "--sched",
-        choices=[CENTRAL_SCHEDULER, DISTRIBUTED_SCHEDULER],
-        type=int,
-        required=True,
-    )
-    parser.add_argument("-me", "--me", action="store_true")
+    # parser.add_argument(
+    #     "--sched",
+    #     choices=[CENTRAL_SCHEDULER, DISTRIBUTED_SCHEDULER],
+    #     type=int,
+    #     required=True,
+    # )
+    # parser.add_argument("-me", "--me", action="store_true")
     parser.add_argument("--no-sim", type=int, required=True)  # number of simulations
     parser.add_argument("--fault-prob", type=float, required=True)  # fault probability
     parser.add_argument("--limit-steps", type=int, default=None)
@@ -190,8 +182,6 @@ if __name__ == "__main__":
             extra_kwargs,
             args.simulation_type,
             args.no_sim,
-            args.sched,
-            args.me,
             args.fault_prob,
             args.fault_interval,
             args.limit_steps,

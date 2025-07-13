@@ -471,7 +471,7 @@ class SimulationMixin:
     def store_raw_result(self, result, simulation_type_kwargs):
         st_kwargs_verb = (
             "_".join(
-                f"{k}={v}"
+                f"{k}={str(v).replace('.', '-')}"
                 for k, v in simulation_type_kwargs["controlled_at_nodes_w_wt"].items()
             )
             if simulation_type_kwargs

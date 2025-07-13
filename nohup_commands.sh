@@ -14,7 +14,7 @@ cd simulations
 # python simulate.py --program linear_regression --sched 0 --no-sim 1000 --fault-interval 3 --graph-names star_graph_n4 --fault-prob 1.0 --simulation-type controlled_at_node_amit_v2 --controlled-at-node 3 --extra-kwargs config_file=matrix_1
 # python simulate.py --program linear_regression --sched 0 --no-sim 1000 --fault-interval 4 --graph-names star_graph_n4 --fault-prob 1.0 --simulation-type controlled_at_node_amit_v2 --controlled-at-node 3 --extra-kwargs config_file=matrix_1
 
-python simulate.py --program graph_coloring --sched 0 --no-sim 10000 --fault-interval 2 --graph-names graph_7 --fault-prob 1.0 --simulation-type controlled_at_node_amit_v2 --controlled-at-nodes-w-wt 0=0.3333 4=0.3333 9=0.3333
+python simulate.py --program graph_coloring --sched 0 --no-sim 10000 --fault-interval 2 --graph-names graph_7 --fault-prob 1.0 --simulation-type controlled_at_node_amit_v2 --controlled-at-nodes-w-wt 0=0.3333 4=0.3333 5=0.3333
 
 # # PROGRAM="graph_coloring"
 # # PROGRAM="dijkstra_token_ring"
