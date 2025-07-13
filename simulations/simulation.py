@@ -76,6 +76,9 @@ class RandomNodeSelectionStrategy(NodeSelectionStrategy):
 class RoundRobinNodeSelectionStrategy(NodeSelectionStrategy):
     def __init__(self, nodes, selected_nodes):
         super().__init__(nodes, selected_nodes)
+        random.shuffle(
+            self.selected_nodes
+        )  # so that the order of round robin is not always same in different simulation rounds
         self.next_to_select = 0
         self.update_step()
 
@@ -89,7 +92,7 @@ class RoundRobinNodeSelectionStrategy(NodeSelectionStrategy):
     def update_step(self, **kwargs):
         # default is random, so equal probabilities to all selected nodes
         self.init_probabilities()  # reset probabilities
-        cur_sel_node = self.get_next_selection()
+        cur_sel_node = self.selected_nodes[self.get_next_selection()]
         self.p[cur_sel_node] = 1.0
         # self.normalize_probabilities()
 
@@ -109,7 +112,7 @@ class ReducedWtSelectionStrategy(NodeSelectionStrategy):
         last_sel_node = kwargs["last_sel_node"]
         sel_node_prob = self.p[last_sel_node]
         for process in self.selected_nodes:
-            self.p[process] += sel_node_prob / 4
+            self.p[process] += sel_node_prob / (2 * (len(self.selected_nodes) - 1))
         self.p[last_sel_node] = sel_node_prob / 2
         self.normalize_probabilities()
 
@@ -451,7 +454,7 @@ class SimulationMixin:
         """
         process: process_id where the fault weight is concentrated
         """
-
+        # print("step", step, "p", strategy.p)
         faulty_actions = self.inject_fault_at_node_v2(state, strategy)
         return faulty_actions
 
