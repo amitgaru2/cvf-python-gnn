@@ -7,14 +7,10 @@ set -ex
 # python main.py --program linear_regression --graph-names star_graph_n4 -ml --extra-kwargs config_file=matrix_1
 
 cd simulations
-# python simulate.py --program linear_regression --sched 0 --no-sim 1000 --fault-interval 2 --graph-names star_graph_n4 --fault-prob 1.0 --simulation-type controlled_at_node_amit_v2 --controlled-at-node 1 --extra-kwargs config_file=matrix_1
-# python simulate.py --program linear_regression --sched 0 --no-sim 1000 --fault-interval 3 --graph-names star_graph_n4 --fault-prob 1.0 --simulation-type controlled_at_node_amit_v2 --controlled-at-node 1 --extra-kwargs config_file=matrix_1
-# python simulate.py --program linear_regression --sched 0 --no-sim 1000 --fault-interval 4 --graph-names star_graph_n4 --fault-prob 1.0 --simulation-type controlled_at_node_amit_v2 --controlled-at-node 1 --extra-kwargs config_file=matrix_1
-# python simulate.py --program linear_regression --sched 0 --no-sim 1000 --fault-interval 2 --graph-names star_graph_n4 --fault-prob 1.0 --simulation-type controlled_at_node_amit_v2 --controlled-at-node 3 --extra-kwargs config_file=matrix_1
-# python simulate.py --program linear_regression --sched 0 --no-sim 1000 --fault-interval 3 --graph-names star_graph_n4 --fault-prob 1.0 --simulation-type controlled_at_node_amit_v2 --controlled-at-node 3 --extra-kwargs config_file=matrix_1
-# python simulate.py --program linear_regression --sched 0 --no-sim 1000 --fault-interval 4 --graph-names star_graph_n4 --fault-prob 1.0 --simulation-type controlled_at_node_amit_v2 --controlled-at-node 3 --extra-kwargs config_file=matrix_1
 
-python simulate.py --program graph_coloring --sched 0 --no-sim 10000 --fault-interval 2 --graph-names graph_7 --fault-prob 1.0 --simulation-type controlled_at_node_amit_v2 --controlled-at-nodes-w-wt 0=0.3333 4=0.3333 5=0.3333
+python simulate.py --program graph_coloring --no-sim 100000 --fault-interval 2 --graph-names graph_7 --fault-prob 1.0 --simulation-type controlled_at_node_amit_v2 --controlled-at-nodes 0 1 --node-sel-strategy random --limit-steps 100
+python simulate.py --program graph_coloring --no-sim 100000 --fault-interval 2 --graph-names graph_7 --fault-prob 1.0 --simulation-type controlled_at_node_amit_v2 --controlled-at-nodes 0 1 --node-sel-strategy round-robin --limit-steps 100
+python simulate.py --program graph_coloring --no-sim 100000 --fault-interval 2 --graph-names graph_7 --fault-prob 1.0 --simulation-type controlled_at_node_amit_v2 --controlled-at-nodes 0 1 --node-sel-strategy reduced-wt --limit-steps 100
 
 # # PROGRAM="graph_coloring"
 # # PROGRAM="dijkstra_token_ring"

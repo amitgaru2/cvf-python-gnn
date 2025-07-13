@@ -45,8 +45,8 @@ NODE_SELECTION_STRATEGIES = [
 
 class NodeSelectionStrategy:
     def __init__(self, nodes, selected_nodes):
-        self.nodes = nodes  # all possible nodes in the set
-        self.selected_nodes = selected_nodes  # selected nodes where fault occurs
+        self.nodes = nodes[:]  # all possible nodes in the set
+        self.selected_nodes = selected_nodes[:]  # selected nodes where fault occurs
         self.init_probabilities()
 
     def init_probabilities(self):
