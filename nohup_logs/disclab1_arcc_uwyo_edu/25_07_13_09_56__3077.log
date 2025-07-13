@@ -1,0 +1,6 @@
++ cd simulations
++ python simulate.py --program maximal_matching --no-sim 10000 --fault-interval 3 --graph-names graph_10 --fault-prob 1.0 --simulation-type controlled_at_node_amit_v2 --controlled-at-nodes 0 1 --node-sel-strategy random --limit-steps 100
+Locating Graph: "graph_10".
+Analysis graph: graph_10 | program: maximal_matching | Simulation Type: controlled_at_node_amit_v2, Args: {'controlled_at_nodes': [0, 1], 'node_sel_strategy': 'random'} | No. of Simulations: 10000 | Scheduler: 0 | Mutual Exclusion: False | Fault Interval: 3
+Total configs: 65,536,000.
+Simulation environment: No. of Simulations: 10000 | Scheduler: CENTRAL | ME: False

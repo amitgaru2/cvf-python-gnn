@@ -8,9 +8,20 @@ set -ex
 
 cd simulations
 
-python simulate.py --program graph_coloring --no-sim 100000 --fault-interval 2 --graph-names graph_7 --fault-prob 1.0 --simulation-type controlled_at_node_amit_v2 --controlled-at-nodes 0 1 --node-sel-strategy random --limit-steps 100
-python simulate.py --program graph_coloring --no-sim 100000 --fault-interval 2 --graph-names graph_7 --fault-prob 1.0 --simulation-type controlled_at_node_amit_v2 --controlled-at-nodes 0 1 --node-sel-strategy round-robin --limit-steps 100
-python simulate.py --program graph_coloring --no-sim 100000 --fault-interval 2 --graph-names graph_7 --fault-prob 1.0 --simulation-type controlled_at_node_amit_v2 --controlled-at-nodes 0 1 --node-sel-strategy reduced-wt --limit-steps 100
+python simulate.py --program maximal_matching --no-sim 10000 --fault-interval 3 --graph-names graph_10 --fault-prob 1.0 --simulation-type controlled_at_node_amit_v2 --controlled-at-nodes 0 1 --node-sel-strategy random --limit-steps 100
+python simulate.py --program maximal_matching --no-sim 10000 --fault-interval 3 --graph-names graph_10 --fault-prob 1.0 --simulation-type controlled_at_node_amit_v2 --controlled-at-nodes 0 1 --node-sel-strategy round-robin --limit-steps 100
+python simulate.py --program maximal_matching --no-sim 10000 --fault-interval 3 --graph-names graph_10 --fault-prob 1.0 --simulation-type controlled_at_node_amit_v2 --controlled-at-nodes 0 1 --node-sel-strategy reduced-wt --limit-steps 100
+
+
+python simulate.py --program maximal_matching --no-sim 10000 --fault-interval 3 --graph-names graph_10 --fault-prob 1.0 --simulation-type controlled_at_node_amit_v2 --controlled-at-nodes 0 4 --node-sel-strategy random --limit-steps 100
+python simulate.py --program maximal_matching --no-sim 10000 --fault-interval 3 --graph-names graph_10 --fault-prob 1.0 --simulation-type controlled_at_node_amit_v2 --controlled-at-nodes 0 4 --node-sel-strategy round-robin --limit-steps 100
+python simulate.py --program maximal_matching --no-sim 10000 --fault-interval 3 --graph-names graph_10 --fault-prob 1.0 --simulation-type controlled_at_node_amit_v2 --controlled-at-nodes 0 4 --node-sel-strategy reduced-wt --limit-steps 100
+
+
+python simulate.py --program maximal_matching --no-sim 10000 --fault-interval 3 --graph-names graph_10 --fault-prob 1.0 --simulation-type controlled_at_node_amit_v2 --controlled-at-nodes 0 4 7 --node-sel-strategy random --limit-steps 100
+python simulate.py --program maximal_matching --no-sim 10000 --fault-interval 3 --graph-names graph_10 --fault-prob 1.0 --simulation-type controlled_at_node_amit_v2 --controlled-at-nodes 0 4 7 --node-sel-strategy round-robin --limit-steps 100
+python simulate.py --program maximal_matching --no-sim 10000 --fault-interval 3 --graph-names graph_10 --fault-prob 1.0 --simulation-type controlled_at_node_amit_v2 --controlled-at-nodes 0 4 7 --node-sel-strategy reduced-wt --limit-steps 100
+
 
 # # PROGRAM="graph_coloring"
 # # PROGRAM="dijkstra_token_ring"
