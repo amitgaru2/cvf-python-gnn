@@ -27,18 +27,18 @@ sys.path.append(utils_path)
 
 class NodeVarHistory:
 
-    def __init__(self, size):
+    def __init__(self, size=5):
         self.size = size
         self.hist = [None for _ in range(self.size)]
         self.cur_indx = -1
 
-    def add_to_history(self, value):
+    def add_history(self, value):
         self.hist.append(value)
         if len(self.hist) > self.size:
             self.hist.pop(0)  # remove oldest element
         self.cur_indx += 1
 
-    def get_history_at_indx(self, indx):
+    def get_history_from(self, indx):
         if indx > self.cur_indx:
             raise Exception(
                 "Trying to access history index yet to be filled."
@@ -47,7 +47,10 @@ class NodeVarHistory:
             internal_indx = 0  # obsolette index trying to be accessed, so move it to the latest oldest in the history i.e. at index 0
         else:
             internal_indx = (self.size - 1) - (self.cur_indx - indx)
-        return self.hist[internal_indx], (self.cur_indx + 1 - self.size) + internal_indx
+        return (
+            self.hist[internal_indx:],
+            (self.cur_indx + 1 - self.size) + internal_indx,
+        )
 
 
 class SimulationMixinV2:
@@ -62,18 +65,17 @@ class SimulationMixinV2:
             e: i for i, e in enumerate(self.edges)
         }  # reverse lookup to get the index of edges {(1, 2): 0, (2, 1): 2, ...}
 
-    def init_var_hist(self, num_vars=1, hist_size=5):
+    def init_var_hist(self):
         """
         - num_vars = 1 for coloring, dijkstra
         - num_vars = 2 for max matching
         """
-        self.num_vars = num_vars
-        self.hist_size = hist_size
+        self.num_vars = 1
 
         self.nodes_hist = []
         for _ in range(len(self.nodes)):
             self.nodes_hist.append(
-                [Queue(maxsize=hist_size) for _ in self.num_vars]
+                [NodeVarHistory() for _ in range(self.num_vars)]
             )  # queue for each variables in every nodes
 
     def init_stale_pointers(self):
@@ -93,8 +95,8 @@ class SimulationMixinV2:
         self.init_var_hist()
         self.init_stale_pointers()
 
-    def log_node_var_to_history(self, node, var, value):
-        self.nodes_hist[node][var].put(value)
+    def log_var_history(self, node, var, value):
+        self.nodes_hist[node][var].add_history(value)
 
     def get_random_state(self, avoid_invariant=False):
         """
