@@ -70,17 +70,9 @@ class SimulationMixinV2:
         }  # reverse lookup to get the index of edges {(1, 2): 0, (2, 1): 2, ...}
 
     def init_var_hist(self):
-        """
-        - num_vars = 1 for coloring, dijkstra
-        - num_vars = 2 for max matching
-        """
-        self.num_vars = 1
-
-        self.nodes_hist = []
-        for _ in range(len(self.nodes)):
-            self.nodes_hist.append(
-                [NodeVarHistory() for _ in range(self.num_vars)]
-            )  # queue for each variables in every nodes
+        self.nodes_hist = [
+            NodeVarHistory() for _ in self.nodes
+        ]  # history for each nodes; assuming each node has single variable.
 
     def init_stale_pointers(self):
         """points the neighboring history from where the variable is yet to be read"""
@@ -90,17 +82,26 @@ class SimulationMixinV2:
                     0 if edge[1] == node else None for edge in range(len(self.edges))
                 ]  # sp values initialized to 0 (first value) for all the edges where the node is a part of the edge (reading the value) otherwise set null
 
-    def create_simulation_environment(self, no_of_simulations: int, limit_steps: int):
+    def create_simulation_environment(
+        self, no_of_simulations: int, fault_interval: int, limit_steps: int
+    ):
         """initialize configurations for the simulation"""
         self.no_of_simulations = no_of_simulations
+        self.fault_interval = fault_interval
         self.limit_steps = limit_steps
 
         self.init_edges()
         self.init_var_hist()
         self.init_stale_pointers()
 
-    def log_var_history(self, node, var, value):
-        self.nodes_hist[node][var].add_history(value)
+    def log_var_history(self, node, value):
+        """log variable history for individual node"""
+        self.nodes_hist[node].add_history(value)
+
+    def log_state_to_history(self, state):
+        """log the entire state to the history of individual nodes"""
+        for node, value in enumerate(state):
+            self.log_var_history(node, value)
 
     def get_random_state(self, avoid_invariant=False):
         """
@@ -121,12 +122,38 @@ class SimulationMixinV2:
 
         return indx, state
 
+    def get_faulty_actions(self, state):
+        pass
+
+    def get_pt_actions(self, state):
+        pass
+
+    def execute_actions(self, state, actions):
+        pass
+
     def run_simulations(self, state, **simulation_kwargs):
         """core simulation logic for a single round of simulationn"""
-        step = 0
+        steps = 0
         last_fault_duration = 0
+        cur_step_type = "pt"
 
-        return step
+        while True:
+            if last_fault_duration + 1 >= self.fault_interval:
+                # fault introduction
+                actions = self.get_faulty_actions(state)
+                last_fault_duration = 0
+            else:
+                # program transition
+                # actions = self.get_pt_actions(state)
+                # state = self.execute_actions(state, actions)
+                last_fault_duration += 1
+
+            steps += 1
+            if self.limit_steps and steps >= self.limit_steps:
+                # limit steps explicitly to stop the non-convergent chain or limit the steps for convergence
+                return steps, True
+
+        return steps, False
 
     def start_simulation(self, **simulation_kwargs):
         """entrypoint of the simulation"""
@@ -145,6 +172,7 @@ class SimulationMixinV2:
                 )
                 log_time = time.time()
             _, state = self.get_random_state(avoid_invariant=True)
+            self.log_state_to_history(state)
             inner_results = self.run_simulations(state, **simulation_kwargs)
             results.append([*inner_results])
 
