@@ -38,6 +38,21 @@ def parse_extra_kwargs(extra_kwargs):
     return result
 
 
+def parse_controlled_at_nodes_w_wt(controlled_at_nodes_w_wt):
+    result = {}
+    tot_prob = 0
+    for kv in controlled_at_nodes_w_wt:
+        kv_split = kv.split("=")
+        k, v = int(kv_split[0]), float(kv_split[1])
+        result[k] = v
+        tot_prob += v
+
+    if tot_prob > 1.0:
+        raise Exception("Probabilties sum cannot be greater than 1.0.")
+
+    return result
+
+
 def main(
     program,
     graph_name,
@@ -50,7 +65,7 @@ def main(
     fault_prob,
     fault_interval,
     limit_steps,
-    simulation_type_args,
+    simulation_type_kwargs,
 ):
     if scheduler == CENTRAL_SCHEDULER:
         me = False
@@ -60,7 +75,7 @@ def main(
         graph_name,
         program,
         simulation_type,
-        simulation_type_args,
+        simulation_type_kwargs,
         no_simulations,
         scheduler,
         me,
@@ -78,8 +93,8 @@ def main(
     simulation.apply_fault_settings(
         fault_probability=fault_prob, fault_interval=fault_interval
     )
-    result = simulation.start_simulation(*simulation_type_args)
-    simulation.store_raw_result(result, *simulation_type_args)
+    result = simulation.start_simulation(simulation_type_kwargs)
+    simulation.store_raw_result(result, simulation_type_kwargs)
     # hist, bin_edges = simulation.aggregate_result(result)
     # logger.info("Result %s", result)
     # simulation.store_result(hist, bin_edges)
@@ -108,7 +123,7 @@ if __name__ == "__main__":
         ],
         required=True,
     )
-    parser.add_argument("--controlled-at-node", type=int, required=False, default=None)
+    parser.add_argument("--controlled-at-nodes-w-wt", type=str, nargs="*")
     parser.add_argument(
         "--sched",
         choices=[CENTRAL_SCHEDULER, DISTRIBUTED_SCHEDULER],
@@ -156,10 +171,15 @@ if __name__ == "__main__":
         SimulationMixin.CONTROLLED_FAULT_AT_NODE_SIMULATION_TYPE_DUONG,
         SimulationMixin.RANDOM_FAULT_START_AT_NODE_SIMULATION_TYPE,
     }:
-        if args.controlled_at_node is None:
-            raise Exception('Missing "--controlled-at-node" argument.')
+        if args.controlled_at_nodes_w_wt is None or not args.controlled_at_nodes_w_wt:
+            raise Exception('Missing "--controlled-at-nodes-w-wt" argument.')
         else:
-            simulation_type_args = [args.controlled_at_node]
+            controlled_at_nodes_w_wt = parse_controlled_at_nodes_w_wt(
+                args.controlled_at_nodes_w_wt
+            )
+            simulation_type_kwargs = {
+                "controlled_at_nodes_w_wt": controlled_at_nodes_w_wt
+            }
 
     extra_kwargs = parse_extra_kwargs(args.extra_kwargs) if args.extra_kwargs else {}
     for graph_name, graph in get_graph(args.graph_names):
@@ -175,5 +195,5 @@ if __name__ == "__main__":
             args.fault_prob,
             args.fault_interval,
             args.limit_steps,
-            simulation_type_args,
+            simulation_type_kwargs,
         )

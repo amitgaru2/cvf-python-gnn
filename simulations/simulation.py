@@ -223,13 +223,19 @@ class SimulationMixin:
 
         return faulty_actions
 
-    def inject_fault_at_node_v2(self, state, process):
+    def inject_fault_at_node_v2(self, state, controlled_at_nodes_w_wt):
         """Amit controlled version v2. Fault occurs at only targetted nodes."""
         fault_count = 1
 
-        other_prob_wts = 0.0
+        other_prob_wts = 1.0 - sum(controlled_at_nodes_w_wt.values())
         p = [other_prob_wts for _ in range(len(self.nodes))]
-        p[process] = 1.0
+
+        for process, wt in controlled_at_nodes_w_wt.items():
+            p[process] = wt
+
+        # normalize
+        p = np.array(p)
+        p /= p.sum()
 
         faulty_actions = self.select_transitions_for_process(p, state, fault_count)
 
@@ -340,36 +346,46 @@ class SimulationMixin:
     #         step += 1
     #     return step
 
-    def get_faulty_actions_random(self, state, *others):
+    def get_faulty_actions_random(self, state):
         faulty_actions = self.inject_fault_w_equal_prob(state)
         return faulty_actions
 
-    def get_faulty_actions_random_start_at_node(self, state, process, step, *others):
+    def get_faulty_actions_random_start_at_node(
+        self, state, process, step, controlled_at_nodes_w_wt
+    ):
         if step == 0:
             faulty_actions = self.inject_fault_at_node(state, process)
         else:
             faulty_actions = self.inject_fault_w_equal_prob(state)
         return faulty_actions
 
-    def get_faulty_actions_controlled_at_node(self, state, process, *others):
+    def get_faulty_actions_controlled_at_node(
+        self, state, step, controlled_at_nodes_w_wt
+    ):
         """
         process: process_id where the fault weight is concentrated
         """
-        faulty_actions = self.inject_fault_at_node(state, process)
+        faulty_actions = self.inject_fault_at_node(state, controlled_at_nodes_w_wt)
         return faulty_actions
 
-    def get_faulty_actions_controlled_at_node_v2(self, state, process, *others):
+    def get_faulty_actions_controlled_at_node_v2(
+        self, state, step, controlled_at_nodes_w_wt
+    ):
         """
         process: process_id where the fault weight is concentrated
         """
-        faulty_actions = self.inject_fault_at_node_v2(state, process)
+        faulty_actions = self.inject_fault_at_node_v2(state, controlled_at_nodes_w_wt)
         return faulty_actions
 
-    def get_faulty_actions_controlled_at_node_duong(self, state, process, *others):
+    def get_faulty_actions_controlled_at_node_duong(
+        self, state, step, controlled_at_nodes_w_wt
+    ):
         """
         process: process_id where the fault weight is concentrated
         """
-        faulty_actions = self.inject_least_fault_at_node(state, process)
+        faulty_actions = self.inject_least_fault_at_node(
+            state, controlled_at_nodes_w_wt
+        )
         return faulty_actions
 
     def log_pt_count(self, actions):
@@ -379,7 +395,7 @@ class SimulationMixin:
         for action in actions:
             self.pt_count[action.process] += 1
 
-    def run_simulations(self, state, *extra_args):
+    def run_simulations(self, state, **extra_kwargs):
         """
         Fault occurs once in every fault interval (in the last step).
         If fault interval is 1 then fault happens in each step.
@@ -398,7 +414,7 @@ class SimulationMixin:
         while not self.is_invariant(state):  # from the base class
             faulty_actions = []
             if last_fault_duration + 1 >= self.fault_interval:
-                faulty_actions = faulty_action_generator(state, *extra_args, step)
+                faulty_actions = faulty_action_generator(state, step, **extra_kwargs)
 
             if faulty_actions:
                 state = self.execute(state, faulty_actions)
@@ -428,7 +444,7 @@ class SimulationMixin:
     def prepare_simulation_round(self):
         self.init_pt_count()
 
-    def start_simulation(self, *simulation_type_args):
+    def start_simulation(self, simulation_type_kwargs):
         logger.info(
             "Simulation environment: No. of Simulations: %d | Scheduler: %s | ME: %s",
             self.no_of_simulations,
@@ -447,24 +463,27 @@ class SimulationMixin:
                 log_time = time.time()
             self.prepare_simulation_round()
             _, state = self.get_random_state(avoid_invariant=True)
-            inner_results = self.run_simulations(state, *simulation_type_args)
+            inner_results = self.run_simulations(state, **simulation_type_kwargs)
             results.append([*inner_results, *self.pt_count.values()])
 
         return results
 
-    def store_raw_result(self, result, *simulation_type_args):
-        simulation_type_args_verbose = "args_" + (
-            "_".join(str(i) for i in simulation_type_args)
-            if simulation_type_args
+    def store_raw_result(self, result, simulation_type_kwargs):
+        st_kwargs_verb = (
+            "_".join(
+                f"{k}={v}"
+                for k, v in simulation_type_kwargs["controlled_at_nodes_w_wt"].items()
+            )
+            if simulation_type_kwargs
             else ""
         )
-        limit_steps_verbose = f"limits_{self.limit_steps}" if self.limit_steps else ""
+        lim_steps_verb = f"limits_{self.limit_steps}" if self.limit_steps else ""
         save_dir = os.path.join("results", self.results_dir)
         create_dir_if_not_exists(save_dir)
 
         file_path = os.path.join(
             save_dir,
-            f"{self.graph_name}__{self.scheduler}__{self.simulation_type}_{simulation_type_args_verbose}__{self.no_of_simulations}__{self.me}__{self.fault_interval}__{limit_steps_verbose}.csv",
+            f"{self.graph_name}__{self.simulation_type}__ARGS_{st_kwargs_verb}__N{self.no_of_simulations}__FI{self.fault_interval}__{lim_steps_verb}.csv",
         )
         f = open(
             file_path,
