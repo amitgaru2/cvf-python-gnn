@@ -32,6 +32,94 @@ from common_helpers import create_dir_if_not_exists
 CENTRAL_SCHEDULER = 0
 DISTRIBUTED_SCHEDULER = 1
 
+RANDOM_NODE_SELECTION_STRATEGY = "random"
+ROUND_ROBIN_NODE_SELECTION_STRATEGY = "round-robin"
+REDUCED_WT_SELECTION_STRATEGY = "reduced-wt"
+
+NODE_SELECTION_STRATEGIES = [
+    RANDOM_NODE_SELECTION_STRATEGY,
+    ROUND_ROBIN_NODE_SELECTION_STRATEGY,
+    REDUCED_WT_SELECTION_STRATEGY,
+]
+
+
+class NodeSelectionStrategy:
+    def __init__(self, nodes, selected_nodes):
+        self.nodes = nodes  # all possible nodes in the set
+        self.selected_nodes = selected_nodes  # selected nodes where fault occurs
+        self.init_probabilities()
+
+    def init_probabilities(self):
+        self.p = [0 for _ in range(len(self.nodes))]  # init probabilities with all 0
+
+    def normalize_probabilities(self):
+        # normalize to make sum of probabilities to exactly equal to 1.0
+        self.p = np.array(self.p)
+        self.p /= self.p.sum()
+
+    def update_step(self, **kwargs):
+        pass
+
+
+class RandomNodeSelectionStrategy(NodeSelectionStrategy):
+
+    def __init__(self, nodes, selected_nodes):
+        super().__init__(nodes, selected_nodes)
+        # default is random, so equal probabilities to all selected nodes
+        wt = 1.0 / len(self.selected_nodes)
+        for process in self.selected_nodes:
+            self.p[process] = wt
+
+        self.normalize_probabilities()
+
+
+class RoundRobinNodeSelectionStrategy(NodeSelectionStrategy):
+    def __init__(self, nodes, selected_nodes):
+        super().__init__(nodes, selected_nodes)
+        self.next_to_select = 0
+        self.update_step()
+
+    def get_next_selection(self):
+        current_next = self.next_to_select
+        self.next_to_select = (current_next + 1) % len(
+            self.selected_nodes
+        )  # keep track of the next node in the round robin to be selected
+        return current_next
+
+    def update_step(self, **kwargs):
+        # default is random, so equal probabilities to all selected nodes
+        self.init_probabilities()  # reset probabilities
+        cur_sel_node = self.get_next_selection()
+        self.p[cur_sel_node] = 1.0
+        # self.normalize_probabilities()
+
+
+class ReducedWtSelectionStrategy(NodeSelectionStrategy):
+    def __init__(self, nodes, selected_nodes):
+        super().__init__(nodes, selected_nodes)
+
+        # init with eq wts
+        wt = 1.0 / len(self.selected_nodes)
+        for process in self.selected_nodes:
+            self.p[process] = wt
+
+        self.normalize_probabilities()
+
+    def update_step(self, **kwargs):
+        last_sel_node = kwargs["last_sel_node"]
+        sel_node_prob = self.p[last_sel_node]
+        for process in self.selected_nodes:
+            self.p[process] += sel_node_prob / 4
+        self.p[last_sel_node] = sel_node_prob / 2
+        self.normalize_probabilities()
+
+
+NodeSelectionStrategyMap = {
+    RANDOM_NODE_SELECTION_STRATEGY: RandomNodeSelectionStrategy,
+    ROUND_ROBIN_NODE_SELECTION_STRATEGY: RoundRobinNodeSelectionStrategy,
+    REDUCED_WT_SELECTION_STRATEGY: ReducedWtSelectionStrategy,
+}
+
 
 class Action:
     UPDATE = 1
@@ -223,21 +311,14 @@ class SimulationMixin:
 
         return faulty_actions
 
-    def inject_fault_at_node_v2(self, state, controlled_at_nodes_w_wt):
+    def inject_fault_at_node_v2(self, state, strategy):
         """Amit controlled version v2. Fault occurs at only targetted nodes."""
         fault_count = 1
 
-        other_prob_wts = 1.0 - sum(controlled_at_nodes_w_wt.values())
-        p = [other_prob_wts for _ in range(len(self.nodes))]
-
-        for process, wt in controlled_at_nodes_w_wt.items():
-            p[process] = wt
-
-        # normalize
-        p = np.array(p)
-        p /= p.sum()
-
-        faulty_actions = self.select_transitions_for_process(p, state, fault_count)
+        faulty_actions = self.select_transitions_for_process(
+            strategy.p, state, fault_count
+        )
+        strategy.update_step(last_sel_node=faulty_actions[-1].process)
 
         return faulty_actions
 
@@ -351,7 +432,7 @@ class SimulationMixin:
         return faulty_actions
 
     def get_faulty_actions_random_start_at_node(
-        self, state, process, step, controlled_at_nodes_w_wt
+        self, state, process, step, controlled_at_nodes
     ):
         if step == 0:
             faulty_actions = self.inject_fault_at_node(state, process)
@@ -359,33 +440,31 @@ class SimulationMixin:
             faulty_actions = self.inject_fault_w_equal_prob(state)
         return faulty_actions
 
-    def get_faulty_actions_controlled_at_node(
-        self, state, step, controlled_at_nodes_w_wt
-    ):
+    def get_faulty_actions_controlled_at_node(self, state, step, controlled_at_nodes):
         """
         process: process_id where the fault weight is concentrated
         """
-        faulty_actions = self.inject_fault_at_node(state, controlled_at_nodes_w_wt)
+        faulty_actions = self.inject_fault_at_node(state, controlled_at_nodes)
         return faulty_actions
 
     def get_faulty_actions_controlled_at_node_v2(
-        self, state, step, controlled_at_nodes_w_wt
+        self, state, step, controlled_at_nodes, node_sel_strategy
     ):
         """
         process: process_id where the fault weight is concentrated
         """
-        faulty_actions = self.inject_fault_at_node_v2(state, controlled_at_nodes_w_wt)
+        NodeSelStrategyKlass = NodeSelectionStrategyMap[node_sel_strategy]
+        strategy = NodeSelStrategyKlass(self.nodes, controlled_at_nodes)
+        faulty_actions = self.inject_fault_at_node_v2(state, strategy)
         return faulty_actions
 
     def get_faulty_actions_controlled_at_node_duong(
-        self, state, step, controlled_at_nodes_w_wt
+        self, state, step, controlled_at_nodes
     ):
         """
         process: process_id where the fault weight is concentrated
         """
-        faulty_actions = self.inject_least_fault_at_node(
-            state, controlled_at_nodes_w_wt
-        )
+        faulty_actions = self.inject_least_fault_at_node(state, controlled_at_nodes)
         return faulty_actions
 
     def log_pt_count(self, actions):
@@ -401,7 +480,6 @@ class SimulationMixin:
         If fault interval is 1 then fault happens in each step.
         If fault interval is 3 then fault happens after 2 program transitions.
         """
-
         step = 0
         last_fault_duration = 0
         faulty_action_generator = {
@@ -470,9 +548,9 @@ class SimulationMixin:
 
     def store_raw_result(self, result, simulation_type_kwargs):
         st_kwargs_verb = (
-            "_".join(
-                f"{k}={str(v).replace('.', '-')}"
-                for k, v in simulation_type_kwargs["controlled_at_nodes_w_wt"].items()
+            "--".join(
+                f"{k}-{"_".join([str(i) for i in v]) if isinstance(v, list) else v}"
+                for k, v in simulation_type_kwargs.items()
             )
             if simulation_type_kwargs
             else ""

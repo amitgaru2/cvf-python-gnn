@@ -5,10 +5,14 @@ import argparse
 
 from custom_logger import logger
 from dijkstra_simulation import DijkstraSimulation
-from linear_regression_simulation import LinearRegressionSimulation
 from graph_coloring_simulation import GraphColoringSimulation
 from maximal_matching_simulation import MaximalMatchingSimulation
-from simulation import CENTRAL_SCHEDULER, DISTRIBUTED_SCHEDULER, SimulationMixin
+from linear_regression_simulation import LinearRegressionSimulation
+from simulation import (
+    SimulationMixin,
+    NODE_SELECTION_STRATEGIES,
+    RANDOM_NODE_SELECTION_STRATEGY,
+)
 
 utils_path = os.path.join(os.getenv("CVF_PROJECT_DIR", ""), "utils")
 sys.path.append(utils_path)
@@ -115,7 +119,12 @@ if __name__ == "__main__":
         ],
         required=True,
     )
-    parser.add_argument("--controlled-at-nodes-w-wt", type=str, nargs="*")
+    parser.add_argument("--controlled-at-nodes", type=int, nargs="*")
+    parser.add_argument(
+        "--node-sel-strategy",
+        choices=NODE_SELECTION_STRATEGIES,
+        default=RANDOM_NODE_SELECTION_STRATEGY,
+    )
     # parser.add_argument(
     #     "--sched",
     #     choices=[CENTRAL_SCHEDULER, DISTRIBUTED_SCHEDULER],
@@ -163,14 +172,13 @@ if __name__ == "__main__":
         SimulationMixin.CONTROLLED_FAULT_AT_NODE_SIMULATION_TYPE_DUONG,
         SimulationMixin.RANDOM_FAULT_START_AT_NODE_SIMULATION_TYPE,
     }:
-        if args.controlled_at_nodes_w_wt is None or not args.controlled_at_nodes_w_wt:
-            raise Exception('Missing "--controlled-at-nodes-w-wt" argument.')
+        if args.controlled_at_nodes is None or not args.controlled_at_nodes:
+            raise Exception('Missing "--controlled-at-nodes" argument.')
         else:
-            controlled_at_nodes_w_wt = parse_controlled_at_nodes_w_wt(
-                args.controlled_at_nodes_w_wt
-            )
+            controlled_at_nodes = args.controlled_at_nodes
             simulation_type_kwargs = {
-                "controlled_at_nodes_w_wt": controlled_at_nodes_w_wt
+                "controlled_at_nodes": controlled_at_nodes,
+                "node_sel_strategy": args.node_sel_strategy,
             }
 
     extra_kwargs = parse_extra_kwargs(args.extra_kwargs) if args.extra_kwargs else {}
