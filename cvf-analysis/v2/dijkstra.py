@@ -1,3 +1,5 @@
+import random
+
 from base import CVFAnalysisV2, ProgramData
 
 
@@ -34,6 +36,30 @@ class DijkstraTokenRingCVFAnalysisV2(CVFAnalysisV2):
         _state = list(state[:])
         _state[idx] = state[L_or_R_idx]
         return tuple(_state)
+
+    def _get_next_value_given_nbrs(self, node, node_value, neighbors_w_values):
+        """designed for simulation v2"""
+        if self.node == self.bottom:
+            if (node_value + 1) % 3 == neighbors_w_values[node + 1]:
+                return (node_value - 1) % 3
+        elif self.node == self.top:
+            if (
+                neighbors_w_values[node - 1] == neighbors_w_values[self.bottom]
+                and (neighbors_w_values[node - 1] + 1) % 3 != node_value
+            ):
+                return (neighbors_w_values[node - 1] + 1) % 3
+        else:
+            # since there could be multiple values in this test, select one random value
+            choices = []
+            if (node_value + 1) % 3 == neighbors_w_values[node - 1]:
+                choices.append(neighbors_w_values[node - 1])
+            elif (node_value + 1) % 3 == neighbors_w_values[node + 1]:
+                choices.append(neighbors_w_values[node + 1])
+
+            if choices:
+                random.shuffle(choices, 1)
+
+        return node_value
 
     def _get_program_transitions_as_configs(self, start_state):
         yielded = set()

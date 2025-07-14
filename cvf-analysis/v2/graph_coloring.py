@@ -28,6 +28,14 @@ class GraphColoringCVFAnalysisV2(CVFAnalysisV2):
                     return False
         return True
 
+    def _get_next_value_given_nbrs(self, node, node_value, neighbors_w_values):
+        """
+        designed for simulation v2.
+        The next color value is independent of the current node's value.
+        """
+        next_color = self._find_min_possible_color(neighbors_w_values.values())
+        return next_color
+
     # def start(self):
     #     super().start()
     #     # self.save_node_pt()
