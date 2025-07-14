@@ -39,27 +39,30 @@ class DijkstraTokenRingCVFAnalysisV2(CVFAnalysisV2):
 
     def _get_next_value_given_nbrs(self, node, node_value, neighbors_w_values):
         """designed for simulation v2"""
+        possible_next_values = []
         if self.node == self.bottom:
             if (node_value + 1) % 3 == neighbors_w_values[node + 1]:
-                return (node_value - 1) % 3
+                possible_next_values.append((node_value - 1) % 3)
         elif self.node == self.top:
             if (
                 neighbors_w_values[node - 1] == neighbors_w_values[self.bottom]
                 and (neighbors_w_values[node - 1] + 1) % 3 != node_value
             ):
-                return (neighbors_w_values[node - 1] + 1) % 3
+                possible_next_values.append((neighbors_w_values[node - 1] + 1) % 3)
         else:
             # since there could be multiple values in this test, select one random value
-            choices = []
             if (node_value + 1) % 3 == neighbors_w_values[node - 1]:
-                choices.append(neighbors_w_values[node - 1])
+                possible_next_values.append(neighbors_w_values[node - 1])
             elif (node_value + 1) % 3 == neighbors_w_values[node + 1]:
-                choices.append(neighbors_w_values[node + 1])
+                possible_next_values.append(neighbors_w_values[node + 1])
 
-            if choices:
-                random.shuffle(choices, 1)
+        choices = [
+            i for i in possible_next_values if i != node_value
+        ]  # don't allow same value to be the next value
+        if choices:
+            return random.sample(choices, 1)[0]
 
-        return node_value
+        return None
 
     def _get_program_transitions_as_configs(self, start_state):
         yielded = set()

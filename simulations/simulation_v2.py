@@ -178,8 +178,7 @@ class SimulationMixinV2:
         node_w_value_n_nbr_values = {}
         for edge in self.faulty_edges:
             temp = []
-            read_frm_node = edge[0]
-            reader_node = edge[1]
+            read_frm_node, reader_node = edge[0], edge[1]
             sp_pointer_of_reader_node = self.nodes_read_pointer[reader_node][
                 read_frm_node
             ]
@@ -187,7 +186,6 @@ class SimulationMixinV2:
                 sp_pointer_of_reader_node
             ):
                 temp.append(NodeReadValue(read_frm_node, reader_node, v, read_pointer))
-                # temp.append((read_frm_node, v))
 
             if temp and reader_node not in node_w_value_n_nbr_values:
                 node_w_value_n_nbr_values[reader_node] = [temp]
@@ -202,17 +200,16 @@ class SimulationMixinV2:
                 neighbors_w_values = {i.node: i.value for i in nbr_comb}
                 next_val = self._get_next_value_given_nbrs(
                     node, self.get_latest_value_of_node(node), neighbors_w_values
-                )
-                eligible_actions_for_fault.append(
-                    ActionV2(
-                        node,
-                        previous_value=self.get_latest_value_of_node(node),
-                        new_value=next_val,
-                        read_pointers={i.node: i.read_pointer for i in nbr_comb},
+                )  # from base cvf class
+                if next_val is not None:
+                    eligible_actions_for_fault.append(
+                        ActionV2(
+                            node,
+                            previous_value=self.get_latest_value_of_node(node),
+                            new_value=next_val,
+                            read_pointers={i.node: i.read_pointer for i in nbr_comb},
+                        )
                     )
-                )
-
-        # self._get_next_value_given_nbrs(node, node_value, neighbors_w_values)
 
         if not eligible_actions_for_fault:
             logger.warning(
@@ -226,22 +223,41 @@ class SimulationMixinV2:
 
     def get_most_latest_state(self):
         """the values of the variables are latest for all the nodes"""
-        return [nh.get_latest_value() for nh in self.nodes_hist]
+        return [self.get_latest_value_of_node(i) for i in range(len(self.nodes))]
+
+    def get_latest_reader_pointer_of_node(self, node):
+        return self.nodes_hist[node].cur_indx
+
+    def get_most_latest_state_reader_pointer(self, exclude_node=None):
+        result = {i: self.get_latest_reader_pointer_of_node(i) for i in self.nodes}
+        if exclude_node is not None:
+            result.pop(exclude_node, None)
+        return result
 
     def get_all_eligible_actions(self, state):
         """get the program transitions from state."""
         eligible_actions = []
-        for position, program_transition in self._get_program_transitions_as_configs(
-            state
-        ):
-            eligible_actions.append(
-                ActionV2(
-                    position,
-                    previous_value=state[position],
-                    new_value=program_transition[position],
-                    sp_pointers={},
+        for node in self.nodes:
+            neighbors_w_values = {}
+            read_pointers = {}
+            for nbr in self.graph[node]:
+                neighbors_w_values[nbr] = state[nbr]
+                read_pointers[nbr] = self.get_latest_reader_pointer_of_node(nbr)
+
+            next_value = self._get_next_value_given_nbrs(
+                node, state[node], neighbors_w_values
+            )  # from base cvf class
+
+            if next_value is not None:
+                eligible_actions.append(
+                    ActionV2(
+                        node,
+                        previous_value=state[node],
+                        new_value=next_value,
+                        read_pointers=read_pointers,
+                    )
                 )
-            )
+
         return eligible_actions
 
     def get_one_random_value(self, values: List):
@@ -261,29 +277,13 @@ class SimulationMixinV2:
             action = None
         else:
             action = self.get_one_random_value(eligible_actions)
-            # the selected action of the node as a program transition will
-            # imply that the node has sp pointer pointed to all the latest
-            # values of its neighbors
-            for nbr in self.graph[action.process]:
-                self.nodes_read_pointer[action.process][nbr] = self.nodes_hist[
-                    nbr
-                ].cur_indx  # set to latest pointer
         return action
 
-    def execute(self, state, action):
-        """execute the action in the state => update the value of a node (given by action) in the state"""
-        return action.execute(state)
-
-    def execute(self, state, action):
-        """execute the action in the state => update the value of a node (given by action) in the state"""
-        return action.execute(state)
-
     def run_simulations(self, state):
-        """core simulation logic for a single round of simulationn"""
-        steps = 0
+        """core simulation logic for a single round of simulation"""
         last_fault_duration = 0
-
-        for i in range(100):
+        print()
+        for _ in range(self.limit_steps):
             faulty_action = None
             if last_fault_duration + 1 >= self.fault_interval:
                 # fault introduction
@@ -294,26 +294,39 @@ class SimulationMixinV2:
                     self.nodes_hist[faulty_action.node],
                     self.nodes_read_pointer[faulty_action.node],
                 )
-                # print("fault happened at ", faulty_action.node)
-                # print("new_history", self.nodes_hist[faulty_action.node])
-                # print("new_pointers", self.nodes_read_pointer[faulty_action.node])
-                # print()
-                # print()
-                # print()
+                print("fault happened at", faulty_action.node)
+                print(
+                    "new history at",
+                    faulty_action.node,
+                    self.nodes_hist[faulty_action.node],
+                )
+                print(
+                    "new pointers at",
+                    faulty_action.node,
+                    self.nodes_read_pointer[faulty_action.node],
+                )
+                print("\n\n")
                 last_fault_duration = 0
             else:
                 # program transition
                 state = self.get_most_latest_state()
                 action = self.get_action(state)
-                self.execute(state, action)
-                last_fault_duration += 1
+                if action is not None:
+                    action.execute(
+                        self.nodes_hist[action.node],
+                        self.nodes_read_pointer[action.node],
+                    )
+                    print("prog transition happened at", action.node)
+                    print("new_history at", action.node, self.nodes_hist[action.node])
+                    print(
+                        "new_pointers at",
+                        action.node,
+                        self.nodes_read_pointer[action.node],
+                    )
+                    print("\n\n")
+                    last_fault_duration += 1
 
-            steps += 1
-            if self.limit_steps and steps >= self.limit_steps:
-                # limit steps explicitly to stop the non-convergent chain or limit the steps for convergence
-                return steps, True
-
-        return steps, False
+        return True
 
     def start_simulation(self):
         """entrypoint of the simulation"""
@@ -335,6 +348,6 @@ class SimulationMixinV2:
             logger.info("Selected initial state is %s", state)
             self.log_state_to_history(state)
             inner_results = self.run_simulations(state)
-            results.append([*inner_results])
+            results.append(inner_results)
 
         return results

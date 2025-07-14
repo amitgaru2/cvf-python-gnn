@@ -34,7 +34,7 @@ class GraphColoringCVFAnalysisV2(CVFAnalysisV2):
         The next color value is independent of the current node's value.
         """
         next_color = self._find_min_possible_color(neighbors_w_values.values())
-        return next_color
+        return next_color if node_value != next_color else None
 
     # def start(self):
     #     super().start()
