@@ -32,13 +32,12 @@ class GraphColoringCVFAnalysisV2(CVFAnalysisV2):
         """
         designed for simulation v2.
         The next color value is independent of the current node's value.
+        don't select the minimum color if it is already different from the neighbors
         """
+        if node_value not in set(neighbors_w_values.values()):
+            return None  # already different
         next_color = self._find_min_possible_color(neighbors_w_values.values())
         return next_color if node_value != next_color else None
-
-    # def start(self):
-    #     super().start()
-    #     # self.save_node_pt()
 
     def _get_program_transitions_as_configs(self, start_state):
         for position, color in enumerate(start_state):
