@@ -6,9 +6,9 @@ import os
 import sys
 import time
 import random
+from typing import List
 
-from collections import Queue
-
+from simulation import Action
 from custom_logger import logger
 
 sys.path.append(
@@ -56,6 +56,11 @@ class NodeVarHistory:
             (self.cur_indx + 1 - self.size) + internal_indx,
         )
 
+    def get_latest_value(self):
+        if self.cur_indx >= self.size:
+            return self.hist[self.size - 1]  # the latest value in the list
+        return self.hist[self.cur_indx]
+
 
 class SimulationMixinV2:
 
@@ -77,10 +82,9 @@ class SimulationMixinV2:
     def init_stale_pointers(self):
         """points the neighboring history from where the variable is yet to be read"""
         for node in range(len(self.nodes)):
-            for k in range(self.num_vars):
-                self.nodes_sp[node][k] = [
-                    0 if edge[1] == node else None for edge in range(len(self.edges))
-                ]  # sp values initialized to 0 (first value) for all the edges where the node is a part of the edge (reading the value) otherwise set null
+            self.nodes_sp[node] = [
+                0 if edge[1] == node else None for edge in range(len(self.edges))
+            ]  # sp values initialized to 0 (first value) for all the edges where the node is a part of the edge (reading the value) otherwise set null
 
     def create_simulation_environment(
         self, no_of_simulations: int, fault_interval: int, limit_steps: int
@@ -122,30 +126,95 @@ class SimulationMixinV2:
 
         return indx, state
 
-    def get_faulty_actions(self, state):
-        pass
+    def get_faulty_action(self, faulty_edges):
+        """
+        faults are introducted in faulty_edges only.
+        one of the random fault given the faulty_edges is selected
+        """
+        eligible_actions_for_fault = []
+        temp_state = []
+        for edge in faulty_edges:
+            sp_pointer_of_reader_node = self.nodes_sp[edge[1]]
+            for v in self.nodes_hist[edge[0]].get_history_from(sp_pointer_of_reader_node):
+                pass
 
-    def get_pt_actions(self, state):
-        pass
+        if not eligible_actions_for_fault:
+            logger.warning(
+                "No eligible action found for fault given faulty edges %s", faulty_edges
+            )
+            action = None
+        else:
+            action = self.get_one_random_value(eligible_actions_for_fault)
+        return action
 
-    def execute_actions(self, state, actions):
-        pass
+    def get_most_latest_state(self):
+        """the values of the variables are latest for all the nodes"""
+        return [nh.get_latest_value() for nh in self.nodes_hist]
+
+    def get_all_eligible_actions(self, state):
+        """get the program transitions from state."""
+        eligible_actions = []
+        for position, program_transition in self._get_program_transitions_as_configs(
+            state
+        ):
+            eligible_actions.append(
+                Action(
+                    Action.UPDATE,
+                    position,
+                    [state[position], program_transition[position]],
+                )
+            )
+        return eligible_actions
+
+    def get_one_random_value(self, values: List):
+        return random.sample(values, 1)
+
+    def get_action(self, state):
+        """
+        select a random eligible action and the process for which that action occur will update its' sp pointer to all latest values
+        """
+        eligible_actions = self.get_all_eligible_actions()
+        if not eligible_actions:
+            logger.warning(
+                "No eligible action for %s : %s",
+                state,
+                self.get_actual_config_values(state),
+            )
+            action = None
+        else:
+            action = self.get_one_random_value(eligible_actions)
+            # the selected action of the node as a program transition will
+            # imply that the node has sp pointer pointed to all the latest
+            # values of its neighbors
+            for nbr in self.graph[action.process]:
+                self.nodes_sp[action.process][nbr] = self.nodes_hist[
+                    nbr
+                ].cur_indx  # set to latest pointer
+        return action
+
+    def execute(self, state, action):
+        """execute the action in the state => update the value of a node (given by action) in the state"""
+        return action.execute(state)
 
     def run_simulations(self, state, **simulation_kwargs):
         """core simulation logic for a single round of simulationn"""
         steps = 0
         last_fault_duration = 0
-        cur_step_type = "pt"
+        faulty_edges = []
 
         while True:
+            faulty_action = None
             if last_fault_duration + 1 >= self.fault_interval:
                 # fault introduction
-                actions = self.get_faulty_actions(state)
+                faulty_action = self.get_faulty_action(faulty_edges)
+
+            if faulty_action is not None:
                 last_fault_duration = 0
             else:
                 # program transition
-                # actions = self.get_pt_actions(state)
-                # state = self.execute_actions(state, actions)
+                state = self.get_most_latest_state()
+                action = self.get_action(state)
+                self.execute(state, action)
                 last_fault_duration += 1
 
             steps += 1
