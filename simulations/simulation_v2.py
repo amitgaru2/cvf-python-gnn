@@ -30,7 +30,9 @@ class NodeVarHistory:
     def __init__(self, size=5):
         self.size = size
         self.hist = [None for _ in range(self.size)]
-        self.cur_indx = -1
+        self.cur_indx = (
+            -1
+        )  # counter ; if 10 elements inserted in the history then cur_indx = 9
 
     def add_history(self, value):
         self.hist.append(value)
@@ -42,22 +44,31 @@ class NodeVarHistory:
             1  # keep track of the number of history of variable added to the node
         )
 
+    def get_internal_indx(self, indx):
+        if self.cur_indx - (self.size - 1) > indx:
+            internal_indx = 0  # obsolette index trying to be accessed, so move it to the latest oldest in the history i.e. at index 0
+        else:
+            internal_indx = (self.size - 1) - (self.cur_indx - indx)
+
+        return internal_indx
+
     def get_history_frm(self, indx):
         if indx > self.cur_indx:
             raise Exception(
                 "Trying to access history index yet to be filled."
             )  # just to make sure we avoided this
 
-        if self.cur_indx - (self.size - 1) > indx:
-            internal_indx = 0  # obsolette index trying to be accessed, so move it to the latest oldest in the history i.e. at index 0
-        else:
-            internal_indx = (self.size - 1) - (self.cur_indx - indx)
-
+        internal_indx = self.get_internal_indx(indx)
         start_indx = (self.cur_indx - (self.size - 1)) + internal_indx
         return zip(
             self.hist[internal_indx:],
             [start_indx + i for i in range(len(self.hist[internal_indx:]))],
         )
+
+    def get_history_at(self, indx):
+        internal_indx = self.get_internal_indx(indx)
+        cur_indx = (self.cur_indx - (self.size - 1)) + internal_indx
+        return self.hist[internal_indx], cur_indx
 
     def get_latest_value(self):
         return self.hist[self.size - 1]  # the latest value in the list
@@ -198,6 +209,15 @@ class SimulationMixinV2:
             nbr_combinations = product(*nbr_read_values)
             for nbr_comb in nbr_combinations:
                 neighbors_w_values = {i.node: i.value for i in nbr_comb}
+                read_pointers = {i.node: i.read_pointer for i in nbr_comb}
+                # for those neighbors that are not the part of faulty edge
+                for nbr in self.graph[node]:
+                    if nbr not in neighbors_w_values:
+                        neighbors_w_values[nbr], read_pointers[nbr] = self.nodes_hist[
+                            nbr
+                        ].get_history_at(self.nodes_read_pointer[node][nbr])
+                #
+                # print("neighbors_w_values", neighbors_w_values)
                 next_val = self._get_next_value_given_nbrs(
                     node, self.get_latest_value_of_node(node), neighbors_w_values
                 )  # from base cvf class
@@ -207,13 +227,13 @@ class SimulationMixinV2:
                             node,
                             previous_value=self.get_latest_value_of_node(node),
                             new_value=next_val,
-                            read_pointers={i.node: i.read_pointer for i in nbr_comb},
+                            read_pointers=read_pointers,
                         )
                     )
 
         if not eligible_actions_for_fault:
             logger.warning(
-                "No eligible action found for fault given faulty edges %s",
+                "No eligible action found for fault given faulty edges %s.",
                 self.faulty_edges,
             )
             action = None
@@ -270,8 +290,7 @@ class SimulationMixinV2:
         eligible_actions = self.get_all_eligible_actions(state)
         if not eligible_actions:
             logger.warning(
-                "No eligible action for %s : %s",
-                state,
+                "No eligible action for %s.",
                 self.get_actual_config_values(state),
             )
             action = None
@@ -283,7 +302,8 @@ class SimulationMixinV2:
         """core simulation logic for a single round of simulation"""
         last_fault_duration = 0
         print()
-        for _ in range(self.limit_steps):
+        for step in range(self.limit_steps):
+            print("Step", step)
             faulty_action = None
             if last_fault_duration + 1 >= self.fault_interval:
                 # fault introduction
@@ -305,7 +325,7 @@ class SimulationMixinV2:
                     faulty_action.node,
                     self.nodes_read_pointer[faulty_action.node],
                 )
-                print("\n\n")
+                print("\n")
                 last_fault_duration = 0
             else:
                 # program transition
@@ -323,10 +343,16 @@ class SimulationMixinV2:
                         action.node,
                         self.nodes_read_pointer[action.node],
                     )
-                    print("\n\n")
+                    print("\n")
                     last_fault_duration += 1
+                else:
+                    # no more to check
+                    logger.info(
+                        "Since no eligible action. Terminating at step %s.", step
+                    )
+                    break
 
-        return True
+        return step
 
     def start_simulation(self):
         """entrypoint of the simulation"""
