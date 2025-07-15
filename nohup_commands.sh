@@ -17,7 +17,7 @@ GRAPH="implicit_graph_n10"
 
 NO_SIMS=10000
 LIMIT_STEPS=100
-FAULT_INTERVALS=(3 4 5)
+FAULT_INTERVALS=(10 15 20)
 SIMULATION_TYPE="controlled_at_node_amit_v2"
 
 # for FI in "${FAULT_INTERVALS[@]}"; do
@@ -33,10 +33,10 @@ SIMULATION_TYPE="controlled_at_node_amit_v2"
 # done
 
 for FI in "${FAULT_INTERVALS[@]}"; do
-python simulate_v2.py --program graph_coloring --faulty-edges 0,4 4,7 --no-sim 100000 --fault-interval $FI --graph-names graph_10 --limit-steps 100
-python simulate_v2.py --program graph_coloring --faulty-edges 0,4 4,0 --no-sim 100000 --fault-interval $FI --graph-names graph_10 --limit-steps 100
-python simulate_v2.py --program graph_coloring --faulty-edges 4,7 7,4 --no-sim 100000 --fault-interval $FI --graph-names graph_10 --limit-steps 100
-python simulate_v2.py --program graph_coloring --faulty-edges 0,4 7,4 --no-sim 100000 --fault-interval $FI --graph-names graph_10 --limit-steps 100
+    # python simulate_v2.py --program graph_coloring --faulty-edges 0,2 2,1 --no-sim 10000 --fault-interval $FI --graph-names graph_20 --limit-steps 100
+    # python simulate_v2.py --program graph_coloring --faulty-edges 0,2 2,1 1,0 --no-sim 10000 --fault-interval $FI --graph-names graph_20 --limit-steps 100
+    python simulate_v2.py --program graph_coloring --faulty-edges 0,1 1,2 2,3 --no-sim 10000 --fault-interval $FI --graph-names graph_21 --limit-steps 100
+    python simulate_v2.py --program graph_coloring --faulty-edges 0,1 1,2 2,3 3,0 --no-sim 10000 --fault-interval $FI --graph-names graph_21 --limit-steps 100
 done
 # for FI in "${FAULT_INTERVALS[@]}"; do
 #     python simulate.py --program $PROGRAM --sched 0 --no-sim $NO_SIMS --fault-interval $FI --graph-names $GRAPH --fault-prob 1.0 --simulation-type $SIMULATION_TYPE --controlled-at-node 0 --limit-steps $LIMIT_STEPS

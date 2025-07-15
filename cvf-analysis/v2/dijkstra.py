@@ -60,9 +60,7 @@ class DijkstraTokenRingCVFAnalysisV2(CVFAnalysisV2):
             i for i in possible_next_values if i != node_value
         ]  # don't allow same value to be the next value
         if choices:
-            choice = random.sample(choices, 1)[0]
-            if choice != node_value:
-                return choice
+            return random.sample(choices, 1)[0]
 
         return None
 
@@ -118,3 +116,19 @@ class DijkstraTokenRingCVFAnalysisV2(CVFAnalysisV2):
                 eligible_rules += 1
 
         return eligible_rules == 1
+
+
+if __name__ == "__main__":
+    import os
+    import sys
+
+    utils_path = os.path.join(os.getenv("CVF_PROJECT_DIR", ""), "utils")
+    sys.path.append(utils_path)
+
+    from command_line_helpers import get_graph
+
+    graph_names = ["implicit_graph_n4"]
+    for graph_name, graph in get_graph(graph_names):
+        cvf = DijkstraTokenRingCVFAnalysisV2(graph_name, graph)
+        result = cvf._get_next_value_given_nbrs(3, 1, {0: 1, 2: 1})
+        print(result)

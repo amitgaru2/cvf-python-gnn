@@ -212,6 +212,7 @@ class SimulationMixinV2:
             else:
                 node_w_value_n_nbr_values[reader_node].append(temp)
 
+        logger.debug("node_w_value_n_nbr_values %s", node_w_value_n_nbr_values)
         # find all eligible updates
         eligible_actions_for_fault = []
         for node, nbr_read_values in node_w_value_n_nbr_values.items():
@@ -318,7 +319,7 @@ class SimulationMixinV2:
         last_fault_duration = 0
         # print()
         for step in range(1, self.limit_steps + 1):
-            # print("Step", step)
+            logger.debug("\nStep %s.", step)
             faulty_action = None
             if last_fault_duration + 1 >= self.fault_interval:
                 # fault introduction
@@ -336,18 +337,17 @@ class SimulationMixinV2:
                     self.nodes_hist[faulty_action.node],
                     self.nodes_read_pointer[faulty_action.node],
                 )
-                # print("fault happened at", faulty_action.node)
-                # print(
-                #     "new history at",
-                #     faulty_action.node,
-                #     self.nodes_hist[faulty_action.node],
-                # )
-                # print(
-                #     "new pointers at",
-                #     faulty_action.node,
-                #     self.nodes_read_pointer[faulty_action.node],
-                # )
-                # print("\n")
+                logger.debug("Fault happened at %s.", faulty_action.node)
+                logger.debug(
+                    "New history at %s: %s",
+                    faulty_action.node,
+                    self.nodes_hist[faulty_action.node],
+                )
+                logger.debug(
+                    "New pointers at %s: %s",
+                    faulty_action.node,
+                    self.nodes_read_pointer[faulty_action.node],
+                )
                 last_fault_duration = 0
             else:
                 # program transition
@@ -361,14 +361,17 @@ class SimulationMixinV2:
                         self.nodes_read_pointer[action.node],
                     )
                     self.log_pt_count(action)
-                    # print("prog transition happened at", action.node)
-                    # print("new_history at", action.node, self.nodes_hist[action.node])
-                    # print(
-                    #     "new_pointers at",
-                    #     action.node,
-                    #     self.nodes_read_pointer[action.node],
-                    # )
-                    # print("\n")
+                    logger.debug("Prog transition happened at %s.", action.node)
+                    logger.debug(
+                        "New_history at %s: %s.",
+                        action.node,
+                        self.nodes_hist[action.node],
+                    )
+                    logger.debug(
+                        "New_pointers at %s: %s",
+                        action.node,
+                        self.nodes_read_pointer[action.node],
+                    )
                 last_fault_duration += 1
 
         return step, True
