@@ -36,13 +36,16 @@ class MaximalMatchingCVFAnalysisV2(CVFAnalysisV2):
 
         def _pr_married(j, config):
             for i in self.graph[j]:
-                if self.possible_node_values[i][state[i]].p == j and config.p == i:
+                if (
+                    self.get_actual_config_node_values(i, state[i]).p == j
+                    and config.p == i
+                ):
                     return True
             return False
 
         for j, indx in enumerate(state):
             # update m.j
-            config = self.possible_node_values[j][indx]
+            config = self.get_actual_config_node_values(j, indx)
             if config.m != _pr_married(j, config):
                 return False
 
@@ -50,20 +53,20 @@ class MaximalMatchingCVFAnalysisV2(CVFAnalysisV2):
             if config.m == _pr_married(j, config):
                 if config.p is None:
                     for i in self.graph[j]:
-                        if self.possible_node_values[i][state[i]].p == j:
+                        if self.get_actual_config_node_values(i, state[i]).p == j:
                             return False
 
                     for k in self.graph[j]:
                         if (
-                            self.possible_node_values[k][state[k]].p is None
+                            self.get_actual_config_node_values(k, state[k]).p is None
                             and k < j
-                            and not self.possible_node_values[k][state[k]].m
+                            and not self.get_actual_config_node_values(k, state[k]).m
                         ):
                             return False
                 else:
                     i = config.p
-                    if self.possible_node_values[i][state[i]].p != j and (
-                        self.possible_node_values[i][state[i]].m or j <= i
+                    if self.get_actual_config_node_values(i, state[i]).p != j and (
+                        self.get_actual_config_node_values(i, state[i]).m or j <= i
                     ):
                         return False
 
@@ -73,12 +76,12 @@ class MaximalMatchingCVFAnalysisV2(CVFAnalysisV2):
     def _is_program_transition(self, i, start_state, dest_state) -> bool:
         """https://inria.hal.science/inria-00127899/document#page=8.52"""
 
-        config = self.possible_node_values[i][start_state[i]]
-        dest_config = self.possible_node_values[i][dest_state[i]]
+        config = self.get_actual_config_node_values(i, start_state[i])
+        dest_config = self.get_actual_config_node_values(i, dest_state[i])
 
         def _pr_married(_i):
             for j in self.graph[_i]:
-                config_j = self.possible_node_values[j][start_state[j]]
+                config_j = self.get_actual_config_node_values(j, start_state[j])
                 if config.p == j and config_j.p == _i:
                     return True
             return False
@@ -91,7 +94,7 @@ class MaximalMatchingCVFAnalysisV2(CVFAnalysisV2):
         # Marriage
         if config.m == _pr_married(i) and config.p is None:
             for j in self.graph[i]:
-                config_j = self.possible_node_values[j][start_state[j]]
+                config_j = self.get_actual_config_node_values(j, start_state[j])
                 if config_j.p == i:
                     if dest_config.p == j:
                         return True
@@ -100,12 +103,12 @@ class MaximalMatchingCVFAnalysisV2(CVFAnalysisV2):
         max_j = -1
         if config.m == _pr_married(i) and config.p is None:
             for k in self.graph[i]:
-                config_k = self.possible_node_values[k][start_state[k]]
+                config_k = self.get_actual_config_node_values(k, start_state[k])
                 if config_k.p == i:
                     break
             else:
                 for j in self.graph[i]:
-                    config_j = self.possible_node_values[j][start_state[j]]
+                    config_j = self.get_actual_config_node_values(j, start_state[j])
                     if config_j.p is None and j > i and not config_j.m:
                         max_j = max(max_j, j)
 
@@ -116,7 +119,7 @@ class MaximalMatchingCVFAnalysisV2(CVFAnalysisV2):
         if config.m == _pr_married(i):
             if config.p is not None:
                 j = config.p
-                config_j = self.possible_node_values[j][start_state[j]]
+                config_j = self.get_actual_config_node_values(j, start_state[j])
                 if config_j.p != i and (config_j.m or j <= i):
                     if dest_config.p is None:
                         return True
@@ -128,12 +131,12 @@ class MaximalMatchingCVFAnalysisV2(CVFAnalysisV2):
     ) -> bool:
         """https://inria.hal.science/inria-00127899/document#page=8.52"""
 
-        config = self.possible_node_values[node][prev_value]
-        dest_config = self.possible_node_values[node][new_value]
+        config = self.get_actual_config_node_values(node, prev_value)
+        dest_config = self.get_actual_config_node_values(node, new_value)
 
         def _pr_married(_i):
             for j in self.graph[_i]:
-                config_j = self.possible_node_values[j][neighbors_w_values[j]]
+                config_j = self.get_actual_config_node_values(j, neighbors_w_values[j])
                 if config.p == j and config_j.p == _i:
                     return True
             return False
@@ -146,7 +149,7 @@ class MaximalMatchingCVFAnalysisV2(CVFAnalysisV2):
         # Marriage
         if config.m == _pr_married(node) and config.p is None:
             for j in self.graph[node]:
-                config_j = self.possible_node_values[j][neighbors_w_values[j]]
+                config_j = self.get_actual_config_node_values(j, neighbors_w_values[j])
                 if config_j.p == node:
                     if dest_config.p == j:
                         return True
@@ -155,12 +158,14 @@ class MaximalMatchingCVFAnalysisV2(CVFAnalysisV2):
         max_j = -1
         if config.m == _pr_married(node) and config.p is None:
             for k in self.graph[node]:
-                config_k = self.possible_node_values[k][neighbors_w_values[k]]
+                config_k = self.get_actual_config_node_values(k, neighbors_w_values[k])
                 if config_k.p == node:
                     break
             else:
                 for j in self.graph[node]:
-                    config_j = self.possible_node_values[j][neighbors_w_values[j]]
+                    config_j = self.get_actual_config_node_values(
+                        j, neighbors_w_values[j]
+                    )
                     if config_j.p is None and j > node and not config_j.m:
                         max_j = max(max_j, j)
 
@@ -171,7 +176,7 @@ class MaximalMatchingCVFAnalysisV2(CVFAnalysisV2):
         if config.m == _pr_married(node):
             if config.p is not None:
                 j = config.p
-                config_j = self.possible_node_values[j][neighbors_w_values[j]]
+                config_j = self.get_actual_config_node_values(j, neighbors_w_values[j])
                 if config_j.p != node and (config_j.m or j <= node):
                     if dest_config.p is None:
                         return True
@@ -220,14 +225,14 @@ class MaximalMatchingCVFAnalysisV2(CVFAnalysisV2):
                     break
 
     def _evaluate_perturbed_pr_married(self, position, state):
-        if self.possible_node_values[position][state[position]].p is None:
+        if self.get_actual_config_node_values(position, state[position]).p is None:
             return [False]
         return [True, False]
 
     def possible_perturbed_state_frm(self, frm_indx):
         frm_config = self.indx_to_config(frm_indx)
         for position, value in enumerate(frm_config):
-            config = self.possible_node_values[position][value]
+            config = self.get_actual_config_node_values(position, value)
             for a_pr_married_value in self._evaluate_perturbed_pr_married(
                 position, frm_config
             ):

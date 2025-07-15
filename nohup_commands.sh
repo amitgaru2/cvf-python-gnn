@@ -17,9 +17,9 @@ DT_GRAPH="implicit_graph_n10"
 
 MM_GRAPH="graph_7"
 
-NO_SIMS=10000
+NO_SIMS=100000
 LIMIT_STEPS=200
-FAULT_INTERVALS=(20 30)
+FAULT_INTERVALS=(3 7)
 SIMULATION_TYPE="controlled_at_node_amit_v2"
 
 # for FI in "${FAULT_INTERVALS[@]}"; do
