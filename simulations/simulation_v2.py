@@ -7,10 +7,13 @@ import os
 import sys
 import time
 import random
+import logging
 from typing import List
 from itertools import product
 
 from custom_logger import logger
+
+logger.setLevel(logging.DEBUG)
 
 sys.path.append(
     os.path.join(
