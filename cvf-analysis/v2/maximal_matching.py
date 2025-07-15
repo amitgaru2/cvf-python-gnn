@@ -316,5 +316,5 @@ if __name__ == "__main__":
     graph_names = ["star_graph_n4"]
     for graph_name, graph in get_graph(graph_names):
         cvf = MaximalMatchingCVFAnalysisV2(graph_name, graph)
-        result = cvf._get_next_value_given_nbrs(0, 0, {0: 1, 2: 1})
+        result = cvf.get_actual_config_values(config=(3, 3, 0, 0))
         print(result)
