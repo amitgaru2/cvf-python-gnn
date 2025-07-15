@@ -290,7 +290,7 @@ class SimulationMixinV2:
         eligible_actions = self.get_all_eligible_actions(state)
         if not eligible_actions:
             logger.warning(
-                "No eligible action for %s.",
+                "No eligible action for %s.\n",
                 self.get_actual_config_values(state),
             )
             action = None
@@ -302,14 +302,21 @@ class SimulationMixinV2:
         """core simulation logic for a single round of simulation"""
         last_fault_duration = 0
         print()
-        for step in range(self.limit_steps):
+        for step in range(1, self.limit_steps + 1):
             print("Step", step)
             faulty_action = None
             if last_fault_duration + 1 >= self.fault_interval:
                 # fault introduction
                 faulty_action = self.get_faulty_action()
 
-            if faulty_action is not None:
+                if faulty_action is None:
+                    # Termination condition; when there is no any fault that can occur
+                    logger.info(
+                        "Since no eligible action for the faults found. Terminating at step %s.",
+                        step,
+                    )
+                    return step
+
                 faulty_action.execute(
                     self.nodes_hist[faulty_action.node],
                     self.nodes_read_pointer[faulty_action.node],
@@ -329,9 +336,11 @@ class SimulationMixinV2:
                 last_fault_duration = 0
             else:
                 # program transition
+                # if program transition not found check in next round if fault can occur, do not terminate if no program transition found
                 state = self.get_most_latest_state()
                 action = self.get_action(state)
                 if action is not None:
+                    # there is possible program transition
                     action.execute(
                         self.nodes_hist[action.node],
                         self.nodes_read_pointer[action.node],
@@ -344,13 +353,7 @@ class SimulationMixinV2:
                         self.nodes_read_pointer[action.node],
                     )
                     print("\n")
-                    last_fault_duration += 1
-                else:
-                    # no more to check
-                    logger.info(
-                        "Since no eligible action. Terminating at step %s.", step
-                    )
-                    break
+                last_fault_duration += 1
 
         return step
 
