@@ -241,7 +241,7 @@ class SimulationMixinV2:
                     )
 
         if not eligible_actions_for_fault:
-            logger.warning(
+            logger.debug(
                 "No eligible action found for fault given faulty edges %s.",
                 self.faulty_edges,
             )
@@ -298,7 +298,7 @@ class SimulationMixinV2:
         """
         eligible_actions = self.get_all_eligible_actions(state)
         if not eligible_actions:
-            logger.warning(
+            logger.debug(
                 "No eligible action for %s.\n",
                 self.get_actual_config_values(state),
             )
@@ -326,7 +326,7 @@ class SimulationMixinV2:
 
                 if faulty_action is None:
                     # Termination condition; when there is no any fault that can occur
-                    logger.info(
+                    logger.debug(
                         "Since no eligible action for the faults found. Terminating at step %s.",
                         step,
                     )
