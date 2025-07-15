@@ -1,3 +1,5 @@
+import random
+
 from typing import Tuple
 from base import ProgramData, CVFAnalysisV2
 
@@ -121,6 +123,61 @@ class MaximalMatchingCVFAnalysisV2(CVFAnalysisV2):
 
         return False
 
+    def _is_program_transition_v2(
+        self, node, prev_value, new_value, neighbors_w_values
+    ) -> bool:
+        """https://inria.hal.science/inria-00127899/document#page=8.52"""
+
+        config = self.possible_node_values[node][prev_value]
+        dest_config = self.possible_node_values[node][new_value]
+
+        def _pr_married(_i):
+            for j in self.graph[_i]:
+                config_j = self.possible_node_values[j][neighbors_w_values[j]]
+                if config.p == j and config_j.p == _i:
+                    return True
+            return False
+
+        # Update
+        if config.m != _pr_married(node):
+            if dest_config.m == _pr_married(node):
+                return True
+
+        # Marriage
+        if config.m == _pr_married(node) and config.p is None:
+            for j in self.graph[node]:
+                config_j = self.possible_node_values[j][neighbors_w_values[j]]
+                if config_j.p == node:
+                    if dest_config.p == j:
+                        return True
+
+        # Seduction
+        max_j = -1
+        if config.m == _pr_married(node) and config.p is None:
+            for k in self.graph[node]:
+                config_k = self.possible_node_values[k][neighbors_w_values[k]]
+                if config_k.p == node:
+                    break
+            else:
+                for j in self.graph[node]:
+                    config_j = self.possible_node_values[j][neighbors_w_values[j]]
+                    if config_j.p is None and j > node and not config_j.m:
+                        max_j = max(max_j, j)
+
+        if max_j >= 0 and dest_config.p == max_j:
+            return True
+
+        # Abandonment
+        if config.m == _pr_married(node):
+            if config.p is not None:
+                j = config.p
+                config_j = self.possible_node_values[j][neighbors_w_values[j]]
+                if config_j.p != node and (config_j.m or j <= node):
+                    if dest_config.p is None:
+                        return True
+
+        return False
+
     def _get_program_transitions_as_configs(self, start_state):
         for position, node_val_indx in enumerate(start_state):
             data = self.get_actual_config_node_values(position, node_val_indx)
@@ -207,3 +264,29 @@ class MaximalMatchingCVFAnalysisV2(CVFAnalysisV2):
                         )
                         to_indx = self.config_to_indx(perturb_state)
                         yield position, to_indx
+
+    def _get_next_value_given_nbrs(self, node, node_value, neighbors_w_values):
+        """designed for simulation v2"""
+        # for position, node_val_indx in enumerate(start_state):
+        data = self.get_actual_config_node_values(node, node_value)
+        current_p_value = data.p
+        current_m_value = data.m
+
+        possible_config_p_val = {i.p for i in self.possible_node_values[node]} - {
+            current_p_value
+        }
+
+        choices = []
+        for perturb_p_val in possible_config_p_val:
+            next_value = self.possible_node_values_mapping[node][
+                MaximalMatchingData(perturb_p_val, current_m_value)
+            ]
+            if self._is_program_transition_v2(
+                node, node_value, next_value, neighbors_w_values
+            ):
+                choices.append(next_value)
+                break
+
+        if choices:
+            return random.sample(choices, 1)[0]
+        return None
