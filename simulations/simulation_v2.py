@@ -2,18 +2,17 @@
 Based on https://github.com/amitgaru2/research-journals/blob/main/2025/results/July.md
 """
 
-import csv
 import os
+import csv
 import sys
 import time
 import random
-import logging
+
 from typing import List
 from itertools import product
 
 from custom_logger import logger
 
-logger.setLevel(logging.DEBUG)
 
 sys.path.append(
     os.path.join(
