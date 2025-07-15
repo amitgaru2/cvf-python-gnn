@@ -16,8 +16,8 @@ PROGRAM="dijkstra_token_ring"
 DT_GRAPH="implicit_graph_n10"
 
 NO_SIMS=10000
-LIMIT_STEPS=100
-FAULT_INTERVALS=(2 5 10)
+LIMIT_STEPS=200
+FAULT_INTERVALS=(10 20)
 SIMULATION_TYPE="controlled_at_node_amit_v2"
 
 # for FI in "${FAULT_INTERVALS[@]}"; do
@@ -32,19 +32,19 @@ SIMULATION_TYPE="controlled_at_node_amit_v2"
 #     python simulate.py --program $PROGRAM --no-sim $NO_SIMS --fault-interval $FI --graph-names $GRAPH --fault-prob 1.0 --simulation-type $SIMULATION_TYPE --controlled-at-nodes 4 5 --node-sel-strategy reduced-wt --limit-steps $LIMIT_STEPS
 # done
 
-# for FI in "${FAULT_INTERVALS[@]}"; do
-#     # python simulate_v2.py --program graph_coloring --faulty-edges 0,2 2,1 --no-sim 10000 --fault-interval $FI --graph-names graph_20 --limit-steps 100
-#     # python simulate_v2.py --program graph_coloring --faulty-edges 0,2 2,1 1,0 --no-sim 10000 --fault-interval $FI --graph-names graph_20 --limit-steps 100
-#     python simulate_v2.py --program graph_coloring --faulty-edges 0,1 1,2 2,3 --no-sim 10000 --fault-interval $FI --graph-names graph_21 --limit-steps 100
-#     python simulate_v2.py --program graph_coloring --faulty-edges 0,1 1,2 2,3 3,0 --no-sim 10000 --fault-interval $FI --graph-names graph_21 --limit-steps 100
-# done
-
 for FI in "${FAULT_INTERVALS[@]}"; do
-    python simulate_v2.py --program $PROGRAM --faulty-edges 1,0 --no-sim 10000 --fault-interval $FI --graph-names $DT_GRAPH --limit-steps 100
-    python simulate_v2.py --program $PROGRAM --faulty-edges 0,9 8,9 --no-sim 10000 --fault-interval $FI --graph-names $DT_GRAPH --limit-steps 100
-    python simulate_v2.py --program $PROGRAM --faulty-edges 4,5 5,4 --no-sim 10000 --fault-interval $FI --graph-names $DT_GRAPH --limit-steps 100
-    python simulate_v2.py --program $PROGRAM --faulty-edges 2,3 3,2 --no-sim 10000 --fault-interval $FI --graph-names $DT_GRAPH --limit-steps 100
+    python simulate_v2.py --program graph_coloring --faulty-edges 0,2 2,1 --no-sim 10000 --fault-interval $FI --graph-names graph_20 --limit-steps $LIMIT_STEPS
+    python simulate_v2.py --program graph_coloring --faulty-edges 0,2 2,1 1,0 --no-sim 10000 --fault-interval $FI --graph-names graph_20 --limit-steps $LIMIT_STEPS
+    python simulate_v2.py --program graph_coloring --faulty-edges 0,1 1,2 2,3 --no-sim 10000 --fault-interval $FI --graph-names graph_21 --limit-steps $LIMIT_STEPS
+    python simulate_v2.py --program graph_coloring --faulty-edges 0,1 1,2 2,3 3,0 --no-sim 10000 --fault-interval $FI --graph-names graph_21 --limit-steps $LIMIT_STEPS
 done
+
+# for FI in "${FAULT_INTERVALS[@]}"; do
+#     python simulate_v2.py --program $PROGRAM --faulty-edges 1,0 --no-sim 10000 --fault-interval $FI --graph-names $DT_GRAPH --limit-steps 100
+#     python simulate_v2.py --program $PROGRAM --faulty-edges 0,9 8,9 --no-sim 10000 --fault-interval $FI --graph-names $DT_GRAPH --limit-steps 100
+#     python simulate_v2.py --program $PROGRAM --faulty-edges 4,5 5,4 --no-sim 10000 --fault-interval $FI --graph-names $DT_GRAPH --limit-steps 100
+#     python simulate_v2.py --program $PROGRAM --faulty-edges 2,3 3,2 --no-sim 10000 --fault-interval $FI --graph-names $DT_GRAPH --limit-steps 100
+# done
 
 # SIMULATION_TYPE="controlled_at_node_amit_v2"
 

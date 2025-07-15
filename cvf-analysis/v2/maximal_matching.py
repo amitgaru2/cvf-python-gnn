@@ -287,6 +287,34 @@ class MaximalMatchingCVFAnalysisV2(CVFAnalysisV2):
                 choices.append(next_value)
                 break
 
+        possible_config_m_val = {True, False} - {current_m_value}
+        for perturb_m_val in possible_config_m_val:
+            next_value = self.possible_node_values_mapping[node][
+                MaximalMatchingData(current_p_value, perturb_m_val)
+            ]
+            if self._is_program_transition_v2(
+                node, node_value, next_value, neighbors_w_values
+            ):
+                choices.append(next_value)
+                break
+
         if choices:
             return random.sample(choices, 1)[0]
+
         return None
+
+
+if __name__ == "__main__":
+    import os
+    import sys
+
+    utils_path = os.path.join(os.getenv("CVF_PROJECT_DIR", ""), "utils")
+    sys.path.append(utils_path)
+
+    from command_line_helpers import get_graph
+
+    graph_names = ["star_graph_n4"]
+    for graph_name, graph in get_graph(graph_names):
+        cvf = MaximalMatchingCVFAnalysisV2(graph_name, graph)
+        result = cvf._get_next_value_given_nbrs(0, 0, {0: 1, 2: 1})
+        print(result)
