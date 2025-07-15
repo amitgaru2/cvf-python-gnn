@@ -60,7 +60,9 @@ class DijkstraTokenRingCVFAnalysisV2(CVFAnalysisV2):
             i for i in possible_next_values if i != node_value
         ]  # don't allow same value to be the next value
         if choices:
-            return random.sample(choices, 1)[0]
+            choice = random.sample(choices, 1)[0]
+            if choice != node_value:
+                return choice
 
         return None
 
