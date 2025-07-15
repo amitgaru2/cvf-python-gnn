@@ -4,9 +4,10 @@ import logging
 import argparse
 
 from custom_logger import logger
+from simulation_v2 import SimulationMixinV2
 from dijkstra_simulation import DijkstraSimulationV2
 from graph_coloring_simulation import GraphColoringSimulationV2
-from simulation_v2 import SimulationMixinV2
+from maximal_matching_simulation import MaximalMatchingSimulationV2
 
 utils_path = os.path.join(os.getenv("CVF_PROJECT_DIR", ""), "utils")
 sys.path.append(utils_path)
@@ -15,11 +16,13 @@ from command_line_helpers import (
     get_graph,
     ColoringProgram,
     DijkstraProgram,
+    MaxMatchingProgram,
 )
 
 AnalysisMap = {
     ColoringProgram: GraphColoringSimulationV2,
     DijkstraProgram: DijkstraSimulationV2,
+    MaxMatchingProgram: MaximalMatchingSimulationV2,
 }
 
 
@@ -72,10 +75,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--program",
-        choices=[
-            ColoringProgram,
-            DijkstraProgram,
-        ],
+        choices=[ColoringProgram, DijkstraProgram, MaxMatchingProgram],
         required=True,
     )  # coloring, dijkstra, max_matching
     parser.add_argument("--faulty-edges", type=str, nargs="+")

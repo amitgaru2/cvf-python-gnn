@@ -212,7 +212,7 @@ class SimulationMixinV2:
             else:
                 node_w_value_n_nbr_values[reader_node].append(temp)
 
-        logger.debug("node_w_value_n_nbr_values %s", node_w_value_n_nbr_values)
+        # logger.debug("node_w_value_n_nbr_values %s", node_w_value_n_nbr_values)
         # find all eligible updates
         eligible_actions_for_fault = []
         for node, nbr_read_values in node_w_value_n_nbr_values.items():
