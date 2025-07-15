@@ -40,10 +40,10 @@ class DijkstraTokenRingCVFAnalysisV2(CVFAnalysisV2):
     def _get_next_value_given_nbrs(self, node, node_value, neighbors_w_values):
         """designed for simulation v2"""
         possible_next_values = []
-        if self.node == self.bottom:
+        if node == self.bottom:
             if (node_value + 1) % 3 == neighbors_w_values[node + 1]:
                 possible_next_values.append((node_value - 1) % 3)
-        elif self.node == self.top:
+        elif node == self.top:
             if (
                 neighbors_w_values[node - 1] == neighbors_w_values[self.bottom]
                 and (neighbors_w_values[node - 1] + 1) % 3 != node_value
