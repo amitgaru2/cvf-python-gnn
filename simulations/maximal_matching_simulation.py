@@ -1,3 +1,4 @@
+from simulation_v2 import SimulationMixinV2
 from simulation import SimulationMixin, Action
 
 from maximal_matching import MaximalMatchingCVFAnalysisV2
@@ -19,3 +20,7 @@ class MaximalMatchingSimulation(SimulationMixin, MaximalMatchingCVFAnalysisV2):
                 )
             )
         return eligible_actions
+
+
+class MaximalMatchingSimulationV2(SimulationMixinV2, MaximalMatchingCVFAnalysisV2):
+    results_dir = "maximal_matching_v2"
