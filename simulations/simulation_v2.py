@@ -2,6 +2,7 @@
 Based on https://github.com/amitgaru2/research-journals/blob/main/2025/results/July.md
 """
 
+import csv
 import os
 import sys
 import time
@@ -23,6 +24,8 @@ utils_path = os.path.join(
     os.getenv("CVF_PROJECT_DIR", "/home/agaru/research/cvf-python-gnn"), "utils"
 )
 sys.path.append(utils_path)
+
+from common_helpers import create_dir_if_not_exists
 
 
 class NodeVarHistory:
@@ -118,6 +121,9 @@ class SimulationMixinV2:
         #     e: i for i, e in enumerate(self.edges)
         # }  # reverse lookup to get the index of edges {(1, 2): 0, (2, 1): 2, ...}
 
+    def init_pt_count(self):
+        self.pt_count = {i: 0 for i in self.nodes}
+
     def init_var_hist(self):
         self.nodes_hist: List[NodeVarHistory] = [
             NodeVarHistory() for _ in self.nodes
@@ -131,7 +137,7 @@ class SimulationMixinV2:
                 edge[0]: 0 for edge in self.edges if edge[1] == node
             }
 
-        print("nodes_reader_pointer", self.nodes_read_pointer)
+        # print("nodes_reader_pointer", self.nodes_read_pointer)
 
     def create_simulation_environment(
         self,
@@ -298,12 +304,18 @@ class SimulationMixinV2:
             action = self.get_one_random_value(eligible_actions)
         return action
 
+    def log_pt_count(self, action):
+        """
+        log the program transition and aggregate it for current simulation round.
+        """
+        self.pt_count[action.node] += 1
+
     def run_simulations(self, state):
         """core simulation logic for a single round of simulation"""
         last_fault_duration = 0
-        print()
+        # print()
         for step in range(1, self.limit_steps + 1):
-            print("Step", step)
+            # print("Step", step)
             faulty_action = None
             if last_fault_duration + 1 >= self.fault_interval:
                 # fault introduction
@@ -315,24 +327,24 @@ class SimulationMixinV2:
                         "Since no eligible action for the faults found. Terminating at step %s.",
                         step,
                     )
-                    return step
+                    return step, False
 
                 faulty_action.execute(
                     self.nodes_hist[faulty_action.node],
                     self.nodes_read_pointer[faulty_action.node],
                 )
-                print("fault happened at", faulty_action.node)
-                print(
-                    "new history at",
-                    faulty_action.node,
-                    self.nodes_hist[faulty_action.node],
-                )
-                print(
-                    "new pointers at",
-                    faulty_action.node,
-                    self.nodes_read_pointer[faulty_action.node],
-                )
-                print("\n")
+                # print("fault happened at", faulty_action.node)
+                # print(
+                #     "new history at",
+                #     faulty_action.node,
+                #     self.nodes_hist[faulty_action.node],
+                # )
+                # print(
+                #     "new pointers at",
+                #     faulty_action.node,
+                #     self.nodes_read_pointer[faulty_action.node],
+                # )
+                # print("\n")
                 last_fault_duration = 0
             else:
                 # program transition
@@ -345,17 +357,21 @@ class SimulationMixinV2:
                         self.nodes_hist[action.node],
                         self.nodes_read_pointer[action.node],
                     )
-                    print("prog transition happened at", action.node)
-                    print("new_history at", action.node, self.nodes_hist[action.node])
-                    print(
-                        "new_pointers at",
-                        action.node,
-                        self.nodes_read_pointer[action.node],
-                    )
-                    print("\n")
+                    self.log_pt_count(action)
+                    # print("prog transition happened at", action.node)
+                    # print("new_history at", action.node, self.nodes_hist[action.node])
+                    # print(
+                    #     "new_pointers at",
+                    #     action.node,
+                    #     self.nodes_read_pointer[action.node],
+                    # )
+                    # print("\n")
                 last_fault_duration += 1
 
-        return step
+        return step, True
+
+    def prepare_simulation_round(self):
+        self.init_pt_count()
 
     def start_simulation(self):
         """entrypoint of the simulation"""
@@ -373,10 +389,36 @@ class SimulationMixinV2:
                     i,
                 )
                 log_time = time.time()
+            self.prepare_simulation_round()
             _, state = self.get_random_state(avoid_invariant=True)
-            logger.info("Selected initial state is %s", state)
+            logger.debug("Selected initial state is %s.", state)
             self.log_state_to_history(state)
             inner_results = self.run_simulations(state)
-            results.append(inner_results)
+            results.append([*inner_results, *self.pt_count.values()])
 
         return results
+
+    def store_raw_result(self, result):
+        faulty_edges_verb = (
+            f"{"_".join(["-".join([str(i) for i in fe]) for fe in self.faulty_edges])}"
+        )
+        lim_steps_verb = f"limits_{self.limit_steps}" if self.limit_steps else ""
+        save_dir = os.path.join("results", self.results_dir)
+        create_dir_if_not_exists(save_dir)
+
+        file_path = os.path.join(
+            save_dir,
+            f"{self.graph_name}__FE_{faulty_edges_verb}__N{self.no_of_simulations}__FI{self.fault_interval}__{lim_steps_verb}.csv",
+        )
+        f = open(
+            file_path,
+            "w",
+            newline="",
+        )  # from the base class
+        logger.info("\nSaving result at %s", file_path)
+        writer = csv.writer(f)
+        headers = ["SN", "Steps", "Lmt Reach"]
+        headers.extend([f"PT {i}" for i in self.nodes])
+        writer.writerow(headers)
+        for i, v in enumerate(result, 1):
+            writer.writerow([i, *v])

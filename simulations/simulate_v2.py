@@ -65,6 +65,7 @@ def main(
         faulty_edges=faulty_edges,
     )
     result = simulation.start_simulation()
+    simulation.store_raw_result(result)
 
 
 if __name__ == "__main__":
