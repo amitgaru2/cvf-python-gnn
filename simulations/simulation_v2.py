@@ -31,7 +31,7 @@ from common_helpers import create_dir_if_not_exists
 
 class NodeVarHistory:
 
-    def __init__(self, size=5):
+    def __init__(self, size):
         self.size = size
         self.hist = [None for _ in range(self.size)]
         self.cur_indx = (
