@@ -9,8 +9,8 @@ set -ex
 cd simulations
 
 # # PROGRAM="graph_coloring"
-# PROGRAM="dijkstra_token_ring"
-PROGRAM="maximal_matching"
+DT_PROGRAM="dijkstra_token_ring"
+# PROGRAM="maximal_matching"
 
 # GRAPH="graph_7"
 DT_GRAPH="implicit_graph_n10"
@@ -19,7 +19,7 @@ MM_GRAPH="graph_7"
 
 NO_SIMS=100000
 LIMIT_STEPS=200
-FAULT_INTERVALS=(3 7)
+FAULT_INTERVALS=(1)
 SIMULATION_TYPE="controlled_at_node_amit_v2"
 
 # for FI in "${FAULT_INTERVALS[@]}"; do
@@ -42,9 +42,16 @@ SIMULATION_TYPE="controlled_at_node_amit_v2"
 # done
 
 for FI in "${FAULT_INTERVALS[@]}"; do
-    python simulate_v2.py --program $PROGRAM --faulty-edges 0,4 4,5  --no-sim $NO_SIMS --fault-interval $FI --graph-names $MM_GRAPH --limit-steps $LIMIT_STEPS
-    python simulate_v2.py --program $PROGRAM --faulty-edges 5,4 4,0  --no-sim $NO_SIMS --fault-interval $FI --graph-names $MM_GRAPH --limit-steps $LIMIT_STEPS
-    python simulate_v2.py --program $PROGRAM --faulty-edges 4,5 4,0  --no-sim $NO_SIMS --fault-interval $FI --graph-names $MM_GRAPH --limit-steps $LIMIT_STEPS
+    python simulate_v2.py --program $DT_PROGRAM --faulty-edges 4,5 5,4 3,4 4,3 --no-sim $NO_SIMS --fault-interval $FI --graph-names $DT_GRAPH --limit-steps $LIMIT_STEPS
+    # python simulate_v2.py --program $DT_PROGRAM --faulty-edges 1,2 2,1 --no-sim $NO_SIMS --fault-interval $FI --graph-names $DT_GRAPH --limit-steps $LIMIT_STEPS
+    # python simulate_v2.py --program $DT_PROGRAM --faulty-edges 2,3 3,2 --no-sim $NO_SIMS --fault-interval $FI --graph-names $DT_GRAPH --limit-steps $LIMIT_STEPS
+    # python simulate_v2.py --program $DT_PROGRAM --faulty-edges 3,4 4,3 --no-sim $NO_SIMS --fault-interval $FI --graph-names $DT_GRAPH --limit-steps $LIMIT_STEPS
+    # python simulate_v2.py --program $DT_PROGRAM --faulty-edges 4,5 5,4 --no-sim $NO_SIMS --fault-interval $FI --graph-names $DT_GRAPH --limit-steps $LIMIT_STEPS
+    # python simulate_v2.py --program $DT_PROGRAM --faulty-edges 5,6 6,5 --no-sim $NO_SIMS --fault-interval $FI --graph-names $DT_GRAPH --limit-steps $LIMIT_STEPS
+    # python simulate_v2.py --program $DT_PROGRAM --faulty-edges 6,7 7,6 --no-sim $NO_SIMS --fault-interval $FI --graph-names $DT_GRAPH --limit-steps $LIMIT_STEPS
+    # python simulate_v2.py --program $DT_PROGRAM --faulty-edges 7,8 8,7 --no-sim $NO_SIMS --fault-interval $FI --graph-names $DT_GRAPH --limit-steps $LIMIT_STEPS
+    # python simulate_v2.py --program $DT_PROGRAM --faulty-edges 8,9 9,8 --no-sim $NO_SIMS --fault-interval $FI --graph-names $DT_GRAPH --limit-steps $LIMIT_STEPS
+    # python simulate_v2.py --program $DT_PROGRAM --faulty-edges 9,0 0,9 --no-sim $NO_SIMS --fault-interval $FI --graph-names $DT_GRAPH --limit-steps $LIMIT_STEPS
 done
 
 
