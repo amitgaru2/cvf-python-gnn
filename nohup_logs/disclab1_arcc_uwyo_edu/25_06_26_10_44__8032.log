@@ -1,4 +1,0 @@
-+ cd cvf-analysis/v2
-+ python main.py --program maximal_matching --graph-names graph_random_regular_graph_n8_d4 -ml
-Locating Graph: "graph_random_regular_graph_n8_d4".
-Total configs: 100,000,000.

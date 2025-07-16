@@ -1,7 +1,0 @@
-+ cd cvf-analysis/v2
-+ python main.py --program maximal_matching --graph-names graph_10 -ml
-Locating Graph: "graph_10".
-Total configs: 65,536,000.
-Total Invariants: 24.
-+ al_matching --graph-names graph_10 -ml
-./temp.sh: 4: al_matching: not found
