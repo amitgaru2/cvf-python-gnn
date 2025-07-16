@@ -1,5 +1,6 @@
 #!/bin/bash
-set -e
+set -eu
+echo "CVF Project root DIR: "$CVF_PROJECT_DIR
 export PYTHONDONTWRITEBYTECODE=1
 dateTime=$(date +"%y_%m_%d_%H_%M")
 jobID="""$dateTime""__"$(shuf -i 1000-9999 -n 1)
