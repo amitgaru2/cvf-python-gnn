@@ -125,9 +125,9 @@ class SimulationMixinV2:
     def init_pt_count(self):
         self.pt_count = {i: 0 for i in self.nodes}
 
-    def init_var_hist(self):
+    def init_var_hist(self, hist_size):
         self.nodes_hist: List[NodeVarHistory] = [
-            NodeVarHistory() for _ in self.nodes
+            NodeVarHistory(hist_size) for _ in self.nodes
         ]  # history for each nodes; assuming each node has single variable.
 
     def init_stale_pointers(self):
@@ -146,6 +146,7 @@ class SimulationMixinV2:
         faulty_edges: dict,
         fault_interval: int,
         limit_steps: int,
+        hist_size: int,
     ):
         """initialize configurations for the simulation"""
         self.no_of_simulations = no_of_simulations
@@ -154,7 +155,7 @@ class SimulationMixinV2:
         self.faulty_edges = faulty_edges
 
         self.init_edges()
-        self.init_var_hist()
+        self.init_var_hist(hist_size)
         self.init_stale_pointers()
 
     def log_var_history(self, node, value):

@@ -51,13 +51,16 @@ def main(
     faulty_edges,
     fault_interval,
     limit_steps,
+    hist_size,
 ):
     logger.info(
-        "Analysis graph: %s | program: %s | No. of Simulations: %s | Fault Interval: %s",
-        graph_name,
+        "Analysis program: %s | graph: %s | No. of Simulations: %s | Fault Interval: %s | Limit steps: %s | History size: %s",
         program,
+        graph_name,
         no_simulations,
         fault_interval,
+        limit_steps,
+        hist_size,
     )
     SimulationCVFAnalysisKlass: SimulationMixinV2 = AnalysisMap[program]
     simulation = SimulationCVFAnalysisKlass(graph_name, graph, extra_kwargs)
@@ -66,6 +69,7 @@ def main(
         limit_steps=limit_steps,
         fault_interval=fault_interval,
         faulty_edges=faulty_edges,
+        hist_size=hist_size,
     )
     result = simulation.start_simulation()
     simulation.store_raw_result(result)
@@ -90,6 +94,12 @@ if __name__ == "__main__":
         nargs="+",
         help="list of graph names in the 'graphs_dir' or list of number of nodes for implict graphs (if implicit program)",
         required=True,
+    )
+    parser.add_argument(
+        "--hist-size",
+        type=int,
+        help="size of the history that each node can store upto",
+        default=5,
     )
     parser.add_argument(
         "--logging",
@@ -123,4 +133,5 @@ if __name__ == "__main__":
             faulty_edges,
             args.fault_interval,
             args.limit_steps,
+            args.hist_size,
         )
