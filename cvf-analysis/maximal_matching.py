@@ -132,31 +132,37 @@ class MaximalMatchingCVFAnalysisV2(CVFAnalysisV2):
         """https://inria.hal.science/inria-00127899/document#page=8.52"""
 
         config = self.get_actual_config_node_values(node, prev_value)
-        dest_config = self.get_actual_config_node_values(node, new_value)
+        new_config = self.get_actual_config_node_values(node, new_value)
 
-        def _pr_married(_i):
-            for j in self.graph[_i]:
-                config_j = self.get_actual_config_node_values(j, neighbors_w_values[j])
-                if config.p == j and config_j.p == _i:
-                    return True
-            return False
+        # PRmarried (i) = ∃j ∈ N (i) : (pi = j and pj = i)
+        pr_married_node = False
+        for j in self.graph[node]:
+            config_j = self.get_actual_config_node_values(j, neighbors_w_values[j])
+            if config.p == j and config_j.p == node:
+                pr_married_node = True
+                break
 
         # Update
-        if config.m != _pr_married(node):
-            if dest_config.m == _pr_married(node):
+        if config.m != pr_married_node:
+            # if there is change in m and the current m is not equivalent to pr_married_node, then it is a transition
+            if new_config.m == pr_married_node:
                 return True
 
         # Marriage
-        if config.m == _pr_married(node) and config.p is None:
+        if config.m == pr_married_node and config.p is None:
+            # config.m is True => pr_married => True => config.p != None; so this case doesn't apply
+            # config.m is False; config.p is None then the new p should be the node `j` that has p = node
             for j in self.graph[node]:
                 config_j = self.get_actual_config_node_values(j, neighbors_w_values[j])
                 if config_j.p == node:
-                    if dest_config.p == j:
+                    if new_config.p == j:
                         return True
 
         # Seduction
         max_j = -1
-        if config.m == _pr_married(node) and config.p is None:
+        # seduce the neighbor that has the highest index among the neighbors that has index higher than self
+        # 0 can seduce 1, 2, 3 and selects 3 if all eligible; 1, 2, 3 cannot seduce 0
+        if config.m == pr_married_node and config.p is None:
             for k in self.graph[node]:
                 config_k = self.get_actual_config_node_values(k, neighbors_w_values[k])
                 if config_k.p == node:
@@ -169,16 +175,17 @@ class MaximalMatchingCVFAnalysisV2(CVFAnalysisV2):
                     if config_j.p is None and j > node and not config_j.m:
                         max_j = max(max_j, j)
 
-        if max_j >= 0 and dest_config.p == max_j:
+        if max_j >= 0 and new_config.p == max_j:
             return True
 
         # Abandonment
-        if config.m == _pr_married(node):
+        if config.m == pr_married_node:
             if config.p is not None:
                 j = config.p
                 config_j = self.get_actual_config_node_values(j, neighbors_w_values[j])
                 if config_j.p != node and (config_j.m or j <= node):
-                    if dest_config.p is None:
+                    # there is another nbr j that points to node but the neighbor p doesn't point to node
+                    if new_config.p is None:
                         return True
 
         return False
@@ -321,5 +328,15 @@ if __name__ == "__main__":
     graph_names = ["star_graph_n4"]
     for graph_name, graph in get_graph(graph_names):
         cvf = MaximalMatchingCVFAnalysisV2(graph_name, graph)
-        result = cvf.get_actual_config_values(config=(3, 3, 0, 0))
-        print(result)
+        # result = cvf.get_actual_config_values(config=(0, 0, 0, 1))
+        # print(result)
+        result = cvf._get_next_value_given_nbrs(0, 0, {1: 0, 2: 0, 3: 1})
+        print(cvf.get_actual_config_values(config=(result, 0, 0, 1)))
+        # result = cvf.get_actual_config_values(config=(4, 0, 0, 0))
+        # print(result)
+        # result = cvf.get_actual_config_values(config=(4, 0, 2, 0))
+        # print(result)
+        # result = cvf.get_actual_config_values(config=(4, 0, 3, 0))
+        # print(result)
+        # result = cvf.get_actual_config_values(config=(5, 0, 3, 0))
+        # print(result)

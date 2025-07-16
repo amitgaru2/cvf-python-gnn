@@ -189,6 +189,9 @@ class SimulationMixinV2:
     def get_latest_value_of_node(self, node):
         return self.nodes_hist[node].get_latest_value()
 
+    def get_read_pointer_of_node_at(self, node, at):
+        return self.nodes_read_pointer[node][at]
+
     def get_faulty_action(self):
         """
         faults are introducted in faulty_edges only.
@@ -224,7 +227,7 @@ class SimulationMixinV2:
                     if nbr not in neighbors_w_values:
                         neighbors_w_values[nbr], read_pointers[nbr] = self.nodes_hist[
                             nbr
-                        ].get_history_at(self.nodes_read_pointer[node][nbr])
+                        ].get_history_at(self.get_read_pointer_of_node_at(node, nbr))
                 #
                 # print("neighbors_w_values", neighbors_w_values)
                 next_val = self._get_next_value_given_nbrs(
@@ -239,7 +242,7 @@ class SimulationMixinV2:
                             read_pointers=read_pointers,
                         )
                     )
-
+    
         if not eligible_actions_for_fault:
             logger.debug(
                 "No eligible action found for fault given faulty edges %s.",
