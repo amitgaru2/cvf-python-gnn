@@ -12,7 +12,6 @@ w_filename = f"{graph}_config_rank_dataset_v2.csv"
 dataset_dir = os.path.join(
     os.getenv("CVF_PROJECT_DIR", ""),
     "cvf-analysis",
-    "v2",
     "datasets",
     program,
 )

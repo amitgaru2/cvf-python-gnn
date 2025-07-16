@@ -8,7 +8,7 @@ import networkx as nx
 
 from torch.utils.data import Dataset, DataLoader
 
-sys.path.append(os.path.join(os.getenv("CVF_PROJECT_DIR", ""), "cvf-analysis", "v2"))
+sys.path.append(os.path.join(os.getenv("CVF_PROJECT_DIR", ""), "cvf-analysis"))
 
 from cvf_fa_helpers import get_graph
 
@@ -49,7 +49,6 @@ class MessagePassingDataset(Dataset):
         dataset_dir = os.path.join(
             os.getenv("CVF_PROJECT_DIR", ""),
             "cvf-analysis",
-            "v2",
             "datasets",
             program,
         )

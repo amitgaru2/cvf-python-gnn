@@ -15,7 +15,7 @@ from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
 from torch_geometric.utils import to_dense_adj
 
-sys.path.append(os.path.join(os.getenv("CVF_PROJECT_DIR", ""), "cvf-analysis", "v2"))
+sys.path.append(os.path.join(os.getenv("CVF_PROJECT_DIR", ""), "cvf-analysis"))
 
 from cvf_fa_helpers import get_graph
 from graph_coloring import GraphColoringCVFAnalysisV2
@@ -66,7 +66,6 @@ class CVFConfigForGCNDataset(Dataset):
         dataset_dir = os.path.join(
             os.getenv("CVF_PROJECT_DIR", ""),
             "cvf-analysis",
-            "v2",
             "datasets",
             program,
         )
@@ -107,7 +106,6 @@ class CVFConfigForGCNWSuccP1Dataset(Dataset):
         dataset_dir = os.path.join(
             os.getenv("CVF_PROJECT_DIR", ""),
             "cvf-analysis",
-            "v2",
             "datasets",
             program,
         )
@@ -155,7 +153,6 @@ class CVFConfigForGCNWSuccODataset(Dataset):
         dataset_dir = os.path.join(
             os.getenv("CVF_PROJECT_DIR", ""),
             "cvf-analysis",
-            "v2",
             "datasets",
             program,
         )
@@ -203,7 +200,6 @@ class CVFConfigForGCNWSuccDataset(Dataset):
         dataset_dir = os.path.join(
             os.getenv("CVF_PROJECT_DIR", ""),
             "cvf-analysis",
-            "v2",
             "datasets",
             program,
         )
@@ -259,7 +255,6 @@ class CVFConfigForGCNWSuccWEIDataset(Dataset):
         dataset_dir = os.path.join(
             os.getenv("CVF_PROJECT_DIR", ""),
             "cvf-analysis",
-            "v2",
             "datasets",
             program,
         )
@@ -316,7 +311,6 @@ class CVFConfigForGCNWSuccLSTMDataset(Dataset):
         dataset_dir = os.path.join(
             os.getenv("CVF_PROJECT_DIR", ""),
             "cvf-analysis",
-            "v2",
             "datasets",
             program,
         )
@@ -358,7 +352,6 @@ class CVFConfigForGCNWSuccLSTMDatasetForMM(Dataset):
         dataset_dir = os.path.join(
             os.getenv("CVF_PROJECT_DIR", ""),
             "cvf-analysis",
-            "v2",
             "datasets",
             program,
         )
@@ -432,7 +425,6 @@ class CVFConfigForGCNWSuccLSTMWNormalizationDataset(Dataset):
         dataset_dir = os.path.join(
             os.getenv("CVF_PROJECT_DIR", ""),
             "cvf-analysis",
-            "v2",
             "datasets",
             program,
         )
@@ -486,7 +478,6 @@ class CVFConfigForGCNWSuccLSTMGCDataset(Dataset):
         dataset_dir = os.path.join(
             os.getenv("CVF_PROJECT_DIR", ""),
             "cvf-analysis",
-            "v2",
             "datasets",
             program,
         )
@@ -557,7 +548,6 @@ class CVFConfigForGCNWSuccLSTMGCV2Dataset(Dataset):
         dataset_dir = os.path.join(
             os.getenv("CVF_PROJECT_DIR", ""),
             "cvf-analysis",
-            "v2",
             "datasets",
             program,
         )
@@ -793,7 +783,6 @@ class CVFConfigForAnalysisV2Dataset(Dataset):
         dataset_dir = os.path.join(
             os.getenv("CVF_PROJECT_DIR", ""),
             "cvf-analysis",
-            "v2",
             "datasets",
             program,
         )
@@ -827,7 +816,6 @@ class CVFConfigForGCNWSuccFDataset(Dataset):
         dataset_dir = os.path.join(
             os.getenv("CVF_PROJECT_DIR", ""),
             "cvf-analysis",
-            "v2",
             "datasets",
             program,
         )
@@ -878,7 +866,6 @@ class CVFConfigForGCNWSuccConvDataset(Dataset):
         dataset_dir = os.path.join(
             os.getenv("CVF_PROJECT_DIR", ""),
             "cvf-analysis",
-            "v2",
             "datasets",
             program,
         )
@@ -931,7 +918,6 @@ class CVFConfigForGCNGridSearchDataset(Dataset):
         dataset_dir = os.path.join(
             os.getenv("CVF_PROJECT_DIR", ""),
             "cvf-analysis",
-            "v2",
             "datasets",
             "coloring",
         )

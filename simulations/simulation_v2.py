@@ -18,7 +18,6 @@ sys.path.append(
     os.path.join(
         os.getenv("CVF_PROJECT_DIR", "/home/agaru/research/cvf-python-gnn"),
         "cvf-analysis",
-        "v2",
     )
 )
 

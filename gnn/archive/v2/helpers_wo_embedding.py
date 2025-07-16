@@ -14,7 +14,7 @@ class CVFConfigDataset(Dataset):
 
     def __init__(self, program, dataset_file, A_file, num_nodes) -> None:
         dataset_dir = os.path.join(
-            os.getenv("CVF_PROJECT_DIR", ""), "cvf-analysis", "v2", "datasets", program
+            os.getenv("CVF_PROJECT_DIR", ""), "cvf-analysis", "datasets", program
         )
         self.data = pd.read_csv(os.path.join(dataset_dir, dataset_file))
         self.A = torch.tensor(

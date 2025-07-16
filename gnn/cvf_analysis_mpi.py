@@ -274,7 +274,7 @@ def get_file_df(dir, file_name):
 @track_runtime
 def get_fa_results(graph_name, ml_grp_by_r, ml_grp_by_re, ml_grp_by_node_re):
     results_dir = os.path.join(
-        os.getenv("CVF_PROJECT_DIR", ""), "cvf-analysis", "v2", "results", program
+        os.getenv("CVF_PROJECT_DIR", ""), "cvf-analysis", "results", program
     )
 
     results_file = f"ranks_avg__{graph_name}.csv"
