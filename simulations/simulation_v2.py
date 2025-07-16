@@ -1,5 +1,5 @@
 """
-Based on https://github.com/amitgaru2/research-journals/blob/main/2025/results/July.md
+Based on https://github.com/amitgaru2/research-journals/blob/main/2025/July.md
 """
 
 import os
