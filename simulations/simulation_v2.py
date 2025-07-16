@@ -380,10 +380,6 @@ class SimulationMixinV2:
 
     def start_simulation(self):
         """entrypoint of the simulation"""
-        logger.info(
-            "Simulation environment: No. of Simulations: %d",
-            self.no_of_simulations,
-        )
         results = []
         log_time = time.time()
         for i in range(1, self.no_of_simulations + 1):
