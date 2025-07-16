@@ -304,7 +304,7 @@ class MaximalMatchingCVFAnalysisV2(CVFAnalysisV2):
                 break
 
         if choices:
-            return random.sample(choices, 1)[0]
+            return random.choice(choices)
 
         return None
 

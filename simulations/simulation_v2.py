@@ -290,7 +290,7 @@ class SimulationMixinV2:
         return eligible_actions
 
     def get_one_random_value(self, values: List):
-        return random.sample(values, 1)[0]
+        return random.choice(values)
 
     def get_action(self, state):
         """
