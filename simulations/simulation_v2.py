@@ -125,9 +125,9 @@ class SimulationMixinV2:
     def init_pt_count(self):
         self.pt_count = {i: 0 for i in self.nodes}
 
-    def init_var_hist(self, hist_size):
+    def init_var_hist(self):
         self.nodes_hist: List[NodeVarHistory] = [
-            NodeVarHistory(hist_size) for _ in self.nodes
+            NodeVarHistory(self.hist_size) for _ in self.nodes
         ]  # history for each nodes; assuming each node has single variable.
 
     def init_stale_pointers(self):
@@ -153,10 +153,9 @@ class SimulationMixinV2:
         self.fault_interval = fault_interval
         self.limit_steps = limit_steps
         self.faulty_edges = faulty_edges
+        self.hist_size = hist_size
 
         self.init_edges()
-        self.init_var_hist(hist_size)
-        self.init_stale_pointers()
 
     def log_var_history(self, node, value):
         """log variable history for individual node"""
@@ -242,7 +241,7 @@ class SimulationMixinV2:
                             read_pointers=read_pointers,
                         )
                     )
-    
+
         if not eligible_actions_for_fault:
             logger.debug(
                 "No eligible action found for fault given faulty edges %s.",
@@ -380,6 +379,8 @@ class SimulationMixinV2:
 
     def prepare_simulation_round(self):
         self.init_pt_count()
+        self.init_var_hist()
+        self.init_stale_pointers()
 
     def start_simulation(self):
         """entrypoint of the simulation"""
