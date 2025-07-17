@@ -318,11 +318,16 @@ class SimulationMixinV2:
     def run_simulations(self, state):
         """core simulation logic for a single round of simulation"""
         last_fault_duration = 0
+        FAULT_NEXT_STEP = "f"
+        next_step = None  # None means go it normal flow, do not interrupt anything
         # print()
         for step in range(1, self.limit_steps + 1):
             logger.debug("\nStep %s.", step)
             faulty_action = None
-            if last_fault_duration + 1 >= random.randint(*self.fault_interval):
+            if (
+                next_step == FAULT_NEXT_STEP
+                or last_fault_duration + 1 >= random.randint(*self.fault_interval)
+            ):
                 # fault introduction
                 faulty_action = self.get_faulty_action()
 
@@ -350,6 +355,7 @@ class SimulationMixinV2:
                     self.nodes_read_pointer[faulty_action.node],
                 )
                 last_fault_duration = 0
+                next_step = None
             else:
                 # program transition
                 # if program transition not found check in next round if fault can occur, do not terminate if no program transition found
@@ -373,6 +379,9 @@ class SimulationMixinV2:
                         action.node,
                         self.nodes_read_pointer[action.node],
                     )
+                else:
+                    # force next step to be a fault since all the preceeding steps will have no program transitions unless fault is executed.
+                    next_step = FAULT_NEXT_STEP
                 last_fault_duration += 1
 
         return step, True
