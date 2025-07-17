@@ -322,7 +322,7 @@ class SimulationMixinV2:
         for step in range(1, self.limit_steps + 1):
             logger.debug("\nStep %s.", step)
             faulty_action = None
-            if last_fault_duration + 1 >= self.fault_interval:
+            if last_fault_duration + 1 >= random.randint(*self.fault_interval):
                 # fault introduction
                 faulty_action = self.get_faulty_action()
 
@@ -413,7 +413,7 @@ class SimulationMixinV2:
 
         file_path = os.path.join(
             save_dir,
-            f"{self.graph_name}__FE_{faulty_edges_verb}__N{self.no_of_simulations}__FI{self.fault_interval}__{lim_steps_verb}.csv",
+            f"{self.graph_name}__FE_{faulty_edges_verb}__N{self.no_of_simulations}__FI_{"-".join([str(i) for i in self.fault_interval])}__{lim_steps_verb}.csv",
         )
         f = open(
             file_path,

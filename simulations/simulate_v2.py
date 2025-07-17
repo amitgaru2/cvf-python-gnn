@@ -85,9 +85,10 @@ if __name__ == "__main__":
     parser.add_argument("--faulty-edges", type=str, nargs="+")
     parser.add_argument("--no-sim", type=int, required=True)  # number of simulations
     parser.add_argument("--limit-steps", type=int, default=None)
-    parser.add_argument(
-        "--fault-interval", type=int, required=True
-    )  # fault probability
+    # parser.add_argument(
+    #     "--fault-interval", type=int, required=True
+    # )
+    parser.add_argument("--fault-interval", type=int, nargs=2)
     parser.add_argument(
         "--graph-names",
         type=str,
