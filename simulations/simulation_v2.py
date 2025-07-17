@@ -436,3 +436,7 @@ class SimulationMixinV2:
         writer.writerow(headers)
         for i, v in enumerate(result, 1):
             writer.writerow([i, *v])
+
+    def aggregate_result(self, result):
+        step_sum = sum([v[0] for v in result])
+        logger.info(f"Total steps taken {step_sum:,}.")

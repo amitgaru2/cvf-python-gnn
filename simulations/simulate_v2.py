@@ -72,7 +72,10 @@ def main(
         hist_size=hist_size,
     )
     result = simulation.start_simulation()
-    simulation.store_raw_result(result)
+    if extra_kwargs.get("agg", False):
+        simulation.aggregate_result(result)
+    else:
+        simulation.store_raw_result(result)
 
 
 if __name__ == "__main__":
@@ -82,7 +85,7 @@ if __name__ == "__main__":
         choices=[ColoringProgram, DijkstraProgram, MaxMatchingProgram],
         required=True,
     )  # coloring, dijkstra, max_matching
-    parser.add_argument("--faulty-edges", type=str, nargs="+")
+    parser.add_argument("--faulty-edges", type=str, nargs="*")
     parser.add_argument("--no-sim", type=int, required=True)  # number of simulations
     parser.add_argument("--limit-steps", type=int, default=None)
     # parser.add_argument(
