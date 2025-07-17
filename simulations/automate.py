@@ -1,18 +1,34 @@
+import os
+import sys
 import itertools
 import subprocess
 
-EDGES = [(0, 1), (0, 2), (0, 3), (1, 0), (2, 0), (3, 0)]
+utils_path = os.path.join(os.getenv("CVF_PROJECT_DIR", ""), "utils")
+sys.path.append(utils_path)
+
+from command_line_helpers import (
+    get_graph,
+)
+
+GRAPH_NAMES = ("star_graph_n4",)
+
+GRAPH = next(get_graph(GRAPH_NAMES))[1]
+
+EDGES = []
+for src, dests in GRAPH.items():
+    EDGES.extend([(src, dest) for dest in dests])  # (src, dest) src being read by dest
+
 max_size = len(EDGES)
 
 N = "10000"
 FI = ("5", "5")
-GRAPH_NAMES = ("star_graph_n4",)
 LIMIT_STEPS = "100"
 HIST_SIZE = "5"
 
 
 def execute_command(cmd):
-    print("Executing ", cmd)
+    # print("Executing ", cmd)
+    print("Executing...", " ".join(cmd))
 
     result = subprocess.run(command, capture_output=True, text=True)
 
