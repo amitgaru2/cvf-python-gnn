@@ -407,13 +407,13 @@ class SimulationMixinV2:
         faulty_edges_verb = (
             f"{"_".join(["-".join([str(i) for i in fe]) for fe in self.faulty_edges])}"
         )
-        lim_steps_verb = f"limits_{self.limit_steps}" if self.limit_steps else ""
+        lim_steps_verb = f"{self.limit_steps}" if self.limit_steps else ""
         save_dir = os.path.join("results", self.results_dir)
         create_dir_if_not_exists(save_dir)
 
         file_path = os.path.join(
             save_dir,
-            f"{self.graph_name}__FE_{faulty_edges_verb}__N{self.no_of_simulations}__FI_{"-".join([str(i) for i in self.fault_interval])}__{lim_steps_verb}.csv",
+            f"{self.graph_name}__FE_{faulty_edges_verb}__N{self.no_of_simulations}__FI_{"-".join([str(i) for i in self.fault_interval])}__H{self.hist_size}__L{lim_steps_verb}.csv",
         )
         f = open(
             file_path,
