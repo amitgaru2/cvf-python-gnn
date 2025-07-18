@@ -318,71 +318,71 @@ class SimulationMixinV2:
     def run_simulations(self, state):
         """core simulation logic for a single round of simulation"""
         last_fault_duration = 0
-        FAULT_NEXT_STEP = "f"
-        next_step = None  # None means go it normal flow, do not interrupt anything
+        # FAULT_NEXT_STEP = "f"
+        # next_step = None  # None means go it normal flow, do not interrupt anything
         # print()
         for step in range(1, self.limit_steps + 1):
             logger.debug("\nStep %s.", step)
             faulty_action = None
-            if (
-                next_step == FAULT_NEXT_STEP
-                or last_fault_duration + 1 >= random.randint(*self.fault_interval)
-            ):
-                # fault introduction
-                faulty_action = self.get_faulty_action()
+            # if (
+            #     next_step == FAULT_NEXT_STEP
+            #     or last_fault_duration + 1 >= random.randint(*self.fault_interval)
+            # ):
+            # fault introduction
+            faulty_action = self.get_faulty_action()
 
-                if faulty_action is None:
-                    # Termination condition; when there is no any fault that can occur
-                    logger.debug(
-                        "Since no eligible action for the faults found. Terminating at step %s.",
-                        step,
-                    )
-                    return step, False
+            if faulty_action is None:
+                # Termination condition; when there is no any fault that can occur
+                logger.debug(
+                    "Since no eligible action for the faults found. Terminating at step %s.",
+                    step,
+                )
+                return step, False
 
-                faulty_action.execute(
-                    self.nodes_hist[faulty_action.node],
-                    self.nodes_read_pointer[faulty_action.node],
-                )
-                logger.debug("Fault happened at %s.", faulty_action.node)
-                logger.debug(
-                    "New history at %s: %s",
-                    faulty_action.node,
-                    self.nodes_hist[faulty_action.node],
-                )
-                logger.debug(
-                    "New pointers at %s: %s",
-                    faulty_action.node,
-                    self.nodes_read_pointer[faulty_action.node],
-                )
-                last_fault_duration = 0
-                next_step = None
-            else:
-                # program transition
-                # if program transition not found check in next round if fault can occur, do not terminate if no program transition found
-                state = self.get_most_latest_state()
-                action = self.get_action(state)
-                if action is not None:
-                    # there is possible program transition
-                    action.execute(
-                        self.nodes_hist[action.node],
-                        self.nodes_read_pointer[action.node],
-                    )
-                    self.log_pt_count(action)
-                    logger.debug("Prog transition happened at %s.", action.node)
-                    logger.debug(
-                        "New_history at %s: %s.",
-                        action.node,
-                        self.nodes_hist[action.node],
-                    )
-                    logger.debug(
-                        "New_pointers at %s: %s",
-                        action.node,
-                        self.nodes_read_pointer[action.node],
-                    )
-                else:
-                    # force next step to be a fault since all the preceeding steps will have no program transitions unless fault is executed.
-                    next_step = FAULT_NEXT_STEP
-                last_fault_duration += 1
+            faulty_action.execute(
+                self.nodes_hist[faulty_action.node],
+                self.nodes_read_pointer[faulty_action.node],
+            )
+            logger.debug("Fault happened at %s.", faulty_action.node)
+            logger.debug(
+                "New history at %s: %s",
+                faulty_action.node,
+                self.nodes_hist[faulty_action.node],
+            )
+            logger.debug(
+                "New pointers at %s: %s",
+                faulty_action.node,
+                self.nodes_read_pointer[faulty_action.node],
+            )
+            # last_fault_duration = 0
+            # next_step = None
+            # else:
+            #     # program transition
+            #     # if program transition not found check in next round if fault can occur, do not terminate if no program transition found
+            #     state = self.get_most_latest_state()
+            #     action = self.get_action(state)
+            #     if action is not None:
+            #         # there is possible program transition
+            #         action.execute(
+            #             self.nodes_hist[action.node],
+            #             self.nodes_read_pointer[action.node],
+            #         )
+            #         self.log_pt_count(action)
+            #         logger.debug("Prog transition happened at %s.", action.node)
+            #         logger.debug(
+            #             "New_history at %s: %s.",
+            #             action.node,
+            #             self.nodes_hist[action.node],
+            #         )
+            #         logger.debug(
+            #             "New_pointers at %s: %s",
+            #             action.node,
+            #             self.nodes_read_pointer[action.node],
+            #         )
+            #     else:
+            #         # force next step to be a fault since all the preceeding steps will have no program transitions unless fault is executed.
+            #         next_step = FAULT_NEXT_STEP
+            # last_fault_duration += 1
 
         return step, True
 

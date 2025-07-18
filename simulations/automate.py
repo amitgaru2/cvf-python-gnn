@@ -10,7 +10,7 @@ from command_line_helpers import (
     get_graph,
 )
 
-GRAPH_NAMES = ("star_graph_n4",)
+GRAPH_NAMES = ("implicit_graph_n4",)
 
 GRAPH = next(get_graph(GRAPH_NAMES))[1]
 
@@ -18,12 +18,13 @@ EDGES = []
 for src, dests in GRAPH.items():
     EDGES.extend([(src, dest) for dest in dests])  # (src, dest) src being read by dest
 
-max_size = len(EDGES)
+max_size = len(EDGES) // 2
 
-N = "10000"
+N = "1000"
 FI = ("5", "5")
 LIMIT_STEPS = "100"
 HIST_SIZE = "5"
+PROGRAM = "dijkstra_token_ring"
 
 
 def execute_command(cmd):
@@ -45,7 +46,7 @@ for i in range(1, max_size + 1):
             "python",
             "simulate_v2.py",
             "--program",
-            "maximal_matching",
+            PROGRAM,
             "--faulty-edges",
             *FAULTY_EDGES,
             "--no-sim",
@@ -66,24 +67,32 @@ for i in range(1, max_size + 1):
 
 # one with no faulty edges
 
-command = [
-    "python",
-    "simulate_v2.py",
-    "--program",
-    "maximal_matching",
-    "--faulty-edges",
-    "--no-sim",
-    N,
-    "--fault-interval",
-    *FI,
-    "--graph-names",
-    *GRAPH_NAMES,
-    "--limit-steps",
-    LIMIT_STEPS,
-    "--hist-size",
-    HIST_SIZE,
-    "--extra-kwargs",
-    "agg=1",
-]
 
-execute_command(command)
+# FAULTY_EDGES = [f"{k[0]},{k[1]}" for k in EDGES]
+# FAULTY_EDGES = []
+# # HIST_SIZE = "5"
+
+# command = [
+#     "python",
+#     "simulate_v2.py",
+#     "--program",
+#     "maximal_matching",
+#     "--faulty-edges",
+#     *FAULTY_EDGES,
+#     "--no-sim",
+#     N,
+#     "--fault-interval",
+#     *FI,
+#     "--graph-names",
+#     *GRAPH_NAMES,
+#     "--limit-steps",
+#     LIMIT_STEPS,
+#     "--hist-size",
+#     HIST_SIZE,
+#     "--extra-kwargs",
+#     "agg=1",
+#     # "--logging",
+#     # "DEBUG",
+# ]
+
+# execute_command(command)
