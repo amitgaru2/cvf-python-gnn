@@ -27,9 +27,9 @@ HIST_SIZE = "5"
 PROGRAM = "dijkstra_token_ring"
 
 
-def execute_command(cmd):
+def execute_command(command):
     # print("Executing ", cmd)
-    print("Executing...", " ".join(cmd))
+    print("Executing...", " ".join(command))
 
     result = subprocess.run(command, capture_output=True, text=True)
 
