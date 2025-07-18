@@ -112,10 +112,15 @@ class NodeReadValue:
     def __init__(self, node, reader_node, value, read_pointer):
         self.node = node
         self.reader_node = reader_node
-        self.value = value  # actual value, not the mapped index
+        self.value = value
         self.read_pointer = (
             read_pointer  # the sp_pointer of the reader "reader_node" to node "node"
         )
+
+    def __str__(self):
+        return f"{self.value}"
+
+    __repr__ = __str__
 
 
 class SimulationMixinV2:
@@ -199,8 +204,13 @@ class SimulationMixinV2:
     def get_latest_value_of_node_var(self, node: int, var: int):
         return self.nodes_hist[node][var].get_latest_value()
 
-    def get_read_pointer_of_node_var_at(self, node: int, var: int, at: int):
-        return self.nodes_read_pointer[node][var][at]
+    def get_read_pointer_of_node_at_var(
+        self,
+        node: int,
+        at: int,
+        var: int,
+    ):
+        return self.nodes_read_pointer[node][at][var]
 
     def get_faulty_action(self):
         """
@@ -209,46 +219,92 @@ class SimulationMixinV2:
         """
         node_w_value_n_nbr_values = {}
         for edge in self.faulty_edges:
-            temp = []
+            temp = [[] for _ in range(self.N_VARS)]
             read_frm_node, reader_node = edge[0], edge[1]
             sp_pointer_of_reader_node = self.nodes_read_pointer[reader_node][
                 read_frm_node
             ]
-            for v, read_pointer in self.nodes_hist[read_frm_node].get_history_frm(
-                sp_pointer_of_reader_node
-            ):
-                temp.append(NodeReadValue(read_frm_node, reader_node, v, read_pointer))
+            for var in range(self.N_VARS):
+                for v, read_pointer in self.nodes_hist[read_frm_node][
+                    var
+                ].get_history_frm(sp_pointer_of_reader_node[var]):
+                    temp[var].append(
+                        NodeReadValue(read_frm_node, reader_node, v, read_pointer)
+                    )
 
-            if temp and reader_node not in node_w_value_n_nbr_values:
-                node_w_value_n_nbr_values[reader_node] = [temp]
-            else:
-                node_w_value_n_nbr_values[reader_node].append(temp)
+            if any(temp):
+                if reader_node not in node_w_value_n_nbr_values:
+                    node_w_value_n_nbr_values[reader_node] = [temp]
+                else:
+                    node_w_value_n_nbr_values[reader_node].append(temp)
 
         # logger.debug("node_w_value_n_nbr_values %s", node_w_value_n_nbr_values)
+
         # find all eligible updates
         eligible_actions_for_fault = []
         for node, nbr_read_values in node_w_value_n_nbr_values.items():
-            nbr_combinations = product(*nbr_read_values)
+            nbr_var_vals_combs = []
+            for nbr_var_vals in nbr_read_values:
+                # first combine internal variables' values then combine the combination with other nodes' combinations;
+                # print("nbr_var_vals", nbr_var_vals)
+                nbr_var_vals_combs.append(list(product(*nbr_var_vals)))
+            nbr_combinations = product(*nbr_var_vals_combs)
+            # print("nbr_combinations", list(nbr_combinations))
             for nbr_comb in nbr_combinations:
-                neighbors_w_values = {i.node: i.value for i in nbr_comb}
-                read_pointers = {i.node: i.read_pointer for i in nbr_comb}
+                neighbors_w_values = {
+                    read_data[0].node: self.get_mapped_value_of_data(
+                        read_data[0].node, [read_data[0].value, read_data[1].value]
+                    )
+                    for read_data in nbr_comb
+                }
+                read_pointers = {
+                    read_data[0].node: [
+                        read_data[0].read_pointer,
+                        read_data[1].read_pointer,
+                    ]
+                    for read_data in nbr_comb
+                }
                 # for those neighbors that are not the part of faulty edge
+                # print("neighbors_w_values", neighbors_w_values)
+
                 for nbr in self.graph[node]:
                     if nbr not in neighbors_w_values:
-                        neighbors_w_values[nbr], read_pointers[nbr] = self.nodes_hist[
-                            nbr
-                        ].get_history_at(self.get_read_pointer_of_node_at(node, nbr))
-                #
+                        data = []
+                        read_pointer = []
+                        for var in range(self.N_VARS):
+                            temp = self.nodes_hist[nbr][var].get_history_at(
+                                self.get_read_pointer_of_node_at_var(node, nbr, var)
+                            )
+                            data.append(temp[0])
+                            read_pointer.append(temp[1])
+                        neighbors_w_values[nbr] = self.get_mapped_value_of_data(
+                            nbr, data
+                        )
+                        read_pointers[nbr] = read_pointer
+
                 # print("neighbors_w_values", neighbors_w_values)
+                # print("read_pointers", read_pointers)
+
+                current_value = self.get_mapped_value_of_data(
+                    node,
+                    [
+                        self.get_latest_value_of_node_var(node, var)
+                        for var in range(self.N_VARS)
+                    ],
+                )
                 next_val, changed_var = self._get_next_value_given_nbrs(
-                    node, self.get_latest_value_of_node(node), neighbors_w_values
+                    node, current_value, neighbors_w_values
                 )  # from base cvf class
                 if next_val is not None:
                     eligible_actions_for_fault.append(
                         ActionV2(
                             node,
-                            previous_value=self.get_latest_value_of_node(node),
-                            new_value=next_val,
+                            previous_value=self.get_latest_value_of_node_var(
+                                node, changed_var
+                            ),
+                            new_value=self.get_actual_config_node_values(
+                                node, next_val
+                            ).data[changed_var],
                             changed_var=changed_var,
                             read_pointers=read_pointers,
                         )
@@ -267,14 +323,9 @@ class SimulationMixinV2:
     def get_most_latest_state(self):
         """the values of the variables that are latest for all the nodes"""
         return [
-            self.possible_node_values_mapping[i][
-                self.DataKlass(
-                    *[
-                        self.get_latest_value_of_node_var(i, j)
-                        for j in range(self.N_VARS)
-                    ]
-                )
-            ]
+            self.get_mapped_value_of_data(
+                i, [self.get_latest_value_of_node_var(i, j) for j in range(self.N_VARS)]
+            )
             for i in range(len(self.nodes))
         ]  # since node hist contains the actual values that needs to be combined as single state value at particular node index and the state value should be mapped back from the actual values of combination of variables
 

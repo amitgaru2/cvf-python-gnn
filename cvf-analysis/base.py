@@ -376,6 +376,9 @@ class CVFAnalysisV2:
             result.append(self.get_actual_config_node_values(position, value))
         return tuple(result)
 
+    def get_mapped_value_of_data(self, node, data):
+        return self.possible_node_values_mapping[node][self.DataKlass(*data)]
+
     def generate_dataset_for_ml(self):
         writer = csv.DictWriter(
             open(

@@ -337,24 +337,22 @@ if __name__ == "__main__":
     graph_names = ["graph_2_node"]
     for graph_name, graph in get_graph(graph_names):
         cvf = MaximalMatchingCVFAnalysisV2(graph_name, graph)
-        c1 = cvf.possible_node_values_mapping[0][MaximalMatchingData(1, False)]
-        c2 = cvf.possible_node_values_mapping[1][MaximalMatchingData(None, True)]
-
-        c3 = cvf.possible_node_values_mapping[1][MaximalMatchingData(0, True)]
+        c1 = cvf.possible_node_values_mapping[0][MaximalMatchingData(1, True)]
+        c2 = cvf.possible_node_values_mapping[1][MaximalMatchingData(0, False)]
 
         # result = cvf.get_actual_config_values(config=(0, 0, 0, 1))
         # print(result)
         result1 = cvf._get_next_value_given_nbrs(0, c1, {1: c2})
-        print(result1)
-        print(cvf.get_actual_config_values(config=(result1, c2)))
+        print(result1[0])
+        print(cvf.get_actual_config_values(config=(result1[0], c2)))
 
-        result2 = cvf._get_next_value_given_nbrs(1, c3, {0: result1})
-        print(result2)
-        print(cvf.get_actual_config_values(config=(result1, result2)))
+        # result2 = cvf._get_next_value_given_nbrs(1, c3, {0: result1})
+        # print(result2)
+        # print(cvf.get_actual_config_values(config=(result1, result2)))
 
-        result3 = cvf._get_next_value_given_nbrs(1, result2, {0: result1})
-        print(result3)
-        print(cvf.get_actual_config_values(config=(result1, result3)))
+        # result3 = cvf._get_next_value_given_nbrs(1, result2, {0: result1})
+        # print(result3)
+        # print(cvf.get_actual_config_values(config=(result1, result3)))
 
         # result2 = cvf._get_next_value_given_nbrs(1, 0, {0: result1})
         # # print(result2)
