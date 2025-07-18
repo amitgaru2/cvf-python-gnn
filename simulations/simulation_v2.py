@@ -491,7 +491,7 @@ class SimulationMixinV2:
                 log_time = time.time()
             self.prepare_simulation_round()
             _, state = self.get_random_state(avoid_invariant=True)
-            # state = (0, 0)
+            # state = (1, 0)
             logger.debug("Selected initial state is %s.", self.get_actual_config_values(state))
             self.log_state_to_history(state)
             inner_results = self.run_simulations()
