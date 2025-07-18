@@ -38,61 +38,65 @@ def execute_command(cmd):
     print("Return Code:", result.returncode)
 
 
-for i in range(1, max_size + 1):
-    FAULTY_EDGES_COMB = itertools.combinations(EDGES, i)
-    for FAULTY_EDGES in FAULTY_EDGES_COMB:
-        FAULTY_EDGES = [f"{k[0]},{k[1]}" for k in FAULTY_EDGES]
-        command = [
-            "python",
-            "simulate_v2.py",
-            "--program",
-            PROGRAM,
-            "--faulty-edges",
-            *FAULTY_EDGES,
-            "--no-sim",
-            N,
-            "--fault-interval",
-            *FI,
-            "--graph-names",
-            *GRAPH_NAMES,
-            "--limit-steps",
-            LIMIT_STEPS,
-            "--hist-size",
-            HIST_SIZE,
-            "--extra-kwargs",
-            "agg=1",
-        ]
+def main():
+    for i in range(1, max_size + 1):
+        FAULTY_EDGES_COMB = itertools.combinations(EDGES, i)
+        for FAULTY_EDGES in FAULTY_EDGES_COMB:
+            FAULTY_EDGES = [f"{k[0]},{k[1]}" for k in FAULTY_EDGES]
+            command = [
+                "python",
+                "simulate_v2.py",
+                "--program",
+                PROGRAM,
+                "--faulty-edges",
+                *FAULTY_EDGES,
+                "--no-sim",
+                N,
+                "--fault-interval",
+                *FI,
+                "--graph-names",
+                *GRAPH_NAMES,
+                "--limit-steps",
+                LIMIT_STEPS,
+                "--hist-size",
+                HIST_SIZE,
+                "--extra-kwargs",
+                "agg=1",
+            ]
 
-        execute_command(command)
+            execute_command(command)
 
-# one with no faulty edges
+    # one with no faulty edges
+
+    # FAULTY_EDGES = [f"{k[0]},{k[1]}" for k in EDGES]
+    # FAULTY_EDGES = []
+    # # HIST_SIZE = "5"
+
+    # command = [
+    #     "python",
+    #     "simulate_v2.py",
+    #     "--program",
+    #     "maximal_matching",
+    #     "--faulty-edges",
+    #     *FAULTY_EDGES,
+    #     "--no-sim",
+    #     N,
+    #     "--fault-interval",
+    #     *FI,
+    #     "--graph-names",
+    #     *GRAPH_NAMES,
+    #     "--limit-steps",
+    #     LIMIT_STEPS,
+    #     "--hist-size",
+    #     HIST_SIZE,
+    #     "--extra-kwargs",
+    #     "agg=1",
+    #     # "--logging",
+    #     # "DEBUG",
+    # ]
+
+    # execute_command(command)
 
 
-# FAULTY_EDGES = [f"{k[0]},{k[1]}" for k in EDGES]
-# FAULTY_EDGES = []
-# # HIST_SIZE = "5"
-
-# command = [
-#     "python",
-#     "simulate_v2.py",
-#     "--program",
-#     "maximal_matching",
-#     "--faulty-edges",
-#     *FAULTY_EDGES,
-#     "--no-sim",
-#     N,
-#     "--fault-interval",
-#     *FI,
-#     "--graph-names",
-#     *GRAPH_NAMES,
-#     "--limit-steps",
-#     LIMIT_STEPS,
-#     "--hist-size",
-#     HIST_SIZE,
-#     "--extra-kwargs",
-#     "agg=1",
-#     # "--logging",
-#     # "DEBUG",
-# ]
-
-# execute_command(command)
+if __name__ == "__main__":
+    main()
