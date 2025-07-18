@@ -1,4 +1,4 @@
-from base import ProgramData, CVFAnalysisV2
+from base import CVFAnalysisV2
 
 
 class GraphColoringCVFAnalysisV2(CVFAnalysisV2):
@@ -9,7 +9,7 @@ class GraphColoringCVFAnalysisV2(CVFAnalysisV2):
         result = list()
         for node in self.nodes:
             possible_values = [
-                ProgramData(i) for i in range(self.degree_of_nodes[node] + 1)
+                self.DataKlass(i) for i in range(self.degree_of_nodes[node] + 1)
             ]
             result.append(tuple(possible_values))
 
@@ -37,7 +37,9 @@ class GraphColoringCVFAnalysisV2(CVFAnalysisV2):
         if node_value not in set(neighbors_w_values.values()):
             return None  # already different
         next_color = self._find_min_possible_color(neighbors_w_values.values())
-        return next_color if node_value != next_color else None
+        if node_value != next_color:
+            return next_color, 0
+        return None, None
 
     def _get_program_transitions_as_configs(self, start_state):
         for position, color in enumerate(start_state):

@@ -5,16 +5,25 @@ from base import ProgramData, CVFAnalysisV2
 
 
 class MaximalMatchingData(ProgramData):
+    N_VARS = 2
+
     def __init__(self, p: int, m: bool):
-        self.p = p
-        self.m = m
-        self.data = (self.p, self.m)
+        self.data = (p, m)
+
+    @property
+    def p(self):
+        return self.data[0]
+
+    @property
+    def m(self):
+        return self.data[1]
 
 
 class MaximalMatchingCVFAnalysisV2(CVFAnalysisV2):
     """(p, m) binded as a single variable."""
 
     results_dir = "maximal_matching"
+    DataKlass = MaximalMatchingData
 
     def get_possible_node_values(self):
         """include m values as well"""
@@ -296,7 +305,7 @@ class MaximalMatchingCVFAnalysisV2(CVFAnalysisV2):
             if self._is_program_transition_v2(
                 node, node_value, next_value, neighbors_w_values
             ):
-                choices.append(next_value)
+                choices.append((next_value, 0))  # changed the first var
                 break
 
         possible_config_m_val = {True, False} - {current_m_value}
@@ -307,13 +316,13 @@ class MaximalMatchingCVFAnalysisV2(CVFAnalysisV2):
             if self._is_program_transition_v2(
                 node, node_value, next_value, neighbors_w_values
             ):
-                choices.append(next_value)
+                choices.append((next_value, 1))  # changed the second var
                 break
 
         if choices:
             return random.choice(choices)
 
-        return None
+        return None, None
 
 
 if __name__ == "__main__":

@@ -52,9 +52,10 @@ class ProgramTransitionTreeNode(metaclass=Singleton):
 
 
 class ProgramData:
+    N_VARS = 1
+
     def __init__(self, val: int):
-        self.val = val
-        self.data = self.val
+        self.data = val
 
     def __eq__(self, other):
         return self.data == other.data
@@ -70,6 +71,7 @@ class ProgramData:
 
 class CVFAnalysisV2:
     results_dir = ""
+    DataKlass = ProgramData
 
     def __init__(
         self,
@@ -213,7 +215,9 @@ class CVFAnalysisV2:
                 program_transitions.append(perturb_state)
 
         if not program_transitions:
-            print("not foudn for", start_state, self.get_actual_config_values(start_state))
+            print(
+                "not foudn for", start_state, self.get_actual_config_values(start_state)
+            )
         return program_transitions
 
     def is_invariant(self, config: Tuple[int]):

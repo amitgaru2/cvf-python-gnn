@@ -1,6 +1,6 @@
 import random
 
-from base import CVFAnalysisV2, ProgramData
+from base import CVFAnalysisV2
 
 
 class DijkstraTokenRingCVFAnalysisV2(CVFAnalysisV2):
@@ -12,7 +12,7 @@ class DijkstraTokenRingCVFAnalysisV2(CVFAnalysisV2):
     def get_possible_node_values(self):
         result = list()
         for _ in self.nodes:
-            possible_values = [ProgramData(i) for i in [0, 1, 2]]
+            possible_values = [self.DataKlass(i) for i in [0, 1, 2]]
             result.append(tuple(possible_values))
 
         return result, []
@@ -60,9 +60,9 @@ class DijkstraTokenRingCVFAnalysisV2(CVFAnalysisV2):
             i for i in possible_next_values if i != node_value
         ]  # don't allow same value to be the next value
         if choices:
-            return random.sample(choices, 1)[0]
+            return random.choice(choices), 0
 
-        return None
+        return None, None
 
     def _get_program_transitions_as_configs(self, start_state):
         yielded = set()
