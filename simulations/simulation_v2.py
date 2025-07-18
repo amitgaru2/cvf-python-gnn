@@ -491,7 +491,7 @@ class SimulationMixinV2:
                 log_time = time.time()
             self.prepare_simulation_round()
             _, state = self.get_random_state(avoid_invariant=True)
-            # state = (1, 0)
+            # state = (0, 0)
             logger.debug("Selected initial state is %s.", self.get_actual_config_values(state))
             self.log_state_to_history(state)
             inner_results = self.run_simulations()
@@ -525,10 +525,11 @@ class SimulationMixinV2:
             writer.writerow([i, *v])
 
     def aggregate_result(self, result, agg_file=None):
-        step_sum = sum([v[0] for v in result])
+        steps_sum = sum([v[0] for v in result])
+        max_steps = max([v[0] for v in result])
         if agg_file is None:
-            logger.info(f"Total steps taken {step_sum:,}.")
+            logger.info(f"Total steps taken {steps_sum:,}.")
         else:
             f = open(agg_file, "a+")
-            csv.writer(f).writerow([step_sum, *self.faulty_edges])
+            csv.writer(f).writerow([steps_sum, max_steps, *self.faulty_edges])
             f.close()
