@@ -33,7 +33,7 @@ class NodeVarHistory:
 
     def __init__(self, size):
         self.size = size
-        self.hist = [None for _ in range(self.size)]
+        self.hist = [float("inf") for _ in range(self.size)]
         self.cur_indx = (
             -1
         )  # counter ; if 10 elements inserted in the history then cur_indx = 9
@@ -80,20 +80,30 @@ class NodeVarHistory:
     def __str__(self):
         return f"{self.hist}"
 
+    __repr__ = __str__
+
 
 class ActionV2:
-    def __init__(self, node, previous_value, new_value, read_pointers):
-        self.node = node
-        self.previous_value = previous_value
-        self.new_value = new_value
+    def __init__(
+        self,
+        node: int,
+        previous_value,
+        new_value,
+        changed_var: int,
+        read_pointers: dict,
+    ):
+        self.node = node  # the node on which the change happened
+        self.previous_value = previous_value  # indexed state value
+        self.new_value = new_value  # indexed state value
+        self.changed_var = changed_var  # which variable changed between the previous_value -> new_value
         self.read_pointers = read_pointers  # that points to the sp_pointers based on which new_value was calculated; {1: 2, 3: 2}
 
     def execute(self, var_history: NodeVarHistory, read_pointers: dict):
-        var_history.add_history(self.new_value)
+        var_history[self.changed_var].add_history(self.new_value)
         read_pointers.update(self.read_pointers)
 
     def __str__(self) -> str:
-        return f"{self.node}: {self.previous_value} - {self.new_value} ; {self.read_pointers}"
+        return f"N={self.node} PV={self.previous_value} NV={self.new_value} RP={self.read_pointers}"
 
     __repr__ = __str__
 
@@ -102,13 +112,14 @@ class NodeReadValue:
     def __init__(self, node, reader_node, value, read_pointer):
         self.node = node
         self.reader_node = reader_node
-        self.value = value
+        self.value = value  # actual value, not the mapped index
         self.read_pointer = (
             read_pointer  # the sp_pointer of the reader "reader_node" to node "node"
         )
 
 
 class SimulationMixinV2:
+    N_VARS = 1  # 1 is default, override in the simulation class
 
     def init_edges(self):
         """edges are necessary since faults are now introduced in the edges rather than nodes"""
@@ -118,27 +129,24 @@ class SimulationMixinV2:
                 [(src, dest) for dest in dests]
             )  # (src, dest) src being read by dest
 
-        # self.edges_indx = {
-        #     e: i for i, e in enumerate(self.edges)
-        # }  # reverse lookup to get the index of edges {(1, 2): 0, (2, 1): 2, ...}
-
     def init_pt_count(self):
         self.pt_count = {i: 0 for i in self.nodes}
 
     def init_var_hist(self):
         self.nodes_hist: List[NodeVarHistory] = [
-            NodeVarHistory(self.hist_size) for _ in self.nodes
-        ]  # history for each nodes; assuming each node has single variable.
+            [NodeVarHistory(self.hist_size) for _ in range(self.N_VARS)]
+            for _ in self.nodes
+        ]  # history for each nodes; each node can have multiple variables like max-matching has 2 varialbes `p` and `m` treated separately.
 
     def init_stale_pointers(self):
         """points the neighboring history from where the variable is yet to be read"""
         self.nodes_read_pointer = {}
         for node in range(len(self.nodes)):
             self.nodes_read_pointer[node] = {
-                edge[0]: 0 for edge in self.edges if edge[1] == node
+                edge[0]: [0 for _ in range(self.N_VARS)]
+                for edge in self.edges
+                if edge[1] == node
             }
-
-        # print("nodes_reader_pointer", self.nodes_read_pointer)
 
     def create_simulation_environment(
         self,
@@ -157,14 +165,17 @@ class SimulationMixinV2:
 
         self.init_edges()
 
-    def log_var_history(self, node, value):
+    def log_var_history(self, node: int, var: int, value):
         """log variable history for individual node"""
-        self.nodes_hist[node].add_history(value)
+        self.nodes_hist[node][var].add_history(value)
 
     def log_state_to_history(self, state):
         """log the entire state to the history of individual nodes"""
         for node, value in enumerate(state):
-            self.log_var_history(node, value)
+            for var, act_value in enumerate(
+                self.possible_node_values[node][value].data
+            ):
+                self.log_var_history(node, var, act_value)
 
     def get_random_state(self, avoid_invariant=False):
         """
@@ -185,11 +196,11 @@ class SimulationMixinV2:
 
         return indx, state
 
-    def get_latest_value_of_node(self, node):
-        return self.nodes_hist[node].get_latest_value()
+    def get_latest_value_of_node_var(self, node: int, var: int):
+        return self.nodes_hist[node][var].get_latest_value()
 
-    def get_read_pointer_of_node_at(self, node, at):
-        return self.nodes_read_pointer[node][at]
+    def get_read_pointer_of_node_var_at(self, node: int, var: int, at: int):
+        return self.nodes_read_pointer[node][var][at]
 
     def get_faulty_action(self):
         """
@@ -229,7 +240,7 @@ class SimulationMixinV2:
                         ].get_history_at(self.get_read_pointer_of_node_at(node, nbr))
                 #
                 # print("neighbors_w_values", neighbors_w_values)
-                next_val = self._get_next_value_given_nbrs(
+                next_val, changed_var = self._get_next_value_given_nbrs(
                     node, self.get_latest_value_of_node(node), neighbors_w_values
                 )  # from base cvf class
                 if next_val is not None:
@@ -238,6 +249,7 @@ class SimulationMixinV2:
                             node,
                             previous_value=self.get_latest_value_of_node(node),
                             new_value=next_val,
+                            changed_var=changed_var,
                             read_pointers=read_pointers,
                         )
                     )
@@ -253,17 +265,21 @@ class SimulationMixinV2:
         return action
 
     def get_most_latest_state(self):
-        """the values of the variables are latest for all the nodes"""
-        return [self.get_latest_value_of_node(i) for i in range(len(self.nodes))]
+        """the values of the variables that are latest for all the nodes"""
+        return [
+            self.possible_node_values_mapping[i][
+                self.DataKlass(
+                    *[
+                        self.get_latest_value_of_node_var(i, j)
+                        for j in range(self.N_VARS)
+                    ]
+                )
+            ]
+            for i in range(len(self.nodes))
+        ]  # since node hist contains the actual values that needs to be combined as single state value at particular node index and the state value should be mapped back from the actual values of combination of variables
 
-    def get_latest_reader_pointer_of_node(self, node):
-        return self.nodes_hist[node].cur_indx
-
-    def get_most_latest_state_reader_pointer(self, exclude_node=None):
-        result = {i: self.get_latest_reader_pointer_of_node(i) for i in self.nodes}
-        if exclude_node is not None:
-            result.pop(exclude_node, None)
-        return result
+    def get_latest_reader_pointer_of_node_var(self, node, var):
+        return self.nodes_hist[node][var].cur_indx
 
     def get_all_eligible_actions(self, state):
         """get the program transitions from state."""
@@ -273,9 +289,13 @@ class SimulationMixinV2:
             read_pointers = {}
             for nbr in self.graph[node]:
                 neighbors_w_values[nbr] = state[nbr]
-                read_pointers[nbr] = self.get_latest_reader_pointer_of_node(nbr)
+                read_pointers[nbr] = []
+                for j in range(self.N_VARS):
+                    read_pointers[nbr].append(
+                        self.get_latest_reader_pointer_of_node_var(nbr, j)
+                    )
 
-            next_value = self._get_next_value_given_nbrs(
+            next_value, changed_var = self._get_next_value_given_nbrs(
                 node, state[node], neighbors_w_values
             )  # from base cvf class
 
@@ -283,8 +303,13 @@ class SimulationMixinV2:
                 eligible_actions.append(
                     ActionV2(
                         node,
-                        previous_value=state[node],
-                        new_value=next_value,
+                        previous_value=self.get_actual_config_node_values(
+                            node, state[node]
+                        ).data[changed_var],
+                        new_value=self.get_actual_config_node_values(
+                            node, next_value
+                        ).data[changed_var],
+                        changed_var=changed_var,
                         read_pointers=read_pointers,
                     )
                 )
@@ -315,7 +340,15 @@ class SimulationMixinV2:
         """
         self.pt_count[action.node] += 1
 
-    def run_simulations(self, state):
+    # def run_simulations(self):
+    #     state = self.get_most_latest_state()
+    #     action = self.get_action(state)
+    #     print("state", state)
+    #     print("action", action)
+
+    #     return 0, True
+
+    def run_simulations(self):
         """core simulation logic for a single round of simulation"""
         last_fault_duration = 0
         FAULT_NEXT_STEP = "f"
@@ -407,7 +440,7 @@ class SimulationMixinV2:
             _, state = self.get_random_state(avoid_invariant=True)
             logger.debug("Selected initial state is %s.", state)
             self.log_state_to_history(state)
-            inner_results = self.run_simulations(state)
+            inner_results = self.run_simulations()
             results.append([*inner_results, *self.pt_count.values()])
 
         return results

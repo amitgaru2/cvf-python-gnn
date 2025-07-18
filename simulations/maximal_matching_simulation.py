@@ -24,3 +24,10 @@ class MaximalMatchingSimulation(SimulationMixin, MaximalMatchingCVFAnalysisV2):
 
 class MaximalMatchingSimulationV2(SimulationMixinV2, MaximalMatchingCVFAnalysisV2):
     results_dir = "maximal_matching_v2"
+
+
+class MaximalMatchingSimulationSepVarV2(
+    SimulationMixinV2, MaximalMatchingCVFAnalysisV2
+):
+    N_VARS = 2
+    results_dir = "maximal_matching_v2_sep_var"

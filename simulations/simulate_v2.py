@@ -7,7 +7,7 @@ from custom_logger import logger
 from simulation_v2 import SimulationMixinV2
 from dijkstra_simulation import DijkstraSimulationV2
 from graph_coloring_simulation import GraphColoringSimulationV2
-from maximal_matching_simulation import MaximalMatchingSimulationV2
+from maximal_matching_simulation import MaximalMatchingSimulationSepVarV2
 
 utils_path = os.path.join(os.getenv("CVF_PROJECT_DIR", ""), "utils")
 sys.path.append(utils_path)
@@ -22,7 +22,7 @@ from command_line_helpers import (
 AnalysisMap = {
     ColoringProgram: GraphColoringSimulationV2,
     DijkstraProgram: DijkstraSimulationV2,
-    MaxMatchingProgram: MaximalMatchingSimulationV2,
+    MaxMatchingProgram: MaximalMatchingSimulationSepVarV2,
 }
 
 
