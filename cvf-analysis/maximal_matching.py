@@ -12,7 +12,7 @@ class MaximalMatchingData(ProgramData):
 
 
 class MaximalMatchingCVFAnalysisV2(CVFAnalysisV2):
-    """Not complete"""
+    """(p, m) binded as a single variable."""
 
     results_dir = "maximal_matching"
 
@@ -325,27 +325,53 @@ if __name__ == "__main__":
 
     from command_line_helpers import get_graph
 
-    graph_names = ["star_graph_n4"]
+    graph_names = ["graph_2_node"]
     for graph_name, graph in get_graph(graph_names):
         cvf = MaximalMatchingCVFAnalysisV2(graph_name, graph)
+        c1 = cvf.possible_node_values_mapping[0][MaximalMatchingData(1, False)]
+        c2 = cvf.possible_node_values_mapping[1][MaximalMatchingData(None, True)]
+
+        c3 = cvf.possible_node_values_mapping[1][MaximalMatchingData(0, True)]
+
         # result = cvf.get_actual_config_values(config=(0, 0, 0, 1))
         # print(result)
-        # result = cvf._get_next_value_given_nbrs(0, 0, {1: 0, 2: 0, 3: 1})
-        # print(cvf.get_actual_config_values(config=(result, 0, 0, 1)))
-        result = cvf.get_actual_config_values(config=(3, 0, 1, 1))
-        print(result)
-        result = cvf.get_actual_config_values(config=(2, 0, 1, 1))
-        print(result)
-        result = cvf.get_actual_config_values(config=(2, 0, 1, 0))
-        print(result)
-        result = cvf.get_actual_config_values(config=(2, 2, 1, 0))
-        print(result)
-        result = cvf.get_actual_config_values(config=(3, 2, 1, 0))
-        print(result)
-        result = cvf.get_actual_config_values(config=(3, 2, 0, 0))
-        print(result)
-        result = cvf.get_actual_config_values(config=(3, 3, 0, 0))
-        print(result)
+        result1 = cvf._get_next_value_given_nbrs(0, c1, {1: c2})
+        print(result1)
+        print(cvf.get_actual_config_values(config=(result1, c2)))
+
+        result2 = cvf._get_next_value_given_nbrs(1, c3, {0: result1})
+        print(result2)
+        print(cvf.get_actual_config_values(config=(result1, result2)))
+
+        result3 = cvf._get_next_value_given_nbrs(1, result2, {0: result1})
+        print(result3)
+        print(cvf.get_actual_config_values(config=(result1, result3)))
+
+        # result2 = cvf._get_next_value_given_nbrs(1, 0, {0: result1})
+        # # print(result2)
+        # print(cvf.get_actual_config_values(config=(result1, result2)))
+
+        # result3 = cvf._get_next_value_given_nbrs(1, result2, {0: result1})
+        # print(cvf.get_actual_config_values(config=(result1, result3)))
+
+        # result4 = cvf._get_next_value_given_nbrs(0, result1, {1: 0})
+        # print(result4)
+        # print(cvf.get_actual_config_values(config=(result4, 0)))
+
+        # result = cvf.get_actual_config_values(config=(3, 0, 1, 1))
+        # print(result)
+        # result = cvf.get_actual_config_values(config=(2, 0, 1, 1))
+        # print(result)
+        # result = cvf.get_actual_config_values(config=(2, 0, 1, 0))
+        # print(result)
+        # result = cvf.get_actual_config_values(config=(2, 2, 1, 0))
+        # print(result)
+        # result = cvf.get_actual_config_values(config=(3, 2, 1, 0))
+        # print(result)
+        # result = cvf.get_actual_config_values(config=(3, 2, 0, 0))
+        # print(result)
+        # result = cvf.get_actual_config_values(config=(3, 3, 0, 0))
+        # print(result)
         # result = cvf.get_actual_config_values(config=(4, 0, 2, 0))
         # print(result)
         # result = cvf.get_actual_config_values(config=(4, 0, 3, 0))

@@ -73,7 +73,7 @@ def main(
     )
     result = simulation.start_simulation()
     if extra_kwargs.get("agg", False):
-        simulation.aggregate_result(result)
+        simulation.aggregate_result(result, extra_kwargs.get("agg_file", None))
     else:
         simulation.store_raw_result(result)
 

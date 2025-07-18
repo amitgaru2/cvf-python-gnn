@@ -1,17 +1,21 @@
 import os
 import sys
+import csv
 import itertools
 import subprocess
 
 utils_path = os.path.join(os.getenv("CVF_PROJECT_DIR", ""), "utils")
 sys.path.append(utils_path)
 
+from common_helpers import create_dir_if_not_exists
 from command_line_helpers import (
     get_graph,
 )
 
-GRAPH_NAMES = ("implicit_graph_n4",)
+PROGRAM = "dijkstra_token_ring"
+PROGRAM = "graph_coloring"
 
+GRAPH_NAMES = ("graph_3",)
 GRAPH = next(get_graph(GRAPH_NAMES))[1]
 
 EDGES = []
@@ -24,7 +28,13 @@ N = "1000"
 FI = ("5", "5")
 LIMIT_STEPS = "100"
 HIST_SIZE = "5"
-PROGRAM = "dijkstra_token_ring"
+
+results_dir = "automation_results"
+agg_file = f"{PROGRAM}__{GRAPH_NAMES[0]}__N{N}__FI{"-".join(FI)}__L{LIMIT_STEPS}__H{HIST_SIZE}__steps__agg.csv"
+agg_file = os.path.join(results_dir, agg_file)
+create_dir_if_not_exists(results_dir)
+if os.path.exists(agg_file):
+    os.remove(agg_file)
 
 
 def execute_command(command):
@@ -62,6 +72,7 @@ def main():
                 HIST_SIZE,
                 "--extra-kwargs",
                 "agg=1",
+                f"agg_file={agg_file}",
             ]
 
             execute_command(command)
