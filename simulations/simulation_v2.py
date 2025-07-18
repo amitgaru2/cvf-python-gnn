@@ -253,14 +253,14 @@ class SimulationMixinV2:
             for nbr_comb in nbr_combinations:
                 neighbors_w_values = {
                     read_data[0].node: self.get_mapped_value_of_data(
-                        read_data[0].node, [read_data[0].value, read_data[1].value]
+                        read_data[0].node,
+                        [read_data[var].value for var in range(self.N_VARS)],
                     )
                     for read_data in nbr_comb
                 }
                 read_pointers = {
                     read_data[0].node: [
-                        read_data[0].read_pointer,
-                        read_data[1].read_pointer,
+                        read_data[var].read_pointer for var in range(self.N_VARS)
                     ]
                     for read_data in nbr_comb
                 }

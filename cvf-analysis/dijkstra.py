@@ -6,16 +6,15 @@ from base import CVFAnalysisV2
 class DijkstraTokenRingCVFAnalysisV2(CVFAnalysisV2):
     results_dir = "dijkstra_token_ring"
 
-    # def get_possible_node_values(self):
-    #     return [{0, 1, 2} for _ in self.nodes]
-
     def get_possible_node_values(self):
-        result = list()
+        result = []
+        mapping = []
         for _ in self.nodes:
             possible_values = [self.DataKlass(i) for i in [0, 1, 2]]
+            mapping.append({v: i for i, v in enumerate(possible_values)})
             result.append(tuple(possible_values))
 
-        return result, []
+        return result, mapping
 
     def initialize_program_helpers(self):
         self.bottom = 0

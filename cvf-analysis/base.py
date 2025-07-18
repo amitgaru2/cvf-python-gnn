@@ -55,7 +55,7 @@ class ProgramData:
     N_VARS = 1
 
     def __init__(self, val: int):
-        self.data = val
+        self.data = (val,)
 
     def __eq__(self, other):
         return self.data == other.data

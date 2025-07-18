@@ -6,14 +6,16 @@ class GraphColoringCVFAnalysisV2(CVFAnalysisV2):
 
     def get_possible_node_values(self):
         """mapping is same to the values in the nodes that is v in value is the index in the mapping."""
-        result = list()
+        result = []
+        mapping = []
         for node in self.nodes:
             possible_values = [
                 self.DataKlass(i) for i in range(self.degree_of_nodes[node] + 1)
             ]
+            mapping.append({v: i for i, v in enumerate(possible_values)})
             result.append(tuple(possible_values))
 
-        return result, []
+        return result, mapping
 
     @staticmethod
     def _find_min_possible_color(colors):
@@ -34,11 +36,10 @@ class GraphColoringCVFAnalysisV2(CVFAnalysisV2):
         The next color value is independent of the current node's value.
         don't select the minimum color if it is already different from the neighbors
         """
-        if node_value not in set(neighbors_w_values.values()):
-            return None  # already different
-        next_color = self._find_min_possible_color(neighbors_w_values.values())
-        if node_value != next_color:
-            return next_color, 0
+        if node_value in set(neighbors_w_values.values()):  # if have same to neighbor then only change
+            next_color = self._find_min_possible_color(neighbors_w_values.values())
+            if node_value != next_color:
+                return next_color, 0
         return None, None
 
     def _get_program_transitions_as_configs(self, start_state):
