@@ -7,7 +7,10 @@ from custom_logger import logger
 from simulation_v2 import SimulationMixinV2
 from dijkstra_simulation import DijkstraSimulationV2
 from graph_coloring_simulation import GraphColoringSimulationV2
-from maximal_matching_simulation import MaximalMatchingSimulationSepVarV2
+from maximal_matching_simulation import (
+    MaximalMatchingSimulationV2,
+    MaximalMatchingSimulationSepVarV2,
+)
 
 utils_path = os.path.join(os.getenv("CVF_PROJECT_DIR", ""), "utils")
 sys.path.append(utils_path)

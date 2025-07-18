@@ -417,9 +417,11 @@ class SimulationMixinV2:
 
                 if faulty_action is None:
                     # Termination condition; when there is no any fault that can occur
+                    state = self.get_most_latest_state()
                     logger.debug(
-                        "Since no eligible action for the faults found. Terminating at step %s.",
+                        "Since no eligible action for the faults found. Terminating at step %s. Latest state %s",
                         step,
+                        self.get_actual_config_values(state),
                     )
                     return step, False
 
@@ -489,6 +491,7 @@ class SimulationMixinV2:
                 log_time = time.time()
             self.prepare_simulation_round()
             _, state = self.get_random_state(avoid_invariant=True)
+            state = (0, 0)
             logger.debug("Selected initial state is %s.", state)
             self.log_state_to_history(state)
             inner_results = self.run_simulations()
