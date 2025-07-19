@@ -16,7 +16,7 @@ from command_line_helpers import (
 # PROGRAM = "graph_coloring"
 PROGRAM = "maximal_matching"
 
-GRAPH_NAMES = ("graph_7",)
+GRAPH_NAMES = ("graph_2_node",)
 GRAPH = next(get_graph(GRAPH_NAMES))[1]
 
 EDGES = []
@@ -25,7 +25,7 @@ for src, dests in GRAPH.items():
 
 max_size = len(EDGES) // 2
 
-N = "100000"
+N = "1000000"
 FI = ("5", "5")
 LIMIT_STEPS = "100"
 HIST_SIZE = "5"
