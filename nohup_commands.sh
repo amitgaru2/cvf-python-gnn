@@ -154,3 +154,5 @@ python automate.py
 
 # python cvf_analysis.py --model lstm_trained_at_2025_04_26_14_01 --program coloring --graph-names graph_10
 # mpirun --hostfile hosts.txt ./run_mpi.sh cvf_analysis_mpi.py --model lstm_trained_at_2025_06_26_20_32 --program maximal_matching --graph-names graph_random_regular_graph_n8_d4
+
+python simulate_v2.py --program graph_coloring --faulty-edges 0,4 4,0 --no-sim 1000 --fault-interval 4 4 --graph-names graph_7 --limit-steps 100 --logging DEBUG 

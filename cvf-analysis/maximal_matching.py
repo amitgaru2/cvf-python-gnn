@@ -1,7 +1,11 @@
 import random
+import logging
 
 from typing import Tuple
+from custom_logger import logger
 from base import ProgramData, CVFAnalysisV2
+
+# logger.setLevel(logging.DEBUG)
 
 
 class MaximalMatchingData(ProgramData):
@@ -155,6 +159,7 @@ class MaximalMatchingCVFAnalysisV2(CVFAnalysisV2):
         if config.m != pr_married_node:
             # if there is change in m and the current m is not equivalent to pr_married_node, then it is a transition
             if new_config.m == pr_married_node:
+                logger.debug("Update")
                 return True
 
         # Marriage
@@ -165,6 +170,7 @@ class MaximalMatchingCVFAnalysisV2(CVFAnalysisV2):
                 config_j = self.get_actual_config_node_values(j, neighbors_w_values[j])
                 if config_j.p == node:
                     if new_config.p == j:
+                        logger.debug("Marriage")
                         return True
 
         # Seduction
@@ -185,6 +191,7 @@ class MaximalMatchingCVFAnalysisV2(CVFAnalysisV2):
                         max_j = max(max_j, j)
 
         if max_j >= 0 and new_config.p == max_j:
+            logger.debug("Seduction")
             return True
 
         # Abandonment
@@ -195,6 +202,7 @@ class MaximalMatchingCVFAnalysisV2(CVFAnalysisV2):
                 if config_j.p != node and (config_j.m or j <= node):
                     # there is another nbr j that points to node but the neighbor p doesn't point to node
                     if new_config.p is None:
+                        logger.debug("Abandonment")
                         return True
 
         return False
@@ -337,20 +345,42 @@ if __name__ == "__main__":
     graph_names = ["graph_2_node"]
     for graph_name, graph in get_graph(graph_names):
         cvf = MaximalMatchingCVFAnalysisV2(graph_name, graph)
-        c1 = cvf.possible_node_values_mapping[0][MaximalMatchingData(1, True)]
-        c2 = cvf.possible_node_values_mapping[1][MaximalMatchingData(None, True)]
+        c1 = cvf.possible_node_values_mapping[0][MaximalMatchingData(None, False)]
+        c2 = cvf.possible_node_values_mapping[1][MaximalMatchingData(None, False)]
 
-        c3 = cvf.possible_node_values_mapping[1][MaximalMatchingData(0, True)]
+        cx = cvf.possible_node_values_mapping[1][MaximalMatchingData(None, True)]
 
-        # result = cvf.get_actual_config_values(config=(0, 0, 0, 1))
-        # print(result)
-        # result1 = cvf._get_next_value_given_nbrs(0, c1, {1: c2})
-        # print(result1)
-        # print(cvf.get_actual_config_values(config=(result1, c2)))
+        result = cvf._get_next_value_given_nbrs(0, c1, {1: c2})
+        print(result)
+        print(cvf.get_actual_config_values(config=(result[0], c2)))
+        c3 = result[0]
 
-        # result2 = cvf._get_next_value_given_nbrs(1, c3, {0: result1})
-        # print(result2)
-        # print(cvf.get_actual_config_values(config=(result1, result2)))
+        result = cvf._get_next_value_given_nbrs(1, c2, {0: c3})
+        print(result)
+        print(cvf.get_actual_config_values(config=(c3, result[0])))
+        c4 = result[0]
+
+        result = cvf._get_next_value_given_nbrs(1, c4, {0: c3})
+        print(result)
+        print(cvf.get_actual_config_values(config=(c3, result[0])))
+
+        c5 = result[0]
+
+        result = cvf._get_next_value_given_nbrs(0, c3, {1: cx})
+        print(result)
+        print(cvf.get_actual_config_values(config=(result[0], cx)))
+
+        c6 = result[0]
+
+        result = cvf._get_next_value_given_nbrs(1, c5, {0: c6})
+        print(result)
+        print(cvf.get_actual_config_values(config=(c6, result[0])))
+
+        c7 = result[0]
+
+        result = cvf._get_next_value_given_nbrs(1, c7, {0: c6})
+        print(result)
+        print(cvf.get_actual_config_values(config=(c6, result[0])))
 
         # result3 = cvf._get_next_value_given_nbrs(1, result2, {0: result1})
         # print(result3)

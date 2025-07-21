@@ -16,16 +16,16 @@ from command_line_helpers import (
 # PROGRAM = "graph_coloring"
 PROGRAM = "maximal_matching"
 
-GRAPH_NAMES = ("graph_2_node",)
+GRAPH_NAMES = ("graph_6",)
 GRAPH = next(get_graph(GRAPH_NAMES))[1]
 
 EDGES = []
 for src, dests in GRAPH.items():
     EDGES.extend([(src, dest) for dest in dests])  # (src, dest) src being read by dest
 
-max_size = len(EDGES) // 2
+max_size = len(EDGES) // 3
 
-N = "1000000"
+N = "10000"
 FI = ("5", "5")
 LIMIT_STEPS = "100"
 HIST_SIZE = "5"
