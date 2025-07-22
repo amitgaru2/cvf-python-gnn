@@ -129,5 +129,5 @@ if __name__ == "__main__":
     graph_names = ["implicit_graph_n4"]
     for graph_name, graph in get_graph(graph_names):
         cvf = DijkstraTokenRingCVFAnalysisV2(graph_name, graph)
-        result = cvf._get_next_value_given_nbrs(3, 1, {0: 1, 2: 1})
+        result = cvf._get_next_value_given_nbrs(1, 2, {0: 0, 2: 2})
         print(result)

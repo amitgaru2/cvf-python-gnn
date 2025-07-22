@@ -12,22 +12,22 @@ from command_line_helpers import (
     get_graph,
 )
 
-# PROGRAM = "dijkstra_token_ring"
+PROGRAM = "dijkstra_token_ring"
 # PROGRAM = "graph_coloring"
-PROGRAM = "maximal_matching"
+# PROGRAM = "maximal_matching"
 
-GRAPH_NAMES = ("graph_6",)
+GRAPH_NAMES = ("implicit_graph_n3",)
 GRAPH = next(get_graph(GRAPH_NAMES))[1]
 
 EDGES = []
 for src, dests in GRAPH.items():
     EDGES.extend([(src, dest) for dest in dests])  # (src, dest) src being read by dest
 
-max_size = len(EDGES) // 3
+max_size = len(EDGES)
 
 N = "10000"
-FI = ("5", "5")
-LIMIT_STEPS = "100"
+FI = ("4", "4")
+LIMIT_STEPS = "500"
 HIST_SIZE = "5"
 
 results_dir = "automation_results"
