@@ -1,6 +1,5 @@
 import os
 import sys
-import csv
 import itertools
 import subprocess
 
@@ -12,18 +11,18 @@ from command_line_helpers import (
     get_graph,
 )
 
-PROGRAM = "dijkstra_token_ring"
+# PROGRAM = "dijkstra_token_ring"
 # PROGRAM = "graph_coloring"
-# PROGRAM = "maximal_matching"
+PROGRAM = "maximal_matching"
 
-GRAPH_NAMES = ("implicit_graph_n3",)
+GRAPH_NAMES = ("graph_7",)
 GRAPH = next(get_graph(GRAPH_NAMES))[1]
 
 EDGES = []
 for src, dests in GRAPH.items():
     EDGES.extend([(src, dest) for dest in dests])  # (src, dest) src being read by dest
 
-max_size = len(EDGES)
+max_size = 1
 
 N = "10000"
 FI = ("4", "4")

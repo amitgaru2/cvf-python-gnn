@@ -345,42 +345,42 @@ if __name__ == "__main__":
     graph_names = ["graph_2_node"]
     for graph_name, graph in get_graph(graph_names):
         cvf = MaximalMatchingCVFAnalysisV2(graph_name, graph)
-        c1 = cvf.possible_node_values_mapping[0][MaximalMatchingData(None, False)]
-        c2 = cvf.possible_node_values_mapping[1][MaximalMatchingData(None, False)]
+        c1 = cvf.possible_node_values_mapping[0][MaximalMatchingData(1, False)]
+        c2 = cvf.possible_node_values_mapping[1][MaximalMatchingData(None, True)]
 
-        cx = cvf.possible_node_values_mapping[1][MaximalMatchingData(None, True)]
+        # cx = cvf.possible_node_values_mapping[1][MaximalMatchingData(None, True)]
 
         result = cvf._get_next_value_given_nbrs(0, c1, {1: c2})
         print(result)
         print(cvf.get_actual_config_values(config=(result[0], c2)))
-        c3 = result[0]
+        # c3 = result[0]
 
-        result = cvf._get_next_value_given_nbrs(1, c2, {0: c3})
-        print(result)
-        print(cvf.get_actual_config_values(config=(c3, result[0])))
-        c4 = result[0]
+        # result = cvf._get_next_value_given_nbrs(1, c2, {0: c3})
+        # print(result)
+        # print(cvf.get_actual_config_values(config=(c3, result[0])))
+        # c4 = result[0]
 
-        result = cvf._get_next_value_given_nbrs(1, c4, {0: c3})
-        print(result)
-        print(cvf.get_actual_config_values(config=(c3, result[0])))
+        # result = cvf._get_next_value_given_nbrs(1, c4, {0: c3})
+        # print(result)
+        # print(cvf.get_actual_config_values(config=(c3, result[0])))
 
-        c5 = result[0]
+        # c5 = result[0]
 
-        result = cvf._get_next_value_given_nbrs(0, c3, {1: cx})
-        print(result)
-        print(cvf.get_actual_config_values(config=(result[0], cx)))
+        # result = cvf._get_next_value_given_nbrs(0, c3, {1: cx})
+        # print(result)
+        # print(cvf.get_actual_config_values(config=(result[0], cx)))
 
-        c6 = result[0]
+        # c6 = result[0]
 
-        result = cvf._get_next_value_given_nbrs(1, c5, {0: c6})
-        print(result)
-        print(cvf.get_actual_config_values(config=(c6, result[0])))
+        # result = cvf._get_next_value_given_nbrs(1, c5, {0: c6})
+        # print(result)
+        # print(cvf.get_actual_config_values(config=(c6, result[0])))
 
-        c7 = result[0]
+        # c7 = result[0]
 
-        result = cvf._get_next_value_given_nbrs(1, c7, {0: c6})
-        print(result)
-        print(cvf.get_actual_config_values(config=(c6, result[0])))
+        # result = cvf._get_next_value_given_nbrs(1, c7, {0: c6})
+        # print(result)
+        # print(cvf.get_actual_config_values(config=(c6, result[0])))
 
         # result3 = cvf._get_next_value_given_nbrs(1, result2, {0: result1})
         # print(result3)
