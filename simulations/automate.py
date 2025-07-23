@@ -12,10 +12,11 @@ from command_line_helpers import (
 )
 
 # PROGRAM = "dijkstra_token_ring"
-# PROGRAM = "graph_coloring"
-PROGRAM = "maximal_matching"
+PROGRAM = "graph_coloring"
+# PROGRAM = "maximal_matching"
 
 GRAPH_NAMES = ("graph_7",)
+# GRAPH_NAMES = ("implicit_graph_n4",)
 GRAPH = next(get_graph(GRAPH_NAMES))[1]
 
 EDGES = []
@@ -73,6 +74,7 @@ def main():
                 "--extra-kwargs",
                 "agg=1",
                 f"agg_file={agg_file}",
+                "store_result=1"
             ]
 
             execute_command(command)
