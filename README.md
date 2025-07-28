@@ -8,7 +8,7 @@ Understanding faults, especially those with high impact, is a key step toward de
 
 1. `cvf-analysis/`
 
-    Base classes for `Full Analysis` code.
+    Base classes for `Full Analysis` code. Full Analysis logic explores all possible state space in the given distributed program. Based on the exploration ranks and rank effects of the states are calculated.
     
     
     
