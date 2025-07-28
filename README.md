@@ -9,17 +9,24 @@ Understanding faults, especially those with high impact, is a key step toward de
 1. `cvf-analysis/`
 
     Base classes for `Full Analysis` code. Full Analysis logic explores all possible state space in the given distributed program. Based on the exploration ranks and rank effects of the states are calculated.
+
+   1.1 `cvf-analysis/graphs`
+
+      Graphs, in the form of text file, to run the analysis on.
     
     
     
 1. `simulations/`
 
-    All simulations logic and code. Simulations are performed `N` (thousands) times to generate a statistics of rank effect based on the number of steps taken by the random initial state to reach an state where no possible transition or fault (cvf) exist. Fault are introduced every `Fault Interval` steps i.e. if `Fault Interval = 5` then first `4` state transitions are Program Transitions and the `5th` step is a fault from cvf at targetted edges.
+    All simulations logic and code. Simulations are performed `N` (thousands) times to generate a statistics of rank effect based on the number of steps taken by the random initial state to reach an state where no possible transition or fault (cvf) exist. Faults are introduced every `Fault Interval` steps i.e. if `Fault Interval = 5` then first `4` state transitions are Program Transitions and the `5th` step is a fault from cvf at targetted edges.
     
 1. `utils/`
 
     Helper functions.
 
-# Algorith
 
 # Running the program
+  
+  1. Running the Simulation
+
+     Eg.1. 
