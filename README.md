@@ -14,7 +14,7 @@ Understanding faults, especially those with high impact, is a key step toward de
     
 1. `simulations/`
 
-    All simulations logic and code.
+    All simulations logic and code. Simulations are performed `N` (thousands) times to generate a statistics of rank effect based on the number of steps taken by the random initial state to reach an state where no possible transition or fault (cvf) exist.
 
     
 1. `utils/`
