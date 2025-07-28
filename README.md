@@ -45,3 +45,7 @@ Understanding faults, especially those with high impact, is a key step toward de
      ```shell
      python simulate_v2.py --program maximal_matching --faulty-edges 0,1 4,5 5,4 5,8 --no-sim 10000 --fault-interval 4 4 --graph-names graph_7 --limit-steps 100 --hist-size 5 --extra-kwargs store_result
      ```
+
+# Contact
+
+If you have any question, feel free to contact me at `agaru@uwyo.edu`.
