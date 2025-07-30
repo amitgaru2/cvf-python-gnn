@@ -6,9 +6,9 @@ set -ex
 # cd cvf-analysis/v2
 # python main.py --program linear_regression --graph-names star_graph_n4 -ml --extra-kwargs config_file=matrix_1
 
-cd simulations
+# cd simulations
 
-python automate.py
+# python automate.py
 
 # # # PROGRAM="graph_coloring"
 # DT_PROGRAM="dijkstra_token_ring"
@@ -105,17 +105,18 @@ python automate.py
 # python main.py --program dijkstra_token_ring --sched 0 --no-sim 500000 --fault-interval 2 --graph-names implicit_graph_n5 --fault-prob 1.0
 # python main.py --program dijkstra_token_ring --sched 0 --no-sim 500000 --fault-interval 4 --graph-names implicit_graph_n5 --fault-prob 1.0
 
-# cd gnn
+cd gnn
 
 # # # # # graphs=("star_graph_n7" "graph_powerlaw_cluster_graph_n7" "graph_random_regular_graph_n7_d4" "star_graph_n13" "graph_powerlaw_cluster_graph_n8" "graph_random_regular_graph_n8_d4" "star_graph_n15" "graph_powerlaw_cluster_graph_n9")
-# graphs=("star_graph_n4" "star_graph_n5")
+graphs=("star_graph_n4")
 # # # # # graphs=("graph_powerlaw_cluster_graph_n6" "graph_random_regular_graph_n6_d3")
 # # # # # # # # # graphs=("implicit_graph_n5" "implicit_graph_n6" "implicit_graph_n7" "implicit_graph_n8" "implicit_graph_n9" "implicit_graph_n10")
-# joined_graphs_args="${graphs[@]}"
+joined_graphs_args="${graphs[@]}"
 
-# epochs=50
-# batch_size=256
-# hidden_size=32
+program="graph_coloring"
+epochs=100
+batch_size=64
+hidden_size=32
 
 # python lstm_scratch.py \
 #     --program maximal_matching \
@@ -125,11 +126,12 @@ python automate.py
 #     --num-layers 2 \
 #     --graph-names $joined_graphs_args
 
-# # python gcn_scratch.py \
-# #     --epochs $epochs \
-# #     --batch-size $batch_size \
-# #     --hidden-size $hidden_size \
-# #     --graph-names $joined_graphs_args
+python gcn_scratch_v2.py \
+--program $program \
+--epochs $epochs \
+--batch-size $batch_size \
+--hidden-size $hidden_size \
+--graph-names $joined_graphs_args
 
 # # cd gnn/new_ideas
 # #
