@@ -340,10 +340,13 @@ class CVFConfigForGCNWSuccLSTMDataset(Dataset):
     def __len__(self):
         return len(self.data)
 
+    def get_encoded_config(self, config):
+        return [i[0] for i in config]
+
     def __getitem__(self, idx):
         row = self.data.loc[idx]
-        config = [i for i in ast.literal_eval(row["config"])]
-        succ = [i for i in ast.literal_eval(row["succ"])]
+        config = self.get_encoded_config(ast.literal_eval(row["config"]))
+        succ = [self.get_encoded_config(s) for s in ast.literal_eval(row["succ"])]
         if succ:
             succ = torch.FloatTensor(succ).to(self.device)
             succ1 = torch.mean(succ, dim=0).unsqueeze(0)  # column wise

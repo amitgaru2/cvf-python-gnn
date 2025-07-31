@@ -118,20 +118,20 @@ epochs=100
 batch_size=64
 hidden_size=32
 
-# python lstm_scratch.py \
-#     --program maximal_matching \
-#     --epochs $epochs \
-#     --batch-size $batch_size \
-#     --hidden-size $hidden_size \
-#     --num-layers 2 \
-#     --graph-names $joined_graphs_args
+python lstm_scratch.py \
+    --program $program \
+    --epochs $epochs \
+    --batch-size $batch_size \
+    --hidden-size $hidden_size \
+    --num-layers 2 \
+    --graph-names $joined_graphs_args
 
-python gcn_scratch_v2.py \
---program $program \
---epochs $epochs \
---batch-size $batch_size \
---hidden-size $hidden_size \
---graph-names $joined_graphs_args
+# python gcn_scratch_v2.py \
+# --program $program \
+# --epochs $epochs \
+# --batch-size $batch_size \
+# --hidden-size $hidden_size \
+# --graph-names $joined_graphs_args
 
 # # cd gnn/new_ideas
 # #

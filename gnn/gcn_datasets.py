@@ -8,10 +8,12 @@ import pandas as pd
 import torch.nn.functional as F
 
 
-from torch_geometric.utils import to_dense_adj
 from torch.utils.data import Dataset, DataLoader
 
 sys.path.append(os.path.join(os.getenv("CVF_PROJECT_DIR", ""), "cvf-analysis"))
+sys.path.append(os.path.join(os.getenv("CVF_PROJECT_DIR"), "utils"))
+
+from command_line_helpers import ColoringProgram, DijkstraProgram
 
 
 class CVFConfigForGCNWSuccWEIDataset(Dataset):
@@ -38,8 +40,9 @@ class CVFConfigForGCNWSuccWEIDataset(Dataset):
             .t()
             .to(self.device)
         )
-        # self.A = to_dense_adj(self.edge_index).squeeze(0)
-        self.no_features = 10  # graph coloring: highest color value based on degree of nodes, dijkstra: 3
+        self.no_features = (
+            10 if program == ColoringProgram else 3
+        )  # graph coloring: highest color value based on degree of nodes, dijkstra: 3
 
     def get_encoded_config(self, config):
         result = []

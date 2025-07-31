@@ -21,7 +21,7 @@ class SimpleGCN(nn.Module):
     def __init__(self, input_size, hidden_size, output_size):
         super().__init__()
         self.gcn1 = GCNConv(input_size, hidden_size, bias=False)
-        self.gcn2 = GCNConv(hidden_size, hidden_size, bias=False)
+        self.gcn2 = GCNConv(hidden_size, hidden_size, bias=True)
         self.out = torch.nn.Linear(hidden_size, output_size)
 
     def forward(self, x, edge_index):
@@ -135,7 +135,7 @@ def main(program, graph_names, H, batch_size, epochs):
     logger.info("\n")
     dataset_coll = get_dataset_coll(program, *graph_names)
     D = dataset_coll[0].no_features
-    train_sizes = [int(0.90 * len(ds)) for ds in dataset_coll]
+    train_sizes = [int(0.80 * len(ds)) for ds in dataset_coll]
     test_sizes = [len(ds) - trs for ds, trs in zip(dataset_coll, train_sizes)]
 
     train_test_datasets = [
