@@ -8,7 +8,7 @@ import torch.nn as nn
 
 from torch_geometric.nn import GCNConv
 from torch_geometric.nn.pool import global_mean_pool
-from torch.utils.data import ConcatDataset, DataLoader, random_split, Sampler
+from torch.utils.data import ConcatDataset, DataLoader, random_split
 
 from custom_logger import logger
 from gcn_datasets import CVFConfigForGCNWSuccWEIDataset
