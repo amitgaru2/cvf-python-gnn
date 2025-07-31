@@ -11,8 +11,7 @@ import torch.nn.functional as F
 
 from functools import lru_cache
 
-from torch.utils.data import Dataset
-from torch.utils.data import DataLoader
+from torch.utils.data import Dataset, DataLoader
 from torch_geometric.utils import to_dense_adj
 
 sys.path.append(os.path.join(os.getenv("CVF_PROJECT_DIR", ""), "cvf-analysis"))

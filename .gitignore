@@ -25,3 +25,5 @@ temp.sh
 test.csv
 
 nohup_logs/
+
+.vscode/
