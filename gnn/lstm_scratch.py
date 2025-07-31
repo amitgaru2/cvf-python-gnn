@@ -1,6 +1,6 @@
 import csv
-import random
 import time
+import random
 import datetime
 import argparse
 
