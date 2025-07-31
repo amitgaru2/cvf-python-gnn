@@ -20,9 +20,6 @@ device = "cuda"  # force cuda or exit
 class SimpleGCN(nn.Module):
     def __init__(self, input_size, hidden_size, output_size):
         super().__init__()
-        # self.gcn1 = GCNConvByHand(input_size, hidden_size, bias=False, device=device)
-        # self.gcn2 = GCNConvByHand(hidden_size, hidden_size, bias=True, device=device)
-
         self.gcn1 = GCNConv(input_size, hidden_size, bias=False)
         self.gcn2 = GCNConv(hidden_size, hidden_size, bias=False)
         self.out = torch.nn.Linear(hidden_size, output_size)
