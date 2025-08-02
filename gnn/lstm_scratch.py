@@ -42,7 +42,7 @@ class SimpleLSTM(nn.Module):
 
     def fit(self, epochs, train_datasets, batch_size):
         criterion = torch.nn.MSELoss()
-        optimizer = torch.optim.Adam(self.parameters(), lr=0.005, weight_decay=0.0001)
+        optimizer = torch.optim.Adam(self.parameters(), lr=0.01, weight_decay=0.0001)
         for epoch in range(1, epochs + 1):
             start_time = time.time()
             self.train()

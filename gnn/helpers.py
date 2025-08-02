@@ -335,7 +335,7 @@ class CVFConfigForGCNWSuccLSTMDataset(Dataset):
         self.data = pd.read_csv(os.path.join(dataset_dir, dataset_file))
         self.device = device
         self.dataset_name = dataset_file.split("_config_rank_dataset.csv")[0]
-        self.D = 3  # input dimension
+        self.D = 1  # input dimension
 
     def __len__(self):
         return len(self.data)
@@ -346,19 +346,20 @@ class CVFConfigForGCNWSuccLSTMDataset(Dataset):
     def __getitem__(self, idx):
         row = self.data.loc[idx]
         config = self.get_encoded_config(ast.literal_eval(row["config"]))
-        succ = [self.get_encoded_config(s) for s in ast.literal_eval(row["succ"])]
-        if succ:
-            succ = torch.FloatTensor(succ).to(self.device)
-            succ1 = torch.mean(succ, dim=0).unsqueeze(0)  # column wise
-            succ2 = torch.mean(succ, dim=1)  # row wise
-            succ2 = torch.sum(succ2).repeat(succ1.shape)
-        else:
-            succ1 = torch.zeros(1, len(config)).to(self.device)
-            succ2 = succ1.clone()
+        # succ = [self.get_encoded_config(s) for s in ast.literal_eval(row["succ"])]
+        # if succ:
+        #     succ = torch.FloatTensor(succ).to(self.device)
+        #     succ1 = torch.mean(succ, dim=0).unsqueeze(0)  # column wise
+        #     succ2 = torch.mean(succ, dim=1)  # row wise
+        #     succ2 = torch.sum(succ2).repeat(succ1.shape)
+        # else:
+        #     succ1 = torch.zeros(1, len(config)).to(self.device)
+        #     succ2 = succ1.clone()
 
         config = torch.FloatTensor([config]).to(self.device)
         result = (
-            torch.cat((config, succ1, succ2), dim=0).t(),
+            # torch.cat((config), dim=0).t(),
+            config.t(),
             self.dataset_name,
         ), torch.FloatTensor([row["rank"]]).to(self.device)
 
@@ -379,7 +380,7 @@ class CVFConfigForGCNWSuccLSTMDatasetForMM(Dataset):
         self.data = pd.read_csv(os.path.join(dataset_dir, dataset_file))
         self.device = device
         self.dataset_name = dataset_file.split("_config_rank_dataset.csv")[0]
-        self.D = 3  # input dimension
+        self.D = 1 # input dimension
         self.highest_p_value = 15
 
     def __len__(self):
@@ -410,22 +411,23 @@ class CVFConfigForGCNWSuccLSTMDatasetForMM(Dataset):
 
     def __getitem__(self, idx):
         row = self.data.loc[idx]
-        succ = [i for i in ast.literal_eval(row["succ"])]
+        # succ = [i for i in ast.literal_eval(row["succ"])]
         config = self.get_encoded_config(ast.literal_eval(row["config"])).to(
             self.device
         )
-        if succ:
-            _succ = [self.get_encoded_config(s) for s in succ]
-            succ = torch.stack(_succ).to(self.device)
-            succ1 = torch.mean(succ, dim=0)
-            succ2 = torch.sum(torch.mean(succ, dim=1), dim=0)
-            succ2 = succ2.unsqueeze(0).repeat(succ1.shape[0], 1)
-        else:
-            succ1 = torch.zeros(config.shape[0], config.shape[1]).to(self.device)
-            succ2 = succ1.clone()
+        # if succ:
+        #     _succ = [self.get_encoded_config(s) for s in succ]
+        #     succ = torch.stack(_succ).to(self.device)
+        #     succ1 = torch.mean(succ, dim=0)
+        #     succ2 = torch.sum(torch.mean(succ, dim=1), dim=0)
+        #     succ2 = succ2.unsqueeze(0).repeat(succ1.shape[0], 1)
+        # else:
+        #     succ1 = torch.zeros(config.shape[0], config.shape[1]).to(self.device)
+        #     succ2 = succ1.clone()
 
         result = (
-            torch.stack([config, succ1, succ2]).reshape(3, -1).t(),
+            # torch.stack([config, succ1, succ2]).reshape(3, -1).t(),
+            config.reshape(self.D, -1).t(),
             self.dataset_name,
         ), torch.FloatTensor([row["rank"]]).to(self.device)
 
@@ -668,9 +670,10 @@ class CVFConfigForAnalysisDataset(Dataset):
 
     def __getitem__(self, idx):
         config = self.cvf_analysis.indx_to_config(idx)
-        succ1, succ2 = self._get_succ_encoding(idx, config)
+        # succ1, succ2 = self._get_succ_encoding(idx, config)
         config = torch.FloatTensor([config]).to(self.device)
-        result = (torch.cat((config, succ1, succ2), dim=0).t(), idx)
+        # result = (torch.cat((config, succ1, succ2), dim=0).t(), idx)
+        result = (config.t(), idx)
         return result
 
 

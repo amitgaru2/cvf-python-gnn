@@ -13,6 +13,7 @@ utils_path = os.path.join(os.getenv("CVF_PROJECT_DIR", ""), "utils")
 sys.path.append(utils_path)
 
 from common_helpers import create_dir_if_not_exists
+from command_line_helpers import ColoringProgram, DijkstraProgram, MaxMatchingProgram
 
 args = generate_parser(takes_model=True)
 model = args.model
@@ -28,14 +29,10 @@ markers = ["*", "o", "h", "v", "P", "s", "p", "x", "D", "8"]
 ONLY_FA = model == "fa"
 
 
-COLORING_PROGRAM = "coloring"
-DIJKSTRA_PROGRAM = "dijkstra_token_ring"
-MAX_MATCHING_PROGRAM = "maximal_matching"
-
 TITLE_PROGRAM_MAP = {
-    COLORING_PROGRAM: "Graph Coloring",
-    DIJKSTRA_PROGRAM: "Dijkstra Token Ring",
-    MAX_MATCHING_PROGRAM: "Maximal Matching",
+    ColoringProgram: "Graph Coloring",
+    DijkstraProgram: "Dijkstra Token Ring",
+    MaxMatchingProgram: "Maximal Matching",
 }
 
 result_type = "cvf"
@@ -73,7 +70,7 @@ def main(graph_name, marker_cycle):
 
 def plot_df(df, legends, marker_cycle):
     plt.figure(figsize=(16, 8))
-    ax = sns.lineplot(data=df, linewidth=3, markersize=10)
+    ax = sns.lineplot(data=df, linewidth=1, markersize=10)
 
     for line in ax.lines:
         line.set_marker(next(marker_cycle))
@@ -97,7 +94,7 @@ def plot_df(df, legends, marker_cycle):
             color=line.get_color(),
             marker=marker,
             label=cat,
-            linewidth=3,
+            linewidth=1,
             markersize=10,
             linestyle=line.get_linestyle(),
         )
