@@ -348,11 +348,18 @@ if __name__ == "__main__":
         c1 = cvf.possible_node_values_mapping[0][MaximalMatchingData(1, False)]
         c2 = cvf.possible_node_values_mapping[1][MaximalMatchingData(None, True)]
 
+        c3 = cvf.possible_node_values_mapping[0][MaximalMatchingData(None, False)]
+        c4 = cvf.possible_node_values_mapping[1][MaximalMatchingData(None, False)]
+        c5 = cvf.possible_node_values_mapping[1][MaximalMatchingData(0, False)]
+        c6 = cvf.possible_node_values_mapping[1][MaximalMatchingData(0, True)]
+        c7 = cvf.possible_node_values_mapping[1][MaximalMatchingData(0, False)]
+
+
         # cx = cvf.possible_node_values_mapping[1][MaximalMatchingData(None, True)]
 
-        result = cvf._get_next_value_given_nbrs(0, c1, {1: c2})
+        result = cvf._get_next_value_given_nbrs(1, c7, {0: c3})
         print(result)
-        print(cvf.get_actual_config_values(config=(result[0], c2)))
+        print(cvf.get_actual_config_values(config=(c3, result[0])))
         # c3 = result[0]
 
         # result = cvf._get_next_value_given_nbrs(1, c2, {0: c3})
