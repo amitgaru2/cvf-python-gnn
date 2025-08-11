@@ -425,6 +425,7 @@ class CVFConfigForGCNWSuccLSTMDatasetForMM(Dataset):
         #     succ1 = torch.zeros(config.shape[0], config.shape[1]).to(self.device)
         #     succ2 = succ1.clone()
 
+        print("config", config.reshape(self.D, -1).t())
         result = (
             # torch.stack([config, succ1, succ2]).reshape(3, -1).t(),
             config.reshape(self.D, -1).t(),

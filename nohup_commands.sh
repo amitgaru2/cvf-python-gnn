@@ -3,8 +3,8 @@ set -ex
 
 # conda activate cvf
 
-# cd cvf-analysis/v2
-# python main.py --program linear_regression --graph-names star_graph_n4 -ml --extra-kwargs config_file=matrix_1
+cd cvf-analysis
+python main.py --program maximal_matching --graph-names graph_7 -ml
 
 # cd simulations
 
@@ -105,26 +105,26 @@ set -ex
 # python main.py --program dijkstra_token_ring --sched 0 --no-sim 500000 --fault-interval 2 --graph-names implicit_graph_n5 --fault-prob 1.0
 # python main.py --program dijkstra_token_ring --sched 0 --no-sim 500000 --fault-interval 4 --graph-names implicit_graph_n5 --fault-prob 1.0
 
-cd gnn
+# cd gnn
 
-# # # # # graphs=("star_graph_n7" "graph_powerlaw_cluster_graph_n7" "graph_random_regular_graph_n7_d4" "star_graph_n13" "graph_powerlaw_cluster_graph_n8" "graph_random_regular_graph_n8_d4" "star_graph_n15" "graph_powerlaw_cluster_graph_n9")
-graphs=("star_graph_n4")
-# # # # # graphs=("graph_powerlaw_cluster_graph_n6" "graph_random_regular_graph_n6_d3")
-# # # # # # # # # graphs=("implicit_graph_n5" "implicit_graph_n6" "implicit_graph_n7" "implicit_graph_n8" "implicit_graph_n9" "implicit_graph_n10")
-joined_graphs_args="${graphs[@]}"
+# # # # # # graphs=("star_graph_n7" "graph_powerlaw_cluster_graph_n7" "graph_random_regular_graph_n7_d4" "star_graph_n13" "graph_powerlaw_cluster_graph_n8" "graph_random_regular_graph_n8_d4" "star_graph_n15" "graph_powerlaw_cluster_graph_n9")
+# graphs=("star_graph_n4")
+# # # # # # graphs=("graph_powerlaw_cluster_graph_n6" "graph_random_regular_graph_n6_d3")
+# # # # # # # # # # graphs=("implicit_graph_n5" "implicit_graph_n6" "implicit_graph_n7" "implicit_graph_n8" "implicit_graph_n9" "implicit_graph_n10")
+# joined_graphs_args="${graphs[@]}"
 
-program="graph_coloring"
-epochs=100
-batch_size=64
-hidden_size=32
+# program="graph_coloring"
+# epochs=100
+# batch_size=64
+# hidden_size=32
 
-python lstm_scratch.py \
-    --program $program \
-    --epochs $epochs \
-    --batch-size $batch_size \
-    --hidden-size $hidden_size \
-    --num-layers 2 \
-    --graph-names $joined_graphs_args
+# python lstm_scratch.py \
+#     --program $program \
+#     --epochs $epochs \
+#     --batch-size $batch_size \
+#     --hidden-size $hidden_size \
+#     --num-layers 2 \
+#     --graph-names $joined_graphs_args
 
 # python gcn_scratch_v2.py \
 # --program $program \
@@ -139,6 +139,8 @@ python lstm_scratch.py \
 # # python transformer_w_same_node_seql.py 50
 
 # cd gnn
+
+# python lstm_scratch.py --program maximal_matching --epochs 100 --batch-size 64 --hidden-size 32 --num-layers 2 --graph-names graph_7 
 
 # python cvf_analysis.py --model lstm_trained_at_2025_06_26_20_32 --program maximal_matching --graph-names graph_random_regular_graph_n4_d2
 # python cvf_analysis.py --model lstm_trained_at_2025_06_26_20_32 --program maximal_matching --graph-names graph_random_regular_graph_n5_d4

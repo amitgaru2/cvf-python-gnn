@@ -6,7 +6,8 @@ import argparse
 import torch
 import torch.nn as nn
 
-from torch_geometric.nn import GCNConv
+from torch_geometric.nn import SAGEConv
+from torch_geometric.utils import sort_edge_index
 from torch_geometric.nn.pool import global_mean_pool
 from torch.utils.data import ConcatDataset, DataLoader, random_split
 
@@ -20,13 +21,15 @@ device = "cuda"  # force cuda or exit
 class SimpleGCN(nn.Module):
     def __init__(self, input_size, hidden_size, output_size):
         super().__init__()
-        self.gcn1 = GCNConv(input_size, hidden_size, bias=False)
-        self.gcn2 = GCNConv(hidden_size, hidden_size, bias=True)
+        self.gcn1 = SAGEConv(input_size, hidden_size, bias=False, aggr='max')
+        # self.gcn2 = SAGEConv(hidden_size, hidden_size, bias=False)
         self.out = torch.nn.Linear(hidden_size, output_size)
 
     def forward(self, x, edge_index):
         h = self.gcn1(x, edge_index)
-        h = self.gcn2(h, edge_index)
+        h = torch.relu(h)
+        # h = self.gcn2(h, edge_index)
+        # h = torch.relu(h)
         h = self.out(h)
         h = torch.relu(h)
         h = global_mean_pool(h, torch.zeros(h.size(1)).to(device).long())
