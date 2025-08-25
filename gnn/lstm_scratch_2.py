@@ -1,11 +1,12 @@
 import csv
-import random
 import time
+import random
 import datetime
 import argparse
 
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 
 from torch_geometric.nn.pool import global_mean_pool
 from torch.utils.data import ConcatDataset, DataLoader, random_split, Sampler, Subset
@@ -26,26 +27,26 @@ subset_size = 200_000
 class SimpleLSTM(nn.Module):
     def __init__(self, input_size, hidden_size, output_size, num_layers=1):
         super().__init__()
-        embed_size = 64
-        self.embedding = nn.Linear(input_size, embed_size)
         self.lstm = nn.GRU(
-            embed_size, hidden_size, num_layers=num_layers, batch_first=True
+            input_size, hidden_size, num_layers=num_layers, batch_first=True
         )
         self.norm = nn.LayerNorm(hidden_size)
         self.h2o = nn.Linear(hidden_size, output_size)
 
     def forward(self, x):
-        x = self.embedding(x)
         lstm_out, _ = self.lstm(x)
+        lstm_out = F.dropout(lstm_out, p=0.3, training=self.training)
         output = self.norm(lstm_out)
         output = self.h2o(output)
         output = torch.relu(output)
-        output = global_mean_pool(output, torch.zeros(output.size(1)).to(device).long())
+        output = global_mean_pool(
+            output, torch.zeros(output.size(1)).to(x.device).long()
+        )
         return output
 
     def fit(self, epochs, train_datasets, batch_size):
         criterion = torch.nn.MSELoss()
-        optimizer = torch.optim.Adam(self.parameters(), lr=0.01, weight_decay=0.0001)
+        optimizer = torch.optim.Adam(self.parameters(), lr=0.005, weight_decay=0.0001)
         for epoch in range(1, epochs + 1):
             start_time = time.time()
             self.train()
@@ -215,6 +216,7 @@ def main(program, graph_names, H, batch_size, epochs, num_layers):
     datasets = ConcatDataset(train_datasets)
 
     test_concat_datasets = ConcatDataset(test_datasets)
+    # test_concat_datasets = ConcatDataset(dataset_coll) # for full dataset test
 
     logger.info(
         f"Train dataset size: {len(datasets):,}, Subset size: {subset_size:,} | Test dataset size: {len(test_concat_datasets):,}"

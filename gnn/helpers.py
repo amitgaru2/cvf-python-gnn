@@ -1025,22 +1025,27 @@ if __name__ == "__main__":
     #     "tiny_graph_edge_index.json",
     # )
 
+    dataset = CVFConfigForGCNWSuccLSTMDataset(
+        device, "star_graph_n4_config_rank_dataset.csv", program="graph_coloring"
+    )
+
     # dataset = CVFConfigForGCNWSuccLSTMDatasetForMM(
     #     device, "star_graph_n7_config_rank_dataset.csv", program="maximal_matching"
     # )
 
-    # loader = DataLoader(dataset, batch_size=10, shuffle=True)
-
-    # for batch in loader:
-    #     x = batch[0]
-    #     print(x[0].shape)
-    #     break
-
-    dataset = CVFConfigForAnalysisDatasetMM(
-        device, "star_graph_n6", program="maximal_matching"
-    )
-
     loader = DataLoader(dataset, batch_size=1, shuffle=True)
 
     for batch in loader:
+        x = batch[0]
+        print(x[0].T)
+        print(x[0].shape)
         break
+
+    # dataset = CVFConfigForAnalysisDatasetMM(
+    #     device, "star_graph_n6", program="maximal_matching"
+    # )
+
+    # loader = DataLoader(dataset, batch_size=1, shuffle=True)
+
+    # for batch in loader:
+    #     break
