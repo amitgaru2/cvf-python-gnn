@@ -652,19 +652,19 @@ class CVFConfigForAnalysisDataset(Dataset):
         if succ:
             succ = torch.FloatTensor(succ).to(self.device)
             succ1 = torch.mean(succ, dim=0).unsqueeze(0)  # column wise
-            succ2 = torch.mean(succ, dim=1)  # row wise
-            succ2 = torch.sum(succ2).repeat(succ1.shape)
+            # succ2 = torch.mean(succ, dim=1)  # row wise
+            # succ2 = torch.sum(succ2).repeat(succ1.shape)
         else:
             succ1 = self.default_succ1.clone()
-            succ2 = self.default_succ1.clone()
+            # succ2 = self.default_succ1.clone()
 
-        return succ1, succ2
+        return succ1
 
     def __getitem__(self, idx):
         config = self.cvf_analysis.indx_to_config(idx)
-        succ1, succ2 = self._get_succ_encoding(idx, config)
+        succ1 = self._get_succ_encoding(idx, config)
         config = torch.FloatTensor([config]).to(self.device)
-        result = (torch.cat((config, succ1, succ2), dim=0).t(), idx)
+        result = (torch.cat((config, succ1), dim=0).t(), idx)
         return result
 
 
