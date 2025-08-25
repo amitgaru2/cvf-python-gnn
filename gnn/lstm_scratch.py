@@ -67,7 +67,7 @@ class SimpleLSTM(nn.Module):
                 out = self(x[0])
                 optimizer.zero_grad()
                 loss = criterion(out, y)
-                total_loss += loss
+                total_loss += loss.item()
                 count += 1
                 loss.backward()
                 optimizer.step()
@@ -76,7 +76,7 @@ class SimpleLSTM(nn.Module):
                 "Training set | Epoch: %s/%s | MSE Loss: %s | Time taken: %ss",
                 epoch,
                 epochs,
-                round((total_loss / count).item(), 4),
+                round((total_loss / count), 4),
                 round(time.time() - start_time, 4),
             )
 
@@ -259,6 +259,7 @@ def main(program, graph_names, H, batch_size, epochs, num_layers):
     D = dataset_coll[0].D
 
     train_valid_test_split = [0.8, 0.1]
+    # train_valid_test_split = [0.9, 0.05]
     train_valid_test_split.append(1.0 - sum(train_valid_test_split))
 
     logger.info("Train, Validation, Test set split: %s", train_valid_test_split)

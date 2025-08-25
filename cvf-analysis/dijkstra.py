@@ -132,4 +132,4 @@ if __name__ == "__main__":
         # result = cvf._get_next_value_given_nbrs(1, 2, {0: 0, 2: 2})
         # print(result)
 
-        print(list(cvf._get_program_transitions_as_configs((1, 2, 2, 0))))
+        print(list(cvf._get_program_transitions_as_configs((0, 0, 0, 0))))

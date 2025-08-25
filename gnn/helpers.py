@@ -305,8 +305,7 @@ class CVFConfigForGCNWSuccLSTMDataset(Dataset):
         self,
         device,
         dataset_file,
-        edge_index_file=None,
-        program="coloring",
+        program="graph_coloring",
     ) -> None:
         dataset_dir = os.path.join(
             os.getenv("CVF_PROJECT_DIR", ""),
@@ -370,6 +369,7 @@ class CVFConfigForGCNWSuccLSTMDatasetForMM(Dataset):
         self.device = device
         self.dataset_name = dataset_file.split("_config_rank_dataset.csv")[0]
         self.D = 3  # input dimension
+        self.D = 2  # input dimension
         self.highest_p_value = 15
 
     def __len__(self):
@@ -408,16 +408,20 @@ class CVFConfigForGCNWSuccLSTMDatasetForMM(Dataset):
             _succ = [self.get_encoded_config(s) for s in succ]
             succ = torch.stack(_succ).to(self.device)
             succ1 = torch.mean(succ, dim=0)
-            succ2 = torch.sum(torch.mean(succ, dim=1), dim=0)
-            succ2 = succ2.unsqueeze(0).repeat(succ1.shape[0], 1)
+            # succ2 = torch.sum(torch.mean(succ, dim=1), dim=0)
+            # succ2 = succ2.unsqueeze(0).repeat(succ1.shape[0], 1)
         else:
             succ1 = torch.zeros(config.shape[0], config.shape[1]).to(self.device)
-            succ2 = succ1.clone()
+            # succ2 = succ1.clone()
 
         result = (
-            torch.stack([config, succ1, succ2]).reshape(3, -1).t(),
+            torch.stack([config, succ1]).reshape(self.D, -1).t(),
             self.dataset_name,
         ), torch.FloatTensor([row["rank"]]).to(self.device)
+        # result = (
+        #     torch.stack([config, succ1, succ2]).reshape(3, -1).t(),
+        #     self.dataset_name,
+        # ), torch.FloatTensor([row["rank"]]).to(self.device)
 
         return result
 
@@ -1031,8 +1035,14 @@ if __name__ == "__main__":
     #     "tiny_graph_edge_index.json",
     # )
 
+    # dataset = CVFConfigForGCNWSuccLSTMDataset(
+    #     device, "star_graph_n4_config_rank_dataset.csv", program="graph_coloring"
+    # )
+
     dataset = CVFConfigForGCNWSuccLSTMDataset(
-        device, "star_graph_n4_config_rank_dataset.csv", program="graph_coloring"
+        device,
+        "implicit_graph_n4_config_rank_dataset.csv",
+        program="dijkstra_token_ring",
     )
 
     # dataset = CVFConfigForGCNWSuccLSTMDatasetForMM(
@@ -1043,8 +1053,9 @@ if __name__ == "__main__":
 
     for batch in loader:
         x = batch[0]
+        y = batch[1]
         print(x[0])
-        print(x[0].shape)
+        print("y", y)
         break
 
     # dataset = CVFConfigForAnalysisDatasetMM(
