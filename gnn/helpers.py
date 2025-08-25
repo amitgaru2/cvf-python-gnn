@@ -317,7 +317,8 @@ class CVFConfigForGCNWSuccLSTMDataset(Dataset):
         self.data = pd.read_csv(os.path.join(dataset_dir, dataset_file))
         self.device = device
         self.dataset_name = dataset_file.split("_config_rank_dataset.csv")[0]
-        self.D = 3  # input dimension
+        # self.D = 3  # input dimension
+        self.D = 2  # input dimension
 
     def __len__(self):
         return len(self.data)
@@ -334,15 +335,20 @@ class CVFConfigForGCNWSuccLSTMDataset(Dataset):
         if succ:
             succ = torch.FloatTensor(succ).to(self.device)
             succ1 = torch.mean(succ, dim=0).unsqueeze(0)  # column wise
-            succ2 = torch.mean(succ, dim=1)  # row wise
-            succ2 = torch.sum(succ2).repeat(succ1.shape)
+            # succ2 = torch.mean(succ, dim=1)  # row wise
+            # succ2 = torch.sum(succ2).repeat(succ1.shape)
         else:
             succ1 = torch.zeros(1, len(config)).to(self.device)
-            succ2 = succ1.clone()
+            # succ2 = succ1.clone()
 
         config = torch.FloatTensor([config]).to(self.device)
+        # result = (
+        #     torch.cat((config, succ1, succ2), dim=0).t(),
+        #     self.dataset_name,
+        # ), torch.FloatTensor([row["rank"]]).to(self.device)
+
         result = (
-            torch.cat((config, succ1, succ2), dim=0).t(),
+            torch.cat((config, succ1), dim=0).t(),
             self.dataset_name,
         ), torch.FloatTensor([row["rank"]]).to(self.device)
 
@@ -1037,7 +1043,7 @@ if __name__ == "__main__":
 
     for batch in loader:
         x = batch[0]
-        print(x[0].T)
+        print(x[0])
         print(x[0].shape)
         break
 

@@ -37,10 +37,21 @@ class SimpleLSTM(nn.Module):
         output = self.norm(lstm_out)
         output = self.h2o(output)
         output = torch.relu(output)
-        output = global_mean_pool(output, torch.zeros(output.size(1)).to(x.device).long())
+        output = global_mean_pool(
+            output, torch.zeros(output.size(1)).to(x.device).long()
+        )
         return output
 
-    def fit(self, epochs, train_datasets, batch_size):
+    def validation_model(self, valid_datasets):
+        [total_loss, count], [total_matched, dataset_size], accuracy = evaluate(
+            self, valid_datasets
+        )
+
+        logger.info(
+            f"Validation set | MSE loss: {round((total_loss / count).item(), 4)} | Total matched: {total_matched:,} out of {dataset_size:,} (Accuracy: {accuracy:,}%)",
+        )
+
+    def fit(self, epochs, train_datasets, valid_datasets, batch_size):
         criterion = torch.nn.MSELoss()
         optimizer = torch.optim.Adam(self.parameters(), lr=0.005, weight_decay=0.0001)
         for epoch in range(1, epochs + 1):
@@ -68,6 +79,10 @@ class SimpleLSTM(nn.Module):
                 round((total_loss / count).item(), 4),
                 round(time.time() - start_time, 4),
             )
+
+            self.validation_model(valid_datasets)
+
+            logger.info("\n")
 
 
 class CustomBatchSampler(Sampler):
@@ -116,43 +131,32 @@ def get_dataset_coll(program, *graph_names):
     return dataset_coll
 
 
-def test_model(model, test_concat_datasets, save_result=False):
-    if save_result:
-        f = open(
-            f"test_results/test_result_w_succ_diff_nodes_lstm_script_{datetime.datetime.now().strftime('%Y_%m_%d_%H_%M')}.csv",
-            "w",
-            newline="",
-        )
-        csv_writer = csv.writer(f)
-        csv_writer.writerow(["Dataset", "Actual", "Predicted"])
-
-    criterion = torch.nn.MSELoss()
+def evaluate(model, datasets):
+    logger.debug("Evaluating model...")
 
     model.eval()
 
     with torch.no_grad():
-        # test_concat_datasets = ConcatDataset(test_datasets)
-        test_batch_sampler = CustomBatchSampler(test_concat_datasets, batch_size=1)
-        test_dataloader = DataLoader(
-            test_concat_datasets, batch_sampler=test_batch_sampler
-        )
+        criterion = torch.nn.MSELoss()
+        batch_sampler = CustomBatchSampler(datasets, batch_size=1)
+        dataloader = DataLoader(datasets, batch_sampler=batch_sampler)
 
         total_loss = 0
         total_matched = 0
         count = 0
-        for batch in test_dataloader:
+        for batch in dataloader:
             x = batch[0]
             y = batch[1]
             y = y.unsqueeze(-1)
             out = model(x[0])
             # print(y, out)
-            if save_result:
-                csv_writer.writerows(
-                    (i, j.item(), k.item())
-                    for (i, j, k) in zip(
-                        x[1], y.detach().cpu().numpy(), out.detach().cpu().numpy()
-                    )
-                )
+            # if save_result:
+            #     csv_writer.writerows(
+            #         (i, j.item(), k.item())
+            #         for (i, j, k) in zip(
+            #             x[1], y.detach().cpu().numpy(), out.detach().cpu().numpy()
+            #         )
+            #     )
             loss = criterion(out, y)
             total_loss += loss
             out = torch.round(out)
@@ -160,12 +164,67 @@ def test_model(model, test_concat_datasets, save_result=False):
             total_matched += matched
             count += 1
 
-        logger.info(
-            f"Test set | MSE loss: {round((total_loss / count).item(), 4)} | Total matched: {total_matched:,} out of {len(test_concat_datasets):,} (Accuracy: {round(total_matched / len(test_concat_datasets) * 100, 2):,}%)",
-        )
+    return (
+        [total_loss, count],
+        [total_matched, len(datasets)],
+        round(total_matched / len(datasets) * 100, 2),
+    )
 
-    if save_result:
-        f.close()
+
+def test_model(model, test_concat_datasets, save_result=False):
+    # if save_result:
+    #     f = open(
+    #         f"test_results/test_result_w_succ_diff_nodes_lstm_script_{datetime.datetime.now().strftime('%Y_%m_%d_%H_%M')}.csv",
+    #         "w",
+    #         newline="",
+    #     )
+    #     csv_writer = csv.writer(f)
+    #     csv_writer.writerow(["Dataset", "Actual", "Predicted"])
+
+    # criterion = torch.nn.MSELoss()
+
+    [total_loss, count], [total_matched, dataset_size], accuracy = evaluate(
+        model, test_concat_datasets
+    )
+
+    # model.eval()
+
+    # with torch.no_grad():
+    #     # test_concat_datasets = ConcatDataset(test_datasets)
+    #     test_batch_sampler = CustomBatchSampler(test_concat_datasets, batch_size=1)
+    #     test_dataloader = DataLoader(
+    #         test_concat_datasets, batch_sampler=test_batch_sampler
+    #     )
+
+    #     total_loss = 0
+    #     total_matched = 0
+    #     count = 0
+    #     for batch in test_dataloader:
+    #         x = batch[0]
+    #         y = batch[1]
+    #         y = y.unsqueeze(-1)
+    #         out = model(x[0])
+    #         # print(y, out)
+    #         if save_result:
+    #             csv_writer.writerows(
+    #                 (i, j.item(), k.item())
+    #                 for (i, j, k) in zip(
+    #                     x[1], y.detach().cpu().numpy(), out.detach().cpu().numpy()
+    #                 )
+    #             )
+    #         loss = criterion(out, y)
+    #         total_loss += loss
+    #         out = torch.round(out)
+    #         matched = (out == y).sum().item()
+    #         total_matched += matched
+    #         count += 1
+
+    logger.info(
+        f"Test set | MSE loss: {round((total_loss / count).item(), 4)} | Total matched: {total_matched:,} out of {dataset_size:,} (Accuracy: {accuracy:,}%)",
+    )
+
+    # if save_result:
+    #     f.close()
 
 
 def get_subset_sampled_loader(train_datasets, batch_size):
@@ -198,18 +257,31 @@ def main(program, graph_names, H, batch_size, epochs, num_layers):
     logger.info("\n")
     dataset_coll = get_dataset_coll(program, *graph_names)
     D = dataset_coll[0].D
-    train_sizes = [int(0.98 * len(ds)) for ds in dataset_coll]
-    test_sizes = [len(ds) - trs for ds, trs in zip(dataset_coll, train_sizes)]
+
+    train_valid_test_split = [0.8, 0.1]
+    train_valid_test_split.append(1.0 - sum(train_valid_test_split))
+
+    logger.info("Train, Validation, Test set split: %s", train_valid_test_split)
+
+    train_sizes = [int(train_valid_test_split[0] * len(ds)) for ds in dataset_coll]
+    valid_sizes = [int(train_valid_test_split[1] * len(ds)) for ds in dataset_coll]
+    test_sizes = [
+        len(ds) - trs - vs
+        for ds, trs, vs in zip(dataset_coll, train_sizes, valid_sizes)
+    ]
 
     train_test_datasets = [
-        random_split(ds, [tr_s, ts])
-        for ds, tr_s, ts in zip(dataset_coll, train_sizes, test_sizes)
+        random_split(ds, [tr_s, vs, ts])
+        for ds, tr_s, vs, ts in zip(dataset_coll, train_sizes, valid_sizes, test_sizes)
     ]
 
     train_datasets = [ds[0] for ds in train_test_datasets]
-    test_datasets = [ds[1] for ds in train_test_datasets]
+    valid_datasets = [ds[1] for ds in train_test_datasets]
+    test_datasets = [ds[2] for ds in train_test_datasets]
 
     datasets = ConcatDataset(train_datasets)
+
+    valid_datasets = ConcatDataset(valid_datasets)
 
     test_concat_datasets = ConcatDataset(test_datasets)
     # test_concat_datasets = ConcatDataset(dataset_coll) # for full dataset test
@@ -224,7 +296,12 @@ def main(program, graph_names, H, batch_size, epochs, num_layers):
     logger.info(f"Total parameters: {sum(p.numel() for p in model.parameters()):,}")
     logger.info("\n")
     start_time = time.time()
-    model.fit(epochs=epochs, train_datasets=train_datasets, batch_size=batch_size)
+    model.fit(
+        epochs=epochs,
+        train_datasets=train_datasets,
+        valid_datasets=valid_datasets,
+        batch_size=batch_size,
+    )
     logger.info("\n")
     logger.info(
         "End Training | Total training time taken %ss",
