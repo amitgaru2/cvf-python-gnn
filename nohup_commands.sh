@@ -111,11 +111,11 @@ cd gnn
 # # # # # graphs=("graph_powerlaw_cluster_graph_n6" "graph_random_regular_graph_n6_d3")
 # # # # # # # # # graphs=("implicit_graph_n5" "implicit_graph_n6" "implicit_graph_n7" "implicit_graph_n8" "implicit_graph_n9" "implicit_graph_n10")
 
-graphs=("star_graph_n10")
+graphs=("star_graph_n7")
 
-# graphs=("graph_power_cluster_graph_n7")
+graphs=("graph_power_cluster_graph_n7")
 
-# graphs=("graph_random_regular_graph_n7_d4")
+graphs=("graph_random_regular_graph_n7_d4")
 
 GRAPH_COLORING_PROGRAM="graph_coloring"
 DIJKSTRA_TOKEN_PROGRAM="dijkstra_token_ring"
