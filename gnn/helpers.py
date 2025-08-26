@@ -368,7 +368,7 @@ class CVFConfigForGCNWSuccLSTMDatasetForMM(Dataset):
         self.data = pd.read_csv(os.path.join(dataset_dir, dataset_file))
         self.device = device
         self.dataset_name = dataset_file.split("_config_rank_dataset.csv")[0]
-        self.D = 3  # input dimension
+        # self.D = 3  # input dimension
         self.D = 2  # input dimension
         self.highest_p_value = 15
 
@@ -745,7 +745,7 @@ class CVFConfigForAnalysisDatasetMM(Dataset):
         return self.cvf_analysis._get_program_transitions_as_configs(config)
 
     def get_x(self, config, succ1, succ2):
-        return torch.stack([config, succ1, succ2]).reshape(3, -1).t()
+        return torch.stack([config, succ1]).reshape(2, -1).t()
 
     def get_default_succs(self, config):
         succ1 = torch.zeros(config.shape[0], config.shape[1]).to(self.device)
