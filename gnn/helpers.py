@@ -271,7 +271,7 @@ class CVFConfigForGCNWSuccWEIDataset(Dataset):
             .t()
             .to(self.device)
         )
-        self.A = to_dense_adj(self.edge_index).squeeze(0)
+        # self.A = to_dense_adj(self.edge_index).squeeze(0)
         self.D = 2
 
     def __len__(self):
@@ -293,7 +293,7 @@ class CVFConfigForGCNWSuccWEIDataset(Dataset):
         config = torch.FloatTensor([config]).to(self.device)
         result = (
             torch.cat((config, succ1), dim=0).t(),
-            self.A,
+            self.edge_index,
             self.dataset_name,
         ), torch.FloatTensor([row["rank"]]).to(self.device)
 

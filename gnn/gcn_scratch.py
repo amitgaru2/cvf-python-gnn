@@ -6,29 +6,34 @@ import argparse
 import torch
 import torch.nn as nn
 
+from torch_geometric.nn.conv import GCNConv
 from torch_geometric.nn.pool import global_mean_pool
 from torch.utils.data import ConcatDataset, DataLoader, random_split, Sampler
 
 from custom_logger import logger
-from models_by_hand import GCNConvByHand
+
+# from models_by_hand import GCNConvByHand
 from helpers import CVFConfigForGCNWSuccWEIDataset
 
+# from lstm_scratch import evaluate, test_model
 
-# device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
 device = "cuda"  # force cuda or exit
 
 
 class SimpleGCN(nn.Module):
     def __init__(self, input_size, hidden_size, output_size):
         super().__init__()
-        self.gcn1 = GCNConvByHand(input_size, hidden_size, bias=False, device=device)
-        self.gcn2 = GCNConvByHand(hidden_size, hidden_size, bias=False, device=device)
+        # self.gcn1 = GCNConvByHand(input_size, hidden_size, bias=False, device=device)
+        # self.gcn2 = GCNConvByHand(hidden_size, hidden_size, bias=False, device=device)
+        self.gcn1 = GCNConv(input_size, hidden_size, bias=False)
+        self.gcn2 = GCNConv(hidden_size, hidden_size, bias=False)
         self.out = torch.nn.Linear(hidden_size, output_size)
 
-    def forward(self, x, A):
-        h = self.gcn1(x, A)
+    def forward(self, x, edge_index):
+        h = self.gcn1(x, edge_index)
         h = torch.relu(h)
-        h = self.gcn2(h, A)
+        h = self.gcn2(h, edge_index)
         h = torch.relu(h)
         h = self.out(h)
         h = torch.relu(h)
@@ -47,7 +52,7 @@ class SimpleGCN(nn.Module):
                 x = batch[0]
                 y = batch[1]
                 y = y.unsqueeze(-1)
-                out = self(x[0], x[1])
+                out = self(x[0], x[1][0])
                 optimizer.zero_grad()
                 loss = criterion(out, y)
                 total_loss += loss
@@ -108,42 +113,24 @@ def get_dataset_coll(program, *graph_names):
     return dataset_coll
 
 
-def test_model(model, test_concat_datasets, save_result=False):
-    if save_result:
-        f = open(
-            f"test_results/test_result_w_succ_diff_nodes_gcn_script_{datetime.datetime.now().strftime('%Y_%m_%d_%H_%M')}.csv",
-            "w",
-            newline="",
-        )
-        csv_writer = csv.writer(f)
-        csv_writer.writerow(["Dataset", "Actual", "Predicted"])
-
-    criterion = torch.nn.MSELoss()
+def evaluate(model, datasets):
+    logger.debug("Evaluating model...")
 
     model.eval()
 
     with torch.no_grad():
-        # test_concat_datasets = ConcatDataset(test_datasets)
-        test_batch_sampler = CustomBatchSampler(test_concat_datasets, batch_size=10240)
-        test_dataloader = DataLoader(
-            test_concat_datasets, batch_sampler=test_batch_sampler
-        )
+        criterion = torch.nn.MSELoss()
+        batch_sampler = CustomBatchSampler(datasets, batch_size=1024)
+        dataloader = DataLoader(datasets, batch_sampler=batch_sampler)
 
         total_loss = 0
         total_matched = 0
         count = 0
-        for batch in test_dataloader:
+        for batch in dataloader:
             x = batch[0]
             y = batch[1]
             y = y.unsqueeze(-1)
-            out = model(x[0], x[1])
-            if save_result:
-                csv_writer.writerows(
-                    (i, j.item(), k.item())
-                    for (i, j, k) in zip(
-                        x[1], y.detach().cpu().numpy(), out.detach().cpu().numpy()
-                    )
-                )
+            out = model(x[0], x[1][0])
             loss = criterion(out, y)
             total_loss += loss
             out = torch.round(out)
@@ -151,12 +138,73 @@ def test_model(model, test_concat_datasets, save_result=False):
             total_matched += matched
             count += 1
 
-        logger.info(
-            f"Test set | MSE loss: {round((total_loss / count).item(), 4)} | Total matched: {total_matched:,} out of {len(test_concat_datasets):,} (Accuracy: {round(total_matched / len(test_concat_datasets) * 100, 2):,}%)",
-        )
+    return (
+        [total_loss, count],
+        [total_matched, len(datasets)],
+        round(total_matched / len(datasets) * 100, 2),
+    )
 
-    if save_result:
-        f.close()
+
+def test_model(model, test_concat_datasets):
+
+    [total_loss, count], [total_matched, dataset_size], accuracy = evaluate(
+        model, test_concat_datasets
+    )
+
+    logger.info(
+        f"Test set | MSE loss: {round((total_loss / count).item(), 4)} | Total matched: {total_matched:,} out of {dataset_size:,} (Accuracy: {accuracy:,}%)",
+    )
+
+
+# def test_model(model, test_concat_datasets, save_result=False):
+#     # if save_result:
+#     #     f = open(
+#     #         f"test_results/test_result_w_succ_diff_nodes_gcn_script_{datetime.datetime.now().strftime('%Y_%m_%d_%H_%M')}.csv",
+#     #         "w",
+#     #         newline="",
+#     #     )
+#     #     csv_writer = csv.writer(f)
+#     #     csv_writer.writerow(["Dataset", "Actual", "Predicted"])
+
+#     # criterion = torch.nn.MSELoss()
+
+#     # model.eval()
+
+#     # with torch.no_grad():
+#     #     # test_concat_datasets = ConcatDataset(test_datasets)
+#     #     test_batch_sampler = CustomBatchSampler(test_concat_datasets, batch_size=10240)
+#     #     test_dataloader = DataLoader(
+#     #         test_concat_datasets, batch_sampler=test_batch_sampler
+#     #     )
+
+#     #     total_loss = 0
+#     #     total_matched = 0
+#     #     count = 0
+#     #     for batch in test_dataloader:
+#     #         x = batch[0]
+#     #         y = batch[1]
+#     #         y = y.unsqueeze(-1)
+#     #         out = model(x[0], x[1])
+#     #         if save_result:
+#     #             csv_writer.writerows(
+#     #                 (i, j.item(), k.item())
+#     #                 for (i, j, k) in zip(
+#     #                     x[1], y.detach().cpu().numpy(), out.detach().cpu().numpy()
+#     #                 )
+#     #             )
+#     #         loss = criterion(out, y)
+#     #         total_loss += loss
+#     #         out = torch.round(out)
+#     #         matched = (out == y).sum().item()
+#     #         total_matched += matched
+#     #         count += 1
+
+#     logger.info(
+#         f"Test set | MSE loss: {round((total_loss / count).item(), 4)} | Total matched: {total_matched:,} out of {len(test_concat_datasets):,} (Accuracy: {round(total_matched / len(test_concat_datasets) * 100, 2):,}%)",
+#     )
+
+#     # if save_result:
+#     #     f.close()
 
 
 def main(program, graph_names, H, batch_size, epochs):
@@ -211,37 +259,11 @@ def main(program, graph_names, H, batch_size, epochs):
     torch.save(model, model_name)
     logger.info("\n")
     logger.info("Testing model...")
-    test_model(model, test_concat_datasets, save_result=True)
+    test_model(model, test_concat_datasets)
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    # parser.add_argument("--epochs", type=int, default=10)
-    # parser.add_argument("--batch-size", type=int, default=64)
-    # parser.add_argument("--hidden-size", type=int, default=16)
-    # parser.add_argument(
-    #     "--graph-names",
-    #     type=str,
-    #     nargs="+",
-    #     help="list of graph names in the 'graphs_dir' or list of number of nodes for implict graphs (if implicit program)",
-    #     required=True,
-    # )
-    # parser.add_argument(
-    #     "--logging",
-    #     choices=[
-    #         "INFO",
-    #         "DEBUG",
-    #     ],
-    #     required=False,
-    # )
-    # args = parser.parse_args()
-    # main(
-    #     epochs=args.epochs,
-    #     batch_size=args.batch_size,
-    #     H=args.hidden_size,
-    #     graph_names=args.graph_names,
-    # )
-
     parser.add_argument("--program", type=str, required=True)
     parser.add_argument("--epochs", type=int, default=10)
     parser.add_argument("--batch-size", type=int, default=64)
