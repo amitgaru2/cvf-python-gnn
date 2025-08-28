@@ -15,7 +15,12 @@ from custom_logger import logger
 from lstm_scratch import SimpleLSTM
 from gcn_scratch import SimpleGCN
 from arg_parser_helper import generate_parser
-from helpers import CVFConfigForAnalysisDataset, CVFConfigForAnalysisDatasetMM
+from helpers import (
+    CVFConfigForAnalysisDataset,
+    CVFConfigForAnalysisDatasetMM,
+    CVFConfigForAnalysisDatasetForGCN,
+    CVFConfigForAnalysisDatasetForGCNMM,
+)
 
 utils_path = os.path.join(os.getenv("CVF_PROJECT_DIR", ""), "utils")
 sys.path.append(utils_path)
@@ -119,17 +124,30 @@ def get_rank(model, x):
 
 
 @track_runtime
+def get_rank_gcn(model, x, edge_index):
+    return model(x, edge_index)
+
+
+@track_runtime
 def group_data(df, grp_by: list):
     return df.groupby(grp_by)
 
 
 @track_runtime
-def get_dataset(graph_name):
-    dataset = (
-        CVFConfigForAnalysisDatasetMMWithTT(device, graph_name, program)
-        if program == "maximal_matching"
-        else CVFConfigForAnalysisDatasetWithTT(device, graph_name, program=program)
-    )
+def get_dataset(graph_name, is_lstm_model):
+    if is_lstm_model:
+        dataset = (
+            CVFConfigForAnalysisDatasetMMWithTT(device, graph_name, program)
+            if program == "maximal_matching"
+            else CVFConfigForAnalysisDatasetWithTT(device, graph_name, program=program)
+        )
+    else:
+        # gcn
+        dataset = (
+            CVFConfigForAnalysisDatasetForGCNMM(device, graph_name, program)
+            if program == "maximal_matching"
+            else CVFConfigForAnalysisDatasetForGCN(device, graph_name, program)
+        )
     return dataset
 
 
@@ -172,7 +190,8 @@ def aggregation_n_save(result_df, result_rank_df):
 @track_runtime
 def ml_cvf_analysis(graph_name):
     model = get_model()
-    dataset = get_dataset(graph_name)
+    is_lstm_model = isinstance(model, SimpleLSTM)
+    dataset = get_dataset(graph_name, is_lstm_model)
     result_df = pd.DataFrame(
         {"node": pd.Series(dtype="int"), "rank effect": pd.Series(dtype="float")}
     )
@@ -188,7 +207,7 @@ def ml_cvf_analysis(graph_name):
             ]
             perturbed_states_x = [dataset[i[1]][0] for i in perturbed_states]
             x = torch.stack([batch[0][0], *perturbed_states_x])
-            ranks = get_rank(model, x)
+            ranks = get_rank(model, x) if is_lstm_model else get_rank_gcn(model, x, batch[2].squeeze(0))
             rank_data.append(np.round(ranks[0].item()))
             rank_effects = ranks[0] - ranks
             for i, rank_effect in enumerate(rank_effects[1:]):
