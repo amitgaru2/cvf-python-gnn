@@ -22,7 +22,7 @@ class SimpleGCN(nn.Module):
     def __init__(self, input_size, hidden_size, output_size):
         super().__init__()
         self.gcn1 = GCNConvByHand(input_size, hidden_size, bias=False, device=device)
-        self.gcn2 = GCNConvByHand(hidden_size, hidden_size, bias=True, device=device)
+        self.gcn2 = GCNConvByHand(hidden_size, hidden_size, bias=False, device=device)
         self.out = torch.nn.Linear(hidden_size, output_size)
 
     def forward(self, x, A):
@@ -37,7 +37,7 @@ class SimpleGCN(nn.Module):
 
     def fit(self, epochs, dataloader):
         criterion = torch.nn.MSELoss()
-        optimizer = torch.optim.Adam(self.parameters(), lr=0.01, weight_decay=0.0001)
+        optimizer = torch.optim.Adam(self.parameters(), lr=0.005, weight_decay=0.0001)
         for epoch in range(1, epochs + 1):
             start_time = time.time()
             self.train()
@@ -92,7 +92,7 @@ class CustomBatchSampler(Sampler):
                 last_accessed[turn] += batch_size
 
 
-def get_dataset_coll(*graph_names):
+def get_dataset_coll(program, *graph_names):
     dataset_coll = []
 
     for graph_name in graph_names:
@@ -101,6 +101,7 @@ def get_dataset_coll(*graph_names):
                 device,
                 f"{graph_name}_config_rank_dataset.csv",
                 f"{graph_name}_edge_index.json",
+                program=program,
             )
         )
 
@@ -158,19 +159,20 @@ def test_model(model, test_concat_datasets, save_result=False):
         f.close()
 
 
-def main(graph_names, H, batch_size, epochs):
+def main(program, graph_names, H, batch_size, epochs):
     logger.info(
-        "Timestamp: %s | Training with Graphs: %s | Batch size: %s | Epochs: %s | Hidden size: %s.",
+        "Timestamp: %s | Program: %s | Training with Graphs: %s | Batch size: %s | Epochs: %s | Hidden size: %s.",
         datetime.datetime.now().timestamp(),
+        program,
         ", ".join(graph_names),
         batch_size,
         epochs,
         H,
     )
     logger.info("\n")
-    dataset_coll = get_dataset_coll(*graph_names)
+    dataset_coll = get_dataset_coll(program, *graph_names)
     D = dataset_coll[0].D
-    train_sizes = [int(0.95 * len(ds)) for ds in dataset_coll]
+    train_sizes = [int(0.8 * len(ds)) for ds in dataset_coll]
     test_sizes = [len(ds) - trs for ds, trs in zip(dataset_coll, train_sizes)]
 
     train_test_datasets = [
@@ -214,6 +216,33 @@ def main(graph_names, H, batch_size, epochs):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
+    # parser.add_argument("--epochs", type=int, default=10)
+    # parser.add_argument("--batch-size", type=int, default=64)
+    # parser.add_argument("--hidden-size", type=int, default=16)
+    # parser.add_argument(
+    #     "--graph-names",
+    #     type=str,
+    #     nargs="+",
+    #     help="list of graph names in the 'graphs_dir' or list of number of nodes for implict graphs (if implicit program)",
+    #     required=True,
+    # )
+    # parser.add_argument(
+    #     "--logging",
+    #     choices=[
+    #         "INFO",
+    #         "DEBUG",
+    #     ],
+    #     required=False,
+    # )
+    # args = parser.parse_args()
+    # main(
+    #     epochs=args.epochs,
+    #     batch_size=args.batch_size,
+    #     H=args.hidden_size,
+    #     graph_names=args.graph_names,
+    # )
+
+    parser.add_argument("--program", type=str, required=True)
     parser.add_argument("--epochs", type=int, default=10)
     parser.add_argument("--batch-size", type=int, default=64)
     parser.add_argument("--hidden-size", type=int, default=16)
@@ -234,6 +263,7 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
     main(
+        program=args.program,
         epochs=args.epochs,
         batch_size=args.batch_size,
         H=args.hidden_size,
