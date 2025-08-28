@@ -22,8 +22,6 @@ from maximal_matching import MaximalMatchingCVFAnalysisV2
 
 device = "cuda"
 
-subset_size = 200_000
-
 
 def profile_peak_gpu_memory(func):
     @wraps(func)

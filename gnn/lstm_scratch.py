@@ -27,7 +27,8 @@ monitor = ZeusMonitor(gpu_indices=[0])
 # device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 device = "cuda"  # force cuda or exit
 
-subset_size = 200_000
+subset_size = 1_000_000
+
 
 def get_subset_sampled_loader(train_datasets, batch_size):
     indices = [
