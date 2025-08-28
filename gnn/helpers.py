@@ -81,6 +81,7 @@ class CVFConfigForGCNWSuccWEIDataset(Dataset):
 
 class CVFConfigForGCNWSuccWEIDatasetForMM(Dataset):
     """only for Max matching"""
+
     def __init__(
         self,
         device,
