@@ -13,7 +13,7 @@ from torch.utils.data import ConcatDataset, DataLoader, random_split, Sampler
 from custom_logger import logger
 
 # from models_by_hand import GCNConvByHand
-from helpers import CVFConfigForGCNWSuccWEIDataset
+from helpers import CVFConfigForGCNWSuccWEIDataset, CVFConfigForGCNWSuccWEIDatasetForMM
 
 # from lstm_scratch import evaluate, test_model
 
@@ -100,9 +100,15 @@ class CustomBatchSampler(Sampler):
 def get_dataset_coll(program, *graph_names):
     dataset_coll = []
 
+    DatasetKlass = (
+        CVFConfigForGCNWSuccWEIDatasetForMM
+        if program == "maximal_matching"
+        else CVFConfigForGCNWSuccWEIDataset
+    )
+
     for graph_name in graph_names:
         dataset_coll.append(
-            CVFConfigForGCNWSuccWEIDataset(
+            DatasetKlass(
                 device,
                 f"{graph_name}_config_rank_dataset.csv",
                 f"{graph_name}_edge_index.json",
