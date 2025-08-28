@@ -457,6 +457,194 @@ class CVFConfigForAnalysisDatasetMM(Dataset):
         return result
 
 
+class CVFConfigForAnalysisDatasetForGCN(Dataset):
+    def __init__(
+        self,
+        device,
+        graph_name,
+        program="graph_coloring",
+    ) -> None:
+        graphs_dir = os.path.join(
+            os.getenv("CVF_PROJECT_DIR", ""), "cvf-analysis", "graphs"
+        )
+        graph_path = os.path.join(graphs_dir, f"{graph_name}.txt")
+        graph = get_graph(graph_path)
+        program_class_map = {
+            "graph_coloring": GraphColoringCVFAnalysisV2,
+            "dijkstra_token_ring": DijkstraTokenRingCVFAnalysisV2,
+            "maximal_matching": MaximalMatchingCVFAnalysisV2,
+        }
+        self.cvf_analysis = program_class_map[program](
+            graph_name,
+            graph,
+            generate_data_ml=False,
+            generate_data_embedding=False,
+            generate_test_data_ml=True,
+        )
+        edge_index_dir = os.path.join(
+            os.getenv("CVF_PROJECT_DIR", ""), "cvf-analysis", "graphs", "edge_indexes"
+        )
+
+        self.device = device
+        self.dataset_name = graph_name
+        self.edge_index = (
+            torch.LongTensor(
+                json.load(
+                    open(
+                        os.path.join(edge_index_dir, f"{graph_name}_edge_index.json"),
+                        "r",
+                    )
+                ),
+            )
+            .t()
+            .to(self.device)
+        )
+        self.cache = {}
+        self.default_succ1 = torch.zeros(1, len(graph)).to(self.device)
+
+    def __len__(self):
+        return self.cvf_analysis.total_configs
+
+    def _get_succ_encoding(self, idx, config):
+        succ = list(
+            i[1] for i in self.cvf_analysis._get_program_transitions_as_configs(config)
+        )
+        if succ:
+            succ = torch.FloatTensor(succ).to(self.device)
+            succ1 = torch.mean(succ, dim=0).unsqueeze(0)  # column wise
+        else:
+            succ1 = self.default_succ1.clone()
+
+        return succ1
+
+    def __getitem__(self, idx):
+        config = self.cvf_analysis.indx_to_config(idx)
+        succ1 = self._get_succ_encoding(idx, config)
+        config = torch.FloatTensor([config]).to(self.device)
+        result = (torch.cat((config, succ1), dim=0).t(), idx, self.edge_index)
+        return result
+
+
+class CVFConfigForAnalysisDatasetForGCNMM(Dataset):
+    def __init__(
+        self,
+        device,
+        graph_name,
+        program="coloring",
+    ) -> None:
+        graphs_dir = os.path.join(
+            os.getenv("CVF_PROJECT_DIR", ""), "cvf-analysis", "graphs"
+        )
+        graph_path = os.path.join(graphs_dir, f"{graph_name}.txt")
+        graph = get_graph(graph_path)
+        program_class_map = {
+            "coloring": GraphColoringCVFAnalysisV2,
+            "dijkstra": DijkstraTokenRingCVFAnalysisV2,
+            "maximal_matching": MaximalMatchingCVFAnalysisV2,
+        }
+        self.cvf_analysis = program_class_map[program](
+            graph_name,
+            graph,
+            generate_data_ml=False,
+            generate_data_embedding=False,
+            generate_test_data_ml=True,
+        )
+
+        self.device = device
+        self.dataset_name = graph_name
+        self.default_succ1 = torch.zeros(1, len(graph)).to(self.device)
+        self.highest_p_value = 15
+
+        edge_index_dir = os.path.join(
+            os.getenv("CVF_PROJECT_DIR", ""), "cvf-analysis", "graphs", "edge_indexes"
+        )
+        self.edge_index = (
+            torch.LongTensor(
+                json.load(
+                    open(
+                        os.path.join(edge_index_dir, f"{graph_name}_edge_index.json"),
+                        "r",
+                    )
+                ),
+            )
+            .t()
+            .to(self.device)
+        )
+
+    def __len__(self):
+        return self.cvf_analysis.total_configs
+
+    def get_p_encoding(self, p_value):
+        if p_value is None:
+            p_value = self.highest_p_value + 1
+
+        p_value = torch.LongTensor([p_value])
+        return (
+            F.one_hot(p_value, num_classes=self.highest_p_value + 2)
+            .squeeze()
+            .to(torch.float32)
+        )
+
+    def get_m_encoding(self, m_value):
+        return (torch.LongTensor([1]) if m_value else torch.LongTensor([0])).to(
+            torch.float32
+        )
+
+    @lru_cache(maxsize=None)
+    def get_p_m_encoding(self, p_value, m_value):
+        return torch.cat([self.get_p_encoding(p_value), self.get_m_encoding(m_value)])
+
+    def get_succ1_succ2(self, succ):
+        succ1 = torch.mean(succ, dim=0)
+        succ2 = torch.sum(torch.mean(succ, dim=1), dim=0)
+        succ2 = succ2.unsqueeze(0).repeat(succ1.shape[0], 1)
+        return succ1, succ2
+
+    def get_encoded_config(self, config):
+        return torch.stack(
+            [
+                self.get_p_m_encoding(
+                    self.cvf_analysis.possible_node_values[i][v].p,
+                    self.cvf_analysis.possible_node_values[i][v].m,
+                )
+                for i, v in enumerate(config)
+            ]
+        )
+
+    def cvf_analysis_indx_to_config(self, idx):
+        return self.cvf_analysis.indx_to_config(idx)
+
+    def cvf_analysis_get_transitions_as_configs(self, config):
+        return self.cvf_analysis._get_program_transitions_as_configs(config)
+
+    def get_x(self, config, succ1, succ2):
+        return torch.stack([config, succ1]).reshape(2, -1).t()
+
+    def get_default_succs(self, config):
+        succ1 = torch.zeros(config.shape[0], config.shape[1]).to(self.device)
+        succ2 = succ1.clone()
+        return succ1, succ2
+
+    def move_to_device(self, tensor):
+        return tensor.to(self.device)
+
+    def __getitem__(self, idx):
+        config = self.cvf_analysis_indx_to_config(idx)
+        succ = [i[1] for i in self.cvf_analysis_get_transitions_as_configs(config)]
+        config = self.move_to_device(self.get_encoded_config(config))
+
+        if succ:
+            _succ = [self.get_encoded_config(s) for s in succ]
+            succ = self.move_to_device(torch.stack(_succ))
+            succ1, succ2 = self.get_succ1_succ2(succ)
+        else:
+            succ1, succ2 = self.get_default_succs(config)
+
+        result = (self.get_x(config, succ1, succ2), idx, self.edge_index)
+
+        return result
+
+
 class CVFConfigForGCNWSuccConvDataset(Dataset):
     def __init__(
         self,
@@ -582,18 +770,18 @@ class CVFConfigForGATDataset(Dataset):
 if __name__ == "__main__":
     device = "cpu"
 
-    dataset = CVFConfigForGCNWSuccWEIDatasetForMM(
+    dataset = CVFConfigForAnalysisDatasetForGCNMM(
         device,
-        "star_graph_n4_config_rank_dataset.csv",
-        "star_graph_n4_edge_index.json",
+        "star_graph_n4",
         program="maximal_matching",
     )
 
     loader = DataLoader(dataset, batch_size=1, shuffle=True)
 
     for batch in loader:
-        x = batch[0]
-        y = batch[1]
-        print(x[0])
-        print("y", y)
+        # x = batch[0]
+        # y = batch[1]
+        # print(x[0])
+        # print("y", y)
+        print(batch)
         break

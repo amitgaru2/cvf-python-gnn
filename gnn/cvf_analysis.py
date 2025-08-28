@@ -13,6 +13,7 @@ from torch.utils.data import DataLoader
 
 from custom_logger import logger
 from lstm_scratch import SimpleLSTM
+from gcn_scratch import SimpleGCN
 from arg_parser_helper import generate_parser
 from helpers import CVFConfigForAnalysisDataset, CVFConfigForAnalysisDatasetMM
 
