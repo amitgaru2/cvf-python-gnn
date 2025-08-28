@@ -114,12 +114,12 @@ cd gnn
 # graphs=("star_graph_n7")
 graphs=("star_graph_n15")
 
-graphs=("graph_powerlaw_cluster_graph_n8")
+# graphs=("graph_powerlaw_cluster_graph_n8")
 
-graphs=("graph_random_regular_graph_n8_d4")
+# graphs=("graph_random_regular_graph_n8_d4")
 
 # graphs=("implicit_graph_n8")
-graphs=("implicit_graph_n10")
+# graphs=("implicit_graph_n10")
 # graphs=("implicit_graph_n12")
 
 GRAPH_COLORING_PROGRAM="graph_coloring"
@@ -132,13 +132,22 @@ epochs=25
 batch_size=64
 hidden_size=32
 
-python lstm_scratch.py \
-    --program $DIJKSTRA_TOKEN_PROGRAM \
+# python lstm_scratch.py \
+#     --program $DIJKSTRA_TOKEN_PROGRAM \
+#     --epochs $epochs \
+#     --batch-size $batch_size \
+#     --hidden-size $hidden_size \
+#     --num-layers 2 \
+#     --graph-names $joined_graphs_args
+
+
+python gcn_scratch.py \
+    --program $GRAPH_COLORING_PROGRAM \
     --epochs $epochs \
     --batch-size $batch_size \
     --hidden-size $hidden_size \
-    --num-layers 2 \
     --graph-names $joined_graphs_args
+
 
 # # python gcn_scratch.py \
 # #     --epochs $epochs \
