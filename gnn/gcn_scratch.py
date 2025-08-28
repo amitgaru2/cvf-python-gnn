@@ -1,4 +1,5 @@
 import csv
+import random
 import time
 import datetime
 import argparse
@@ -6,54 +7,72 @@ import argparse
 import torch
 import torch.nn as nn
 
-from torch_geometric.utils import to_edge_index
 from torch_geometric.nn.pool import global_mean_pool
 from torch_geometric.nn.conv import GCNConv, SAGEConv
-from torch.utils.data import ConcatDataset, DataLoader, random_split, Sampler
+from torch.utils.data import ConcatDataset, DataLoader, random_split, Sampler, Subset
+
+from zeus.monitor import ZeusMonitor
 
 from custom_logger import logger
 
 # from models_by_hand import GCNConvByHand
-from lstm_scratch import get_subset_sampled_loader, subset_size
-from helpers import CVFConfigForGCNWSuccWEIDataset, CVFConfigForGCNWSuccWEIDatasetForMM
+from helpers import (
+    CVFConfigForGCNWSuccWEIDataset,
+    CVFConfigForGCNWSuccWEIDatasetForMM,
+    profile_peak_gpu_memory,
+)
 
 # from lstm_scratch import evaluate, test_model
 
+monitor = ZeusMonitor(gpu_indices=[0])
 
 device = "cuda"  # force cuda or exit
+
+subset_size = 200_000
+
+def get_subset_sampled_loader(train_datasets, batch_size):
+    indices = [
+        (
+            random.sample(range(len(ds)), subset_size)
+            if subset_size <= len(ds)
+            else range(len(ds))
+        )
+        for ds in train_datasets
+    ]
+    subsets = [Subset(ds, ind) for (ds, ind) in zip(train_datasets, indices)]
+    datasets = ConcatDataset(subsets)
+    batch_sampler = CustomBatchSampler(datasets, batch_size=batch_size)
+    dataloader = DataLoader(datasets, batch_sampler=batch_sampler)
+    return dataloader
 
 
 class SimpleGCN(nn.Module):
     def __init__(self, input_size, hidden_size, output_size):
         super().__init__()
 
-        # self.gcn1 = GCNConv(input_size, hidden_size, bias=False)
-        # self.gcn2 = GCNConv(hidden_size, hidden_size, bias=False)
-        # self.gcn3 = GCNConv(hidden_size, hidden_size, bias=False)
+        self.gcn1 = GCNConv(input_size, hidden_size, bias=False)
+        self.gcn2 = GCNConv(hidden_size, hidden_size, bias=False)
+        self.gcn3 = GCNConv(hidden_size, hidden_size, bias=False)
+        self.gcn4 = GCNConv(hidden_size, hidden_size, bias=False)
 
-        self.gcn1 = SAGEConv(input_size, hidden_size, bias=False)
-        self.ln1 = nn.LayerNorm(hidden_size)
-        self.gcn2 = SAGEConv(hidden_size, hidden_size, bias=False)
-        self.ln2 = nn.LayerNorm(hidden_size)
-        self.gcn3 = SAGEConv(hidden_size, hidden_size, bias=False)
-        self.ln3 = nn.LayerNorm(hidden_size)
-        self.gcn4 = SAGEConv(hidden_size, hidden_size, bias=False)
-        self.ln4 = nn.LayerNorm(hidden_size)
+        # self.gcn1 = SAGEConv(input_size, hidden_size, bias=False)
+        # self.gcn2 = SAGEConv(hidden_size, hidden_size, bias=False)
+        # self.gcn3 = SAGEConv(hidden_size, hidden_size, bias=False)
+        # self.gcn4 = SAGEConv(hidden_size, hidden_size, bias=False)
+
+        self.ln = nn.LayerNorm(hidden_size)
 
         self.out = torch.nn.Linear(hidden_size, output_size)
 
     def forward(self, x, edge_index):
         h = self.gcn1(x, edge_index)
-        h = self.ln1(h)
         h = torch.relu(h)
         h = self.gcn2(h, edge_index)
-        h = self.ln2(h)
         h = torch.relu(h)
         h = self.gcn3(h, edge_index)
-        h = self.ln3(h)
         h = torch.relu(h)
         h = self.gcn4(h, edge_index)
-        h = self.ln4(h)
+        h = self.ln(h)
         h = torch.relu(h)
         h = self.out(h)
         h = torch.relu(h)
@@ -69,7 +88,9 @@ class SimpleGCN(nn.Module):
             f"Validation set | MSE loss: {round((total_loss / count).item(), 4)} | Total matched: {total_matched:,} out of {dataset_size:,} (Accuracy: {accuracy:,}%)",
         )
 
+    @profile_peak_gpu_memory
     def fit(self, epochs, train_datasets, valid_datasets, batch_size):
+        monitor.begin_window("training")
         criterion = torch.nn.MSELoss()
         optimizer = torch.optim.Adam(self.parameters(), lr=0.005, weight_decay=0.0001)
         dataloader = get_subset_sampled_loader(train_datasets, batch_size)
@@ -100,6 +121,11 @@ class SimpleGCN(nn.Module):
             self.validation_model(valid_datasets)
 
             logger.info("\n")
+
+        measurement = monitor.end_window("training")
+        logger.info(
+            f"Energy usage - Entire training: {measurement.time} s, {measurement.total_energy} J"
+        )
 
 
 class CustomBatchSampler(Sampler):

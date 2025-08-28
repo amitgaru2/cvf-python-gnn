@@ -7,10 +7,11 @@ import torch
 import pandas as pd
 import torch.nn.functional as F
 
-from functools import lru_cache
+from functools import wraps, lru_cache
 
-from torch.utils.data import Dataset
-from torch.utils.data import DataLoader
+from torch.utils.data import Dataset, DataLoader
+
+from custom_logger import logger
 
 sys.path.append(os.path.join(os.getenv("CVF_PROJECT_DIR", ""), "cvf-analysis"))
 
@@ -18,6 +19,30 @@ from cvf_fa_helpers import get_graph
 from graph_coloring import GraphColoringCVFAnalysisV2
 from dijkstra import DijkstraTokenRingCVFAnalysisV2
 from maximal_matching import MaximalMatchingCVFAnalysisV2
+
+device = "cuda"
+
+subset_size = 200_000
+
+
+def profile_peak_gpu_memory(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        torch.cuda.reset_peak_memory_stats(device)
+
+        start_mem = torch.cuda.memory_allocated(device)
+        result = func(*args, **kwargs)
+        end_mem = torch.cuda.memory_allocated(device)
+        peak_mem = torch.cuda.max_memory_allocated(device)
+
+        logger.info(f"[{func.__name__}] GPU {device} memory usage:")
+        logger.info(f"  Start : {start_mem / 1024**2:.2f} MB")
+        logger.info(f"  End   : {end_mem / 1024**2:.2f} MB")
+        logger.info(f"  Peak  : {peak_mem / 1024**2:.2f} MB")
+
+        return result
+
+    return wrapper
 
 
 class CVFConfigForGCNWSuccWEIDataset(Dataset):

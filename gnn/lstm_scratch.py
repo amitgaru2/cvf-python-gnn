@@ -3,6 +3,7 @@ import random
 import time
 import datetime
 import argparse
+import functools
 
 import torch
 import torch.nn as nn
@@ -10,17 +11,38 @@ import torch.nn as nn
 from torch_geometric.nn.pool import global_mean_pool
 from torch.utils.data import ConcatDataset, DataLoader, random_split, Sampler, Subset
 
+from zeus.monitor import ZeusMonitor
+
+# from memory_profiler import profile
+
 from custom_logger import logger
 from helpers import (
     CVFConfigForGCNWSuccLSTMDataset,
     CVFConfigForGCNWSuccLSTMDatasetForMM,
+    profile_peak_gpu_memory,
 )
 
+monitor = ZeusMonitor(gpu_indices=[0])
 
 # device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 device = "cuda"  # force cuda or exit
 
 subset_size = 200_000
+
+def get_subset_sampled_loader(train_datasets, batch_size):
+    indices = [
+        (
+            random.sample(range(len(ds)), subset_size)
+            if subset_size <= len(ds)
+            else range(len(ds))
+        )
+        for ds in train_datasets
+    ]
+    subsets = [Subset(ds, ind) for (ds, ind) in zip(train_datasets, indices)]
+    datasets = ConcatDataset(subsets)
+    batch_sampler = CustomBatchSampler(datasets, batch_size=batch_size)
+    dataloader = DataLoader(datasets, batch_sampler=batch_sampler)
+    return dataloader
 
 
 class SimpleLSTM(nn.Module):
@@ -51,7 +73,9 @@ class SimpleLSTM(nn.Module):
             f"Validation set | MSE loss: {round((total_loss / count).item(), 4)} | Total matched: {total_matched:,} out of {dataset_size:,} (Accuracy: {accuracy:,}%)",
         )
 
+    @profile_peak_gpu_memory
     def fit(self, epochs, train_datasets, valid_datasets, batch_size):
+        monitor.begin_window("training")
         criterion = torch.nn.MSELoss()
         optimizer = torch.optim.Adam(self.parameters(), lr=0.005, weight_decay=0.0001)
         for epoch in range(1, epochs + 1):
@@ -81,8 +105,12 @@ class SimpleLSTM(nn.Module):
             )
 
             self.validation_model(valid_datasets)
-
             logger.info("\n")
+
+        measurement = monitor.end_window("training")
+        logger.info(
+            f"Energy usage - Entire training: {measurement.time} s, {measurement.total_energy} J"
+        )
 
 
 class CustomBatchSampler(Sampler):
@@ -225,22 +253,6 @@ def test_model(model, test_concat_datasets, save_result=False):
 
     # if save_result:
     #     f.close()
-
-
-def get_subset_sampled_loader(train_datasets, batch_size):
-    indices = [
-        (
-            random.sample(range(len(ds)), subset_size)
-            if subset_size <= len(ds)
-            else range(len(ds))
-        )
-        for ds in train_datasets
-    ]
-    subsets = [Subset(ds, ind) for (ds, ind) in zip(train_datasets, indices)]
-    datasets = ConcatDataset(subsets)
-    batch_sampler = CustomBatchSampler(datasets, batch_size=batch_size)
-    dataloader = DataLoader(datasets, batch_sampler=batch_sampler)
-    return dataloader
 
 
 def main(program, graph_names, H, batch_size, epochs, num_layers):
