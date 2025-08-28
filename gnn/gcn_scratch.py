@@ -13,6 +13,7 @@ from torch.utils.data import ConcatDataset, DataLoader, random_split, Sampler
 from custom_logger import logger
 
 # from models_by_hand import GCNConvByHand
+from lstm_scratch import get_subset_sampled_loader, subset_size
 from helpers import CVFConfigForGCNWSuccWEIDataset, CVFConfigForGCNWSuccWEIDatasetForMM
 
 # from lstm_scratch import evaluate, test_model
@@ -40,9 +41,19 @@ class SimpleGCN(nn.Module):
         h = global_mean_pool(h, torch.zeros(h.size(1)).to(device).long())
         return h
 
-    def fit(self, epochs, dataloader):
+    def validation_model(self, valid_datasets):
+        [total_loss, count], [total_matched, dataset_size], accuracy = evaluate(
+            self, valid_datasets
+        )
+
+        logger.info(
+            f"Validation set | MSE loss: {round((total_loss / count).item(), 4)} | Total matched: {total_matched:,} out of {dataset_size:,} (Accuracy: {accuracy:,}%)",
+        )
+
+    def fit(self, epochs, train_datasets, valid_datasets, batch_size):
         criterion = torch.nn.MSELoss()
         optimizer = torch.optim.Adam(self.parameters(), lr=0.005, weight_decay=0.0001)
+        dataloader = get_subset_sampled_loader(train_datasets, batch_size)
         for epoch in range(1, epochs + 1):
             start_time = time.time()
             self.train()
@@ -66,6 +77,10 @@ class SimpleGCN(nn.Module):
                 round((total_loss / count).item(), 4),
                 round(time.time() - start_time, 4),
             )
+
+            self.validation_model(valid_datasets)
+
+            logger.info("\n")
 
 
 class CustomBatchSampler(Sampler):
@@ -226,34 +241,52 @@ def main(program, graph_names, H, batch_size, epochs):
     logger.info("\n")
     dataset_coll = get_dataset_coll(program, *graph_names)
     D = dataset_coll[0].D
-    train_sizes = [int(0.8 * len(ds)) for ds in dataset_coll]
-    test_sizes = [len(ds) - trs for ds, trs in zip(dataset_coll, train_sizes)]
+
+    train_valid_test_split = [0.8, 0.1]
+    # train_valid_test_split = [0.9, 0.05]
+    train_valid_test_split.append(1.0 - sum(train_valid_test_split))
+
+    logger.info("Train, Validation, Test set split: %s", train_valid_test_split)
+
+    train_sizes = [int(train_valid_test_split[0] * len(ds)) for ds in dataset_coll]
+    valid_sizes = [int(train_valid_test_split[1] * len(ds)) for ds in dataset_coll]
+    test_sizes = [
+        len(ds) - trs - vs
+        for ds, trs, vs in zip(dataset_coll, train_sizes, valid_sizes)
+    ]
 
     train_test_datasets = [
-        random_split(ds, [tr_s, ts])
-        for ds, tr_s, ts in zip(dataset_coll, train_sizes, test_sizes)
+        random_split(ds, [tr_s, vs, ts])
+        for ds, tr_s, vs, ts in zip(dataset_coll, train_sizes, valid_sizes, test_sizes)
     ]
 
     train_datasets = [ds[0] for ds in train_test_datasets]
-    test_datasets = [ds[1] for ds in train_test_datasets]
+    valid_datasets = [ds[1] for ds in train_test_datasets]
+    test_datasets = [ds[2] for ds in train_test_datasets]
 
     datasets = ConcatDataset(train_datasets)
+
+    valid_datasets = ConcatDataset(valid_datasets)
+
     test_concat_datasets = ConcatDataset(test_datasets)
 
     logger.info(
-        f"Train dataset size: {len(datasets):,} | Test dataset size: {len(test_concat_datasets):,}"
+        f"Train dataset size: {len(datasets):,}, Subset size: {subset_size:,} | Validation dataset size: {len(valid_datasets):,} | Test dataset size: {len(test_concat_datasets):,}"
     )
     logger.info("\n")
-
-    batch_sampler = CustomBatchSampler(datasets, batch_size=batch_size)
-    dataloader = DataLoader(datasets, batch_sampler=batch_sampler)
 
     model = SimpleGCN(D, H, 1).to(device)
     logger.info("Model %s", model)
     logger.info(f"Total parameters: {sum(p.numel() for p in model.parameters()):,}")
     logger.info("\n")
     start_time = time.time()
-    model.fit(epochs=epochs, dataloader=dataloader)
+    model.fit(
+        epochs=epochs,
+        train_datasets=train_datasets,
+        valid_datasets=valid_datasets,
+        batch_size=batch_size,
+    )
+    # model.fit(epochs=epochs, dataloader=dataloader)
     logger.info("\n")
     logger.info(
         "End Training | Total training time taken %ss",

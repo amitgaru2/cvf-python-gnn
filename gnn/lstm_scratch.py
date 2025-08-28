@@ -288,7 +288,7 @@ def main(program, graph_names, H, batch_size, epochs, num_layers):
     # test_concat_datasets = ConcatDataset(dataset_coll) # for full dataset test
 
     logger.info(
-        f"Train dataset size: {len(datasets):,}, Subset size: {subset_size:,} | Test dataset size: {len(test_concat_datasets):,}"
+        f"Train dataset size: {len(datasets):,}, Subset size: {subset_size:,} | Validation dataset size: {len(valid_datasets):,} | Test dataset size: {len(test_concat_datasets):,}"
     )
     logger.info("\n")
 
