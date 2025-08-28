@@ -57,13 +57,13 @@ def track_runtime(func):
     return wrapper
 
 
-class CVFConfigForAnalysisDatasetWithTT(CVFConfigForAnalysisDataset):
+class CVFConfigForAnalysisDatasetWithTTMixin:
     @track_runtime
     def __getitem__(self, idx):
         return super().__getitem__(idx)
 
 
-class CVFConfigForAnalysisDatasetMMWithTT(CVFConfigForAnalysisDatasetMM):
+class CVFConfigForAnalysisDatasetMMWithTTMixin:
 
     @track_runtime
     def move_to_device(self, tensor):
@@ -96,6 +96,30 @@ class CVFConfigForAnalysisDatasetMMWithTT(CVFConfigForAnalysisDatasetMM):
     @track_runtime
     def __getitem__(self, idx):
         return super().__getitem__(idx)
+
+
+class CVFConfigForAnalysisDatasetWithTTLSTM(
+    CVFConfigForAnalysisDatasetWithTTMixin, CVFConfigForAnalysisDataset
+):
+    pass
+
+
+class CVFConfigForAnalysisDatasetWithTTGCN(
+    CVFConfigForAnalysisDatasetWithTTMixin, CVFConfigForAnalysisDatasetForGCN
+):
+    pass
+
+
+class CVFConfigForAnalysisDatasetMMWithTTLSTM(
+    CVFConfigForAnalysisDatasetMMWithTTMixin, CVFConfigForAnalysisDatasetMM
+):
+    pass
+
+
+class CVFConfigForAnalysisDatasetMMWithTTGCN(
+    CVFConfigForAnalysisDatasetMMWithTTMixin, CVFConfigForAnalysisDatasetForGCNMM
+):
+    pass
 
 
 # Optional utility to print final report
@@ -137,16 +161,18 @@ def group_data(df, grp_by: list):
 def get_dataset(graph_name, is_lstm_model):
     if is_lstm_model:
         dataset = (
-            CVFConfigForAnalysisDatasetMMWithTT(device, graph_name, program)
+            CVFConfigForAnalysisDatasetMMWithTTLSTM(device, graph_name, program)
             if program == "maximal_matching"
-            else CVFConfigForAnalysisDatasetWithTT(device, graph_name, program=program)
+            else CVFConfigForAnalysisDatasetWithTTLSTM(
+                device, graph_name, program=program
+            )
         )
     else:
         # gcn
         dataset = (
-            CVFConfigForAnalysisDatasetForGCNMM(device, graph_name, program)
+            CVFConfigForAnalysisDatasetMMWithTTGCN(device, graph_name, program)
             if program == "maximal_matching"
-            else CVFConfigForAnalysisDatasetForGCN(device, graph_name, program)
+            else CVFConfigForAnalysisDatasetWithTTGCN(device, graph_name, program)
         )
     return dataset
 
@@ -207,7 +233,11 @@ def ml_cvf_analysis(graph_name):
             ]
             perturbed_states_x = [dataset[i[1]][0] for i in perturbed_states]
             x = torch.stack([batch[0][0], *perturbed_states_x])
-            ranks = get_rank(model, x) if is_lstm_model else get_rank_gcn(model, x, batch[2].squeeze(0))
+            ranks = (
+                get_rank(model, x)
+                if is_lstm_model
+                else get_rank_gcn(model, x, batch[2].squeeze(0))
+            )
             rank_data.append(np.round(ranks[0].item()))
             rank_effects = ranks[0] - ranks
             for i, rank_effect in enumerate(rank_effects[1:]):
