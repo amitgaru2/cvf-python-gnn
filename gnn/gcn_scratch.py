@@ -6,8 +6,9 @@ import argparse
 import torch
 import torch.nn as nn
 
-from torch_geometric.nn.conv import GCNConv
+from torch_geometric.utils import to_edge_index
 from torch_geometric.nn.pool import global_mean_pool
+from torch_geometric.nn.conv import GCNConv, SAGEConv
 from torch.utils.data import ConcatDataset, DataLoader, random_split, Sampler
 
 from custom_logger import logger
@@ -25,16 +26,34 @@ device = "cuda"  # force cuda or exit
 class SimpleGCN(nn.Module):
     def __init__(self, input_size, hidden_size, output_size):
         super().__init__()
-        # self.gcn1 = GCNConvByHand(input_size, hidden_size, bias=False, device=device)
-        # self.gcn2 = GCNConvByHand(hidden_size, hidden_size, bias=False, device=device)
-        self.gcn1 = GCNConv(input_size, hidden_size, bias=False)
-        self.gcn2 = GCNConv(hidden_size, hidden_size, bias=False)
+
+        # self.gcn1 = GCNConv(input_size, hidden_size, bias=False)
+        # self.gcn2 = GCNConv(hidden_size, hidden_size, bias=False)
+        # self.gcn3 = GCNConv(hidden_size, hidden_size, bias=False)
+
+        self.gcn1 = SAGEConv(input_size, hidden_size, bias=False)
+        self.ln1 = nn.LayerNorm(hidden_size)
+        self.gcn2 = SAGEConv(hidden_size, hidden_size, bias=False)
+        self.ln2 = nn.LayerNorm(hidden_size)
+        self.gcn3 = SAGEConv(hidden_size, hidden_size, bias=False)
+        self.ln3 = nn.LayerNorm(hidden_size)
+        self.gcn4 = SAGEConv(hidden_size, hidden_size, bias=False)
+        self.ln4 = nn.LayerNorm(hidden_size)
+
         self.out = torch.nn.Linear(hidden_size, output_size)
 
     def forward(self, x, edge_index):
         h = self.gcn1(x, edge_index)
+        h = self.ln1(h)
         h = torch.relu(h)
         h = self.gcn2(h, edge_index)
+        h = self.ln2(h)
+        h = torch.relu(h)
+        h = self.gcn3(h, edge_index)
+        h = self.ln3(h)
+        h = torch.relu(h)
+        h = self.gcn4(h, edge_index)
+        h = self.ln4(h)
         h = torch.relu(h)
         h = self.out(h)
         h = torch.relu(h)
