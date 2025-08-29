@@ -96,7 +96,7 @@ class SimpleGCN(nn.Module):
                 out = self(x[0], x[1][0])
                 optimizer.zero_grad()
                 loss = criterion(out, y)
-                total_loss += loss
+                total_loss += loss.item()
                 count += 1
                 loss.backward()
                 optimizer.step()
