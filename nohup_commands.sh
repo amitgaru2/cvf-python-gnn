@@ -1,10 +1,23 @@
 #!/bin/bash
 set -ex
 
-# conda activate cvf
+GRAPH_COLORING_PROGRAM="graph_coloring"
+DIJKSTRA_TOKEN_PROGRAM="dijkstra_token_ring"
+MAX_MATCHING_PROGRAM="maximal_matching"
 
-# cd cvf-analysis/v2
-# python main.py --program linear_regression --graph-names star_graph_n4 -ml --extra-kwargs config_file=matrix_1
+
+cd cvf-analysis
+
+python main.py --program $GRAPH_COLORING_PROGRAM --graph-names star_graph_n10 -ml
+python main.py --program $GRAPH_COLORING_PROGRAM --graph-names graph_random_regular_graph_n10_d4 -ml
+python main.py --program $GRAPH_COLORING_PROGRAM --graph-names graph_random_regular_graph_n11_d4 -ml
+python main.py --program $GRAPH_COLORING_PROGRAM --graph-names graph_random_regular_graph_n12_d4 -ml
+
+python main.py --program $GRAPH_COLORING_PROGRAM --graph-names graph_random_regular_graph_n9_d4 -ml
+python main.py --program $GRAPH_COLORING_PROGRAM --graph-names graph_random_regular_graph_n10_d4 -ml
+python main.py --program $GRAPH_COLORING_PROGRAM --graph-names graph_random_regular_graph_n11_d4 -ml
+python main.py --program $GRAPH_COLORING_PROGRAM --graph-names graph_random_regular_graph_n12_d4 -ml
+
 
 # cd simulations
 
@@ -105,7 +118,7 @@ set -ex
 # python main.py --program dijkstra_token_ring --sched 0 --no-sim 500000 --fault-interval 2 --graph-names implicit_graph_n5 --fault-prob 1.0
 # python main.py --program dijkstra_token_ring --sched 0 --no-sim 500000 --fault-interval 4 --graph-names implicit_graph_n5 --fault-prob 1.0
 
-cd gnn
+# cd gnn
 
 # # # # # graphs=("star_graph_n7" "graph_powerlaw_cluster_graph_n7" "graph_random_regular_graph_n7_d4" "star_graph_n13" "graph_powerlaw_cluster_graph_n8" "graph_random_regular_graph_n8_d4" "star_graph_n15" "graph_powerlaw_cluster_graph_n9")
 # # # # # graphs=("graph_powerlaw_cluster_graph_n6" "graph_random_regular_graph_n6_d3")
@@ -125,15 +138,13 @@ cd gnn
 # graphs=("graph_powerlaw_cluster_graph_n6")
 # graphs=("graph_random_regular_graph_n6_d2")
 
-GRAPH_COLORING_PROGRAM="graph_coloring"
-DIJKSTRA_TOKEN_PROGRAM="dijkstra_token_ring"
-MAX_MATCHING_PROGRAM="maximal_matching"
 
-# joined_graphs_args="${graphs[@]}"
 
-epochs=25
-batch_size=64
-hidden_size=32
+# # joined_graphs_args="${graphs[@]}"
+
+# epochs=25
+# batch_size=64
+# hidden_size=32
 
 # python lstm_scratch.py \
 #     --program $DIJKSTRA_TOKEN_PROGRAM \
@@ -144,18 +155,18 @@ hidden_size=32
 #     --graph-names $joined_graphs_args
 
 
-graphs=("star_graph_n8" "graph_powerlaw_cluster_graph_n6" "graph_random_regular_graph_n6_d3")
+# graphs=("star_graph_n8" "graph_powerlaw_cluster_graph_n6" "graph_random_regular_graph_n6_d3")
 
-for joined_graphs_args in "${graphs[@]}"; do
+# for joined_graphs_args in "${graphs[@]}"; do
 
-    python gcn_scratch.py \
-        --program $MAX_MATCHING_PROGRAM \
-        --epochs $epochs \
-        --batch-size $batch_size \
-        --hidden-size $hidden_size \
-        --graph-names $joined_graphs_args
+#     python gcn_scratch.py \
+#         --program $MAX_MATCHING_PROGRAM \
+#         --epochs $epochs \
+#         --batch-size $batch_size \
+#         --hidden-size $hidden_size \
+#         --graph-names $joined_graphs_args
 
-done
+# done
 
 # # python gcn_scratch.py \
 # #     --epochs $epochs \

@@ -331,7 +331,7 @@ def main(program, graph_names, H, batch_size, epochs, num_layers):
     test_model(model, test_concat_datasets, save_result=True)
 
 
-def main():
+def wrap_main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--program", type=str, default="coloring")
     parser.add_argument("--epochs", type=int, default=10)
@@ -382,7 +382,7 @@ def test_model_for_new_graphs(model_name, program, graph_names):
 
 
 if __name__ == "__main__":
-    main()
+    wrap_main()
     # test_model_for_new_graphs(
     #     "lstm_trained_at_2025_08_27_15_04",
     #     "dijkstra_token_ring",
