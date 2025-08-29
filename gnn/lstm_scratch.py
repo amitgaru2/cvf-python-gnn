@@ -1,12 +1,11 @@
-import csv
-import random
 import time
+import random
 import datetime
 import argparse
-import functools
 
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 
 from torch_geometric.nn.pool import global_mean_pool
 from torch.utils.data import ConcatDataset, DataLoader, random_split, Sampler, Subset
@@ -27,7 +26,32 @@ monitor = ZeusMonitor(gpu_indices=[0])
 # device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 device = "cuda"  # force cuda or exit
 
-subset_size = 1_000_000
+subset_size = 100_000_000
+
+
+# def collate_fn(batch, target_len=6, pad_value=-1):
+#     """
+#     batch: list of (sequence, label)
+#     target_len: fixed length for padding
+#     pad_value: value used for padding
+#     """
+#     sequences, labels = zip(*batch)  # unzip
+
+#     print("sequences", sequences[0][0].shape, "labels", labels)
+
+#     padded_seqs = []
+#     for seq in sequences:
+#         seq = seq[0][0]
+#         pad_len = target_len - len(seq)
+#         padded_seq = F.pad(seq, (0, pad_len), value=pad_value, batc)
+#         print("seq", seq, "padded", padded_seq)
+#         padded_seqs.append(padded_seq)
+
+#     # Stack into tensors
+#     batch_seqs = torch.stack(padded_seqs)
+#     batch_labels = torch.tensor(labels)
+
+#     return batch_seqs, batch_labels
 
 
 def get_subset_sampled_loader(train_datasets, batch_size):
@@ -151,11 +175,7 @@ def get_dataset_coll(program, *graph_names):
         else CVFConfigForGCNWSuccLSTMDataset
     )
     for graph_name in graph_names:
-        dataset_coll.append(
-            DatasetKlass(
-                device, f"{graph_name}_config_rank_dataset.csv", program=program
-            )
-        )
+        dataset_coll.append(DatasetKlass(device, f"{graph_name}", program=program))
 
     return dataset_coll
 

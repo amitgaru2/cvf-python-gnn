@@ -190,7 +190,7 @@ class CVFConfigForGCNWSuccLSTMDataset(Dataset):
     def __init__(
         self,
         device,
-        dataset_file,
+        dataset,
         program="graph_coloring",
     ) -> None:
         dataset_dir = os.path.join(
@@ -199,11 +199,14 @@ class CVFConfigForGCNWSuccLSTMDataset(Dataset):
             "datasets",
             program,
         )
-        self.data = pd.read_csv(os.path.join(dataset_dir, dataset_file))
+        self.data = pd.read_csv(
+            os.path.join(dataset_dir, f"{dataset}_config_rank_dataset.csv")
+        )
         self.device = device
-        self.dataset_name = dataset_file.split("_config_rank_dataset.csv")[0]
-        # self.D = 3  # input dimension
+        self.dataset_name = dataset
         self.D = 2  # input dimension
+        self.pad_upto_length = 15
+        self.pad_value = -1
 
     def __len__(self):
         return len(self.data)
@@ -213,29 +216,23 @@ class CVFConfigForGCNWSuccLSTMDataset(Dataset):
 
     def __getitem__(self, idx):
         row = self.data.loc[idx]
-        # config = [i for i in ast.literal_eval(row["config"])]
-        # succ = [i for i in ast.literal_eval(row["succ"])]
         config = self.get_encoded_config(ast.literal_eval(row["config"]))
         succ = [self.get_encoded_config(s) for s in ast.literal_eval(row["succ"])]
         if succ:
             succ = torch.FloatTensor(succ).to(self.device)
             succ1 = torch.mean(succ, dim=0).unsqueeze(0)  # column wise
-            # succ2 = torch.mean(succ, dim=1)  # row wise
-            # succ2 = torch.sum(succ2).repeat(succ1.shape)
         else:
             succ1 = torch.zeros(1, len(config)).to(self.device)
-            # succ2 = succ1.clone()
 
         config = torch.FloatTensor([config]).to(self.device)
-        # result = (
-        #     torch.cat((config, succ1, succ2), dim=0).t(),
-        #     self.dataset_name,
-        # ), torch.FloatTensor([row["rank"]]).to(self.device)
-
-        result = (
-            torch.cat((config, succ1), dim=0).t(),
-            self.dataset_name,
-        ), torch.FloatTensor([row["rank"]]).to(self.device)
+        # padding
+        X_wo_pad = torch.cat((config, succ1), dim=0)
+        pad_length = self.pad_upto_length - X_wo_pad.shape[1]
+        X_w_pad = F.pad(X_wo_pad, (0, pad_length), value=self.pad_value)
+        #
+        result = (X_w_pad.t(), self.dataset_name), torch.FloatTensor([row["rank"]]).to(
+            self.device
+        )
 
         return result
 
@@ -345,6 +342,9 @@ class CVFConfigForAnalysisDataset(Dataset):
         self.cache = {}
         self.default_succ1 = torch.zeros(1, len(graph)).to(self.device)
 
+        self.pad_upto_length = 15
+        self.pad_value = -1
+
     def __len__(self):
         return self.cvf_analysis.total_configs
 
@@ -352,16 +352,11 @@ class CVFConfigForAnalysisDataset(Dataset):
         succ = list(
             i[1] for i in self.cvf_analysis._get_program_transitions_as_configs(config)
         )
-        # self.cache[idx] = program_transition_idxs
-        # succ = [self.cvf_analysis.indx_to_config(i) for i in program_transition_idxs]
         if succ:
             succ = torch.FloatTensor(succ).to(self.device)
             succ1 = torch.mean(succ, dim=0).unsqueeze(0)  # column wise
-            # succ2 = torch.mean(succ, dim=1)  # row wise
-            # succ2 = torch.sum(succ2).repeat(succ1.shape)
         else:
             succ1 = self.default_succ1.clone()
-            # succ2 = self.default_succ1.clone()
 
         return succ1
 
@@ -369,7 +364,12 @@ class CVFConfigForAnalysisDataset(Dataset):
         config = self.cvf_analysis.indx_to_config(idx)
         succ1 = self._get_succ_encoding(idx, config)
         config = torch.FloatTensor([config]).to(self.device)
-        result = (torch.cat((config, succ1), dim=0).t(), idx)
+        # padding
+        X_wo_pad = torch.cat((config, succ1), dim=0)
+        pad_length = self.pad_upto_length - X_wo_pad.shape[1]
+        X_w_pad = F.pad(X_wo_pad, (0, pad_length), value=self.pad_value)
+        #
+        result = (X_w_pad.t(), idx)
         return result
 
 
@@ -793,10 +793,10 @@ class CVFConfigForGATDataset(Dataset):
 if __name__ == "__main__":
     device = "cpu"
 
-    dataset = CVFConfigForAnalysisDatasetForGCNMM(
+    dataset = CVFConfigForGCNWSuccLSTMDataset(
         device,
         "star_graph_n4",
-        program="maximal_matching",
+        program="graph_coloring",
     )
 
     loader = DataLoader(dataset, batch_size=1, shuffle=True)
