@@ -337,14 +337,14 @@ def test_model_for_new_graphs(model_name, program, graph_names):
 if __name__ == "__main__":
     wrap_main()
     # test_model_for_new_graphs(
-    #     "lstm_trained_at_2025_08_29_11_02",
+    #     "gcn_trained_at_2025_08_29_12_18",
     #     "graph_coloring",
     #     [
     #         # "star_graph_n7",
     #         # "star_graph_n8",
     #         # "star_graph_n9",
     #         # "star_graph_n10",
-    #         # "star_graph_n11",
+    #         "star_graph_n11",
     #         # "star_graph_n12",
     #         # "graph_powerlaw_cluster_graph_n7",
     #         # "graph_powerlaw_cluster_graph_n6",
