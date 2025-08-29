@@ -393,7 +393,7 @@ def test_model_for_new_graphs(model_name, program, graph_names):
         return model
 
     logger.info(
-        "Testing model %s | program %s | graphs %s", model_name, program, graph_names
+        "Testing model: %s | Program: %s | Graphs: %s", model_name, program, graph_names
     )
     model = _get_model(model_name)
     dataset_coll = get_dataset_coll(program, *graph_names)
@@ -402,9 +402,20 @@ def test_model_for_new_graphs(model_name, program, graph_names):
 
 
 if __name__ == "__main__":
-    wrap_main()
-    # test_model_for_new_graphs(
-    #     "lstm_trained_at_2025_08_27_15_04",
-    #     "dijkstra_token_ring",
-    #     ["implicit_graph_n8"],
-    # )
+    # wrap_main()
+    test_model_for_new_graphs(
+        "lstm_trained_at_2025_08_29_11_02",
+        "graph_coloring",
+        [
+            # "star_graph_n7",
+            # "star_graph_n8",
+            # "star_graph_n9",
+            # "star_graph_n10",
+            # "star_graph_n11",
+            # "star_graph_n12",
+            # "graph_powerlaw_cluster_graph_n7",
+            # "graph_powerlaw_cluster_graph_n8"
+            "star_graph_n3",
+            # "star_graph_n14"
+        ],
+    )

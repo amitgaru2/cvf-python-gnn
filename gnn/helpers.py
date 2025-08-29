@@ -22,6 +22,9 @@ from maximal_matching import MaximalMatchingCVFAnalysisV2
 
 device = "cuda"
 
+LSTM_PAD_UPTO_LENGTH = 15
+LSTM_PAD_VALUE = -1
+
 
 def profile_peak_gpu_memory(func):
     @wraps(func)
@@ -205,8 +208,6 @@ class CVFConfigForGCNWSuccLSTMDataset(Dataset):
         self.device = device
         self.dataset_name = dataset
         self.D = 2  # input dimension
-        self.pad_upto_length = 15
-        self.pad_value = -1
 
     def __len__(self):
         return len(self.data)
@@ -227,8 +228,8 @@ class CVFConfigForGCNWSuccLSTMDataset(Dataset):
         config = torch.FloatTensor([config]).to(self.device)
         # padding
         X_wo_pad = torch.cat((config, succ1), dim=0)
-        pad_length = self.pad_upto_length - X_wo_pad.shape[1]
-        X_w_pad = F.pad(X_wo_pad, (0, pad_length), value=self.pad_value)
+        pad_length = LSTM_PAD_UPTO_LENGTH - X_wo_pad.shape[1]
+        X_w_pad = F.pad(X_wo_pad, (0, pad_length), value=LSTM_PAD_VALUE)
         #
         result = (X_w_pad.t(), self.dataset_name), torch.FloatTensor([row["rank"]]).to(
             self.device
@@ -342,9 +343,6 @@ class CVFConfigForAnalysisDataset(Dataset):
         self.cache = {}
         self.default_succ1 = torch.zeros(1, len(graph)).to(self.device)
 
-        self.pad_upto_length = 15
-        self.pad_value = -1
-
     def __len__(self):
         return self.cvf_analysis.total_configs
 
@@ -366,8 +364,8 @@ class CVFConfigForAnalysisDataset(Dataset):
         config = torch.FloatTensor([config]).to(self.device)
         # padding
         X_wo_pad = torch.cat((config, succ1), dim=0)
-        pad_length = self.pad_upto_length - X_wo_pad.shape[1]
-        X_w_pad = F.pad(X_wo_pad, (0, pad_length), value=self.pad_value)
+        pad_length = LSTM_PAD_UPTO_LENGTH - X_wo_pad.shape[1]
+        X_w_pad = F.pad(X_wo_pad, (0, pad_length), value=LSTM_PAD_VALUE)
         #
         result = (X_w_pad.t(), idx)
         return result

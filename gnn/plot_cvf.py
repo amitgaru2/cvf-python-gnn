@@ -28,7 +28,7 @@ markers = ["*", "o", "h", "v", "P", "s", "p", "x", "D", "8"]
 ONLY_FA = model == "fa"
 
 
-COLORING_PROGRAM = "coloring"
+COLORING_PROGRAM = "graph_coloring"
 DIJKSTRA_PROGRAM = "dijkstra_token_ring"
 MAX_MATCHING_PROGRAM = "maximal_matching"
 
