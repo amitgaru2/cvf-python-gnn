@@ -119,8 +119,10 @@ cd gnn
 # graphs=("graph_random_regular_graph_n8_d4")
 
 # graphs=("implicit_graph_n10")
-graphs=("implicit_graph_n11")
+# graphs=("implicit_graph_n11")
 # graphs=("implicit_graph_n12")
+
+graphs=("star_graph_n8")
 
 GRAPH_COLORING_PROGRAM="graph_coloring"
 DIJKSTRA_TOKEN_PROGRAM="dijkstra_token_ring"
@@ -128,7 +130,7 @@ MAX_MATCHING_PROGRAM="maximal_matching"
 
 joined_graphs_args="${graphs[@]}"
 
-epochs=50
+epochs=25
 batch_size=64
 hidden_size=32
 
@@ -142,7 +144,7 @@ hidden_size=32
 
 
 python gcn_scratch.py \
-    --program $DIJKSTRA_TOKEN_PROGRAM \
+    --program $MAX_MATCHING_PROGRAM \
     --epochs $epochs \
     --batch-size $batch_size \
     --hidden-size $hidden_size \

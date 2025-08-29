@@ -51,15 +51,15 @@ class SimpleGCN(nn.Module):
     def __init__(self, input_size, hidden_size, output_size):
         super().__init__()
 
-        self.gcn1 = GCNConv(input_size, hidden_size, bias=False)
-        self.gcn2 = GCNConv(hidden_size, hidden_size, bias=False)
-        self.gcn3 = GCNConv(hidden_size, hidden_size, bias=False)
-        self.gcn4 = GCNConv(hidden_size, hidden_size, bias=False)
+        # self.gcn1 = GCNConv(input_size, hidden_size, bias=False)
+        # self.gcn2 = GCNConv(hidden_size, hidden_size, bias=False)
+        # self.gcn3 = GCNConv(hidden_size, hidden_size, bias=False)
+        # self.gcn4 = GCNConv(hidden_size, hidden_size, bias=False)
 
-        # self.gcn1 = SAGEConv(input_size, hidden_size, bias=False)
-        # self.gcn2 = SAGEConv(hidden_size, hidden_size, bias=False)
-        # self.gcn3 = SAGEConv(hidden_size, hidden_size, bias=False)
-        # self.gcn4 = SAGEConv(hidden_size, hidden_size, bias=False)
+        self.gcn1 = SAGEConv(input_size, hidden_size, bias=False)
+        self.gcn2 = SAGEConv(hidden_size, hidden_size, bias=False)
+        self.gcn3 = SAGEConv(hidden_size, hidden_size, bias=False)
+        self.gcn4 = SAGEConv(hidden_size, hidden_size, bias=False)
 
         self.ln = nn.LayerNorm(hidden_size)
 
