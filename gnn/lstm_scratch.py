@@ -331,7 +331,7 @@ def main(program, graph_names, H, batch_size, epochs, num_layers):
     test_model(model, test_concat_datasets, save_result=True)
 
 
-if __name__ == "__main__":
+def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--program", type=str, default="coloring")
     parser.add_argument("--epochs", type=int, default=10)
@@ -362,3 +362,29 @@ if __name__ == "__main__":
         num_layers=args.num_layers,
         graph_names=args.graph_names,
     )
+
+
+def test_model_for_new_graphs(model_name, program, graph_names):
+    def _get_model(model_name):
+        model = torch.load(f"trained_models/{model_name}.pt", weights_only=False).to(
+            device
+        )
+        model.eval()
+        return model
+
+    logger.info(
+        "Testing model %s | program %s | graphs %s", model_name, program, graph_names
+    )
+    model = _get_model(model_name)
+    dataset_coll = get_dataset_coll(program, *graph_names)
+    concat_datasets = ConcatDataset(dataset_coll)
+    test_model(model, concat_datasets)
+
+
+if __name__ == "__main__":
+    main()
+    # test_model_for_new_graphs(
+    #     "lstm_trained_at_2025_08_27_15_04",
+    #     "dijkstra_token_ring",
+    #     ["implicit_graph_n8"],
+    # )

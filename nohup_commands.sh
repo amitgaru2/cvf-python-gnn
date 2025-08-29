@@ -122,13 +122,14 @@ cd gnn
 # graphs=("implicit_graph_n11")
 # graphs=("implicit_graph_n12")
 
-graphs=("star_graph_n8")
+# graphs=("graph_powerlaw_cluster_graph_n6")
+# graphs=("graph_random_regular_graph_n6_d2")
 
 GRAPH_COLORING_PROGRAM="graph_coloring"
 DIJKSTRA_TOKEN_PROGRAM="dijkstra_token_ring"
 MAX_MATCHING_PROGRAM="maximal_matching"
 
-joined_graphs_args="${graphs[@]}"
+# joined_graphs_args="${graphs[@]}"
 
 epochs=25
 batch_size=64
@@ -143,13 +144,18 @@ hidden_size=32
 #     --graph-names $joined_graphs_args
 
 
-python gcn_scratch.py \
-    --program $MAX_MATCHING_PROGRAM \
-    --epochs $epochs \
-    --batch-size $batch_size \
-    --hidden-size $hidden_size \
-    --graph-names $joined_graphs_args
+graphs=("star_graph_n8" "graph_powerlaw_cluster_graph_n6" "graph_random_regular_graph_n6_d3")
 
+for joined_graphs_args in "${graphs[@]}"; do
+
+    python gcn_scratch.py \
+        --program $MAX_MATCHING_PROGRAM \
+        --epochs $epochs \
+        --batch-size $batch_size \
+        --hidden-size $hidden_size \
+        --graph-names $joined_graphs_args
+
+done
 
 # # python gcn_scratch.py \
 # #     --epochs $epochs \
