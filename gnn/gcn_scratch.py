@@ -14,20 +14,17 @@ from torch.utils.data import ConcatDataset, DataLoader, random_split, Sampler, S
 
 from custom_logger import logger
 
-# from models_by_hand import GCNConvByHand
 from helpers import (
     CVFConfigForGCNWSuccWEIDataset,
     CVFConfigForGCNWSuccWEIDatasetForMM,
     profile_peak_gpu_memory,
 )
 
-# from lstm_scratch import evaluate, test_model
-
 monitor = ZeusMonitor(gpu_indices=[0])
 
 device = "cuda"  # force cuda or exit
 
-subset_size = 1_000_000
+subset_size = 100_000_000
 
 
 def get_subset_sampled_loader(train_datasets, batch_size):
@@ -49,19 +46,11 @@ def get_subset_sampled_loader(train_datasets, batch_size):
 class SimpleGCN(nn.Module):
     def __init__(self, input_size, hidden_size, output_size):
         super().__init__()
-
-        # self.gcn1 = GCNConv(input_size, hidden_size, bias=False)
-        # self.gcn2 = GCNConv(hidden_size, hidden_size, bias=False)
-        # self.gcn3 = GCNConv(hidden_size, hidden_size, bias=False)
-        # self.gcn4 = GCNConv(hidden_size, hidden_size, bias=False)
-
         self.gcn1 = SAGEConv(input_size, hidden_size, bias=False)
         self.gcn2 = SAGEConv(hidden_size, hidden_size, bias=False)
         self.gcn3 = SAGEConv(hidden_size, hidden_size, bias=False)
         self.gcn4 = SAGEConv(hidden_size, hidden_size, bias=False)
-
         self.ln = nn.LayerNorm(hidden_size)
-
         self.out = torch.nn.Linear(hidden_size, output_size)
 
     def forward(self, x, edge_index):
@@ -222,57 +211,6 @@ def test_model(model, test_concat_datasets):
     )
 
 
-# def test_model(model, test_concat_datasets, save_result=False):
-#     # if save_result:
-#     #     f = open(
-#     #         f"test_results/test_result_w_succ_diff_nodes_gcn_script_{datetime.datetime.now().strftime('%Y_%m_%d_%H_%M')}.csv",
-#     #         "w",
-#     #         newline="",
-#     #     )
-#     #     csv_writer = csv.writer(f)
-#     #     csv_writer.writerow(["Dataset", "Actual", "Predicted"])
-
-#     # criterion = torch.nn.MSELoss()
-
-#     # model.eval()
-
-#     # with torch.no_grad():
-#     #     # test_concat_datasets = ConcatDataset(test_datasets)
-#     #     test_batch_sampler = CustomBatchSampler(test_concat_datasets, batch_size=10240)
-#     #     test_dataloader = DataLoader(
-#     #         test_concat_datasets, batch_sampler=test_batch_sampler
-#     #     )
-
-#     #     total_loss = 0
-#     #     total_matched = 0
-#     #     count = 0
-#     #     for batch in test_dataloader:
-#     #         x = batch[0]
-#     #         y = batch[1]
-#     #         y = y.unsqueeze(-1)
-#     #         out = model(x[0], x[1])
-#     #         if save_result:
-#     #             csv_writer.writerows(
-#     #                 (i, j.item(), k.item())
-#     #                 for (i, j, k) in zip(
-#     #                     x[1], y.detach().cpu().numpy(), out.detach().cpu().numpy()
-#     #                 )
-#     #             )
-#     #         loss = criterion(out, y)
-#     #         total_loss += loss
-#     #         out = torch.round(out)
-#     #         matched = (out == y).sum().item()
-#     #         total_matched += matched
-#     #         count += 1
-
-#     logger.info(
-#         f"Test set | MSE loss: {round((total_loss / count).item(), 4)} | Total matched: {total_matched:,} out of {len(test_concat_datasets):,} (Accuracy: {round(total_matched / len(test_concat_datasets) * 100, 2):,}%)",
-#     )
-
-#     # if save_result:
-#     #     f.close()
-
-
 def main(program, graph_names, H, batch_size, epochs):
     logger.info(
         "Timestamp: %s | Program: %s | Training with Graphs: %s | Batch size: %s | Epochs: %s | Hidden size: %s.",
@@ -346,7 +284,7 @@ def main(program, graph_names, H, batch_size, epochs):
     test_model(model, test_concat_datasets)
 
 
-if __name__ == "__main__":
+def wrap_main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--program", type=str, required=True)
     parser.add_argument("--epochs", type=int, default=10)
@@ -375,3 +313,43 @@ if __name__ == "__main__":
         H=args.hidden_size,
         graph_names=args.graph_names,
     )
+
+
+def test_model_for_new_graphs(model_name, program, graph_names):
+    def _get_model(model_name):
+        model = torch.load(f"trained_models/{model_name}.pt", weights_only=False).to(
+            device
+        )
+        model.eval()
+        return model
+
+    logger.info(
+        "Testing model: %s | Program: %s | Graphs: %s", model_name, program, graph_names
+    )
+    model = _get_model(model_name)
+    dataset_coll = get_dataset_coll(program, *graph_names)
+    concat_datasets = ConcatDataset(dataset_coll)
+    test_model(model, concat_datasets)
+
+
+if __name__ == "__main__":
+    wrap_main()
+    # test_model_for_new_graphs(
+    #     "lstm_trained_at_2025_08_29_11_02",
+    #     "graph_coloring",
+    #     [
+    #         # "star_graph_n7",
+    #         # "star_graph_n8",
+    #         # "star_graph_n9",
+    #         # "star_graph_n10",
+    #         # "star_graph_n11",
+    #         # "star_graph_n12",
+    #         # "graph_powerlaw_cluster_graph_n7",
+    #         # "graph_powerlaw_cluster_graph_n6",
+    #         # "graph_random_regular_graph_n7_d4",
+    #         # "graph_random_regular_graph_n90_d4",
+    #         # "graph_powerlaw_cluster_graph_n8"
+    #         # "star_graph_n3",
+    #         # "star_graph_n14"
+    #     ],
+    # )

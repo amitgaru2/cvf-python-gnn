@@ -22,7 +22,6 @@ from helpers import (
 
 monitor = ZeusMonitor(gpu_indices=[0])
 
-# device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 device = "cuda"  # force cuda or exit
 
 subset_size = 100_000_000
@@ -401,23 +400,25 @@ def test_model_for_new_graphs(model_name, program, graph_names):
 
 
 if __name__ == "__main__":
-    wrap_main()
-    # test_model_for_new_graphs(
-    #     "lstm_trained_at_2025_08_29_11_02",
-    #     "graph_coloring",
-    #     [
-    #         # "star_graph_n7",
-    #         # "star_graph_n8",
-    #         # "star_graph_n9",
-    #         # "star_graph_n10",
-    #         # "star_graph_n11",
-    #         # "star_graph_n12",
-    #         # "graph_powerlaw_cluster_graph_n7",
-    #         # "graph_powerlaw_cluster_graph_n6",
-    #         # "graph_random_regular_graph_n7_d4",
-    #         # "graph_random_regular_graph_n90_d4",
-    #         # "graph_powerlaw_cluster_graph_n8"
-    #         # "star_graph_n3",
-    #         # "star_graph_n14"
-    #     ],
-    # )
+    # wrap_main()
+    test_model_for_new_graphs(
+        # "lstm_trained_at_2025_08_29_11_02",
+        "lstm_trained_at_2025_08_29_11_39",
+        "graph_coloring",
+        [
+            # "star_graph_n7",
+            # "star_graph_n8",
+            # "star_graph_n9",
+            # "star_graph_n10",
+            # "star_graph_n11",
+            # "star_graph_n12",
+            # "graph_powerlaw_cluster_graph_n7",
+            # "graph_powerlaw_cluster_graph_n6",
+            # "graph_random_regular_graph_n9_d2",
+            # "graph_random_regular_graph_n90_d4",
+            # "graph_powerlaw_cluster_graph_n8"
+            # "star_graph_n3",
+            # "star_graph_n14"
+            "complete_graph_n5"
+        ],
+    )
