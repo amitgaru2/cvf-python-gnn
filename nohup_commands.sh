@@ -104,9 +104,9 @@ cd gnn
 
 # graphs=("implicit_graph_n8" "implicit_graph_n9" "implicit_graph_n10" "implicit_graph_n11")
 
-graphs=("star_graph_n7" "star_graph_n8" \
-        "graph_powerlaw_cluster_graph_n5" "graph_powerlaw_cluster_graph_n6" \
-        "graph_random_regular_graph_n6_d2" "graph_random_regular_graph_n7_d2")
+# graphs=("star_graph_n7" "star_graph_n8" \
+#         "graph_powerlaw_cluster_graph_n5" "graph_powerlaw_cluster_graph_n6" \
+#         "graph_random_regular_graph_n6_d2" "graph_random_regular_graph_n7_d2")
 
 
 joined_graphs_args="${graphs[@]}"
@@ -115,12 +115,20 @@ epochs=25
 batch_size=64
 hidden_size=32
 
-python lstm_scratch.py \
-    --program $MAX_MATCHING_PROGRAM \
+# python lstm_scratch.py \
+#     --program $GRAPH_COLORING_PROGRAM \
+#     --epochs $epochs \
+#     --batch-size $batch_size \
+#     --hidden-size $hidden_size \
+#     --num-layers 2 \
+#     --graph-names $joined_graphs_args
+
+
+python gcn_scratch.py \
+    --program $GRAPH_COLORING_PROGRAM \
     --epochs $epochs \
     --batch-size $batch_size \
     --hidden-size $hidden_size \
-    --num-layers 2 \
     --graph-names $joined_graphs_args
 
 
