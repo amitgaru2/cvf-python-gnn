@@ -102,9 +102,10 @@ class SimpleGCN(nn.Module):
                 optimizer.step()
 
             logger.info(
-                "Training set | Epoch %s | MSE Loss: %s | Time taken: %ss",
+                "Training set | Epoch: %s/%s | MSE Loss: %s | Time taken: %ss",
                 epoch,
-                round((total_loss / count).item(), 4),
+                epochs,
+                round((total_loss / count), 4),
                 round(time.time() - start_time, 4),
             )
 
