@@ -74,12 +74,14 @@ class SimpleLSTM(nn.Module):
         self.lstm = nn.GRU(
             input_size, hidden_size, num_layers=num_layers, batch_first=True
         )
-        self.norm = nn.LayerNorm(hidden_size)
+        self.dropout = nn.Dropout(p=0.3)
+        # self.norm = nn.LayerNorm(hidden_size)
         self.h2o = nn.Linear(hidden_size, output_size)
 
     def forward(self, x):
         lstm_out, _ = self.lstm(x)
-        output = self.norm(lstm_out)
+        # output = self.norm(lstm_out)
+        output = self.dropout(lstm_out)
         output = self.h2o(output)
         output = torch.relu(output)
         output = global_mean_pool(
