@@ -5,12 +5,11 @@ import argparse
 
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 
+from zeus.monitor import ZeusMonitor
 from torch_geometric.nn.pool import global_mean_pool
 from torch.utils.data import ConcatDataset, DataLoader, random_split, Sampler, Subset
 
-from zeus.monitor import ZeusMonitor
 
 # from memory_profiler import profile
 
@@ -402,20 +401,23 @@ def test_model_for_new_graphs(model_name, program, graph_names):
 
 
 if __name__ == "__main__":
-    # wrap_main()
-    test_model_for_new_graphs(
-        "lstm_trained_at_2025_08_29_11_02",
-        "graph_coloring",
-        [
-            # "star_graph_n7",
-            # "star_graph_n8",
-            # "star_graph_n9",
-            # "star_graph_n10",
-            # "star_graph_n11",
-            # "star_graph_n12",
-            # "graph_powerlaw_cluster_graph_n7",
-            # "graph_powerlaw_cluster_graph_n8"
-            "star_graph_n3",
-            # "star_graph_n14"
-        ],
-    )
+    wrap_main()
+    # test_model_for_new_graphs(
+    #     "lstm_trained_at_2025_08_29_11_02",
+    #     "graph_coloring",
+    #     [
+    #         # "star_graph_n7",
+    #         # "star_graph_n8",
+    #         # "star_graph_n9",
+    #         # "star_graph_n10",
+    #         # "star_graph_n11",
+    #         # "star_graph_n12",
+    #         # "graph_powerlaw_cluster_graph_n7",
+    #         # "graph_powerlaw_cluster_graph_n6",
+    #         # "graph_random_regular_graph_n7_d4",
+    #         # "graph_random_regular_graph_n90_d4",
+    #         # "graph_powerlaw_cluster_graph_n8"
+    #         # "star_graph_n3",
+    #         # "star_graph_n14"
+    #     ],
+    # )

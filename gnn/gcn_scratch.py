@@ -1,17 +1,16 @@
-import csv
-import random
 import time
+import random
 import datetime
 import argparse
 
 import torch
 import torch.nn as nn
 
+from zeus.monitor import ZeusMonitor
+from torch_geometric.nn.conv import SAGEConv
 from torch_geometric.nn.pool import global_mean_pool
-from torch_geometric.nn.conv import GCNConv, SAGEConv
 from torch.utils.data import ConcatDataset, DataLoader, random_split, Sampler, Subset
 
-from zeus.monitor import ZeusMonitor
 
 from custom_logger import logger
 
