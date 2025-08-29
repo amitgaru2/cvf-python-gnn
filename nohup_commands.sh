@@ -98,11 +98,16 @@ MAX_MATCHING_PROGRAM="maximal_matching"
 
 cd gnn
 
-graphs=("star_graph_n8" "star_graph_n9" "star_graph_n10" "star_graph_n11" \
-        "graph_powerlaw_cluster_graph_n5" "graph_powerlaw_cluster_graph_n6" "graph_powerlaw_cluster_graph_n7" "graph_powerlaw_cluster_graph_n8" \
-        "graph_random_regular_graph_n7_d2" "graph_random_regular_graph_n7_d4" "graph_random_regular_graph_n8_d2" "graph_random_regular_graph_n8_d4")
+# graphs=("star_graph_n8" "star_graph_n9" "star_graph_n10" "star_graph_n11" \
+#         "graph_powerlaw_cluster_graph_n5" "graph_powerlaw_cluster_graph_n6" "graph_powerlaw_cluster_graph_n7" "graph_powerlaw_cluster_graph_n8" \
+#         "graph_random_regular_graph_n7_d2" "graph_random_regular_graph_n7_d4" "graph_random_regular_graph_n8_d2" "graph_random_regular_graph_n8_d4")
 
 # graphs=("implicit_graph_n8" "implicit_graph_n9" "implicit_graph_n10" "implicit_graph_n11")
+
+graphs=("star_graph_n7" "star_graph_n8" \
+        "graph_powerlaw_cluster_graph_n5" "graph_powerlaw_cluster_graph_n6" \
+        "graph_random_regular_graph_n6_d2" "graph_random_regular_graph_n7_d2")
+
 
 joined_graphs_args="${graphs[@]}"
 
@@ -111,7 +116,7 @@ batch_size=64
 hidden_size=32
 
 python lstm_scratch.py \
-    --program $DIJKSTRA_TOKEN_PROGRAM \
+    --program $MAX_MATCHING_PROGRAM \
     --epochs $epochs \
     --batch-size $batch_size \
     --hidden-size $hidden_size \

@@ -242,17 +242,20 @@ class CVFConfigForGCNWSuccLSTMDataset(Dataset):
 
 
 class CVFConfigForGCNWSuccLSTMDatasetForMM(Dataset):
-    def __init__(self, device, dataset_file, program="coloring") -> None:
+    """only for mm"""
+
+    def __init__(self, device, dataset, program="maximal_matching") -> None:
         dataset_dir = os.path.join(
             os.getenv("CVF_PROJECT_DIR", ""),
             "cvf-analysis",
             "datasets",
             program,
         )
-        self.data = pd.read_csv(os.path.join(dataset_dir, dataset_file))
+        self.data = pd.read_csv(
+            os.path.join(dataset_dir, f"{dataset}_config_rank_dataset.csv")
+        )
         self.device = device
-        self.dataset_name = dataset_file.split("_config_rank_dataset.csv")[0]
-        # self.D = 3  # input dimension
+        self.dataset_name = dataset
         self.D = 2  # input dimension
         self.highest_p_value = 15
 
