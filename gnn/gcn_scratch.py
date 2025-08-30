@@ -179,6 +179,7 @@ def evaluate(model, datasets):
         dataloader = DataLoader(datasets, batch_sampler=batch_sampler)
 
         total_loss = 0
+        mre_total_loss = 0
         total_matched = 0
         count = 0
         for batch in dataloader:
