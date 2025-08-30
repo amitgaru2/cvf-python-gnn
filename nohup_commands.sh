@@ -102,53 +102,53 @@ epochs=25
 batch_size=32
 hidden_size=32  
 
-graphs=("star_graph_n8" "star_graph_n9" \
-        "graph_powerlaw_cluster_graph_n5" "graph_powerlaw_cluster_graph_n6" \
-        "graph_random_regular_graph_n7_d2" "graph_random_regular_graph_n7_d4")
+# graphs=("star_graph_n8" "star_graph_n9" \
+#         "graph_powerlaw_cluster_graph_n5" "graph_powerlaw_cluster_graph_n6" \
+#         "graph_random_regular_graph_n7_d2" "graph_random_regular_graph_n7_d4")
 
-joined_graphs_args="${graphs[@]}"
+# joined_graphs_args="${graphs[@]}"
 
-python lstm_scratch.py \
-    --program $GRAPH_COLORING_PROGRAM \
-    --epochs 25 \
-    --batch-size $batch_size \
-    --hidden-size $hidden_size \
-    --num-layers 2 \
-    --graph-names $joined_graphs_args
+# python lstm_scratch.py \
+#     --program $GRAPH_COLORING_PROGRAM \
+#     --epochs 25 \
+#     --batch-size $batch_size \
+#     --hidden-size $hidden_size \
+#     --num-layers 2 \
+#     --graph-names $joined_graphs_args
 
-python gcn_scratch.py \
-    --program $GRAPH_COLORING_PROGRAM \
-    --epochs 25 \
-    --batch-size $batch_size \
-    --hidden-size $hidden_size \
-    --graph-names $joined_graphs_args
-
-
-graphs=("implicit_graph_n8" "implicit_graph_n9" "implicit_graph_n10")
+# python gcn_scratch.py \
+#     --program $GRAPH_COLORING_PROGRAM \
+#     --epochs 25 \
+#     --batch-size $batch_size \
+#     --hidden-size $hidden_size \
+#     --graph-names $joined_graphs_args
 
 
-joined_graphs_args="${graphs[@]}"
-
-python lstm_scratch.py \
-    --program $DIJKSTRA_TOKEN_PROGRAM \
-    --epochs 50 \
-    --batch-size $batch_size \
-    --hidden-size $hidden_size \
-    --num-layers 2 \
-    --graph-names $joined_graphs_args
+# graphs=("implicit_graph_n8" "implicit_graph_n9" "implicit_graph_n10")
 
 
-python gcn_scratch.py \
-    --program $DIJKSTRA_TOKEN_PROGRAM \
-    --epochs 50 \
-    --batch-size $batch_size \
-    --hidden-size $hidden_size \
-    --graph-names $joined_graphs_args
+# joined_graphs_args="${graphs[@]}"
+
+# python lstm_scratch.py \
+#     --program $DIJKSTRA_TOKEN_PROGRAM \
+#     --epochs 50 \
+#     --batch-size $batch_size \
+#     --hidden-size $hidden_size \
+#     --num-layers 2 \
+#     --graph-names $joined_graphs_args
 
 
-graphs=("star_graph_n10" \
-        "graph_powerlaw_cluster_graph_n7" \
-        "graph_random_regular_graph_n7_d4")
+# python gcn_scratch.py \
+#     --program $DIJKSTRA_TOKEN_PROGRAM \
+#     --epochs 50 \
+#     --batch-size $batch_size \
+#     --hidden-size $hidden_size \
+#     --graph-names $joined_graphs_args
+
+
+graphs=("star_graph_n8" \
+        "graph_powerlaw_cluster_graph_n6" \
+        "graph_random_regular_graph_n6_d2")
 
 joined_graphs_args="${graphs[@]}"
 
