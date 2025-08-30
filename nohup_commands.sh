@@ -99,7 +99,7 @@ MAX_MATCHING_PROGRAM="maximal_matching"
 cd gnn
 
 epochs=25
-batch_size=64
+batch_size=32
 hidden_size=32  
 
 graphs=("star_graph_n8" "star_graph_n9" \
@@ -146,9 +146,9 @@ python gcn_scratch.py \
     --graph-names $joined_graphs_args
 
 
-graphs=("star_graph_n8" \
-        "graph_powerlaw_cluster_graph_n6" \
-        "graph_random_regular_graph_n6_d4")
+graphs=("star_graph_n10" \
+        "graph_powerlaw_cluster_graph_n7" \
+        "graph_random_regular_graph_n7_d4")
 
 joined_graphs_args="${graphs[@]}"
 

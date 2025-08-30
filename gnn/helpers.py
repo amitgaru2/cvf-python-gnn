@@ -46,7 +46,7 @@ def profile_peak_gpu_memory(func):
     return wrapper
 
 
-def mean_relative_error(y_pred, y_true, eps=1e-8):
+def mean_relative_error(y_pred, y_true):
     """
     Mean Relative Error (MRE)
 
@@ -59,7 +59,7 @@ def mean_relative_error(y_pred, y_true, eps=1e-8):
         Tensor: scalar MRE
     """
     denom = torch.abs(y_true)
-    if denom == 0:
+    if torch.all(denom == 0):
         return torch.FloatTensor([0.0])
     return torch.mean(torch.abs(y_true - y_pred) / denom)
 

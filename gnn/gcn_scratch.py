@@ -228,7 +228,6 @@ def main(program, graph_names, H, batch_size, epochs):
     D = dataset_coll[0].D
 
     train_valid_test_split = [0.8, 0.1]
-    # train_valid_test_split = [0.9, 0.05]
     train_valid_test_split.append(1.0 - sum(train_valid_test_split))
 
     logger.info("Train, Validation, Test set split: %s", train_valid_test_split)
