@@ -18,6 +18,7 @@ from helpers import (
     CVFConfigForGCNWSuccLSTMDataset,
     CVFConfigForGCNWSuccLSTMDatasetForMM,
     profile_peak_gpu_memory,
+    mean_relative_error,
 )
 
 monitor = ZeusMonitor(gpu_indices=[0])
@@ -90,12 +91,12 @@ class SimpleLSTM(nn.Module):
         return output
 
     def validation_model(self, valid_datasets):
-        [total_loss, count], [total_matched, dataset_size], accuracy = evaluate(
-            self, valid_datasets
+        [total_loss, mre_total_loss, count], [total_matched, dataset_size], accuracy = (
+            evaluate(self, valid_datasets)
         )
 
         logger.info(
-            f"Validation set | MSE loss: {round((total_loss / count).item(), 4)} | Total matched: {total_matched:,} out of {dataset_size:,} (Accuracy: {accuracy:,}%)",
+            f"Validation set | MSE loss: {round((total_loss / count).item(), 4)} | MRE loss: {round(mre_total_loss / count, 4)} | Total matched: {total_matched:,} out of {dataset_size:,} (Accuracy: {accuracy:,}%)",
         )
 
     @profile_peak_gpu_memory
@@ -193,87 +194,36 @@ def evaluate(model, datasets):
         total_loss = 0
         total_matched = 0
         count = 0
+        mre_total_loss = 0
         for batch in dataloader:
             x = batch[0]
             y = batch[1]
             y = y.unsqueeze(-1)
             out = model(x[0])
-            # print(y, out)
-            # if save_result:
-            #     csv_writer.writerows(
-            #         (i, j.item(), k.item())
-            #         for (i, j, k) in zip(
-            #             x[1], y.detach().cpu().numpy(), out.detach().cpu().numpy()
-            #         )
-            #     )
             loss = criterion(out, y)
-            total_loss += loss
+            mre_total_loss += mean_relative_error(out, y).item() * y.size(0)
+            total_loss += loss * y.size(0)
             out = torch.round(out)
             matched = (out == y).sum().item()
             total_matched += matched
             count += 1
 
     return (
-        [total_loss, count],
+        [total_loss, mre_total_loss, len(datasets)],
         [total_matched, len(datasets)],
         round(total_matched / len(datasets) * 100, 2),
     )
 
 
 def test_model(model, test_concat_datasets, save_result=False):
-    # if save_result:
-    #     f = open(
-    #         f"test_results/test_result_w_succ_diff_nodes_lstm_script_{datetime.datetime.now().strftime('%Y_%m_%d_%H_%M')}.csv",
-    #         "w",
-    #         newline="",
-    #     )
-    #     csv_writer = csv.writer(f)
-    #     csv_writer.writerow(["Dataset", "Actual", "Predicted"])
 
-    # criterion = torch.nn.MSELoss()
-
-    [total_loss, count], [total_matched, dataset_size], accuracy = evaluate(
-        model, test_concat_datasets
+    [total_loss, mre_total_loss, count], [total_matched, dataset_size], accuracy = (
+        evaluate(model, test_concat_datasets)
     )
-
-    # model.eval()
-
-    # with torch.no_grad():
-    #     # test_concat_datasets = ConcatDataset(test_datasets)
-    #     test_batch_sampler = CustomBatchSampler(test_concat_datasets, batch_size=1)
-    #     test_dataloader = DataLoader(
-    #         test_concat_datasets, batch_sampler=test_batch_sampler
-    #     )
-
-    #     total_loss = 0
-    #     total_matched = 0
-    #     count = 0
-    #     for batch in test_dataloader:
-    #         x = batch[0]
-    #         y = batch[1]
-    #         y = y.unsqueeze(-1)
-    #         out = model(x[0])
-    #         # print(y, out)
-    #         if save_result:
-    #             csv_writer.writerows(
-    #                 (i, j.item(), k.item())
-    #                 for (i, j, k) in zip(
-    #                     x[1], y.detach().cpu().numpy(), out.detach().cpu().numpy()
-    #                 )
-    #             )
-    #         loss = criterion(out, y)
-    #         total_loss += loss
-    #         out = torch.round(out)
-    #         matched = (out == y).sum().item()
-    #         total_matched += matched
-    #         count += 1
 
     logger.info(
-        f"Test set | MSE loss: {round((total_loss / count).item(), 4)} | Total matched: {total_matched:,} out of {dataset_size:,} (Accuracy: {accuracy:,}%)",
+        f"Test set | MSE loss: {round((total_loss / count).item(), 4)} | MRE loss: {round(mre_total_loss / count, 4)} | Total matched: {total_matched:,} out of {dataset_size:,} (Accuracy: {accuracy:,}%)",
     )
-
-    # if save_result:
-    #     f.close()
 
 
 def main(program, graph_names, H, batch_size, epochs, num_layers):
@@ -406,16 +356,18 @@ if __name__ == "__main__":
     # test_model_for_new_graphs(
     #     # "lstm_trained_at_2025_08_29_11_02",
     #     # "lstm_trained_at_2025_08_29_11_39",
-    #     "lstm_trained_at_2025_08_29_13_24",
-    #     "dijkstra_token_ring",
+    #     # "lstm_trained_at_2025_08_29_13_24",
+    #     "lstm_trained_at_2025_08_29_17_59",
+    #     "maximal_matching",
     #     [
-    #         # "star_graph_n7",
+    #         # "star_graph_n6",
+    #         "complete_graph_n5",
     #         # "star_graph_n8",
     #         # "star_graph_n9",
     #         # "star_graph_n10",
     #         # "star_graph_n11",
     #         # "star_graph_n12",
-    #         "implicit_graph_n12",
+    #         # "implicit_graph_n12",
     #         # "graph_powerlaw_cluster_graph_n7",
     #         # "graph_powerlaw_cluster_graph_n6",
     #         # "graph_random_regular_graph_n9_d2",

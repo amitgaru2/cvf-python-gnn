@@ -46,6 +46,24 @@ def profile_peak_gpu_memory(func):
     return wrapper
 
 
+def mean_relative_error(y_pred, y_true, eps=1e-8):
+    """
+    Mean Relative Error (MRE)
+
+    Args:
+        y_pred (Tensor): Predicted values
+        y_true (Tensor): True values
+        eps (float): Small constant to avoid division by zero
+
+    Returns:
+        Tensor: scalar MRE
+    """
+    denom = torch.abs(y_true)
+    if denom == 0:
+        return torch.FloatTensor([0.0])
+    return torch.mean(torch.abs(y_true - y_pred) / denom)
+
+
 class CVFConfigForGCNWSuccWEIDataset(Dataset):
     def __init__(
         self,

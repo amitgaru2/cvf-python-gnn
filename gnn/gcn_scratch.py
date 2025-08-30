@@ -17,6 +17,7 @@ from custom_logger import logger
 from helpers import (
     CVFConfigForGCNWSuccWEIDataset,
     CVFConfigForGCNWSuccWEIDatasetForMM,
+    mean_relative_error,
     profile_peak_gpu_memory,
 )
 
@@ -50,7 +51,6 @@ class SimpleGCN(nn.Module):
         self.gcn2 = SAGEConv(hidden_size, hidden_size, bias=False)
         self.gcn3 = SAGEConv(hidden_size, hidden_size, bias=False)
         # self.gcn4 = SAGEConv(hidden_size, hidden_size, bias=False)
-        # self.ln = nn.LayerNorm(hidden_size)
         self.dropout = nn.Dropout(p=0.3)
         self.out = torch.nn.Linear(hidden_size, output_size)
 
@@ -60,8 +60,6 @@ class SimpleGCN(nn.Module):
         h = self.gcn2(h, edge_index)
         h = torch.relu(h)
         h = self.gcn3(h, edge_index)
-        # h = torch.relu(h)
-        # h = self.gcn4(h, edge_index)
         h = self.dropout(h)
         h = torch.relu(h)
         h = self.out(h)
@@ -70,12 +68,12 @@ class SimpleGCN(nn.Module):
         return h
 
     def validation_model(self, valid_datasets):
-        [total_loss, count], [total_matched, dataset_size], accuracy = evaluate(
-            self, valid_datasets
+        [total_loss, mre_total_loss, count], [total_matched, dataset_size], accuracy = (
+            evaluate(self, valid_datasets)
         )
 
         logger.info(
-            f"Validation set | MSE loss: {round((total_loss / count).item(), 4)} | Total matched: {total_matched:,} out of {dataset_size:,} (Accuracy: {accuracy:,}%)",
+            f"Validation set | MSE loss: {round((total_loss / count).item(), 4)} | MRE loss: {round(mre_total_loss / count, 4)} | Total matched: {total_matched:,} out of {dataset_size:,} (Accuracy: {accuracy:,}%)",
         )
 
     @profile_peak_gpu_memory
@@ -189,14 +187,15 @@ def evaluate(model, datasets):
             y = y.unsqueeze(-1)
             out = model(x[0], x[1][0])
             loss = criterion(out, y)
-            total_loss += loss
+            mre_total_loss += mean_relative_error(out, y).item() * y.size(0)
+            total_loss += loss * y.size(0)
             out = torch.round(out)
             matched = (out == y).sum().item()
             total_matched += matched
             count += 1
 
     return (
-        [total_loss, count],
+        [total_loss, mre_total_loss, len(datasets)],
         [total_matched, len(datasets)],
         round(total_matched / len(datasets) * 100, 2),
     )
@@ -204,12 +203,12 @@ def evaluate(model, datasets):
 
 def test_model(model, test_concat_datasets):
 
-    [total_loss, count], [total_matched, dataset_size], accuracy = evaluate(
-        model, test_concat_datasets
+    [total_loss, mre_total_loss, count], [total_matched, dataset_size], accuracy = (
+        evaluate(model, test_concat_datasets)
     )
 
     logger.info(
-        f"Test set | MSE loss: {round((total_loss / count).item(), 4)} | Total matched: {total_matched:,} out of {dataset_size:,} (Accuracy: {accuracy:,}%)",
+        f"Test set | MSE loss: {round((total_loss / count).item(), 4)} |  MRE loss: {round(mre_total_loss / count, 4)} | Total matched: {total_matched:,} out of {dataset_size:,} (Accuracy: {accuracy:,}%)",
     )
 
 

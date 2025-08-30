@@ -98,9 +98,9 @@ MAX_MATCHING_PROGRAM="maximal_matching"
 
 cd gnn
 
-# graphs=("star_graph_n8" "star_graph_n9" "star_graph_n10" "star_graph_n11" \
-#         "graph_powerlaw_cluster_graph_n5" "graph_powerlaw_cluster_graph_n6" "graph_powerlaw_cluster_graph_n7" "graph_powerlaw_cluster_graph_n8" \
-#         "graph_random_regular_graph_n7_d2" "graph_random_regular_graph_n7_d4" "graph_random_regular_graph_n8_d2" "graph_random_regular_graph_n8_d4")
+graphs=("star_graph_n8" "star_graph_n9" "star_graph_n10" \
+        "graph_powerlaw_cluster_graph_n5" "graph_powerlaw_cluster_graph_n6" "graph_powerlaw_cluster_graph_n7" \
+        "graph_random_regular_graph_n7_d2" "graph_random_regular_graph_n7_d4" "graph_random_regular_graph_n8_d2")
 
 # graphs=("implicit_graph_n8" "implicit_graph_n9" "implicit_graph_n10" "implicit_graph_n11")
 
@@ -115,21 +115,21 @@ epochs=25
 batch_size=64
 hidden_size=32
 
-# python lstm_scratch.py \
-#     --program $GRAPH_COLORING_PROGRAM \
-#     --epochs $epochs \
-#     --batch-size $batch_size \
-#     --hidden-size $hidden_size \
-#     --num-layers 2 \
-#     --graph-names $joined_graphs_args
-
-
-python gcn_scratch.py \
+python lstm_scratch.py \
     --program $GRAPH_COLORING_PROGRAM \
     --epochs $epochs \
     --batch-size $batch_size \
     --hidden-size $hidden_size \
+    --num-layers 2 \
     --graph-names $joined_graphs_args
+
+
+# python gcn_scratch.py \
+#     --program $GRAPH_COLORING_PROGRAM \
+#     --epochs $epochs \
+#     --batch-size $batch_size \
+#     --hidden-size $hidden_size \
+#     --graph-names $joined_graphs_args
 
 
 # for joined_graphs_args in "${graphs[@]}"; do
