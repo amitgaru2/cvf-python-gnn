@@ -185,56 +185,56 @@ cd gnn
 # gc
 model=lstm_trained_at_2025_08_29_23_08
 
-python lstm_scratch_test.py $model star_graph_n10
-python lstm_scratch_test.py $model star_graph_n11
-python lstm_scratch_test.py $model star_graph_n12
-python lstm_scratch_test.py $model graph_powerlaw_cluster_graph_n7
-python lstm_scratch_test.py $model graph_powerlaw_cluster_graph_n8
-python lstm_scratch_test.py $model graph_random_regular_graph_n8_d2
-python lstm_scratch_test.py $model graph_random_regular_graph_n8_d4
+python lstm_scratch_test.py $model $GRAPH_COLORING_PROGRAM star_graph_n10
+python lstm_scratch_test.py $model $GRAPH_COLORING_PROGRAM star_graph_n11
+python lstm_scratch_test.py $model $GRAPH_COLORING_PROGRAM star_graph_n12
+python lstm_scratch_test.py $model $GRAPH_COLORING_PROGRAM graph_powerlaw_cluster_graph_n7
+python lstm_scratch_test.py $model $GRAPH_COLORING_PROGRAM graph_powerlaw_cluster_graph_n8
+python lstm_scratch_test.py $model $GRAPH_COLORING_PROGRAM graph_random_regular_graph_n8_d2
+python lstm_scratch_test.py $model $GRAPH_COLORING_PROGRAM graph_random_regular_graph_n8_d4
 
 
 model=gcn_trained_at_2025_08_29_23_13
 
-python gcn_scratch_test.py $model star_graph_n10
-python gcn_scratch_test.py $model star_graph_n11
-python gcn_scratch_test.py $model star_graph_n12
-python gcn_scratch_test.py $model graph_powerlaw_cluster_graph_n7
-python gcn_scratch_test.py $model graph_powerlaw_cluster_graph_n8
-python gcn_scratch_test.py $model graph_random_regular_graph_n8_d2
-python gcn_scratch_test.py $model graph_random_regular_graph_n8_d4
+python gcn_scratch_test.py $model $GRAPH_COLORING_PROGRAM star_graph_n10
+python gcn_scratch_test.py $model $GRAPH_COLORING_PROGRAM star_graph_n11
+python gcn_scratch_test.py $model $GRAPH_COLORING_PROGRAM star_graph_n12
+python gcn_scratch_test.py $model $GRAPH_COLORING_PROGRAM graph_powerlaw_cluster_graph_n7
+python gcn_scratch_test.py $model $GRAPH_COLORING_PROGRAM graph_powerlaw_cluster_graph_n8
+python gcn_scratch_test.py $model $GRAPH_COLORING_PROGRAM graph_random_regular_graph_n8_d2
+python gcn_scratch_test.py $model $GRAPH_COLORING_PROGRAM graph_random_regular_graph_n8_d4
 
 
 
 # dtr
 model=lstm_trained_at_2025_08_29_23_28
 
-python lstm_scratch_test.py $model implicit_graph_n10
-python lstm_scratch_test.py $model implicit_graph_n11
-python lstm_scratch_test.py $model implicit_graph_n12
+python lstm_scratch_test.py $model $DIJKSTRA_TOKEN_PROGRAM implicit_graph_n10
+python lstm_scratch_test.py $model $DIJKSTRA_TOKEN_PROGRAM implicit_graph_n11
+python lstm_scratch_test.py $model $DIJKSTRA_TOKEN_PROGRAM implicit_graph_n12
 
 
 model=gcn_trained_at_2025_08_29_23_41
 
-python gcn_scratch_test.py $model implicit_graph_n10
-python gcn_scratch_test.py $model implicit_graph_n11
-python gcn_scratch_test.py $model implicit_graph_n12
+python gcn_scratch_test.py $model $DIJKSTRA_TOKEN_PROGRAM implicit_graph_n10
+python gcn_scratch_test.py $model $DIJKSTRA_TOKEN_PROGRAM implicit_graph_n11
+python gcn_scratch_test.py $model $DIJKSTRA_TOKEN_PROGRAM implicit_graph_n12
 
 
 # mm
 
 model=lstm_trained_at_2025_08_30_05_53
 
-python lstm_scratch_test.py $model star_graph_n9
-python lstm_scratch_test.py $model star_graph_n10
-python lstm_scratch_test.py $model graph_powerlaw_cluster_graph_n7
-python lstm_scratch_test.py $model graph_random_regular_graph_n7_d2
+python lstm_scratch_test.py $model $MAX_MATCHING_PROGRAM star_graph_n9
+python lstm_scratch_test.py $model $MAX_MATCHING_PROGRAM star_graph_n10
+python lstm_scratch_test.py $model $MAX_MATCHING_PROGRAM graph_powerlaw_cluster_graph_n7
+python lstm_scratch_test.py $model $MAX_MATCHING_PROGRAM graph_random_regular_graph_n7_d2
 
 
 model=gcn_trained_at_2025_08_30_06_35
 
-python gcn_scratch_test.py $model star_graph_n9
-python gcn_scratch_test.py $model star_graph_n10
-python gcn_scratch_test.py $model graph_powerlaw_cluster_graph_n7
-python gcn_scratch_test.py $model graph_random_regular_graph_n7_d2
+python gcn_scratch_test.py $model $MAX_MATCHING_PROGRAM star_graph_n9
+python gcn_scratch_test.py $model $MAX_MATCHING_PROGRAM star_graph_n10
+python gcn_scratch_test.py $model $MAX_MATCHING_PROGRAM graph_powerlaw_cluster_graph_n7
+python gcn_scratch_test.py $model $MAX_MATCHING_PROGRAM graph_random_regular_graph_n7_d2
 
