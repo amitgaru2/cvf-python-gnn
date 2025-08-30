@@ -98,11 +98,11 @@ MAX_MATCHING_PROGRAM="maximal_matching"
 
 cd gnn
 
-graphs=("star_graph_n8" "star_graph_n9" "star_graph_n10" \
-        "graph_powerlaw_cluster_graph_n5" "graph_powerlaw_cluster_graph_n6" "graph_powerlaw_cluster_graph_n7" \
-        "graph_random_regular_graph_n7_d2" "graph_random_regular_graph_n7_d4" "graph_random_regular_graph_n8_d2")
+# graphs=("star_graph_n8" "star_graph_n9" "star_graph_n10" \
+#         "graph_powerlaw_cluster_graph_n5" "graph_powerlaw_cluster_graph_n6" "graph_powerlaw_cluster_graph_n7" \
+#         "graph_random_regular_graph_n7_d2" "graph_random_regular_graph_n7_d4" "graph_random_regular_graph_n8_d2")
 
-# graphs=("implicit_graph_n8" "implicit_graph_n9" "implicit_graph_n10" "implicit_graph_n11")
+graphs=("implicit_graph_n8" "implicit_graph_n9" "implicit_graph_n10" "implicit_graph_n11")
 
 # graphs=("star_graph_n7" "star_graph_n8" \
 #         "graph_powerlaw_cluster_graph_n5" "graph_powerlaw_cluster_graph_n6" \
@@ -111,18 +111,31 @@ graphs=("star_graph_n8" "star_graph_n9" "star_graph_n10" \
 
 joined_graphs_args="${graphs[@]}"
 
-epochs=25
+epochs=50
 batch_size=64
 hidden_size=32
 
 python lstm_scratch.py \
-    --program $GRAPH_COLORING_PROGRAM \
+    --program $DIJKSTRA_TOKEN_PROGRAM \
     --epochs $epochs \
     --batch-size $batch_size \
     --hidden-size $hidden_size \
     --num-layers 2 \
     --graph-names $joined_graphs_args
 
+
+graphs=("star_graph_n6" "star_graph_n7" \
+        "graph_powerlaw_cluster_graph_n5" "graph_powerlaw_cluster_graph_n6" \
+        "graph_random_regular_graph_n6_d2" "graph_random_regular_graph_n7_d2")
+
+
+python lstm_scratch.py \
+    --program $MAX_MATCHING_PROGRAM \
+    --epochs 25 \
+    --batch-size $batch_size \
+    --hidden-size $hidden_size \
+    --num-layers 2 \
+    --graph-names $joined_graphs_args
 
 # python gcn_scratch.py \
 #     --program $GRAPH_COLORING_PROGRAM \
