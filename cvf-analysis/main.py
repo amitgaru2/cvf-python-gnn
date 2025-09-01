@@ -16,6 +16,8 @@ from linear_regression import LinearRegressionCVFAnalysisV2
 utils_path = os.path.join(os.getenv("CVF_PROJECT_DIR", ""), "utils")
 sys.path.append(utils_path)
 
+from profilers import track_runtime, print_runtime_report, reset_runtime
+
 from command_line_helpers import (
     get_graph,
     ColoringProgram,
@@ -42,6 +44,7 @@ def parse_extra_kwargs(extra_kwargs):
     return result
 
 
+@track_runtime
 def main(
     program,
     graph_name,
@@ -51,6 +54,7 @@ def main(
     generate_data_emb,
     generate_test_data_ml,
 ):
+    logger.info("CVF Analysis | Program %s | Graph %s.", program, graph_name)
     CVFAnalysisKlass = AnalysisMap[program]
     cvf_analysis = CVFAnalysisKlass(
         graph_name,
@@ -114,6 +118,8 @@ if __name__ == "__main__":
             args.generate_data_emb,
             args.generate_test_data_ml,
         )
+        print_runtime_report(logger)
+        reset_runtime()
 
 
 """
