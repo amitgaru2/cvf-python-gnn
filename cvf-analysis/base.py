@@ -436,12 +436,14 @@ class CVFAnalysisV2:
                 self.get_actual_config_values(self.indx_to_config(k))
             )
             if k in self.config_successors:
-                succ = [
-                    _get_encoded_config(
-                        self.get_actual_config_values(self.indx_to_config(i))
-                    )
-                    for i in self.config_successors[k]
-                ]
+                succ = np.array(
+                    [
+                        _get_encoded_config(
+                            self.get_actual_config_values(self.indx_to_config(i))
+                        )
+                        for i in self.config_successors[k]
+                    ]
+                )
                 succ = np.mean(succ, axis=0)
             else:
                 succ = np.zeros((1, len(self.nodes)))

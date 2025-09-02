@@ -392,6 +392,76 @@ class CVFConfigForAnalysisDataset(Dataset):
         return result
 
 
+class CVFConfigForAnalysisDatasetV2(Dataset):
+    def __init__(
+        self,
+        device,
+        graph_name,
+        program="graph_coloring",
+    ) -> None:
+        graphs_dir = os.path.join(
+            os.getenv("CVF_PROJECT_DIR", ""), "cvf-analysis", "graphs"
+        )
+        graph_path = os.path.join(graphs_dir, f"{graph_name}.txt")
+        graph = get_graph(graph_path)
+        program_class_map = {
+            "graph_coloring": GraphColoringCVFAnalysisV2,
+            "dijkstra_token_ring": DijkstraTokenRingCVFAnalysisV2,
+            "maximal_matching": MaximalMatchingCVFAnalysisV2,
+        }
+        self.cvf_analysis = program_class_map[program](
+            graph_name,
+            graph,
+            generate_data_ml=False,
+            generate_data_embedding=False,
+            generate_test_data_ml=True,
+        )
+
+        dataset_dir = os.path.join(
+            os.getenv("CVF_PROJECT_DIR", ""),
+            "cvf-analysis",
+            "datasets",
+            program,
+        )
+
+        self.data = torch.load(
+            os.path.join(dataset_dir, f"{graph_name}_config_rank_dataset.pt")
+        )
+
+        self.device = device
+        self.dataset_name = graph_name
+        # self.default_succ1 = torch.zeros(1, len(graph)).to(self.device)
+
+    def __len__(self):
+        return self.data["y"].size()
+
+    # def _get_succ_encoding(self, idx, config):
+    #     succ = list(
+    #         i[1] for i in self.cvf_analysis._get_program_transitions_as_configs(config)
+    #     )
+    #     if succ:
+    #         succ = torch.FloatTensor(succ).to(self.device)
+    #         succ1 = torch.mean(succ, dim=0).unsqueeze(0)  # column wise
+    #     else:
+    #         succ1 = self.default_succ1.clone()
+
+    #     return succ1
+
+    def __getitem__(self, idx):
+        # config = self.cvf_analysis.indx_to_config(idx)
+        # succ1 = self._get_succ_encoding(idx, config)
+        # config = torch.FloatTensor([config]).to(self.device)
+        # # padding
+        # X_wo_pad = torch.cat((config, succ1), dim=0)
+        # pad_length = LSTM_PAD_UPTO_LENGTH - X_wo_pad.shape[1]
+        # X_w_pad = F.pad(X_wo_pad, (0, pad_length), value=LSTM_PAD_VALUE)
+        # #
+        # result = (X_w_pad.t(), idx)
+        # return result
+        X = self.data["X"][idx].to(self.device)
+        return (X.t(), idx)
+
+
 class CVFConfigForAnalysisDatasetMM(Dataset):
     def __init__(
         self,
