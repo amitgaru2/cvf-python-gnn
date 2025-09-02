@@ -21,6 +21,7 @@ from helpers import (
     CVFConfigForAnalysisDatasetForGCN,
     CVFConfigForAnalysisDatasetForGCNMM,
     CVFConfigForAnalysisDatasetV2,
+    CVFConfigForAnalysisDatasetMMV2,
 )
 
 utils_path = os.path.join(os.getenv("CVF_PROJECT_DIR", ""), "utils")
@@ -112,7 +113,7 @@ class CVFConfigForAnalysisDatasetWithTTGCN(
 
 
 class CVFConfigForAnalysisDatasetMMWithTTLSTM(
-    CVFConfigForAnalysisDatasetMMWithTTMixin, CVFConfigForAnalysisDatasetMM
+    CVFConfigForAnalysisDatasetMMWithTTMixin, CVFConfigForAnalysisDatasetMMV2
 ):
     pass
 

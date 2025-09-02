@@ -382,9 +382,12 @@ class MaximalMatchingCVFAnalysisV2(CVFAnalysisV2):
             X_all.append(X_w_pad)
             y_all.append(y)
 
+        X_all = np.array(X_all)
         torch.save(
             {
-                "X": torch.from_numpy(np.array(X_all).transpose(0, 2, 1)).float(),
+                "X": torch.from_numpy(
+                    X_all.reshape(X_all.shape[0], 2, -1).transpose(0, 2, 1)
+                ).float(),
                 "y": torch.from_numpy(np.array(y_all)).float(),
             },
             os.path.join(
