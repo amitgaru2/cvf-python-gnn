@@ -376,7 +376,7 @@ class MaximalMatchingCVFAnalysisV2(CVFAnalysisV2):
                 )
                 succ = np.mean(succ, axis=0)
             else:
-                succ = np.zeros((config.shape[0], config.shape[1]))
+                succ = np.full((config.shape[0], config.shape[1]), -1)
 
             X_w_pad = np.vstack((config, succ))
             X_all.append(X_w_pad)
