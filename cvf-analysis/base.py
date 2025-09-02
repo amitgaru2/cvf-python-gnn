@@ -193,10 +193,7 @@ class CVFAnalysisV2:
         self.find_rank_effect()
         self.save_rank_effect()
         if self.generate_data_ml:
-            if self.results_dir == "maximal_matching":
-                self.generate_dataset_for_ml()
-            else:
-                self.generate_dataset_for_ml_v2()
+            self.generate_dataset_for_ml_v2()
         if self.generate_data_embedding:
             self.generate_dataset_for_embedding()
 

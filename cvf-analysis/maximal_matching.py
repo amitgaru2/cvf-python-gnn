@@ -1,11 +1,14 @@
+import os
+import math
 import random
-import logging
+
+import torch
+import numpy as np
 
 from typing import Tuple
+
 from custom_logger import logger
 from base import ProgramData, CVFAnalysisV2
-
-# logger.setLevel(logging.DEBUG)
 
 
 class MaximalMatchingData(ProgramData):
@@ -331,6 +334,65 @@ class MaximalMatchingCVFAnalysisV2(CVFAnalysisV2):
             return random.choice(choices)
 
         return None, None
+
+    def generate_dataset_for_ml_v2(self):
+
+        def _get_p_encoding(p_value):
+            if p_value is None:
+                p_value = highest_p_value + 1
+
+            p_value = np.array([p_value])
+            p_encoded_value = np.eye(highest_p_value + 2)[p_value][0]
+            return p_encoded_value
+
+        def _get_m_encoding(m_value):
+            m_encoded_value = np.array([1.0]) if m_value else np.array([0.0])
+            return m_encoded_value
+
+        def _get_p_m_encoding(p_value, m_value):
+            return np.hstack((_get_p_encoding(p_value), _get_m_encoding(m_value)))
+
+        def _get_encoded_config(config):
+            return np.vstack([_get_p_m_encoding(v.data[0], v.data[1]) for v in config])
+
+        highest_p_value = 15
+
+        X_all = []
+        y_all = []
+
+        for k, v in enumerate(self.global_rank_map):
+            y = np.array([math.ceil(v[0] / v[1])])
+            config = _get_encoded_config(
+                self.get_actual_config_values(self.indx_to_config(k))
+            )
+            if k in self.config_successors:
+                succ = np.array(
+                    [
+                        _get_encoded_config(
+                            self.get_actual_config_values(self.indx_to_config(i))
+                        )
+                        for i in self.config_successors[k]
+                    ]
+                )
+                succ = np.mean(succ, axis=0)
+            else:
+                succ = np.zeros((config.shape[0], config.shape[1]))
+
+            X_w_pad = np.vstack((config, succ))
+            X_all.append(X_w_pad)
+            y_all.append(y)
+
+        torch.save(
+            {
+                "X": torch.from_numpy(np.array(X_all).transpose(0, 2, 1)).float(),
+                "y": torch.from_numpy(np.array(y_all)).float(),
+            },
+            os.path.join(
+                "datasets",
+                self.results_dir,
+                f"{self.graph_name}_config_rank_dataset.pt",
+            ),
+        )
 
 
 if __name__ == "__main__":
