@@ -2,6 +2,7 @@ import os
 import csv
 import math
 
+import torch
 import numpy as np
 import pandas as pd
 
@@ -192,7 +193,7 @@ class CVFAnalysisV2:
         self.find_rank_effect()
         self.save_rank_effect()
         if self.generate_data_ml:
-            self.generate_dataset_for_ml()
+            self.generate_dataset_for_ml_v2()
         if self.generate_data_embedding:
             self.generate_dataset_for_embedding()
 
@@ -415,6 +416,45 @@ class CVFAnalysisV2:
                         else []
                     ),
                 }
+            )
+
+    def generate_dataset_for_ml_v2(self):
+        """v2: directly save dataset that doesn't require preprocessing"""
+
+        def _get_encoded_config(config):
+            return [i.data[0] for i in config]
+
+        for k, v in enumerate(self.global_rank_map):
+            y = math.ceil(v[0] / v[1])
+            config = _get_encoded_config(
+                self.get_actual_config_values(self.indx_to_config(k))
+            )
+            if k in self.config_successors:
+                succ = [
+                    _get_encoded_config(
+                        self.get_actual_config_values(self.indx_to_config(i))
+                    )
+                    for i in self.config_successors[k]
+                ]
+                succ = np.mean(succ, axis=0)
+            else:
+                succ = np.zeros((1, len(self.nodes)))
+
+            X_wo_pad = np.vstack((config, succ))
+            pad_length = 15 - len(self.nodes)
+            X_w_pad = np.pad(
+                X_wo_pad,
+                pad_width=((0, 0), (0, pad_length)),
+                mode="constant",
+                constant_values=-1,
+            )
+            torch.save(
+                {"X": X_w_pad, "y": y},
+                os.path.join(
+                    "datasets",
+                    self.results_dir,
+                    f"{self.graph_name}_config_rank_dataset.pt",
+                ),
             )
 
     def generate_test_dataset_for_ml(self):
