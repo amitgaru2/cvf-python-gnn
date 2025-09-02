@@ -193,7 +193,10 @@ class CVFAnalysisV2:
         self.find_rank_effect()
         self.save_rank_effect()
         if self.generate_data_ml:
-            self.generate_dataset_for_ml_v2()
+            if self.results_dir == "maximal_matching":
+                self.generate_dataset_for_ml()
+            else:
+                self.generate_dataset_for_ml_v2()
         if self.generate_data_embedding:
             self.generate_dataset_for_embedding()
 
@@ -424,8 +427,11 @@ class CVFAnalysisV2:
         def _get_encoded_config(config):
             return [i.data[0] for i in config]
 
+        X_all = []
+        y_all = []
+
         for k, v in enumerate(self.global_rank_map):
-            y = math.ceil(v[0] / v[1])
+            y = np.array([math.ceil(v[0] / v[1])])
             config = _get_encoded_config(
                 self.get_actual_config_values(self.indx_to_config(k))
             )
@@ -448,14 +454,21 @@ class CVFAnalysisV2:
                 mode="constant",
                 constant_values=-1,
             )
-            torch.save(
-                {"X": X_w_pad, "y": y},
-                os.path.join(
-                    "datasets",
-                    self.results_dir,
-                    f"{self.graph_name}_config_rank_dataset.pt",
-                ),
-            )
+
+            X_all.append(X_w_pad)
+            y_all.append(y)
+
+        torch.save(
+            {
+                "X": torch.from_numpy(np.array(X_all)).float(),
+                "y": torch.from_numpy(np.array(y_all)).float(),
+            },
+            os.path.join(
+                "datasets",
+                self.results_dir,
+                f"{self.graph_name}_config_rank_dataset.pt",
+            ),
+        )
 
     def generate_test_dataset_for_ml(self):
         writer = csv.DictWriter(
