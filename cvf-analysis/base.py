@@ -443,7 +443,9 @@ class CVFAnalysisV2:
                 )
                 succ = np.mean(succ, axis=0)
             else:
-                succ = np.zeros((1, len(self.nodes)))
+                succ = np.full((1, len(self.nodes)), -1)
+
+            # succ = succ * len(self.nodes)
 
             X_wo_pad = np.vstack((config, succ))
             pad_length = 15 - len(self.nodes)

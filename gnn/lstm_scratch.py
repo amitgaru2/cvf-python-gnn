@@ -15,9 +15,8 @@ from torch.utils.data import ConcatDataset, DataLoader, random_split, Sampler, S
 
 from custom_logger import logger
 from helpers import (
-    CVFConfigForGCNWSuccLSTMDataset,
     CVFConfigForGCNWSuccLSTMDatasetV2,
-    CVFConfigForGCNWSuccLSTMDatasetForMM,
+    CVFConfigForGCNWSuccLSTMDatasetForMMV2,
     profile_peak_gpu_memory,
     mean_relative_error,
 )
@@ -172,7 +171,7 @@ class CustomBatchSampler(Sampler):
 def get_dataset_coll(program, *graph_names):
     dataset_coll = []
     DatasetKlass = (
-        CVFConfigForGCNWSuccLSTMDatasetForMM
+        CVFConfigForGCNWSuccLSTMDatasetForMMV2
         if program == "maximal_matching"
         else CVFConfigForGCNWSuccLSTMDatasetV2
     )
