@@ -462,7 +462,7 @@ class CVFAnalysisV2:
 
         torch.save(
             {
-                "X": torch.from_numpy(np.array(X_all)).float(),
+                "X": torch.from_numpy(np.array(X_all).transpose(0, 2, 1)).float(),
                 "y": torch.from_numpy(np.array(y_all)).float(),
             },
             os.path.join(

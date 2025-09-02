@@ -433,7 +433,7 @@ class CVFConfigForAnalysisDatasetV2(Dataset):
         # self.default_succ1 = torch.zeros(1, len(graph)).to(self.device)
 
     def __len__(self):
-        return self.data["y"].size()
+        return self.data["y"].size(0)
 
     # def _get_succ_encoding(self, idx, config):
     #     succ = list(
@@ -459,7 +459,7 @@ class CVFConfigForAnalysisDatasetV2(Dataset):
         # result = (X_w_pad.t(), idx)
         # return result
         X = self.data["X"][idx].to(self.device)
-        return (X.t(), idx)
+        return (X, idx)
 
 
 class CVFConfigForAnalysisDatasetMM(Dataset):
