@@ -259,6 +259,39 @@ class CVFConfigForGCNWSuccLSTMDataset(Dataset):
         return f"{self.__class__.__name__} {self.dataset_name}"
 
 
+class CVFConfigForGCNWSuccLSTMDatasetV2(Dataset):
+    def __init__(
+        self,
+        device,
+        graph_name,
+        program="graph_coloring",
+    ) -> None:
+        dataset_dir = os.path.join(
+            os.getenv("CVF_PROJECT_DIR", ""),
+            "cvf-analysis",
+            "datasets",
+            program,
+        )
+        self.data = torch.load(
+            os.path.join(dataset_dir, f"{graph_name}_config_rank_dataset.pt")
+        )
+        self.device = device
+        self.dataset_name = graph_name
+        self.D = 2  # input dimension
+
+    def __len__(self):
+        return self.data["y"].size(0)
+
+    def __getitem__(self, idx):
+        X = self.data["X"][idx].to(self.device)
+        y = self.data["y"][idx].to(self.device)
+        result = (X, y)
+        return result
+
+    def __repr__(self):
+        return f"{self.__class__.__name__} {self.dataset_name}"
+
+
 class CVFConfigForGCNWSuccLSTMDatasetForMM(Dataset):
     """only for mm"""
 

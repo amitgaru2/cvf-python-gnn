@@ -16,6 +16,7 @@ from torch.utils.data import ConcatDataset, DataLoader, random_split, Sampler, S
 from custom_logger import logger
 from helpers import (
     CVFConfigForGCNWSuccLSTMDataset,
+    CVFConfigForGCNWSuccLSTMDatasetV2,
     CVFConfigForGCNWSuccLSTMDatasetForMM,
     profile_peak_gpu_memory,
     mean_relative_error,
@@ -111,10 +112,10 @@ class SimpleLSTM(nn.Module):
             count = 0
             dataloader = get_subset_sampled_loader(train_datasets, batch_size)
             for batch in dataloader:
-                x = batch[0]
+                X = batch[0]
                 y = batch[1]
                 y = y.unsqueeze(-1)
-                out = self(x[0])
+                out = self(X)
                 optimizer.zero_grad()
                 loss = criterion(out, y)
                 total_loss += loss.item()
@@ -173,7 +174,7 @@ def get_dataset_coll(program, *graph_names):
     DatasetKlass = (
         CVFConfigForGCNWSuccLSTMDatasetForMM
         if program == "maximal_matching"
-        else CVFConfigForGCNWSuccLSTMDataset
+        else CVFConfigForGCNWSuccLSTMDatasetV2
     )
     for graph_name in graph_names:
         dataset_coll.append(DatasetKlass(device, f"{graph_name}", program=program))
@@ -196,10 +197,10 @@ def evaluate(model, datasets):
         count = 0
         mre_total_loss = 0
         for batch in dataloader:
-            x = batch[0]
+            X = batch[0]
             y = batch[1]
             y = y.unsqueeze(-1)
-            out = model(x[0])
+            out = model(X)
             loss = criterion(out, y)
             mre_total_loss += mean_relative_error(out, y).item() * y.size(0)
             total_loss += loss * y.size(0)
