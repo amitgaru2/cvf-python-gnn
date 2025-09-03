@@ -15,9 +15,10 @@ from custom_logger import logger
 
 sys.path.append(os.path.join(os.getenv("CVF_PROJECT_DIR", ""), "cvf-analysis"))
 
-from cvf_fa_helpers import get_graph
-from graph_coloring import GraphColoringCVFAnalysisV2
+from cvf_fa_helpers import get_graph, get_graph_stats
+
 from dijkstra import DijkstraTokenRingCVFAnalysisV2
+from graph_coloring import GraphColoringCVFAnalysisV2
 from maximal_matching import MaximalMatchingCVFAnalysisV2
 
 device = "cuda"
@@ -279,13 +280,22 @@ class CVFConfigForGCNWSuccLSTMDatasetV2(Dataset):
         self.dataset_name = graph_name
         self.D = 2  # input dimension
 
+        graphs_dir = os.path.join(
+            os.getenv("CVF_PROJECT_DIR", ""), "cvf-analysis", "graphs"
+        )
+        graph_path = os.path.join(graphs_dir, f"{graph_name}.txt")
+        graph = get_graph(graph_path)
+        graph_stats = get_graph_stats(graph)
+        self.graph_stats = torch.FloatTensor([*graph_stats]).to(self.device)
+
     def __len__(self):
         return self.data["y"].size(0)
 
     def __getitem__(self, idx):
         X = self.data["X"][idx].to(self.device)
         y = self.data["y"][idx].to(self.device)
-        result = (X, y)
+        result = ((X, self.graph_stats), y)
+        # result = (X, y)
         return result
 
     def __repr__(self):
@@ -494,14 +504,23 @@ class CVFConfigForAnalysisDatasetV2(Dataset):
 
         self.device = device
         self.dataset_name = graph_name
-        # self.default_succ1 = torch.zeros(1, len(graph)).to(self.device)
+
+        graphs_dir = os.path.join(
+            os.getenv("CVF_PROJECT_DIR", ""), "cvf-analysis", "graphs"
+        )
+        graph_path = os.path.join(graphs_dir, f"{graph_name}.txt")
+        graph = get_graph(graph_path)
+        graph_stats = get_graph_stats(graph)
+        self.graph_stats = torch.FloatTensor([*graph_stats]).to(self.device)
 
     def __len__(self):
         return self.data["y"].size(0)
 
     def __getitem__(self, idx):
         X = self.data["X"][idx].to(self.device)
-        return (X, idx)
+        # result = (X, idx)
+        result = ((X, self.graph_stats), idx)
+        return result
 
 
 class CVFConfigForAnalysisDatasetMM(Dataset):

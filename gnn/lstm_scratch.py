@@ -69,6 +69,17 @@ def get_subset_sampled_loader(train_datasets, batch_size):
     return dataloader
 
 
+# class LearnableScaler(nn.Module):
+#     def __init__(self, in_features):
+#         super().__init__()
+#         self.fc = nn.Linear(in_features, 1)
+#         self.softplus = nn.Softplus()  # ensure scaling > 0
+
+#     def forward(self, graph_stats):
+#         scale = self.softplus(self.fc(graph_stats))
+#         return scale
+
+
 class SimpleLSTM(nn.Module):
     def __init__(self, input_size, hidden_size, output_size, num_layers=1):
         super().__init__()
@@ -76,18 +87,21 @@ class SimpleLSTM(nn.Module):
             input_size, hidden_size, num_layers=num_layers, batch_first=True
         )
         self.dropout = nn.Dropout(p=0.3)
-        # self.norm = nn.LayerNorm(hidden_size)
         self.h2o = nn.Linear(hidden_size, output_size)
+        # self.scaler = LearnableScaler(2)
 
-    def forward(self, x):
+    def forward(self, x, graph_stats):
         lstm_out, _ = self.lstm(x)
-        # output = self.norm(lstm_out)
         output = self.dropout(lstm_out)
         output = self.h2o(output)
         output = torch.relu(output)
         output = global_mean_pool(
             output, torch.zeros(output.size(1)).to(x.device).long()
         )
+        # # Compute scaling factor
+        # scale = self.scaler(graph_stats)
+        # output = output * scale
+
         return output
 
     def validation_model(self, valid_datasets):
@@ -114,7 +128,7 @@ class SimpleLSTM(nn.Module):
                 X = batch[0]
                 y = batch[1]
                 y = y.unsqueeze(-1)
-                out = self(X)
+                out = self(X[0])
                 optimizer.zero_grad()
                 loss = criterion(out, y)
                 total_loss += loss.item()
@@ -199,7 +213,7 @@ def evaluate(model, datasets):
             X = batch[0]
             y = batch[1]
             y = y.unsqueeze(-1)
-            out = model(X)
+            out = model(X[0])
             loss = criterion(out, y)
             mre_total_loss += mean_relative_error(out, y).item() * y.size(0)
             total_loss += loss * y.size(0)
