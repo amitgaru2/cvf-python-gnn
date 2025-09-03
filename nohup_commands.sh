@@ -98,23 +98,23 @@ MAX_MATCHING_PROGRAM="maximal_matching"
 
 cd gnn
 
-epochs=25
-batch_size=32
-hidden_size=32  
+# epochs=25
+# batch_size=32
+# hidden_size=32  
 
-graphs=("star_graph_n5" "star_graph_n6" "star_graph_n7" "star_graph_n8" "star_graph_n9" \
-        "graph_powerlaw_cluster_graph_n5" "graph_powerlaw_cluster_graph_n6" \
-        "graph_random_regular_graph_n7_d2" "graph_random_regular_graph_n7_d4")
+# graphs=("star_graph_n5" "star_graph_n6" "star_graph_n7" "star_graph_n8" "star_graph_n9" \
+#         "graph_powerlaw_cluster_graph_n5" "graph_powerlaw_cluster_graph_n6" \
+#         "graph_random_regular_graph_n7_d2" "graph_random_regular_graph_n7_d4")
 
-joined_graphs_args="${graphs[@]}"
+# joined_graphs_args="${graphs[@]}"
 
-python lstm_scratch.py \
-    --program $GRAPH_COLORING_PROGRAM \
-    --epochs 25 \
-    --batch-size $batch_size \
-    --hidden-size $hidden_size \
-    --num-layers 2 \
-    --graph-names $joined_graphs_args
+# python lstm_scratch.py \
+#     --program $GRAPH_COLORING_PROGRAM \
+#     --epochs 25 \
+#     --batch-size $batch_size \
+#     --hidden-size $hidden_size \
+#     --num-layers 2 \
+#     --graph-names $joined_graphs_args
 
 # # python gcn_scratch.py \
 # #     --program $GRAPH_COLORING_PROGRAM \
@@ -199,7 +199,7 @@ python lstm_scratch.py \
 # python plot_cvf.py --model $model --program $GRAPH_COLORING_PROGRAM --graph-names star_graph_n13 graph_powerlaw_cluster_graph_n9 graph_random_regular_graph_n9_d4
 
 
-# model=gcn_trained_at_2025_08_29_23_13
+model=gcn_trained_at_2025_08_29_23_13
 
 # python gcn_scratch_test.py $model $GRAPH_COLORING_PROGRAM star_graph_n10
 # python gcn_scratch_test.py $model $GRAPH_COLORING_PROGRAM star_graph_n11
@@ -211,8 +211,8 @@ python lstm_scratch.py \
 
 
 # python cvf_analysis.py --model $model --program $GRAPH_COLORING_PROGRAM --graph-names star_graph_n10 star_graph_n11 star_graph_n12 star_graph_n13 graph_powerlaw_cluster_graph_n7 graph_powerlaw_cluster_graph_n8 graph_powerlaw_cluster_graph_n9 graph_random_regular_graph_n8_d2 graph_random_regular_graph_n8_d4 graph_random_regular_graph_n9_d4
-# python plot_cvf.py --model $model --program $GRAPH_COLORING_PROGRAM --graph-names star_graph_n10 star_graph_n11 star_graph_n12 star_graph_n13 graph_powerlaw_cluster_graph_n7 graph_powerlaw_cluster_graph_n8 graph_powerlaw_cluster_graph_n9 graph_random_regular_graph_n8_d2 graph_random_regular_graph_n8_d4 graph_random_regular_graph_n9_d4
-# python plot_cvf.py --model $model --program $GRAPH_COLORING_PROGRAM --graph-names star_graph_n13 graph_powerlaw_cluster_graph_n9 graph_random_regular_graph_n9_d4
+python plot_cvf.py --model $model --program $GRAPH_COLORING_PROGRAM --graph-names star_graph_n10 star_graph_n11 star_graph_n12 star_graph_n13 graph_powerlaw_cluster_graph_n7 graph_powerlaw_cluster_graph_n8 graph_powerlaw_cluster_graph_n9 graph_random_regular_graph_n8_d2 graph_random_regular_graph_n8_d4 graph_random_regular_graph_n9_d4
+
 
 # # dtr
 # model=lstm_trained_at_2025_08_29_23_28
@@ -225,16 +225,16 @@ python lstm_scratch.py \
 # python plot_cvf.py --model $model --program $DIJKSTRA_TOKEN_PROGRAM --graph-names implicit_graph_n13 implicit_graph_n14 implicit_graph_n15
 
 
-# model=gcn_trained_at_2025_08_29_23_41
+model=gcn_trained_at_2025_08_29_23_41
 
 # python gcn_scratch_test.py $model $DIJKSTRA_TOKEN_PROGRAM implicit_graph_n10
 # python gcn_scratch_test.py $model $DIJKSTRA_TOKEN_PROGRAM implicit_graph_n11
 # python gcn_scratch_test.py $model $DIJKSTRA_TOKEN_PROGRAM implicit_graph_n12
 
 
-# python cvf_analysis.py --model $model --program $DIJKSTRA_TOKEN_PROGRAM --graph-names implicit_graph_n13 implicit_graph_n14 implicit_graph_n15
+python cvf_analysis.py --model $model --program $DIJKSTRA_TOKEN_PROGRAM --graph-names implicit_graph_n13 implicit_graph_n14 implicit_graph_n15
 # python cvf_analysis.py --model $model --program $DIJKSTRA_TOKEN_PROGRAM --graph-names implicit_graph_n15
-# python plot_cvf.py --model $model --program $DIJKSTRA_TOKEN_PROGRAM --graph-names implicit_graph_n13 implicit_graph_n14 implicit_graph_n15
+python plot_cvf.py --model $model --program $DIJKSTRA_TOKEN_PROGRAM --graph-names implicit_graph_n13 implicit_graph_n14 implicit_graph_n15
 
 
 # mm
