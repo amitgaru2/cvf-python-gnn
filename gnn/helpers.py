@@ -294,8 +294,8 @@ class CVFConfigForGCNWSuccLSTMDatasetV2(Dataset):
     def __getitem__(self, idx):
         X = self.data["X"][idx].to(self.device)
         y = self.data["y"][idx].to(self.device)
-        result = ((X, self.graph_stats), y)
-        # result = (X, y)
+        # result = ((X, self.graph_stats), y)
+        result = (X, y)
         return result
 
     def __repr__(self):
@@ -518,8 +518,7 @@ class CVFConfigForAnalysisDatasetV2(Dataset):
 
     def __getitem__(self, idx):
         X = self.data["X"][idx].to(self.device)
-        # result = (X, idx)
-        result = ((X, self.graph_stats), idx)
+        result = (X, idx)
         return result
 
 

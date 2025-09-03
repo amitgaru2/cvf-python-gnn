@@ -12,7 +12,7 @@ from collections import defaultdict
 from torch.utils.data import DataLoader
 
 from custom_logger import logger
-from lstm_scratch import SimpleLSTM, LearnableScaler
+from lstm_scratch import SimpleLSTM
 from gcn_scratch import SimpleGCN
 from arg_parser_helper import generate_parser
 from helpers import (
@@ -145,8 +145,8 @@ def get_model():
 
 
 @track_runtime
-def get_rank(model, x, graph_stats):
-    return model(x, graph_stats)
+def get_rank(model, x):
+    return model(x)
 
 
 @track_runtime
@@ -233,10 +233,10 @@ def ml_cvf_analysis(graph_name):
             perturbed_states = [
                 (i, indx) for (i, indx) in get_perturbed_states(dataset, frm_idx)
             ]
-            perturbed_states_x = [dataset[i[1]][0][0] for i in perturbed_states]
-            x = torch.stack([batch[0][0][0], *perturbed_states_x])
+            perturbed_states_x = [dataset[i[1]][0] for i in perturbed_states]
+            x = torch.stack([batch[0][0], *perturbed_states_x])
             ranks = (
-                get_rank(model, x, batch[0][1])
+                get_rank(model, x)
                 if is_lstm_model
                 else get_rank_gcn(model, x, batch[2].squeeze(0))
             )

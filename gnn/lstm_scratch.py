@@ -90,7 +90,7 @@ class SimpleLSTM(nn.Module):
         self.h2o = nn.Linear(hidden_size, output_size)
         # self.scaler = LearnableScaler(2)
 
-    def forward(self, x, graph_stats):
+    def forward(self, x):
         lstm_out, _ = self.lstm(x)
         output = self.dropout(lstm_out)
         output = self.h2o(output)
