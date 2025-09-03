@@ -514,7 +514,7 @@ class CVFConfigForAnalysisDatasetV2(Dataset):
         self.graph_stats = torch.FloatTensor([*graph_stats]).to(self.device)
 
     def __len__(self):
-        return self.data["y"].size(0)
+        return self.data["X"].size(0)
 
     def __getitem__(self, idx):
         X = self.data["X"][idx].to(self.device)
