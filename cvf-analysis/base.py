@@ -509,7 +509,7 @@ class CVFAnalysisV2:
             config = _get_encoded_config(
                 self.get_actual_config_values(self.indx_to_config(k))
             )
-            if k in self.config_successors:
+            if k in self.config_successors and self.config_successors[k]:
                 succ = np.array(
                     [
                         _get_encoded_config(
