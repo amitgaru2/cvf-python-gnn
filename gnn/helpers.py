@@ -669,7 +669,7 @@ class CVFConfigForAnalysisDatasetMMV2(Dataset):
         self.dataset_name = graph_name
 
     def __len__(self):
-        return self.data["y"].size(0)
+        return self.data["X"].size(0)
 
     def __getitem__(self, idx):
         X = self.data["X"][idx].to(self.device)

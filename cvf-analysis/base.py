@@ -200,7 +200,7 @@ class CVFAnalysisV2:
     def start_test_data_generation_ml(self):
         logger.info("Generating test data for ML.")
         self.find_successors()
-        self.generate_test_dataset_for_ml()
+        self.generate_test_dataset_for_ml_v2()
 
     def _get_program_transitions_as_configs(self, start_state: Tuple[int]):
         raise NotImplemented
@@ -498,6 +498,51 @@ class CVFAnalysisV2:
                     ),
                 }
             )
+
+    def generate_test_dataset_for_ml_v2(self):
+        def _get_encoded_config(config):
+            return [i.data[0] for i in config]
+
+        X_all = []
+
+        for k in range(self.total_configs):
+            config = _get_encoded_config(
+                self.get_actual_config_values(self.indx_to_config(k))
+            )
+            if k in self.config_successors:
+                succ = np.array(
+                    [
+                        _get_encoded_config(
+                            self.get_actual_config_values(self.indx_to_config(i))
+                        )
+                        for i in self.config_successors[k]
+                    ]
+                )
+                succ = np.mean(succ, axis=0)
+            else:
+                succ = np.full((1, len(self.nodes)), -1)
+
+            X_wo_pad = np.vstack((config, succ))
+            pad_length = 15 - len(self.nodes)
+            X_w_pad = np.pad(
+                X_wo_pad,
+                pad_width=((0, 0), (0, pad_length)),
+                mode="constant",
+                constant_values=-1,
+            )
+
+            X_all.append(X_w_pad)
+
+        torch.save(
+            {
+                "X": torch.from_numpy(np.array(X_all).transpose(0, 2, 1)).float(),
+            },
+            os.path.join(
+                "datasets",
+                self.results_dir,
+                f"{self.graph_name}_config_rank_dataset.pt",
+            ),
+        )
 
     def save_node_pt(self):
         df = pd.DataFrame.from_dict(self.global_pt, orient="index")
