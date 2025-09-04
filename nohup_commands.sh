@@ -6,7 +6,9 @@ DIJKSTRA_TOKEN_PROGRAM="dijkstra_token_ring"
 MAX_MATCHING_PROGRAM="maximal_matching"
 
 
-# cd cvf-analysis
+cd cvf-analysis
+
+python main.py --program maximal_matching --graph-names graph_powerlaw_cluster_graph_n8 graph_random_regular_graph_n8_d2 --generate-test-data-ml
 
 # python main.py --program $GRAPH_COLORING_PROGRAM --graph-names star_graph_n10 -ml
 # python main.py --program $GRAPH_COLORING_PROGRAM --graph-names graph_random_regular_graph_n10_d4 -ml
@@ -211,7 +213,7 @@ model=gcn_trained_at_2025_08_29_23_13
 
 
 # python cvf_analysis.py --model $model --program $GRAPH_COLORING_PROGRAM --graph-names star_graph_n10 star_graph_n11 star_graph_n12 star_graph_n13 graph_powerlaw_cluster_graph_n7 graph_powerlaw_cluster_graph_n8 graph_powerlaw_cluster_graph_n9 graph_random_regular_graph_n8_d2 graph_random_regular_graph_n8_d4 graph_random_regular_graph_n9_d4
-python plot_cvf.py --model $model --program $GRAPH_COLORING_PROGRAM --graph-names star_graph_n10 star_graph_n11 star_graph_n12 star_graph_n13 graph_powerlaw_cluster_graph_n7 graph_powerlaw_cluster_graph_n8 graph_powerlaw_cluster_graph_n9 graph_random_regular_graph_n8_d2 graph_random_regular_graph_n8_d4 graph_random_regular_graph_n9_d4
+# python plot_cvf.py --model $model --program $GRAPH_COLORING_PROGRAM --graph-names star_graph_n10 star_graph_n11 star_graph_n12 star_graph_n13 graph_powerlaw_cluster_graph_n7 graph_powerlaw_cluster_graph_n8 graph_powerlaw_cluster_graph_n9 graph_random_regular_graph_n8_d2 graph_random_regular_graph_n8_d4 graph_random_regular_graph_n9_d4
 
 
 # # dtr
@@ -232,21 +234,21 @@ model=gcn_trained_at_2025_08_29_23_41
 # python gcn_scratch_test.py $model $DIJKSTRA_TOKEN_PROGRAM implicit_graph_n12
 
 
-python cvf_analysis.py --model $model --program $DIJKSTRA_TOKEN_PROGRAM --graph-names implicit_graph_n13 implicit_graph_n14 implicit_graph_n15
-# python cvf_analysis.py --model $model --program $DIJKSTRA_TOKEN_PROGRAM --graph-names implicit_graph_n15
-python plot_cvf.py --model $model --program $DIJKSTRA_TOKEN_PROGRAM --graph-names implicit_graph_n13 implicit_graph_n14 implicit_graph_n15
+# python cvf_analysis.py --model $model --program $DIJKSTRA_TOKEN_PROGRAM --graph-names implicit_graph_n13 implicit_graph_n14 implicit_graph_n15
+# # python cvf_analysis.py --model $model --program $DIJKSTRA_TOKEN_PROGRAM --graph-names implicit_graph_n15
+# python plot_cvf.py --model $model --program $DIJKSTRA_TOKEN_PROGRAM --graph-names implicit_graph_n13 implicit_graph_n14 implicit_graph_n15
 
 
 # mm
 
-# model=lstm_trained_at_2025_08_30_05_53
+mm_model=lstm_trained_at_2025_08_30_05_53
 
 # # python lstm_scratch_test.py $model $MAX_MATCHING_PROGRAM star_graph_n9
 # # python lstm_scratch_test.py $model $MAX_MATCHING_PROGRAM star_graph_n10
 # python lstm_scratch_test.py $model $MAX_MATCHING_PROGRAM graph_powerlaw_cluster_graph_n7
 # python lstm_scratch_test.py $model $MAX_MATCHING_PROGRAM graph_random_regular_graph_n7_d2
 
-# python cvf_analysis.py --model $model --program $MAX_MATCHING_PROGRAM --graph-names star_graph_n11 graph_powerlaw_cluster_graph_n8 graph_random_regular_graph_n8_d2
+# python cvf_analysis.py --model $model --program $MAX_MATCHING_PROGRAM --graph-names star_graph_n10
 
 # model=gcn_trained_at_2025_08_30_06_35
 
@@ -261,4 +263,4 @@ python plot_cvf.py --model $model --program $DIJKSTRA_TOKEN_PROGRAM --graph-name
 
 # python cvf_analysis.py --model lstm_trained_at_2025_08_29_23_28 --program dijkstra_token_ring --graph-names implicit_graph_n12 implicit_graph_n13
 
-# python cvf_analysis.py --model lstm_trained_at_2025_08_30_05_53 --program maximal_matching --graph-names star_graph_n8
+# python cvf_analysis.py --model $mm_model --program $MAX_MATCHING_PROGRAM --graph-names star_graph_n10
