@@ -10,15 +10,13 @@ from zeus.monitor import ZeusMonitor
 from torch_geometric.nn.pool import global_mean_pool
 from torch.utils.data import ConcatDataset, DataLoader, random_split, Sampler, Subset
 
-
 # from memory_profiler import profile
-
-from custom_logger import logger
 from helpers import (
     CVFConfigForGCNWSuccLSTMDatasetV2,
     CVFConfigForGCNWSuccLSTMDatasetForMMV2,
     profile_peak_gpu_memory,
     mean_relative_error,
+    logger,
 )
 
 monitor = ZeusMonitor(gpu_indices=[0])

@@ -11,7 +11,6 @@ from collections import defaultdict
 
 from torch.utils.data import DataLoader
 
-from custom_logger import logger
 from lstm_scratch import SimpleLSTM
 from gcn_scratch import SimpleGCN
 from arg_parser_helper import generate_parser
@@ -27,6 +26,7 @@ from helpers import (
 utils_path = os.path.join(os.getenv("CVF_PROJECT_DIR", ""), "utils")
 sys.path.append(utils_path)
 
+from custom_logger import logger
 from common_helpers import create_dir_if_not_exists
 
 
@@ -126,7 +126,7 @@ class CVFConfigForAnalysisDatasetMMWithTTGCN(
 
 # Optional utility to print final report
 def print_runtime_report():
-    logger.info("\n=== Runtime Report ===")
+    logger.info("=== Runtime Report ===")
     for func_name, total_time in function_runtimes.items():
         logger.info(f"{func_name}: {total_time:.6f}s")
     logger.info("=== End Report ===\n\n")

@@ -7,7 +7,6 @@ import sys
 import logging
 import argparse
 
-from custom_logger import logger
 from dijkstra import DijkstraTokenRingCVFAnalysisV2
 from graph_coloring import GraphColoringCVFAnalysisV2
 from maximal_matching import MaximalMatchingCVFAnalysisV2
@@ -16,8 +15,8 @@ from linear_regression import LinearRegressionCVFAnalysisV2
 utils_path = os.path.join(os.getenv("CVF_PROJECT_DIR", ""), "utils")
 sys.path.append(utils_path)
 
+from custom_logger import logger
 from profilers import track_runtime, print_runtime_report, reset_runtime
-
 from command_line_helpers import (
     get_graph,
     ColoringProgram,

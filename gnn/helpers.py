@@ -11,12 +11,14 @@ from functools import wraps, lru_cache
 
 from torch.utils.data import Dataset, DataLoader
 
-from custom_logger import logger
 
 sys.path.append(os.path.join(os.getenv("CVF_PROJECT_DIR", ""), "cvf-analysis"))
 
-from cvf_fa_helpers import get_graph, get_graph_stats
+utils_path = os.path.join(os.getenv("CVF_PROJECT_DIR", ""), "utils")
+sys.path.append(utils_path)
 
+from custom_logger import logger
+from cvf_fa_helpers import get_graph, get_graph_stats
 from dijkstra import DijkstraTokenRingCVFAnalysisV2
 from graph_coloring import GraphColoringCVFAnalysisV2
 from maximal_matching import MaximalMatchingCVFAnalysisV2

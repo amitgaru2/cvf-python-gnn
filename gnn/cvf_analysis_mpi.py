@@ -68,7 +68,7 @@ class CVFConfigForAnalysisDatasetMMWithTT(CVFConfigForAnalysisDatasetMM):
 
 # Optional utility to print final report
 def print_runtime_report():
-    logger.info("\n=== Runtime Report : %s ===", program_node_rank)
+    logger.info("=== Runtime Report : %s ===", program_node_rank)
     for func_name, total_time in function_runtimes.items():
         logger.info(f"Node: %s | {func_name}: {total_time:.6f}s", program_node_rank)
     logger.info("=== End Report : %s ===\n\n", program_node_rank)

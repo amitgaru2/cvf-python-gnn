@@ -7,12 +7,12 @@ import numpy as np
 
 from typing import Tuple
 
-from custom_logger import logger
 from base import (
     ProgramData,
     CVFAnalysisV2,
     create_dir_if_not_exists,
     CHUNK_CONFIG_RATIO,
+    logger,
 )
 
 

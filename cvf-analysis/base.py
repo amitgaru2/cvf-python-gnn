@@ -12,11 +12,11 @@ from typing import List, Tuple
 from collections import defaultdict
 
 
-from custom_logger import logger
 
 utils_path = os.path.join(os.getenv("CVF_PROJECT_DIR", ""), "utils")
 sys.path.append(utils_path)
 
+from custom_logger import logger
 from common_helpers import create_dir_if_not_exists
 
 CHUNK_CONFIG_RATIO = 100_000

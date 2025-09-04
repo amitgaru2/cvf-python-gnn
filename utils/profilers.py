@@ -26,7 +26,7 @@ def reset_runtime():
 
 
 def print_runtime_report(logger):
-    logger.info("\n=== Runtime Report ===")
+    logger.info("=== Runtime Report ===")
     for func_name, total_time in function_runtimes.items():
         logger.info(f"{func_name}: {total_time:.6f}s")
     logger.info("=== End Report ===\n\n")
