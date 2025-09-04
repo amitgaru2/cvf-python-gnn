@@ -449,7 +449,7 @@ class CVFAnalysisV2:
             # succ = succ * len(self.nodes)
 
             X_wo_pad = np.vstack((config, succ))
-            pad_length = 15 - len(self.nodes)
+            pad_length = 15 - len(self.nodes) if len(self.nodes) <= 15 else 0
             X_w_pad = np.pad(
                 X_wo_pad,
                 pad_width=((0, 0), (0, pad_length)),
@@ -524,7 +524,7 @@ class CVFAnalysisV2:
                 succ = np.full((1, len(self.nodes)), -1)
 
             X_wo_pad = np.vstack((config, succ))
-            pad_length = 15 - len(self.nodes)
+            pad_length = 15 - len(self.nodes) if len(self.nodes) <= 15 else 0
             X_w_pad = np.pad(
                 X_wo_pad,
                 pad_width=((0, 0), (0, pad_length)),

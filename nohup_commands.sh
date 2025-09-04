@@ -5,6 +5,8 @@ GRAPH_COLORING_PROGRAM="graph_coloring"
 DIJKSTRA_TOKEN_PROGRAM="dijkstra_token_ring"
 MAX_MATCHING_PROGRAM="maximal_matching"
 
+# cd gnn
+# python cvf_analysis.py --model lstm_trained_at_2025_08_29_23_28 --program dijkstra_token_ring --graph-names implicit_graph_n16
 
 cd cvf-analysis
 
@@ -98,7 +100,7 @@ python main.py --program maximal_matching --graph-names graph_powerlaw_cluster_g
 # python simulate.py --program $PROGRAM --sched 0 --no-sim $NO_SIMS --fault-interval $FAULT_INTERVAL --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 8 --limit-steps $LIMIT_STEPS
 # python simulate.py --program $PROGRAM --sched 0 --no-sim $NO_SIMS --fault-interval $FAULT_INTERVAL --graph-names $GRAPH --fault-prob 1.0 --simulation-type controlled_at_node_duong --controlled-at-node 9 --limit-steps $LIMIT_STEPS
 
-cd gnn
+# cd gnn
 
 # epochs=25
 # batch_size=32
@@ -201,7 +203,7 @@ cd gnn
 # python plot_cvf.py --model $model --program $GRAPH_COLORING_PROGRAM --graph-names star_graph_n13 graph_powerlaw_cluster_graph_n9 graph_random_regular_graph_n9_d4
 
 
-model=gcn_trained_at_2025_08_29_23_13
+# model=gcn_trained_at_2025_08_29_23_13
 
 # python gcn_scratch_test.py $model $GRAPH_COLORING_PROGRAM star_graph_n10
 # python gcn_scratch_test.py $model $GRAPH_COLORING_PROGRAM star_graph_n11
