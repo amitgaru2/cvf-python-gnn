@@ -5,13 +5,17 @@ GRAPH_COLORING_PROGRAM="graph_coloring"
 DIJKSTRA_TOKEN_PROGRAM="dijkstra_token_ring"
 MAX_MATCHING_PROGRAM="maximal_matching"
 
+
+GC_MODEL="lstm_trained_at_2025_08_29_23_08"
+
+cd cvf-analysis
+python main.py --program $GRAPH_COLORING_PROGRAM --graph-names graph_powerlaw_cluster_graph_n11 graph_random_regular_graph_n12_d3 --generate-test-data-ml
+
+
 # cd gnn
-# python cvf_analysis.py --model lstm_trained_at_2025_08_29_23_28 --program dijkstra_token_ring --graph-names implicit_graph_n16
+# python cvf_analysis.py --model $GC_MODEL --program $GRAPH_COLORING_PROGRAM --graph-names star_graph_n17
 
-# cd cvf-analysis
-
-# python main.py --program maximal_matching --graph-names graph_powerlaw_cluster_graph_n8 --generate-test-data-ml
-
+#
 # python main.py --program $GRAPH_COLORING_PROGRAM --graph-names star_graph_n10 -ml
 # python main.py --program $GRAPH_COLORING_PROGRAM --graph-names graph_random_regular_graph_n10_d4 -ml
 # python main.py --program $GRAPH_COLORING_PROGRAM --graph-names graph_random_regular_graph_n11_d4 -ml
@@ -104,7 +108,7 @@ MAX_MATCHING_PROGRAM="maximal_matching"
 
 # epochs=25
 # batch_size=32
-# hidden_size=32  
+# hidden_size=32
 
 # graphs=("star_graph_n5" "star_graph_n6" "star_graph_n7" "star_graph_n8" "star_graph_n9" \
 #         "graph_powerlaw_cluster_graph_n5" "graph_powerlaw_cluster_graph_n6" \
@@ -187,7 +191,7 @@ MAX_MATCHING_PROGRAM="maximal_matching"
 # testing
 
 # gc
-# model=lstm_trained_at_2025_08_29_23_08
+
 
 # python lstm_scratch_test.py $model $GRAPH_COLORING_PROGRAM star_graph_n10
 # python lstm_scratch_test.py $model $GRAPH_COLORING_PROGRAM star_graph_n11
@@ -259,7 +263,7 @@ mm_model=lstm_trained_at_2025_08_30_05_53
 # python gcn_scratch_test.py $model $MAX_MATCHING_PROGRAM graph_powerlaw_cluster_graph_n7
 # python gcn_scratch_test.py $model $MAX_MATCHING_PROGRAM graph_random_regular_graph_n7_d2
 
-python cvf_analysis.py --model $mm_model --program $MAX_MATCHING_PROGRAM --graph-names graph_powerlaw_cluster_graph_n8
+# python cvf_analysis.py --model $mm_model --program $MAX_MATCHING_PROGRAM --graph-names graph_powerlaw_cluster_graph_n8
 # python plot_cvf.py --model $model --program $MAX_MATCHING_PROGRAM --graph-names star_graph_n9 graph_powerlaw_cluster_graph_n7 graph_random_regular_graph_n7_d2
 
 
