@@ -200,6 +200,7 @@ class CVFAnalysisV2:
     def start_test_data_generation_ml(self):
         logger.info("Generating test data for ML.")
         self.find_successors()
+        logger.info("Find successors complete.")
         self.generate_test_dataset_for_ml_v2()
 
     def _get_program_transitions_as_configs(self, start_state: Tuple[int]):

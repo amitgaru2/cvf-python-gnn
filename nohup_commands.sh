@@ -8,7 +8,7 @@ MAX_MATCHING_PROGRAM="maximal_matching"
 
 cd cvf-analysis
 
-python main.py --program maximal_matching --graph-names graph_powerlaw_cluster_graph_n8 graph_random_regular_graph_n8_d2 --generate-test-data-ml
+python main.py --program maximal_matching --graph-names graph_powerlaw_cluster_graph_n8 --generate-test-data-ml
 
 # python main.py --program $GRAPH_COLORING_PROGRAM --graph-names star_graph_n10 -ml
 # python main.py --program $GRAPH_COLORING_PROGRAM --graph-names graph_random_regular_graph_n10_d4 -ml
