@@ -661,11 +661,20 @@ class CVFConfigForAnalysisDatasetMMV2(Dataset):
             "cvf-analysis",
             "datasets",
             program,
+            f"{graph_name}_config_rank_dataset",
         )
 
-        self.data = torch.load(
-            os.path.join(dataset_dir, f"{graph_name}_config_rank_dataset.pt")
-        )
+        filepaths = [
+            os.path.join(dataset_dir, f)
+            for f in os.listdir(dataset_dir)
+            if f.endswith(".pt")
+        ]
+        filepaths.sort()
+
+        chunks = [torch.load(fp)["X"] for fp in filepaths]
+        self.data = {}
+        self.data["X"] = torch.cat(chunks, dim=0)
+        logger.info("Data loaded successfully!")
 
         self.device = device
         self.dataset_name = graph_name

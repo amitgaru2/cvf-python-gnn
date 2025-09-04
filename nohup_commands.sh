@@ -8,9 +8,9 @@ MAX_MATCHING_PROGRAM="maximal_matching"
 # cd gnn
 # python cvf_analysis.py --model lstm_trained_at_2025_08_29_23_28 --program dijkstra_token_ring --graph-names implicit_graph_n16
 
-cd cvf-analysis
+# cd cvf-analysis
 
-python main.py --program maximal_matching --graph-names graph_powerlaw_cluster_graph_n8 --generate-test-data-ml
+# python main.py --program maximal_matching --graph-names graph_powerlaw_cluster_graph_n8 --generate-test-data-ml
 
 # python main.py --program $GRAPH_COLORING_PROGRAM --graph-names star_graph_n10 -ml
 # python main.py --program $GRAPH_COLORING_PROGRAM --graph-names graph_random_regular_graph_n10_d4 -ml
@@ -259,7 +259,7 @@ mm_model=lstm_trained_at_2025_08_30_05_53
 # python gcn_scratch_test.py $model $MAX_MATCHING_PROGRAM graph_powerlaw_cluster_graph_n7
 # python gcn_scratch_test.py $model $MAX_MATCHING_PROGRAM graph_random_regular_graph_n7_d2
 
-# python cvf_analysis.py --model $model --program $MAX_MATCHING_PROGRAM --graph-names star_graph_n9 graph_powerlaw_cluster_graph_n7 graph_random_regular_graph_n7_d2
+python cvf_analysis.py --model $mm_model --program $MAX_MATCHING_PROGRAM --graph-names graph_powerlaw_cluster_graph_n8
 # python plot_cvf.py --model $model --program $MAX_MATCHING_PROGRAM --graph-names star_graph_n9 graph_powerlaw_cluster_graph_n7 graph_random_regular_graph_n7_d2
 
 
