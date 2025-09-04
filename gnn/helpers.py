@@ -18,7 +18,7 @@ utils_path = os.path.join(os.getenv("CVF_PROJECT_DIR", ""), "utils")
 sys.path.append(utils_path)
 
 from custom_logger import logger
-from cvf_fa_helpers import get_graph, get_graph_stats
+from cvf_fa_helpers import get_graph
 from dijkstra import DijkstraTokenRingCVFAnalysisV2
 from graph_coloring import GraphColoringCVFAnalysisV2
 from maximal_matching import MaximalMatchingCVFAnalysisV2
@@ -282,21 +282,12 @@ class CVFConfigForGCNWSuccLSTMDatasetV2(Dataset):
         self.dataset_name = graph_name
         self.D = 2  # input dimension
 
-        graphs_dir = os.path.join(
-            os.getenv("CVF_PROJECT_DIR", ""), "cvf-analysis", "graphs"
-        )
-        graph_path = os.path.join(graphs_dir, f"{graph_name}.txt")
-        graph = get_graph(graph_path)
-        graph_stats = get_graph_stats(graph)
-        self.graph_stats = torch.FloatTensor([*graph_stats]).to(self.device)
-
     def __len__(self):
         return self.data["y"].size(0)
 
     def __getitem__(self, idx):
         X = self.data["X"][idx].to(self.device)
         y = self.data["y"][idx].to(self.device)
-        # result = ((X, self.graph_stats), y)
         result = (X, y)
         return result
 
@@ -373,37 +364,6 @@ class CVFConfigForGCNWSuccLSTMDatasetForMM(Dataset):
         #     self.dataset_name,
         # ), torch.FloatTensor([row["rank"]]).to(self.device)
 
-        return result
-
-    def __repr__(self):
-        return f"{self.__class__.__name__} {self.dataset_name}"
-
-
-class CVFConfigForGCNWSuccLSTMDatasetForMMV2(Dataset):
-    """only for mm"""
-
-    def __init__(self, device, graph_name, program="maximal_matching") -> None:
-        dataset_dir = os.path.join(
-            os.getenv("CVF_PROJECT_DIR", ""),
-            "cvf-analysis",
-            "datasets",
-            program,
-        )
-        self.data = torch.load(
-            os.path.join(dataset_dir, f"{graph_name}_config_rank_dataset.pt")
-        )
-        self.device = device
-        self.dataset_name = graph_name
-        self.D = 2  # input dimension
-        self.highest_p_value = 15
-
-    def __len__(self):
-        return self.data["y"].size(0)
-
-    def __getitem__(self, idx):
-        X = self.data["X"][idx].to(self.device)
-        y = self.data["y"][idx].to(self.device)
-        result = (X, y)
         return result
 
     def __repr__(self):
@@ -633,63 +593,6 @@ class CVFConfigForAnalysisDatasetMM(Dataset):
             idx,
         )
 
-        return result
-
-
-class CVFConfigForAnalysisDatasetMMV2(Dataset):
-    def __init__(
-        self,
-        device,
-        graph_name,
-        program="maximal_matching",
-    ) -> None:
-        graphs_dir = os.path.join(
-            os.getenv("CVF_PROJECT_DIR", ""), "cvf-analysis", "graphs"
-        )
-        graph_path = os.path.join(graphs_dir, f"{graph_name}.txt")
-        graph = get_graph(graph_path)
-        program_class_map = {
-            "coloring": GraphColoringCVFAnalysisV2,
-            "dijkstra": DijkstraTokenRingCVFAnalysisV2,
-            "maximal_matching": MaximalMatchingCVFAnalysisV2,
-        }
-        self.cvf_analysis = program_class_map[program](
-            graph_name,
-            graph,
-            generate_data_ml=False,
-            generate_data_embedding=False,
-            generate_test_data_ml=True,
-        )
-
-        dataset_dir = os.path.join(
-            os.getenv("CVF_PROJECT_DIR", ""),
-            "cvf-analysis",
-            "datasets",
-            program,
-            f"{graph_name}_config_rank_dataset",
-        )
-
-        filepaths = [
-            os.path.join(dataset_dir, f)
-            for f in os.listdir(dataset_dir)
-            if f.endswith(".pt")
-        ]
-        filepaths.sort()
-
-        chunks = [torch.load(fp)["X"] for fp in filepaths]
-        self.data = {}
-        self.data["X"] = torch.cat(chunks, dim=0)
-        logger.info("Data loaded successfully!")
-
-        self.device = device
-        self.dataset_name = graph_name
-
-    def __len__(self):
-        return self.data["X"].size(0)
-
-    def __getitem__(self, idx):
-        X = self.data["X"][idx].to(self.device)
-        result = (X, idx)
         return result
 
 

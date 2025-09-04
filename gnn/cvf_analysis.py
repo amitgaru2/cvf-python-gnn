@@ -15,12 +15,9 @@ from lstm_scratch import SimpleLSTM
 from gcn_scratch import SimpleGCN
 from arg_parser_helper import generate_parser
 from helpers import (
-    CVFConfigForAnalysisDataset,
-    CVFConfigForAnalysisDatasetMM,
     CVFConfigForAnalysisDatasetForGCN,
     CVFConfigForAnalysisDatasetForGCNMM,
     CVFConfigForAnalysisDatasetV2,
-    CVFConfigForAnalysisDatasetMMV2,
 )
 
 utils_path = os.path.join(os.getenv("CVF_PROJECT_DIR", ""), "utils")
@@ -112,10 +109,10 @@ class CVFConfigForAnalysisDatasetWithTTGCN(
     pass
 
 
-class CVFConfigForAnalysisDatasetMMWithTTLSTM(
-    CVFConfigForAnalysisDatasetMMWithTTMixin, CVFConfigForAnalysisDatasetMMV2
-):
-    pass
+# class CVFConfigForAnalysisDatasetMMWithTTLSTM(
+#     CVFConfigForAnalysisDatasetMMWithTTMixin, CVFConfigForAnalysisDatasetMMV2
+# ):
+#     pass
 
 
 class CVFConfigForAnalysisDatasetMMWithTTGCN(
@@ -162,13 +159,7 @@ def group_data(df, grp_by: list):
 @track_runtime
 def get_dataset(graph_name, is_lstm_model):
     if is_lstm_model:
-        dataset = (
-            CVFConfigForAnalysisDatasetMMWithTTLSTM(device, graph_name, program)
-            if program == "maximal_matching"
-            else CVFConfigForAnalysisDatasetWithTTLSTM(
-                device, graph_name, program=program
-            )
-        )
+        dataset = CVFConfigForAnalysisDatasetWithTTLSTM(device, graph_name, program)
     else:
         # gcn
         dataset = (
