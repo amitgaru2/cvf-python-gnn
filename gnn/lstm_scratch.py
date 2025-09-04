@@ -125,7 +125,7 @@ class SimpleLSTM(nn.Module):
                 X = batch[0]
                 y = batch[1]
                 y = y.unsqueeze(-1)
-                out = self(X[0])
+                out = self(X)
                 optimizer.zero_grad()
                 loss = criterion(out, y)
                 total_loss += loss.item()
@@ -181,9 +181,11 @@ class CustomBatchSampler(Sampler):
 
 def get_dataset_coll(program, *graph_names):
     dataset_coll = []
-    DatasetKlass = CVFConfigForGCNWSuccLSTMDatasetV2
+    # DatasetKlass = CVFConfigForGCNWSuccLSTMDatasetV2
     for graph_name in graph_names:
-        dataset_coll.append(DatasetKlass(device, f"{graph_name}", program=program))
+        dataset_coll.append(
+            CVFConfigForGCNWSuccLSTMDatasetV2(device, f"{graph_name}", program=program)
+        )
 
     return dataset_coll
 
@@ -206,7 +208,7 @@ def evaluate(model, datasets):
             X = batch[0]
             y = batch[1]
             y = y.unsqueeze(-1)
-            out = model(X[0])
+            out = model(X)
             loss = criterion(out, y)
             mre_total_loss += mean_relative_error(out, y).item() * y.size(0)
             total_loss += loss * y.size(0)
