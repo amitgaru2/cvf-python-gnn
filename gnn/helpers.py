@@ -493,27 +493,32 @@ class CVFConfigForAnalysisDatasetV2(Dataset):
             generate_test_data_ml=True,
         )
 
-        dataset_dir = os.path.join(
-            os.getenv("CVF_PROJECT_DIR", ""),
-            "cvf-analysis",
-            "datasets",
-            program,
-        )
-
-        self.data = torch.load(
-            os.path.join(dataset_dir, f"{graph_name}_config_rank_dataset.pt")
-        )
-
         self.device = device
         self.dataset_name = graph_name
 
         graphs_dir = os.path.join(
             os.getenv("CVF_PROJECT_DIR", ""), "cvf-analysis", "graphs"
         )
-        graph_path = os.path.join(graphs_dir, f"{graph_name}.txt")
-        graph = get_graph(graph_path)
-        graph_stats = get_graph_stats(graph)
-        self.graph_stats = torch.FloatTensor([*graph_stats]).to(self.device)
+
+        dataset_dir = os.path.join(
+            os.getenv("CVF_PROJECT_DIR", ""),
+            "cvf-analysis",
+            "datasets",
+            program,
+            f"{graph_name}_config_rank_dataset",
+        )
+
+        filepaths = [
+            os.path.join(dataset_dir, f)
+            for f in os.listdir(dataset_dir)
+            if f.endswith(".pt")
+        ]
+        filepaths.sort()
+
+        chunks = [torch.load(fp)["X"] for fp in filepaths]
+        self.data = {}
+        self.data["X"] = torch.cat(chunks, dim=0)
+        logger.info("Data loaded successfully!")
 
     def __len__(self):
         return self.data["X"].size(0)

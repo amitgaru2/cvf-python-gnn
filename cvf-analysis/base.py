@@ -12,7 +12,6 @@ from typing import List, Tuple
 from collections import defaultdict
 
 
-
 utils_path = os.path.join(os.getenv("CVF_PROJECT_DIR", ""), "utils")
 sys.path.append(utils_path)
 
@@ -20,6 +19,7 @@ from custom_logger import logger
 from common_helpers import create_dir_if_not_exists
 
 CHUNK_CONFIG_RATIO = 100_000
+
 
 class Singleton(type):
     _instances = {}
@@ -564,16 +564,6 @@ class CVFAnalysisV2:
 
         if X_all:
             _save_chunk(chunk_id, X_all)
-        # torch.save(
-        #     {
-        #         "X": torch.from_numpy(np.array(X_all).transpose(0, 2, 1)).float(),
-        #     },
-        #     os.path.join(
-        #         "datasets",
-        #         self.results_dir,
-        #         f"{self.graph_name}_config_rank_dataset.pt",
-        #     ),
-        # )
 
     def save_node_pt(self):
         df = pd.DataFrame.from_dict(self.global_pt, orient="index")
