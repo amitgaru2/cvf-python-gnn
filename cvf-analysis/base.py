@@ -19,7 +19,7 @@ sys.path.append(utils_path)
 
 from common_helpers import create_dir_if_not_exists
 
-CHUNK_CONFIG_RATIO = 1_000
+CHUNK_CONFIG_RATIO = 100_000
 
 class Singleton(type):
     _instances = {}
