@@ -8,7 +8,12 @@ import numpy as np
 from typing import Tuple
 
 from custom_logger import logger
-from base import ProgramData, CVFAnalysisV2
+from base import (
+    ProgramData,
+    CVFAnalysisV2,
+    create_dir_if_not_exists,
+    CHUNK_CONFIG_RATIO,
+)
 
 
 class MaximalMatchingData(ProgramData):
@@ -398,6 +403,23 @@ class MaximalMatchingCVFAnalysisV2(CVFAnalysisV2):
         )
 
     def generate_test_dataset_for_ml_v2(self):
+        chunk_dataset_dir = os.path.join(
+            "datasets",
+            self.results_dir,
+            f"{self.graph_name}_config_rank_dataset",
+        )
+        create_dir_if_not_exists(chunk_dataset_dir)
+
+        def _save_chunk(chunk_id, X_all):
+            torch.save(
+                {
+                    "X": torch.from_numpy(
+                        X_all.reshape(X_all.shape[0], 2, -1).transpose(0, 2, 1)
+                    ).float(),
+                },
+                os.path.join(chunk_dataset_dir, f"chunk_{chunk_id:04d}.pt"),
+            )
+
         def _get_p_encoding(p_value):
             if p_value is None:
                 p_value = highest_p_value + 1
@@ -418,8 +440,9 @@ class MaximalMatchingCVFAnalysisV2(CVFAnalysisV2):
 
         highest_p_value = 15
         X_all = []
+        chunk_id = 0
 
-        for k in range(self.total_configs):
+        for i, k in enumerate(range(self.total_configs), 1):
             config = _get_encoded_config(
                 self.get_actual_config_values(self.indx_to_config(k))
             )
@@ -446,20 +469,28 @@ class MaximalMatchingCVFAnalysisV2(CVFAnalysisV2):
             )
 
             X_all.append(X_w_pad)
+            if i % CHUNK_CONFIG_RATIO == 0:
+                X_all = np.array(X_all)
+                _save_chunk(chunk_id, X_all)
+                X_all = []
+                chunk_id += 1
 
-        X_all = np.array(X_all)
-        torch.save(
-            {
-                "X": torch.from_numpy(
-                    X_all.reshape(X_all.shape[0], 2, -1).transpose(0, 2, 1)
-                ).float(),
-            },
-            os.path.join(
-                "datasets",
-                self.results_dir,
-                f"{self.graph_name}_config_rank_dataset.pt",
-            ),
-        )
+        if X_all:
+            X_all = np.array(X_all)
+            _save_chunk(chunk_id, X_all)
+
+        # torch.save(
+        #     {
+        #         "X": torch.from_numpy(
+        #             X_all.reshape(X_all.shape[0], 2, -1).transpose(0, 2, 1)
+        #         ).float(),
+        #     },
+        #     os.path.join(
+        #         "datasets",
+        #         self.results_dir,
+        #         f"{self.graph_name}_config_rank_dataset.pt",
+        #     ),
+        # )
 
 
 if __name__ == "__main__":

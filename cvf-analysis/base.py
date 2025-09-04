@@ -1,5 +1,6 @@
 import os
 import csv
+import sys
 import math
 
 import torch
@@ -13,6 +14,12 @@ from collections import defaultdict
 
 from custom_logger import logger
 
+utils_path = os.path.join(os.getenv("CVF_PROJECT_DIR", ""), "utils")
+sys.path.append(utils_path)
+
+from common_helpers import create_dir_if_not_exists
+
+CHUNK_CONFIG_RATIO = 1_000
 
 class Singleton(type):
     _instances = {}
@@ -501,12 +508,28 @@ class CVFAnalysisV2:
             )
 
     def generate_test_dataset_for_ml_v2(self):
+        chunk_dataset_dir = os.path.join(
+            "datasets",
+            self.results_dir,
+            f"{self.graph_name}_config_rank_dataset",
+        )
+        create_dir_if_not_exists(chunk_dataset_dir)
+
+        def _save_chunk(chunk_id, X_all):
+            torch.save(
+                {
+                    "X": torch.from_numpy(np.array(X_all).transpose(0, 2, 1)).float(),
+                },
+                os.path.join(chunk_dataset_dir, f"chunk_{chunk_id:04d}.pt"),
+            )
+
         def _get_encoded_config(config):
             return [i.data[0] for i in config]
 
         X_all = []
+        chunk_id = 0
 
-        for k in range(self.total_configs):
+        for i, k in enumerate(range(self.total_configs), 1):
             config = _get_encoded_config(
                 self.get_actual_config_values(self.indx_to_config(k))
             )
@@ -534,16 +557,23 @@ class CVFAnalysisV2:
 
             X_all.append(X_w_pad)
 
-        torch.save(
-            {
-                "X": torch.from_numpy(np.array(X_all).transpose(0, 2, 1)).float(),
-            },
-            os.path.join(
-                "datasets",
-                self.results_dir,
-                f"{self.graph_name}_config_rank_dataset.pt",
-            ),
-        )
+            if i % CHUNK_CONFIG_RATIO == 0:
+                _save_chunk(chunk_id, X_all)
+                X_all = []
+                chunk_id += 1
+
+        if X_all:
+            _save_chunk(chunk_id, X_all)
+        # torch.save(
+        #     {
+        #         "X": torch.from_numpy(np.array(X_all).transpose(0, 2, 1)).float(),
+        #     },
+        #     os.path.join(
+        #         "datasets",
+        #         self.results_dir,
+        #         f"{self.graph_name}_config_rank_dataset.pt",
+        #     ),
+        # )
 
     def save_node_pt(self):
         df = pd.DataFrame.from_dict(self.global_pt, orient="index")
