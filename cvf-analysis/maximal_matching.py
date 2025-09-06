@@ -341,6 +341,23 @@ class MaximalMatchingCVFAnalysisV2(CVFAnalysisV2):
         return None, None
 
     def generate_dataset_for_ml_v2(self):
+        chunk_dataset_dir = os.path.join(
+            "datasets",
+            self.results_dir,
+            f"{self.graph_name}_config_rank_dataset",
+        )
+        create_dir_if_not_exists(chunk_dataset_dir)
+
+        def _save_chunk(chunk_id, X_all, y_all):
+            torch.save(
+                {
+                    "X": torch.from_numpy(
+                        X_all.reshape(X_all.shape[0], 2, -1).transpose(0, 2, 1)
+                    ).float(),
+                    "y": torch.from_numpy(np.array(y_all)).float(),
+                },
+                os.path.join(chunk_dataset_dir, f"chunk_{chunk_id:04d}.pt"),
+            )
 
         def _get_p_encoding(p_value):
             if p_value is None:
@@ -361,6 +378,7 @@ class MaximalMatchingCVFAnalysisV2(CVFAnalysisV2):
             return np.vstack([_get_p_m_encoding(v.data[0], v.data[1]) for v in config])
 
         highest_p_value = 15
+        chunk_id = 0
 
         X_all = []
         y_all = []
@@ -386,21 +404,29 @@ class MaximalMatchingCVFAnalysisV2(CVFAnalysisV2):
             X_w_pad = np.vstack((config, succ))
             X_all.append(X_w_pad)
             y_all.append(y)
+            if (k + 1) % CHUNK_CONFIG_RATIO == 0:
+                X_all = np.array(X_all)
+                _save_chunk(chunk_id, X_all, y_all)
+                X_all = []
+                chunk_id += 1
 
-        X_all = np.array(X_all)
-        torch.save(
-            {
-                "X": torch.from_numpy(
-                    X_all.reshape(X_all.shape[0], 2, -1).transpose(0, 2, 1)
-                ).float(),
-                "y": torch.from_numpy(np.array(y_all)).float(),
-            },
-            os.path.join(
-                "datasets",
-                self.results_dir,
-                f"{self.graph_name}_config_rank_dataset.pt",
-            ),
-        )
+        if X_all:
+            X_all = np.array(X_all)
+            _save_chunk(chunk_id, X_all, y_all)
+
+        # torch.save(
+        #     {
+        #         "X": torch.from_numpy(
+        #             X_all.reshape(X_all.shape[0], 2, -1).transpose(0, 2, 1)
+        #         ).float(),
+        #         "y": torch.from_numpy(np.array(y_all)).float(),
+        #     },
+        #     os.path.join(
+        #         "datasets",
+        #         self.results_dir,
+        #         f"{self.graph_name}_config_rank_dataset.pt",
+        #     ),
+        # )
 
     def generate_test_dataset_for_ml_v2(self):
         chunk_dataset_dir = os.path.join(

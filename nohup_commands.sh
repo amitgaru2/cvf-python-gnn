@@ -10,7 +10,7 @@ GC_MODEL="lstm_trained_at_2025_08_29_23_08"
 
 cd cvf-analysis
 # python main.py --program $GRAPH_COLORING_PROGRAM --graph-names graph_random_regular_graph_n12_d3 --generate-test-data-ml
-python main.py --program $GRAPH_COLORING_PROGRAM --graph-names graph_powerlaw_cluster_graph_n11 --generate-test-data-ml
+python main.py --program $MAX_MATCHING_PROGRAM --graph-names graph_powerlaw_cluster_graph_n11 -ml
 
 
 # cd gnn
