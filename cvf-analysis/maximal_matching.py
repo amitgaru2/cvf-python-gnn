@@ -408,6 +408,7 @@ class MaximalMatchingCVFAnalysisV2(CVFAnalysisV2):
                 X_all = np.array(X_all)
                 _save_chunk(chunk_id, X_all, y_all)
                 X_all = []
+                y_all = []
                 chunk_id += 1
 
         if X_all:

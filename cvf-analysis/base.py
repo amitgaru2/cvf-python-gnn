@@ -428,12 +428,28 @@ class CVFAnalysisV2:
 
     def generate_dataset_for_ml_v2(self):
         """v2: directly save dataset that doesn't require preprocessing"""
+        chunk_dataset_dir = os.path.join(
+            "datasets",
+            self.results_dir,
+            f"{self.graph_name}_config_rank_dataset",
+        )
+        create_dir_if_not_exists(chunk_dataset_dir)
+
+        def _save_chunk(chunk_id, X_all, y_all):
+            torch.save(
+                {
+                    "X": torch.from_numpy(np.array(X_all).transpose(0, 2, 1)).float(),
+                    "y": torch.from_numpy(np.array(y_all)).float(),
+                },
+                os.path.join(chunk_dataset_dir, f"chunk_{chunk_id:04d}.pt"),
+            )
 
         def _get_encoded_config(config):
             return [i.data[0] for i in config]
 
         X_all = []
         y_all = []
+        chunk_id = 0
 
         for k, v in enumerate(self.global_rank_map):
             y = np.array([math.ceil(v[0] / v[1])])
@@ -467,17 +483,26 @@ class CVFAnalysisV2:
             X_all.append(X_w_pad)
             y_all.append(y)
 
-        torch.save(
-            {
-                "X": torch.from_numpy(np.array(X_all).transpose(0, 2, 1)).float(),
-                "y": torch.from_numpy(np.array(y_all)).float(),
-            },
-            os.path.join(
-                "datasets",
-                self.results_dir,
-                f"{self.graph_name}_config_rank_dataset.pt",
-            ),
-        )
+            if (k + 1) % CHUNK_CONFIG_RATIO == 0:
+                _save_chunk(chunk_id, X_all, y_all)
+                X_all = []
+                y_all = []
+                chunk_id += 1
+
+        if X_all:
+            _save_chunk(chunk_id, X_all, y_all)
+
+        # torch.save(
+        #     {
+        #         "X": torch.from_numpy(np.array(X_all).transpose(0, 2, 1)).float(),
+        #         "y": torch.from_numpy(np.array(y_all)).float(),
+        #     },
+        #     os.path.join(
+        #         "datasets",
+        #         self.results_dir,
+        #         f"{self.graph_name}_config_rank_dataset.pt",
+        #     ),
+        # )
 
     def generate_test_dataset_for_ml(self):
         writer = csv.DictWriter(
