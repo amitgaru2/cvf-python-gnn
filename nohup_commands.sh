@@ -157,7 +157,7 @@ hidden_size=32
 
 graphs=("star_graph_n4" "star_graph_n5" "star_graph_n6" "star_graph_n7" "star_graph_n8" \
         "graph_powerlaw_cluster_graph_n4" "graph_powerlaw_cluster_graph_n5" "graph_powerlaw_cluster_graph_n6" \
-        "graph_random_regular_graph_n4_d2" "graph_random_regular_graph_n5_d2" "graph_random_regular_graph_n6_d2" "graph_random_regular_graph_n7_d2")
+        "graph_random_regular_graph_n5_d4" "graph_random_regular_graph_n6_d4")
 
 joined_graphs_args="${graphs[@]}"
 
