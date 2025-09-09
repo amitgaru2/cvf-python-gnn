@@ -7,16 +7,19 @@ MAX_MATCHING_PROGRAM="maximal_matching"
 
 
 GC_MODEL="lstm_trained_at_2025_08_29_23_08"
+DTR_MODEL="lstm_trained_at_2025_08_29_23_28"
+MM_MODEL="lstm_trained_at_2025_08_30_05_53"
+
 
 cd cvf-analysis
 # python main.py --program $GRAPH_COLORING_PROGRAM --graph-names graph_random_regular_graph_n12_d3 --generate-test-data-ml
-python main.py --program $MAX_MATCHING_PROGRAM --graph-names star_graph_n4 star_graph_n5 star_graph_n6 star_graph_n7 star_graph_n8 star_graph_n9 star_graph_n10 -ml
-python main.py --program $MAX_MATCHING_PROGRAM --graph-names graph_powerlaw_cluster_graph_n5 graph_powerlaw_cluster_graph_n6 graph_powerlaw_cluster_graph_n7 graph_powerlaw_cluster_graph_n8 -ml
-python main.py --program $MAX_MATCHING_PROGRAM --graph-names graph_random_regular_graph_n5_d4 graph_random_regular_graph_n6_d4 graph_random_regular_graph_n7_d4 graph_random_regular_graph_n8_d4 -ml
+# python main.py --program $MAX_MATCHING_PROGRAM --graph-names star_graph_n4 star_graph_n5 star_graph_n6 star_graph_n7 star_graph_n8 star_graph_n9 star_graph_n10 -ml
+# python main.py --program $MAX_MATCHING_PROGRAM --graph-names graph_powerlaw_cluster_graph_n5 graph_powerlaw_cluster_graph_n6 graph_powerlaw_cluster_graph_n7 graph_powerlaw_cluster_graph_n8 -ml
+python main.py --program $DIJKSTRA_TOKEN_PROGRAM --graph-names implicit_graph_n17 --generate-test-data-ml
 
 
-# cd gnn
-# python cvf_analysis.py --model $GC_MODEL --program $GRAPH_COLORING_PROGRAM --graph-names graph_random_regular_graph_n12_d3
+cd gnn
+python cvf_analysis.py --model $DTR_MODEL --program $DIJKSTRA_TOKEN_PROGRAM --graph-names implicit_graph_n17
 # 
 #
 # python main.py --program $GRAPH_COLORING_PROGRAM --graph-names star_graph_n10 -ml
