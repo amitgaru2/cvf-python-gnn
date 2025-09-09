@@ -7,6 +7,9 @@ import sys
 import logging
 import argparse
 
+from memory_profiler import profile
+from zeus.monitor import ZeusMonitor
+
 from dijkstra import DijkstraTokenRingCVFAnalysisV2
 from graph_coloring import GraphColoringCVFAnalysisV2
 from maximal_matching import MaximalMatchingCVFAnalysisV2
@@ -33,6 +36,8 @@ AnalysisMap = {
     LinearRegressionProgram: LinearRegressionCVFAnalysisV2,
 }
 
+monitor = ZeusMonitor(gpu_indices=[0])
+
 
 def parse_extra_kwargs(extra_kwargs):
     result = {}
@@ -44,6 +49,7 @@ def parse_extra_kwargs(extra_kwargs):
 
 
 @track_runtime
+@profile
 def main(
     program,
     graph_name,
@@ -54,6 +60,7 @@ def main(
     generate_test_data_ml,
 ):
     logger.info("CVF Analysis | Program %s | Graph %s.", program, graph_name)
+    monitor.begin_window("training")
     CVFAnalysisKlass = AnalysisMap[program]
     cvf_analysis = CVFAnalysisKlass(
         graph_name,
@@ -64,6 +71,10 @@ def main(
         generate_test_data_ml,
     )
     cvf_analysis.start()
+    measurement = monitor.end_window("training")
+    logger.info(
+        f"Energy usage - Entire training: {measurement.time} s, {measurement.total_energy} J"
+    )
 
 
 if __name__ == "__main__":
