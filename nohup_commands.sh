@@ -20,6 +20,8 @@ python main.py --program $GRAPH_COLORING_PROGRAM --graph-names graph_powerlaw_cl
 # python main.py --program $MAX_MATCHING_PROGRAM --graph-names star_graph_n4 star_graph_n5 star_graph_n6 star_graph_n7 star_graph_n8 star_graph_n9 star_graph_n10 -ml
 # python main.py --program $MAX_MATCHING_PROGRAM --graph-names graph_powerlaw_cluster_graph_n5 graph_powerlaw_cluster_graph_n6 graph_powerlaw_cluster_graph_n7 graph_powerlaw_cluster_graph_n8 -ml
 # python main.py --program $DIJKSTRA_TOKEN_PROGRAM --graph-names implicit_graph_n17 --generate-test-data-ml
+python main.py --program $MAX_MATCHING_PROGRAM --graph-names star_graph_n11 graph_powerlaw_cluster_graph_n9 graph_random_regular_n9_d2  --generate-test-data-ml
+#python main.py --program $DIJKSTRA_TOKEN_PROGRAM --graph-names implicit_graph_n17 --generate-test-data-ml
 
 cd ..
 
