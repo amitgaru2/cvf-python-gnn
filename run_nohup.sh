@@ -2,12 +2,13 @@
 set -eu
 echo "CVF Project root DIR: "$CVF_PROJECT_DIR
 export PYTHONDONTWRITEBYTECODE=1
-dateTime=$(date +"%y_%m_%d_%H_%M")
-jobID="""$dateTime""__"$(shuf -i 1000-9999 -n 1)
+dateDir=$(date +"%y_%m_%d")
+timePrefix=$(date +"%H_%M")
+jobID="""$timePrefix""_"$(shuf -i 10000-99999 -n 1)
 echo "Job ID: ""$jobID"
 hostName=$(hostname | sed 's/\./_/g')
-mkdir -p "nohup_logs/${hostName}"
-logLocation="nohup_logs/${hostName}/""$jobID"".log"
+mkdir -p "nohup_logs/${hostName}/${dateDir}"
+logLocation="nohup_logs/${hostName}/${dateDir}/""$jobID"".log"
 echo "Log location: ""$logLocation"
 echo "Started at : "$(date)
 commanLocation="nohup_commands/${hostName}/nohup_commands.sh"
