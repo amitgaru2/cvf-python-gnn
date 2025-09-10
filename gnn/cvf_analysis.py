@@ -9,6 +9,7 @@ import pandas as pd
 from functools import wraps
 from collections import defaultdict
 
+from zeus.monitor import ZeusMonitor
 from torch.utils.data import DataLoader
 
 from lstm_scratch import SimpleLSTM
@@ -18,6 +19,7 @@ from helpers import (
     CVFConfigForAnalysisDatasetForGCN,
     CVFConfigForAnalysisDatasetForGCNMM,
     CVFConfigForAnalysisDatasetV2,
+    profile_peak_gpu_memory,
 )
 
 utils_path = os.path.join(os.getenv("CVF_PROJECT_DIR", ""), "utils")
@@ -26,6 +28,8 @@ sys.path.append(utils_path)
 from custom_logger import logger
 from common_helpers import create_dir_if_not_exists
 
+
+monitor = ZeusMonitor(gpu_indices=[0])
 
 args = generate_parser(takes_model=True)
 
@@ -207,6 +211,7 @@ def aggregation_n_save(result_df, result_rank_df):
 
 
 @track_runtime
+@profile_peak_gpu_memory
 def ml_cvf_analysis(graph_name):
     model = get_model()
     is_lstm_model = isinstance(model, SimpleLSTM)
@@ -343,6 +348,7 @@ def get_fa_results(graph_name, ml_grp_by_r, ml_grp_by_re, ml_grp_by_node_re):
 
 @track_runtime
 def main(graph_name, has_fa_analysis=True):
+    monitor.begin_window("inference")
     logger.info("Starting for %s.", graph_name)
     if ONLY_FA:
         ml_grp_by_r = pd.DataFrame(columns=["rank"])
@@ -355,6 +361,10 @@ def main(graph_name, has_fa_analysis=True):
         get_fa_results(graph_name, ml_grp_by_r, ml_grp_by_re, ml_grp_by_node_re)
 
     logger.info("Complete for %s.", graph_name)
+    measurement = monitor.end_window("inference")
+    logger.info(
+        f"Energy usage - Entire training: {measurement.time} s, {measurement.total_energy} J"
+    )
 
 
 if __name__ == "__main__":
