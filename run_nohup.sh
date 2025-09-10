@@ -11,7 +11,7 @@ logLocation="nohup_logs/${hostName}/""$jobID"".log"
 echo "Log location: ""$logLocation"
 echo "Started at : "$(date)
 commanLocation="nohup_commands/${hostName}/nohup_commands.sh"
-tempFileLocation="temp2.sh"
+tempFileLocation="temp.sh"
 cp ${commanLocation} ${tempFileLocation}
 sed -i '2,${/^#/d}' ${tempFileLocation}
 sed -i '/^$/d' ${tempFileLocation}
