@@ -16,5 +16,5 @@ GNN_DIR="gnn"
 # cd $GNN_DIR
 
 cd $CVF_ANALYSIS_DIR
-python main.py --program $MM_PROG --graph-names graph_powerlaw_cluster_graph_n7
+python main.py --program $MM_PROG --graph-names graph_powerlaw_cluster_graph_n7 -ml
 
