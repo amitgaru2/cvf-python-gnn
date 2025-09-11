@@ -107,8 +107,6 @@ class SimpleGCN(nn.Module):
 
             self.validation_model(valid_datasets)
 
-            logger.info("\n")
-
         measurement = monitor.end_window("training")
         logger.info(
             f"Energy usage - Entire training: {measurement.time} s, {measurement.total_energy} J"
@@ -173,7 +171,7 @@ def evaluate(model, datasets):
 
     with torch.no_grad():
         criterion = torch.nn.MSELoss()
-        batch_sampler = CustomBatchSampler(datasets, batch_size=1024)
+        batch_sampler = CustomBatchSampler(datasets, batch_size=1)
         dataloader = DataLoader(datasets, batch_sampler=batch_sampler)
 
         total_loss = 0
@@ -221,7 +219,6 @@ def main(program, graph_names, H, batch_size, epochs):
         epochs,
         H,
     )
-    logger.info("\n")
     dataset_coll = get_dataset_coll(program, *graph_names)
     D = dataset_coll[0].D
 
