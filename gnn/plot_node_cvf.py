@@ -79,24 +79,32 @@ def main(graph_name):
 
     rank_effects = df["rank effect"].unique()
     rank_effects.sort()
-    df_preproc = pd.DataFrame({"Rank Effect": rank_effects})
+    df_preproc = pd.DataFrame({"rank effect": rank_effects})
 
     nodes = df["node"].unique()
     nodes.sort()
     for node in nodes:
         if not ONLY_FA:
             col = f"Node {node} ML count"
-            node_data = df.loc[(df["node"] == node)]["ML count"]
-            node_data = node_data.reset_index(drop=True)
-            df_preproc.loc[:, col] = node_data
+            node_data_df = df.loc[(df["node"] == node)][["rank effect", "ML count"]]
+            node_data_df = node_data_df.set_index("rank effect", drop=True)
+            df_preproc = pd.merge(
+                df_preproc, node_data_df, on="rank effect", how="left"
+            )
+            df_preproc.rename(columns={"ML count": col}, inplace=True)
 
         if "FA count" in df.columns:
             col = f"Node {node} FA count"
-            node_data = df.loc[(df["node"] == node)]["FA count"]
-            node_data = node_data.reset_index(drop=True)
-            df_preproc.loc[:, col] = node_data
+            node_data_df = df.loc[(df["node"] == node)][["rank effect", "FA count"]]
+            node_data_df = node_data_df.reset_index(drop=True)
+            df_preproc = pd.merge(
+                df_preproc, node_data_df, on="rank effect", how="left"
+            )
+            df_preproc.rename(columns={"FA count": col}, inplace=True)
 
-    selected_cols = ["Rank Effect"]
+    print("df_preproc", df_preproc)
+
+    selected_cols = ["rank effect"]
     for i in selected_nodes:
         temp = [f"Node {i} ML count"] if not ONLY_FA else []
         if "FA count" in df.columns:
@@ -104,7 +112,11 @@ def main(graph_name):
         selected_cols.extend(temp)
 
     df_preproc = df_preproc[selected_cols]
-    df_preproc.set_index("Rank Effect", inplace=True)
+    df_preproc.set_index("rank effect", inplace=True)
+    df_preproc.index.name = "rank effect"
+
+    # df_preproc.fillna(0, inplace=True)
+    # print("df_preproc", df_preproc)
 
     plot_df(df_preproc, selected_cols, graph_name, lines_in_pair)
 
