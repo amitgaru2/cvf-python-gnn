@@ -10,13 +10,13 @@ GC_MODEL="lstm_trained_at_2025_08_29_23_08"
 DTR_MODEL="lstm_trained_at_2025_08_29_23_28"
 MM_MODEL="lstm_trained_at_2025_08_30_05_53"
 
-# cd cvf-analysis
+cd cvf-analysis
 
-# python main.py --program $DTR_PROG --graph-names implicit_graph_n15 --generate-test-data-ml
+python main.py --program $MM_PROG --graph-names graph_powerlaw_cluster_graph_n9 --generate-test-data-ml
 
-cd gnn
+# cd gnn
 
-python cvf_analysis.py --model $MM_MODEL --program $MM_PROG --graph-names graph_powerlaw_cluster_graph_n7 
+# python cvf_analysis.py --model $MM_MODEL --program $MM_PROG --graph-names graph_powerlaw_cluster_graph_n9
 
 # cd cvf-analysis
 # python main.py --program $MAX_MATCHING_PROGRAM --graph-names graph_random_regular_graph_n9_d2 --generate-test-data-ml

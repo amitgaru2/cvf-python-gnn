@@ -14,10 +14,11 @@ graph_names = [
     # "graph_5",
     # "test_lr_graph_6",
     # "implicit_graph_n5",
-    "graph_2_node"
+    # "star_graph_n10"
+    "graph_powerlaw_cluster_graph_n7"
 ]
 
-planar = True
+planar = False
 fontsize = 25
 
 for gname in graph_names:
@@ -46,6 +47,6 @@ for gname in graph_names:
     ax = plt.gca()  # to get the current axis
     ax.collections[0].set_edgecolor("#000000")
 
-    # fig.suptitle(f"Graph {gname.split("_")[1]}", fontsize=fontsize)
+    fig.suptitle(f"Graph {" ".join(gname.split("_"))}", fontsize=fontsize)
     fig.savefig(f"graph_images/{gname}.png")
     # plt.show()
