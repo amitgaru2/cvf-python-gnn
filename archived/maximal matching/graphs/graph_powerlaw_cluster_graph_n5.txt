@@ -1,5 +1,0 @@
-A D
-B D E
-C D E
-D A B C E
-E B C D
