@@ -102,7 +102,7 @@ def main(graph_name):
             )
             df_preproc.rename(columns={"FA count": col}, inplace=True)
 
-    print("df_preproc", df_preproc)
+    # print("df_preproc", df_preproc)
 
     selected_cols = ["rank effect"]
     for i in selected_nodes:
