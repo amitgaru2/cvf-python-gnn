@@ -95,7 +95,7 @@ class CVFAnalysisV2:
         self.generate_data_ml = generate_data_ml
         self.generate_data_embedding = generate_data_embedding
         self.generate_test_data_ml = generate_test_data_ml
-        self.pt_graph_adj_list = {None: set()}
+        # self.pt_graph_adj_list = {None: set()}
         self.extra_kwargs = extra_kwargs
 
         self.nodes = list(self.graph.keys())
@@ -116,7 +116,7 @@ class CVFAnalysisV2:
         self.total_invariants = 0
 
         # node's program transitions count
-        self.global_pt = defaultdict(lambda: 0)
+        self.node_pts_count = defaultdict(lambda: 0)
 
         # config -> successors / program transitions for ml
         self.config_successors = {}
@@ -199,10 +199,11 @@ class CVFAnalysisV2:
         self.save_rank()
         self.find_rank_effect()
         self.save_rank_effect()
+        self.save_node_pts_count()
         if self.generate_data_ml:
             self.generate_dataset_for_ml_v2()
-        if self.generate_data_embedding:
-            self.generate_dataset_for_embedding()
+        # if self.generate_data_embedding:
+        #     self.generate_dataset_for_embedding()
 
     def start_test_data_generation_ml(self):
         logger.info("Generating test data for ML.")
@@ -219,13 +220,16 @@ class CVFAnalysisV2:
             start_state
         ):
             if perturb_state is not None:
+                self.node_pts_count[position] += 1
                 program_transitions.append(self.config_to_indx(perturb_state))
             else:
                 program_transitions.append(perturb_state)
 
         if not program_transitions:
-            print(
-                "not foudn for", start_state, self.get_actual_config_values(start_state)
+            logger.warning(
+                "Not found for %s %s.",
+                start_state,
+                self.get_actual_config_values(start_state),
             )
         return program_transitions
 
@@ -590,8 +594,8 @@ class CVFAnalysisV2:
         if X_all:
             _save_chunk(chunk_id, X_all)
 
-    def save_node_pt(self):
-        df = pd.DataFrame.from_dict(self.global_pt, orient="index")
+    def save_node_pts_count(self):
+        df = pd.DataFrame.from_dict(self.node_pts_count, orient="index")
         df.fillna(0, inplace=True)
         df = df.reindex(sorted(df.columns), axis=1)
         df.index.name = "node"
@@ -600,7 +604,7 @@ class CVFAnalysisV2:
             os.path.join(
                 "results",
                 self.results_dir,
-                f"pts_by_node_avg__{self.graph_name}.csv",
+                f"pts_by_node__{self.graph_name}.csv",
             )
         )
 

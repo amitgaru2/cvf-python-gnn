@@ -49,7 +49,7 @@ class GraphColoringCVFAnalysisV2(CVFAnalysisV2):
             if color in neighbor_colors:  # is different color
                 transition_color = self._find_min_possible_color(neighbor_colors)
                 if color != transition_color:
-                    self.global_pt[position] += 1
+                    # self.global_pt[position] += 1
                     perturb_state = tuple(
                         [
                             *start_state[:position],
