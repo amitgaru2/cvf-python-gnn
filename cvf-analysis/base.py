@@ -220,6 +220,7 @@ class CVFAnalysisV2:
             start_state
         ):
             if perturb_state is not None:
+                # print("star_state", start_state, "next state", perturb_state, "position", position)
                 self.node_pts_count[position] += 1
                 program_transitions.append(self.config_to_indx(perturb_state))
             else:
