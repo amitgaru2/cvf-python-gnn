@@ -340,11 +340,13 @@ class CVFAnalysisV2:
     def find_rank_effect(self):
         for indx in range(self.total_configs):
             for position, to_indx in self.possible_perturbed_state_frm(indx):
-                rank_effect = math.ceil(
+                frm_rank = math.ceil(
                     self.global_rank_map[indx, 0] / self.global_rank_map[indx, 1]
-                ) - math.ceil(
+                )
+                to_rank = math.ceil(
                     self.global_rank_map[to_indx, 0] / self.global_rank_map[to_indx, 1]
                 )
+                rank_effect = frm_rank - to_rank
                 self.global_avg_rank_effect[rank_effect] += 1
                 if position not in self.global_avg_node_rank_effect:
                     self.global_avg_node_rank_effect[position] = defaultdict(lambda: 0)
