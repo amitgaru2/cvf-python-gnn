@@ -78,5 +78,5 @@ if __name__ == "__main__":
     loader = DataLoader(dataset, batch_size=2, shuffle=True)
 
     for batch in loader:
-        print(batch)
+        print(batch[0])
         break
