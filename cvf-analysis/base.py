@@ -89,12 +89,14 @@ class CVFAnalysisV2:
         generate_data_ml: bool = False,
         generate_data_embedding: bool = False,
         generate_test_data_ml: bool = False,
+        generate_dataset_for_ml_mpnn_mode: bool = False,
     ) -> None:
         self.graph_name = graph_name
         self.graph = graph
         self.generate_data_ml = generate_data_ml
         self.generate_data_embedding = generate_data_embedding
         self.generate_test_data_ml = generate_test_data_ml
+        self.generate_dataset_for_ml_mpnn_mode = generate_dataset_for_ml_mpnn_mode
         # self.pt_graph_adj_list = {None: set()}
         self.extra_kwargs = extra_kwargs
 
@@ -121,7 +123,7 @@ class CVFAnalysisV2:
         # config -> successors / program transitions for ml
         self.config_successors = {}
 
-        if not self.generate_test_data_ml:
+        if not self.generate_test_data_ml and not self.generate_dataset_for_ml_mpnn_mode:
             self.init_rank_calculation_related_configs()
 
         self.initialize_helpers()
@@ -193,6 +195,9 @@ class CVFAnalysisV2:
         if self.generate_test_data_ml:
             self.start_test_data_generation_ml()
             return
+        elif self.generate_dataset_for_ml_mpnn_mode:
+            self.generate_dataset_for_ml_mpnn()
+            return
 
         self.find_rank()
         logger.info("Total Invariants: %s.", f"{self.total_invariants:,}")
@@ -201,6 +206,7 @@ class CVFAnalysisV2:
         self.save_rank_effect()
         self.save_node_pts_count()
         if self.generate_data_ml:
+            # self.generate_dataset_for_ml()
             self.generate_dataset_for_ml_v2()
         # if self.generate_data_embedding:
         #     self.generate_dataset_for_embedding()
@@ -209,12 +215,17 @@ class CVFAnalysisV2:
         logger.info("Generating test data for ML.")
         self.find_successors()
         logger.info("Find successors complete.")
+        # self.generate_test_dataset_for_ml()
         self.generate_test_dataset_for_ml_v2()
+
+    def start_dataset_generation_ml_mpp(self):
+        logger.info("Generating dataset for ML (MPP).")
+        self.generate_dataset_for_ml_mpp()
 
     def _get_program_transitions_as_configs(self, start_state: Tuple[int]):
         raise NotImplemented
 
-    def _get_program_transitions(self, start_state):
+    def _get_program_transitions(self, start_state: Tuple[int]):
         program_transitions = []
         for position, perturb_state in self._get_program_transitions_as_configs(
             start_state
@@ -233,6 +244,20 @@ class CVFAnalysisV2:
                 self.get_actual_config_values(start_state),
             )
         return program_transitions
+
+    def _get_program_transition_distributed(self, start_state: Tuple[int]):
+        """
+        There is only one transition for any given state in distributed configuration.
+        For star graph, index 0 as center node, configuration (0, 0, 0) the distributed PT is (1, 1, 1).
+        """
+        program_transition = list(start_state)
+        for position, perturb_state in self._get_program_transitions_as_configs(
+            start_state
+        ):
+            if perturb_state is not None:
+                program_transition[position] = perturb_state[position]
+
+        return program_transition
 
     def is_invariant(self, config: Tuple[int]):
         raise NotImplemented
@@ -538,6 +563,27 @@ class CVFAnalysisV2:
                     ),
                 }
             )
+
+    def generate_dataset_for_ml_mpnn(self):
+        X_all = []
+        y_all = []
+        for k in range(self.total_configs):
+            state = self.indx_to_config(k)
+            X = np.array(state)
+            y = np.array(self._get_program_transition_distributed(state))
+            X_all.append(X)
+            y_all.append(y)
+
+        logger.info("Dataset generation complete. Saving the dataset.")
+        torch.save(
+            {
+                "X": torch.from_numpy(np.array(X_all)).float(),
+                "y": torch.from_numpy(np.array(y_all)).float(),
+            },
+            os.path.join(
+                "datasets", self.results_dir, f"ml_mpnn__{self.graph_name}.pt"
+            ),
+        )
 
     def generate_test_dataset_for_ml_v2(self):
         chunk_dataset_dir = os.path.join(
