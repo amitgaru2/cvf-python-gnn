@@ -13,12 +13,6 @@ sys.path.append(os.path.join(os.getenv("CVF_PROJECT_DIR", ""), "cvf-analysis"))
 utils_path = os.path.join(os.getenv("CVF_PROJECT_DIR", ""), "utils")
 sys.path.append(utils_path)
 
-from custom_logger import logger
-from cvf_fa_helpers import get_graph
-from dijkstra import DijkstraTokenRingCVFAnalysisV2
-from graph_coloring import GraphColoringCVFAnalysisV2
-from maximal_matching import MaximalMatchingCVFAnalysisV2
-
 device = "cuda"
 
 
@@ -53,12 +47,9 @@ class MPNNDataset(Dataset):
             program,
         )
         self.data = torch.load(os.path.join(dataset_dir, f"ml_mpnn__{graph_name}.pt"))
-        # self.data = {}
-        # self.data["X"] = torch.cat(X_chunks, dim=0)
-        # self.data["y"] = torch.cat(y_chunks, dim=0)
 
     def __len__(self):
-        return len(self.data)
+        return len(self.data["y"])
 
     def __getitem__(self, idx):
         return self.data["X"][idx].unsqueeze(dim=-1).to(self.device), self.data["y"][
