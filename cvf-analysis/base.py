@@ -100,6 +100,8 @@ class CVFAnalysisV2:
         # self.pt_graph_adj_list = {None: set()}
         self.extra_kwargs = extra_kwargs
 
+        self.init_data_store()
+
         self.nodes = list(self.graph.keys())
         self.degree_of_nodes = {n: len(self.graph[n]) for n in self.nodes}
 
@@ -123,11 +125,21 @@ class CVFAnalysisV2:
         # config -> successors / program transitions for ml
         self.config_successors = {}
 
-        if not self.generate_test_data_ml and not self.generate_dataset_for_ml_mpnn_mode:
+        if (
+            not self.generate_test_data_ml
+            and not self.generate_dataset_for_ml_mpnn_mode
+        ):
             self.init_rank_calculation_related_configs()
 
         self.initialize_helpers()
         self.initialize_program_helpers()
+
+    @property
+    def complete_results_dir(self):
+        return os.path.join("results", self.results_dir, self.graph_name)
+
+    def init_data_store(self):
+        create_dir_if_not_exists(self.complete_results_dir)
 
     def pre_initialize_program_helpers(self):
         pass
@@ -386,7 +398,7 @@ class CVFAnalysisV2:
         )
         df.sort_values(by="rank effect").reset_index(drop=True).to_csv(
             os.path.join(
-                "results", self.results_dir, f"rank_effects_avg__{self.graph_name}.csv"
+                self.complete_results_dir, f"rank_effects_avg__{self.graph_name}.csv"
             )
         )
 
@@ -398,8 +410,7 @@ class CVFAnalysisV2:
         df.sort_index(inplace=True)
         df.astype("int64").to_csv(
             os.path.join(
-                "results",
-                self.results_dir,
+                self.complete_results_dir,
                 f"rank_effects_by_node_avg__{self.graph_name}.csv",
             )
         )
@@ -651,8 +662,7 @@ class CVFAnalysisV2:
         df.sort_index(inplace=True)
         df.astype("int64").to_csv(
             os.path.join(
-                "results",
-                self.results_dir,
+                self.complete_results_dir,
                 f"pts_by_node__{self.graph_name}.csv",
             )
         )
