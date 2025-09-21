@@ -122,6 +122,9 @@ class CVFAnalysisV2:
         # node's program transitions count
         self.node_pts_count = defaultdict(lambda: 0)
 
+        # node's cvfs count
+        self.node_cvfs_count = defaultdict(lambda: 0)
+
         # config -> successors / program transitions for ml
         self.config_successors = {}
 
@@ -217,6 +220,7 @@ class CVFAnalysisV2:
         self.find_rank_effect()
         self.save_rank_effect()
         self.save_node_pts_count()
+        self.save_node_cvfs_count()
         if self.generate_data_ml:
             # self.generate_dataset_for_ml()
             self.generate_dataset_for_ml_v2()
@@ -384,6 +388,7 @@ class CVFAnalysisV2:
                 if position not in self.global_avg_node_rank_effect:
                     self.global_avg_node_rank_effect[position] = defaultdict(lambda: 0)
                 self.global_avg_node_rank_effect[position][rank_effect] += 1
+                self.node_cvfs_count[position] += 1
 
     def save_rank_effect(self):
         df = pd.DataFrame(
@@ -655,11 +660,26 @@ class CVFAnalysisV2:
         df.fillna(0, inplace=True)
         df = df.reindex(sorted(df.columns), axis=1)
         df.index.name = "node"
+        df.columns = ["count"]
         df.sort_index(inplace=True)
         df.astype("int64").to_csv(
             os.path.join(
                 self.complete_results_dir,
                 f"pts_by_node__{self.graph_name}.csv",
+            )
+        )
+
+    def save_node_cvfs_count(self):
+        df = pd.DataFrame.from_dict(self.node_cvfs_count, orient="index")
+        df.fillna(0, inplace=True)
+        df = df.reindex(sorted(df.columns), axis=1)
+        df.index.name = "node"
+        df.columns = ["count"]
+        df.sort_index(inplace=True)
+        df.astype("int64").to_csv(
+            os.path.join(
+                self.complete_results_dir,
+                f"cvfs_by_node__{self.graph_name}.csv",
             )
         )
 
