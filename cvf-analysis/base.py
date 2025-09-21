@@ -340,9 +340,7 @@ class CVFAnalysisV2:
             }
         )
         df.sort_values(by="rank").reset_index(drop=True).to_csv(
-            os.path.join(
-                "results", self.results_dir, f"ranks_avg__{self.graph_name}.csv"
-            )
+            os.path.join(self.complete_results_dir, f"ranks_avg__{self.graph_name}.csv")
         )
 
         # max
@@ -353,9 +351,7 @@ class CVFAnalysisV2:
             }
         )
         df.sort_values(by="rank").reset_index(drop=True).to_csv(
-            os.path.join(
-                "results", self.results_dir, f"ranks_max__{self.graph_name}.csv"
-            )
+            os.path.join(self.complete_results_dir, f"ranks_max__{self.graph_name}.csv")
         )
 
     def possible_perturbed_state_frm(self, frm_indx):
