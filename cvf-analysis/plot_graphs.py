@@ -16,7 +16,7 @@ graph_names = [
     # "implicit_graph_n5",
     # "star_graph_n10"
     # "graph_powerlaw_cluster_graph_n7"
-    "graph_15"
+    "graph_16"
 ]
 
 planar = False
