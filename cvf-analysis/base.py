@@ -124,6 +124,7 @@ class CVFAnalysisV2:
 
         # node's cvfs count
         self.node_cvfs_count = defaultdict(lambda: 0)
+        self.node_cvfs_count_w_transition = defaultdict(lambda: 0)
 
         # config -> successors / program transitions for ml
         self.config_successors = {}
@@ -388,6 +389,15 @@ class CVFAnalysisV2:
                 if position not in self.global_avg_node_rank_effect:
                     self.global_avg_node_rank_effect[position] = defaultdict(lambda: 0)
                 self.global_avg_node_rank_effect[position][rank_effect] += 1
+                if rank_effect < 0:
+                    self.node_cvfs_count_w_transition[
+                        (
+                            position,
+                            self.indx_to_config(indx)[position],
+                            self.indx_to_config(to_indx)[position],
+                            rank_effect,
+                        )
+                    ] += 1  # (node, frm_value, to_value, rank_effect)
                 self.node_cvfs_count[position] += 1
 
     def save_rank_effect(self):
@@ -681,6 +691,21 @@ class CVFAnalysisV2:
                 self.complete_results_dir,
                 f"cvfs_by_node__{self.graph_name}.csv",
             )
+        )
+
+        df = pd.DataFrame(
+            [(*k, v) for k, v in self.node_cvfs_count_w_transition.items()],
+            columns=["node", "frm_value", "to_value", "rank effect", "count"],
+        )
+
+        df = df.sort_values(by=["node", "rank effect"]).reset_index(drop=True)
+
+        df.astype("int64").to_csv(
+            os.path.join(
+                self.complete_results_dir,
+                f"cvfs_by_node_w_trans__{self.graph_name}.csv",
+            ),
+            index=False,
         )
 
     def generate_dataset_for_embedding(self):
