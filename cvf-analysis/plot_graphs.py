@@ -67,7 +67,7 @@ if __name__ == "__main__":
         # "implicit_graph_n5",
         # "star_graph_n10"
         # "graph_powerlaw_cluster_graph_n7"
-        "graph_16"
+        "graph_10"
     ]
 
     main(graph_names, save_to_file=True)
