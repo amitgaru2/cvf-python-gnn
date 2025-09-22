@@ -695,10 +695,10 @@ class CVFAnalysisV2:
 
         df = pd.DataFrame(
             [(*k, v) for k, v in self.node_cvfs_count_w_transition.items()],
-            columns=["node", "frm_value", "to_value", "rank effect", "count"],
+            columns=["node", "frm_value", "to_value", "rank_effect", "count"],
         )
 
-        df = df.sort_values(by=["node", "rank effect"]).reset_index(drop=True)
+        df = df.sort_values(by=["node", "rank_effect"]).reset_index(drop=True)
 
         df.astype("int64").to_csv(
             os.path.join(
