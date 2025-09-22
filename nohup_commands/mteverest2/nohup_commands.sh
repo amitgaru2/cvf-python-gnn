@@ -12,7 +12,7 @@ MM_MODEL="lstm_trained_at_2025_08_30_05_53"
 
 cd cvf-analysis
 
-python main.py --program $GC_PROG --graph-names graph_powerlaw_cluster_graph_n12 -ml-mpnn
+python main.py --program $GC_PROG --graph-names graph_random_regular_graph_n9_d4
 
 # cd gnn
 
