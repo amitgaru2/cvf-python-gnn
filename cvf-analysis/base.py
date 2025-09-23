@@ -698,7 +698,7 @@ class CVFAnalysisV2:
             columns=["node", "frm_value", "to_value", "rank_effect", "count"],
         )
 
-        df = df.sort_values(by=["node", "rank_effect"]).reset_index(drop=True)
+        df = df.sort_values(by=["node", "rank_effect", "frm_value", "to_value"]).reset_index(drop=True)
 
         df.astype("int64").to_csv(
             os.path.join(
