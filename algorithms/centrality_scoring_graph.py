@@ -86,7 +86,7 @@ def main(graph_name):
         "communicability_betweenness_centr": communicability_betweenness_centr,
     }
 
-    data = {"nodes": nodes}
+    data = {"nodes": sorted(nodes)}
     data.update({k: [iv for ik, iv in sorted(v.items())] for k, v in results.items()})
     save_to_file(graph_name, data)
 
