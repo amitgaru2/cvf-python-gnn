@@ -10,9 +10,45 @@ GC_MODEL="lstm_trained_at_2025_08_29_23_08"
 DTR_MODEL="lstm_trained_at_2025_08_29_23_28"
 MM_MODEL="lstm_trained_at_2025_08_30_05_53"
 
-cd cvf-analysis
+# cd cvf-analysis
 
-python main.py --program $GC_PROG --graph-names graph_random_regular_graph_n9_d4
+# python main.py --program $GC_PROG --graph-names graph_random_regular_graph_n9_d4
+
+
+cd algorithms
+
+python centrality_scoring_graph.py star_graph_n3 
+python centrality_scoring_graph.py star_graph_n4
+python centrality_scoring_graph.py star_graph_n5
+
+python centrality_scoring_graph.py graph_powerlaw_cluster_graph_n5
+python centrality_scoring_graph.py graph_powerlaw_cluster_graph_n6
+python centrality_scoring_graph.py graph_powerlaw_cluster_graph_n7
+python centrality_scoring_graph.py graph_powerlaw_cluster_graph_n8
+
+python centrality_scoring_graph.py graph_random_regular_graph_n7_d4
+python centrality_scoring_graph.py graph_random_regular_graph_n8_d4
+python centrality_scoring_graph.py graph_random_regular_graph_n9_d4
+
+python centrality_scoring_graph.py graph_1
+python centrality_scoring_graph.py graph_2
+python centrality_scoring_graph.py graph_3
+python centrality_scoring_graph.py graph_4
+python centrality_scoring_graph.py graph_5
+python centrality_scoring_graph.py graph_6
+python centrality_scoring_graph.py graph_7
+python centrality_scoring_graph.py graph_8
+python centrality_scoring_graph.py graph_9
+python centrality_scoring_graph.py graph_10
+python centrality_scoring_graph.py graph_11
+python centrality_scoring_graph.py graph_12
+python centrality_scoring_graph.py graph_13
+python centrality_scoring_graph.py graph_14
+python centrality_scoring_graph.py graph_15
+python centrality_scoring_graph.py graph_16
+python centrality_scoring_graph.py graph_17
+
+
 
 # cd gnn
 
