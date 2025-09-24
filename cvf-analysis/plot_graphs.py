@@ -53,21 +53,6 @@ def plot(graph_names):
 
 
 if __name__ == "__main__":
-    graph_names = [
-        # "graph_1",
-        # "graph_2",
-        # "graph_3",
-        # "graph_6",
-        # "graph_6b",
-        # "graph_7",
-        # "graph_8",
-        # "graph_4",
-        # "graph_5",
-        # "test_lr_graph_6",
-        # "implicit_graph_n5",
-        # "star_graph_n10"
-        # "graph_powerlaw_cluster_graph_n7"
-        "graph_10"
-    ]
+    graph_names = [sys.argv[1]]
 
     main(graph_names, save_to_file=True)
