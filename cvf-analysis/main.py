@@ -58,6 +58,7 @@ def main(
     generate_data_ml,
     generate_data_emb,
     generate_test_data_ml,
+    generate_dataset_for_ml_mpnn,
 ):
     logger.info("CVF Analysis | Program %s | Graph %s.", program, graph_name)
     monitor.begin_window("training")
@@ -69,6 +70,7 @@ def main(
         generate_data_ml,
         generate_data_emb,
         generate_test_data_ml,
+        generate_dataset_for_ml_mpnn,
     )
     cvf_analysis.start()
     measurement = monitor.end_window("training")
@@ -113,6 +115,9 @@ if __name__ == "__main__":
     parser.add_argument("-ml", "--generate-data-ml", action="store_true")
     parser.add_argument("-emb", "--generate-data-emb", action="store_true")
     parser.add_argument("-test-ml", "--generate-test-data-ml", action="store_true")
+    parser.add_argument(
+        "-ml-mpnn", "--generate-dataset-ml-mpnn", action="store_true"
+    )
     args = parser.parse_args()
     if args.logging:
         logger.setLevel(getattr(logging, args.logging, "INFO"))
@@ -127,6 +132,7 @@ if __name__ == "__main__":
             args.generate_data_ml,
             args.generate_data_emb,
             args.generate_test_data_ml,
+            args.generate_dataset_ml_mpnn,
         )
         print_runtime_report(logger)
         reset_runtime()

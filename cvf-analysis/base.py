@@ -89,14 +89,18 @@ class CVFAnalysisV2:
         generate_data_ml: bool = False,
         generate_data_embedding: bool = False,
         generate_test_data_ml: bool = False,
+        generate_dataset_for_ml_mpnn_mode: bool = False,
     ) -> None:
         self.graph_name = graph_name
         self.graph = graph
         self.generate_data_ml = generate_data_ml
         self.generate_data_embedding = generate_data_embedding
         self.generate_test_data_ml = generate_test_data_ml
-        self.pt_graph_adj_list = {None: set()}
+        self.generate_dataset_for_ml_mpnn_mode = generate_dataset_for_ml_mpnn_mode
+        # self.pt_graph_adj_list = {None: set()}
         self.extra_kwargs = extra_kwargs
+
+        self.init_data_store()
 
         self.nodes = list(self.graph.keys())
         self.degree_of_nodes = {n: len(self.graph[n]) for n in self.nodes}
@@ -116,16 +120,30 @@ class CVFAnalysisV2:
         self.total_invariants = 0
 
         # node's program transitions count
-        self.global_pt = defaultdict(lambda: 0)
+        self.node_pts_count = defaultdict(lambda: 0)
+
+        # node's cvfs count
+        self.node_cvfs_count = defaultdict(lambda: 0)
+        self.node_cvfs_count_w_transition = defaultdict(lambda: 0)
 
         # config -> successors / program transitions for ml
         self.config_successors = {}
 
-        if not self.generate_test_data_ml:
+        if (
+            not self.generate_test_data_ml
+            and not self.generate_dataset_for_ml_mpnn_mode
+        ):
             self.init_rank_calculation_related_configs()
 
         self.initialize_helpers()
         self.initialize_program_helpers()
+
+    @property
+    def complete_results_dir(self):
+        return os.path.join("results", self.results_dir, self.graph_name)
+
+    def init_data_store(self):
+        create_dir_if_not_exists(self.complete_results_dir)
 
     def pre_initialize_program_helpers(self):
         pass
@@ -193,41 +211,70 @@ class CVFAnalysisV2:
         if self.generate_test_data_ml:
             self.start_test_data_generation_ml()
             return
+        elif self.generate_dataset_for_ml_mpnn_mode:
+            self.generate_dataset_for_ml_mpnn()
+            return
 
         self.find_rank()
         logger.info("Total Invariants: %s.", f"{self.total_invariants:,}")
         self.save_rank()
         self.find_rank_effect()
         self.save_rank_effect()
+        self.save_node_pts_count()
+        self.save_node_cvfs_count()
         if self.generate_data_ml:
+            # self.generate_dataset_for_ml()
             self.generate_dataset_for_ml_v2()
-        if self.generate_data_embedding:
-            self.generate_dataset_for_embedding()
+        # if self.generate_data_embedding:
+        #     self.generate_dataset_for_embedding()
 
     def start_test_data_generation_ml(self):
         logger.info("Generating test data for ML.")
         self.find_successors()
         logger.info("Find successors complete.")
+        # self.generate_test_dataset_for_ml()
         self.generate_test_dataset_for_ml_v2()
+
+    def start_dataset_generation_ml_mpp(self):
+        logger.info("Generating dataset for ML (MPP).")
+        self.generate_dataset_for_ml_mpp()
 
     def _get_program_transitions_as_configs(self, start_state: Tuple[int]):
         raise NotImplemented
 
-    def _get_program_transitions(self, start_state):
+    def _get_program_transitions(self, start_state: Tuple[int]):
         program_transitions = []
         for position, perturb_state in self._get_program_transitions_as_configs(
             start_state
         ):
             if perturb_state is not None:
+                # print("star_state", start_state, "next state", perturb_state, "position", position)
+                self.node_pts_count[position] += 1
                 program_transitions.append(self.config_to_indx(perturb_state))
             else:
                 program_transitions.append(perturb_state)
 
         if not program_transitions:
-            print(
-                "not foudn for", start_state, self.get_actual_config_values(start_state)
+            logger.warning(
+                "Not found for %s %s.",
+                start_state,
+                self.get_actual_config_values(start_state),
             )
         return program_transitions
+
+    def _get_program_transition_distributed(self, start_state: Tuple[int]):
+        """
+        There is only one transition for any given state in distributed configuration.
+        For star graph, index 0 as center node, configuration (0, 0, 0) the distributed PT is (1, 1, 1).
+        """
+        program_transition = list(start_state)
+        for position, perturb_state in self._get_program_transitions_as_configs(
+            start_state
+        ):
+            if perturb_state is not None:
+                program_transition[position] = perturb_state[position]
+
+        return program_transition
 
     def is_invariant(self, config: Tuple[int]):
         raise NotImplemented
@@ -298,9 +345,7 @@ class CVFAnalysisV2:
             }
         )
         df.sort_values(by="rank").reset_index(drop=True).to_csv(
-            os.path.join(
-                "results", self.results_dir, f"ranks_avg__{self.graph_name}.csv"
-            )
+            os.path.join(self.complete_results_dir, f"ranks_avg__{self.graph_name}.csv")
         )
 
         # max
@@ -311,9 +356,7 @@ class CVFAnalysisV2:
             }
         )
         df.sort_values(by="rank").reset_index(drop=True).to_csv(
-            os.path.join(
-                "results", self.results_dir, f"ranks_max__{self.graph_name}.csv"
-            )
+            os.path.join(self.complete_results_dir, f"ranks_max__{self.graph_name}.csv")
         )
 
     def possible_perturbed_state_frm(self, frm_indx):
@@ -335,15 +378,27 @@ class CVFAnalysisV2:
     def find_rank_effect(self):
         for indx in range(self.total_configs):
             for position, to_indx in self.possible_perturbed_state_frm(indx):
-                rank_effect = math.ceil(
+                frm_rank = math.ceil(
                     self.global_rank_map[indx, 0] / self.global_rank_map[indx, 1]
-                ) - math.ceil(
+                )
+                to_rank = math.ceil(
                     self.global_rank_map[to_indx, 0] / self.global_rank_map[to_indx, 1]
                 )
+                rank_effect = frm_rank - to_rank
                 self.global_avg_rank_effect[rank_effect] += 1
                 if position not in self.global_avg_node_rank_effect:
                     self.global_avg_node_rank_effect[position] = defaultdict(lambda: 0)
                 self.global_avg_node_rank_effect[position][rank_effect] += 1
+                if rank_effect < 0:
+                    self.node_cvfs_count_w_transition[
+                        (
+                            position,
+                            self.indx_to_config(indx)[position],
+                            self.indx_to_config(to_indx)[position],
+                            rank_effect,
+                        )
+                    ] += 1  # (node, frm_value, to_value, rank_effect)
+                self.node_cvfs_count[position] += 1
 
     def save_rank_effect(self):
         df = pd.DataFrame(
@@ -354,7 +409,7 @@ class CVFAnalysisV2:
         )
         df.sort_values(by="rank effect").reset_index(drop=True).to_csv(
             os.path.join(
-                "results", self.results_dir, f"rank_effects_avg__{self.graph_name}.csv"
+                self.complete_results_dir, f"rank_effects_avg__{self.graph_name}.csv"
             )
         )
 
@@ -366,8 +421,7 @@ class CVFAnalysisV2:
         df.sort_index(inplace=True)
         df.astype("int64").to_csv(
             os.path.join(
-                "results",
-                self.results_dir,
+                self.complete_results_dir,
                 f"rank_effects_by_node_avg__{self.graph_name}.csv",
             )
         )
@@ -532,6 +586,27 @@ class CVFAnalysisV2:
                 }
             )
 
+    def generate_dataset_for_ml_mpnn(self):
+        X_all = []
+        y_all = []
+        for k in range(self.total_configs):
+            state = self.indx_to_config(k)
+            X = np.array(state)
+            y = np.array(self._get_program_transition_distributed(state))
+            X_all.append(X)
+            y_all.append(y)
+
+        logger.info("Dataset generation complete. Saving the dataset.")
+        torch.save(
+            {
+                "X": torch.from_numpy(np.array(X_all)).float(),
+                "y": torch.from_numpy(np.array(y_all)).float(),
+            },
+            os.path.join(
+                "datasets", self.results_dir, f"ml_mpnn__{self.graph_name}.pt"
+            ),
+        )
+
     def generate_test_dataset_for_ml_v2(self):
         chunk_dataset_dir = os.path.join(
             "datasets",
@@ -590,18 +665,47 @@ class CVFAnalysisV2:
         if X_all:
             _save_chunk(chunk_id, X_all)
 
-    def save_node_pt(self):
-        df = pd.DataFrame.from_dict(self.global_pt, orient="index")
+    def save_node_pts_count(self):
+        df = pd.DataFrame.from_dict(self.node_pts_count, orient="index")
         df.fillna(0, inplace=True)
         df = df.reindex(sorted(df.columns), axis=1)
         df.index.name = "node"
+        df.columns = ["count"]
         df.sort_index(inplace=True)
         df.astype("int64").to_csv(
             os.path.join(
-                "results",
-                self.results_dir,
-                f"pts_by_node_avg__{self.graph_name}.csv",
+                self.complete_results_dir,
+                f"pts_by_node__{self.graph_name}.csv",
             )
+        )
+
+    def save_node_cvfs_count(self):
+        df = pd.DataFrame.from_dict(self.node_cvfs_count, orient="index")
+        df.fillna(0, inplace=True)
+        df = df.reindex(sorted(df.columns), axis=1)
+        df.index.name = "node"
+        df.columns = ["count"]
+        df.sort_index(inplace=True)
+        df.astype("int64").to_csv(
+            os.path.join(
+                self.complete_results_dir,
+                f"cvfs_by_node__{self.graph_name}.csv",
+            )
+        )
+
+        df = pd.DataFrame(
+            [(*k, v) for k, v in self.node_cvfs_count_w_transition.items()],
+            columns=["node", "frm_value", "to_value", "rank_effect", "count"],
+        )
+
+        df = df.sort_values(by=["node", "rank_effect", "frm_value", "to_value"]).reset_index(drop=True)
+
+        df.astype("int64").to_csv(
+            os.path.join(
+                self.complete_results_dir,
+                f"cvfs_by_node_w_trans__{self.graph_name}.csv",
+            ),
+            index=False,
         )
 
     def generate_dataset_for_embedding(self):

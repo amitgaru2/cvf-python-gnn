@@ -1,5 +1,6 @@
 import os
 import sys
+
 import pandas as pd
 import seaborn as sns
 import matplotlib.lines as mlines
@@ -25,8 +26,8 @@ graph_names = args.graph_names
 selected_nodes = args.nodes
 selected_nodes.sort()
 
-plots_dir = os.path.join("plots", program)
-create_dir_if_not_exists(plots_dir)
+# plots_dir = os.path.join("plots", program)
+# create_dir_if_not_exists(plots_dir)
 
 ONLY_FA = model == "fa"
 
@@ -147,7 +148,7 @@ def plot_df(df_preproc, selected_cols, graph_name, lines_in_pair):
 
     ax.set_title(get_title(graph_name), fontdict={"fontsize": fontsize})
 
-    file_name = f"RE_Node__{model}__{program}__{graph_name}__{''.join([str(i) for i in selected_nodes])}__{model}.png"
+    file_name = f"RE__{model}__{program}__{graph_name}__N{''.join([str(i) for i in selected_nodes])}.png"
 
     custom_lines = [
         mlines.Line2D(
@@ -164,6 +165,8 @@ def plot_df(df_preproc, selected_cols, graph_name, lines_in_pair):
 
     plt.rc("font", size=fontsize)
     plt.legend(handles=custom_lines, fontsize=fontsize * 0.9)  # using a size in points
+    plots_dir = os.path.join("plots", program, graph_name)
+    create_dir_if_not_exists(plots_dir)
     filepath = os.path.join(
         plots_dir,
         f"{file_name}",
