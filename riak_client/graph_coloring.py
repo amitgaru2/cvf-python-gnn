@@ -8,7 +8,7 @@ sys.path.append(utils_path)
 from custom_logger import logger
 from common_helpers import create_dir_if_not_exists
 from command_line_helpers import (
-    get_graph,
+    get_graph_v2,
     ColoringProgram,
     DijkstraProgram,
     MaxMatchingProgram,
@@ -21,4 +21,9 @@ RIAK_GRAPH_BUCKET_PREFIX = "graph_coloring"
 RIAK_GRAPH_KEY_PREFIX = "graph_"
 
 
-graph = get_graph(sys.argv[1])
+graph_name = sys.argv[1]
+graph = get_graph_v2(graph_name)
+logger.info(f"Loaded graph {graph}.")
+
+init_config = tuple(0 for _ in graph.nodes())
+logger.info(f"Writing initial config: {init_config}")
