@@ -1,6 +1,9 @@
 import os
 import logging
 
+from networkx import Graph
+
+from custom_logger import logger
 
 ColoringProgram = "graph_coloring"
 DijkstraProgram = "dijkstra_token_ring"
@@ -41,3 +44,23 @@ def get_graph(graph_names, logger=None):
                 line = f.readline()
 
         yield graph_name, graph
+
+
+def get_graph_v2(graph_name):
+    logger.debug('Locating Graph: "%s".', graph_name)
+    full_path = os.path.join(GRAPHS_DIR, f"{graph_name}.txt")
+    if not os.path.exists(full_path):
+        logger.warning("Graph file: %s not found! Skipping the graph.", full_path)
+        return None
+
+    graph_dict = {}
+    with open(full_path, "r") as f:
+        line = f.readline()
+        while line:
+            node_edges = [int(i) for i in line.split()]
+            node = node_edges[0]
+            edges = node_edges[1:]
+            graph_dict[node] = set(edges)
+            line = f.readline()
+
+    return Graph(graph_dict, name=graph_name)

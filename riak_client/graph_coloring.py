@@ -31,6 +31,7 @@ def put_request_riak(bucket_name, key, value):
     try:
         response = requests.put(url, json=data, headers=headers)
         response.raise_for_status()
+        logger.info(f"Wrote {{ {key}: {value} }} to {bucket_name}.")
         logger.debug(f"Success: {response.status_code}")
         if response.text:
             logger.debug("Response body:", response.text)
@@ -55,10 +56,6 @@ def init_data(riak_bucket_name, graph):
         if not success:
             logger.error(f"Failed to write node {i} to Riak.")
             sys.exit(1)
-        else:
-            logger.info(
-                f"Wrote key {node_key} with initial color {init_config[i]} to Riak."
-            )
 
 
 def update_node_color(riak_bucket_name, node_index, color):
