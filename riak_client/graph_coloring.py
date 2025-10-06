@@ -1,5 +1,6 @@
 import os
 import sys
+import argparse
 
 import requests
 
@@ -16,6 +17,26 @@ RIAK_BASE_URL = "http://localhost:8098"
 RIAK_BUCKET_PREFIX = "graph_coloring"
 RIAK_NODE_KEY_PREFIX = "node_"
 RIAK_PETERSON_LCK_KEY_PREFIX = "L_"
+
+
+def get_args_parser():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--graph-name",
+        type=str,
+        required=True,
+    )
+    parser.add_argument(
+        "--client-partition-nodes",
+        type=int,
+        nargs="+",
+        help="list of nodes that belongs to the current client's partition",
+        required=True,
+    )
+
+    args = parser.parse_args()
+
+    return args
 
 
 def put_request_riak(bucket_name, key, value):
@@ -48,12 +69,14 @@ def put_request_riak(bucket_name, key, value):
         return False
 
 
-def init_pet_lock_data(riak_bucket_name, graph):
+def init_pet_lock_data(riak_bucket_name, graph, client_partition_nodes):
     logger.info(f"Writing initial Peterson lock data.")
 
     for n in graph.nodes():
         for nbr in graph.neighbors(n):
-            if n < nbr:
+            if n < nbr and not (
+                n in client_partition_nodes and nbr in client_partition_nodes
+            ):  # no lock if both nodes in the same client partition
                 node_key = f"{RIAK_PETERSON_LCK_KEY_PREFIX}{n}_{nbr}"
                 meta = {"flag_0": False, "flag_1": False, "turn": None}
                 put_request_riak(riak_bucket_name, node_key, meta)
@@ -80,10 +103,10 @@ def init_config_data(riak_bucket_name, graph):
             sys.exit(1)
 
 
-def init_data(riak_bucket_name, graph):
+def init_data(riak_bucket_name, graph, client_partition_nodes):
     init_graph_data(riak_bucket_name, graph)
     init_config_data(riak_bucket_name, graph)
-    init_pet_lock_data(riak_bucket_name, graph)
+    init_pet_lock_data(riak_bucket_name, graph, client_partition_nodes)
 
 
 def invert_dict(d):
@@ -95,10 +118,19 @@ def invert_dict(d):
     return grouped
 
 
-def main(graph_name):
-    graph_name = sys.argv[1]
+def check_client_partition_nodes(client_partition_nodes, graph):
+    if len(set(client_partition_nodes)) != len(client_partition_nodes):
+        raise Exception("Client partition nodes contain duplicates.")
+
+    if set(client_partition_nodes) - set(graph.nodes()):
+        raise Exception("Client partition nodes not in graph nodes.")
+
+
+def main(graph_name, client_partition_nodes):
     graph = get_graph_v2(graph_name)
     logger.info(f"Loaded graph {graph}.")
+
+    check_client_partition_nodes(client_partition_nodes, graph)
 
     init_config = tuple(0 for _ in range(graph.number_of_nodes()))
     logger.info(f"Writing initial config: {init_config}")
@@ -106,13 +138,11 @@ def main(graph_name):
     riak_bucket_name = f"{RIAK_BUCKET_PREFIX}__{graph_name}"
     logger.info(f"Using Riak bucket: {riak_bucket_name}")
 
-    init_data(riak_bucket_name, graph)
+    init_data(riak_bucket_name, graph, client_partition_nodes)
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        logger.error("Usage: python graph_coloring.py <graph_name>")
-        sys.exit(1)
-
-    graph_name = sys.argv[1]
-    main(graph_name)
+    args = get_args_parser()
+    graph_name = args.graph_name
+    client_partition_nodes = args.client_partition_nodes
+    main(graph_name, client_partition_nodes)
