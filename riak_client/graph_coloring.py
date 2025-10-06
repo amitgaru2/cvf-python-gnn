@@ -3,6 +3,8 @@ import sys
 
 import requests
 
+from chash_vnode_index import get_vnode_index
+
 utils_path = os.path.join(os.getenv("CVF_PROJECT_DIR", ""), "utils")
 sys.path.append(utils_path)
 
@@ -11,6 +13,7 @@ from custom_logger import logger
 from command_line_helpers import get_graph_v2
 
 
+RING_SIZE = 8
 RIAK_BASE_URL = "http://localhost:8098"
 RIAK_BUCKET_PREFIX = "graph_coloring"
 RIAK_NODE_KEY_PREFIX = "node_"
@@ -46,20 +49,39 @@ def put_request_riak(bucket_name, key, value):
         return False
 
 
-def init_data(riak_bucket_name, graph):
+def init_graph_data(riak_bucket_name, graph):
+    logger.info(f"Writing initial graph data.")
+
+    for n in graph.nodes():
+        node_key = f"{RIAK_NODE_KEY_PREFIX}{n}__meta"
+        meta = {"nbrs": list(graph.neighbors(n))}
+        put_request_riak(riak_bucket_name, node_key, meta)
+
+
+def init_config_data(riak_bucket_name, graph):
     init_config = tuple(0 for _ in range(graph.number_of_nodes()))
-    logger.info(f"Writing initial config: {init_config}")
+    logger.info(f"Writing initial configuration: {init_config}")
 
     for i in range(graph.number_of_nodes()):
-        node_key = f"{RIAK_NODE_KEY_PREFIX}{i}"
+        node_key = f"{RIAK_NODE_KEY_PREFIX}{i}__val"
         success = put_request_riak(riak_bucket_name, node_key, init_config[i])
         if not success:
             logger.error(f"Failed to write node {i} to Riak.")
             sys.exit(1)
 
 
-def update_node_color(riak_bucket_name, node_index, color):
-    pass
+def init_data(riak_bucket_name, graph):
+    init_graph_data(riak_bucket_name, graph)
+    init_config_data(riak_bucket_name, graph)
+
+
+def invert_dict(d):
+    grouped = {}
+
+    for key, value in d.items():
+        grouped.setdefault(value, []).append(key)
+
+    return grouped
 
 
 def main(graph_name):
