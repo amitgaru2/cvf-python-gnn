@@ -93,7 +93,7 @@ def init_graph_data(riak_bucket_name, graph):
 
 def init_config_data(riak_bucket_name, graph):
     init_config = tuple(0 for _ in range(graph.number_of_nodes()))
-    logger.info(f"Writing initial configuration: {init_config}")
+    logger.info(f"Writing initial configuration: {init_config}.")
 
     for i in range(graph.number_of_nodes()):
         node_key = f"{RIAK_NODE_KEY_PREFIX}{i}__val"
@@ -131,9 +131,6 @@ def main(graph_name, client_partition_nodes):
     logger.info(f"Loaded graph {graph}.")
 
     check_client_partition_nodes(client_partition_nodes, graph)
-
-    init_config = tuple(0 for _ in range(graph.number_of_nodes()))
-    logger.info(f"Writing initial config: {init_config}")
 
     riak_bucket_name = f"{RIAK_BUCKET_PREFIX}__{graph_name}"
     logger.info(f"Using Riak bucket: {riak_bucket_name}")
