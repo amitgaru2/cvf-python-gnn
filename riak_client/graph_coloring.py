@@ -68,7 +68,7 @@ def get_pet_lock(node, nbr):
         flag_otherside = get_request_riak(
             RIAK_BUCKET_NAME,
             f"{RIAK_PETERSON_LCK_FLAG_KEY_PREFIX}{i}_{j}_{other_side}",
-        )
+        )  # None if the key not found in the bucket
         if turn == side and flag_otherside is True:
             continue  # wait
         else:
