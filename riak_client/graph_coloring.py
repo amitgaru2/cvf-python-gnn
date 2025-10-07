@@ -102,17 +102,16 @@ def get_lexically_ordered_neighbors(node):
     neighbors = get_request_riak(
         f"{RIAK_BUCKET_PREFIX}__{graph_name}", f"{RIAK_NODE_KEY_PREFIX}{node}__meta"
     )["nbrs"]
-
     neighbors.sort()
-
     for nbr in neighbors:
-        yield nbr not in CLIENT_NODES, nbr
+        yield nbr
 
 
 def take_step_each_node(graph, node):
     neighbor_colors = set()
     lock_acquired_for = []
-    for lock_req, nbr in get_lexically_ordered_neighbors(node):
+    for nbr in get_lexically_ordered_neighbors(node):
+        lock_req = nbr not in CLIENT_NODES
         if lock_req:
             get_pet_lock(node, nbr)
             lock_acquired_for.append(nbr)
