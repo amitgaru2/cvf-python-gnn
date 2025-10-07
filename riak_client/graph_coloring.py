@@ -51,10 +51,6 @@ def get_i_j_ordering(node, nbr):
 
 
 def get_pet_lock(node, nbr):
-    """
-    i < j
-    side: i or j
-    """
     side = node
     other_side = nbr
     (i, j) = get_i_j_ordering(node, nbr)
@@ -82,10 +78,6 @@ def get_pet_lock(node, nbr):
 
 
 def release_pet_lock(node, nbr):
-    """
-    i < j
-    side: i or j
-    """
     side = node
     (i, j) = get_i_j_ordering(node, nbr)
     logger.info(f"Releasing lock for edge ({i}, {j}) by node {side}.")
