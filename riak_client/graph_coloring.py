@@ -1,3 +1,4 @@
+import json
 import os
 import sys
 import argparse
@@ -16,7 +17,8 @@ RING_SIZE = 8
 RIAK_BASE_URL = "http://localhost:8098"
 RIAK_BUCKET_PREFIX = "graph_coloring"
 RIAK_NODE_KEY_PREFIX = "node_"
-RIAK_PETERSON_LCK_KEY_PREFIX = "L_"
+RIAK_PETERSON_LCK_FLAG_KEY_PREFIX = "L_FLAG_"
+RIAK_PETERSON_LCK_TURN_KEY_PREFIX = "L_TURN_"
 
 
 def get_args_parser():
@@ -69,17 +71,63 @@ def put_request_riak(bucket_name, key, value):
         return False
 
 
+def get_request_riak(bucket_name, key):
+    url = f"{RIAK_BASE_URL}/buckets/{bucket_name}/keys/{key}"
+    headers = {"Content-Type": "application/json"}
+    response = requests.get(url, headers=headers)
+    if response.status_code == 200:
+        try:
+            value = response.json()  # attempt to parse JSON
+        except json.JSONDecodeError:
+            value = response.text  # fallback to raw text
+    elif response.status_code == 404:
+        logger.error(f"Key '{key}' not found in bucket '{bucket_name}'.")
+        value = None
+    else:
+        logger.error(f"Error {response.status_code}: {response.text}")
+        value = None
+    return value
+
+
+def get_pet_lock(riak_bucket_name, i, j, side):
+    """
+    i < j
+    side: i or j
+    """
+    put_request_riak(
+        riak_bucket_name, f"{RIAK_PETERSON_LCK_FLAG_KEY_PREFIX}{i}_{j}_{side}", True
+    )
+    put_request_riak(
+        riak_bucket_name, f"{RIAK_PETERSON_LCK_TURN_KEY_PREFIX}{i}_{j}", side
+    )
+    while True:
+        turn = get_request_riak(
+            riak_bucket_name, f"{RIAK_PETERSON_LCK_TURN_KEY_PREFIX}{i}_{j}"
+        )
+        flag_otherside = get_request_riak(
+            riak_bucket_name, f"{RIAK_PETERSON_LCK_FLAG_KEY_PREFIX}{i}_{j}_{j}"
+        )
+        if turn != side or not flag_otherside:
+            break
+
+    return True
+
+
+def check_all_members_of(lst, *values):
+    return not (set(values) - set(lst))
+
+
 def init_pet_lock_data(riak_bucket_name, graph, client_partition_nodes):
     logger.info(f"Writing initial Peterson lock data.")
 
     for n in graph.nodes():
         for nbr in graph.neighbors(n):
-            if n < nbr and not (
-                n in client_partition_nodes and nbr in client_partition_nodes
-            ):  # no lock if both nodes in the same client partition
-                node_key = f"{RIAK_PETERSON_LCK_KEY_PREFIX}{n}_{nbr}"
-                meta = {"flag_0": False, "flag_1": False, "turn": None}
-                put_request_riak(riak_bucket_name, node_key, meta)
+            if not check_all_members_of(client_partition_nodes, n, nbr):
+                (i, j) = (n, nbr) if n < nbr else (nbr, n)
+                node_key = f"{RIAK_PETERSON_LCK_FLAG_KEY_PREFIX}{i}_{j}_{n}"
+                put_request_riak(riak_bucket_name, node_key, False)
+                turn_key = f"{RIAK_PETERSON_LCK_TURN_KEY_PREFIX}{i}_{j}"
+                put_request_riak(riak_bucket_name, turn_key, -1)
 
 
 def init_graph_data(riak_bucket_name, graph):
@@ -126,6 +174,46 @@ def check_client_partition_nodes(client_partition_nodes, graph):
         raise Exception("Client partition nodes not in graph nodes.")
 
 
+def get_lexically_ordered_neighbor_i_j(n):
+    neighbors = get_request_riak(
+        f"{RIAK_BUCKET_PREFIX}__{graph_name}", f"{RIAK_NODE_KEY_PREFIX}{n}__meta"
+    )["nbrs"]
+
+    neighbors.sort()
+
+    for nbr in neighbors:
+        if not check_all_members_of(client_partition_nodes, n, nbr):
+            (i, j) = (n, nbr) if n < nbr else (nbr, n)
+            yield True, nbr, (i, j)
+        else:
+            yield False, nbr, (None, None)
+
+
+def take_step_each_node(graph, n, client_partition_nodes):
+    neighbor_colors = set()
+    for lock_req, nbr, (i, j) in get_lexically_ordered_neighbor_i_j(n):
+        if lock_req:
+            get_pet_lock(f"{RIAK_BUCKET_PREFIX}__{graph_name}", i, j, n)
+
+        nbr_color = get_request_riak(
+            f"{RIAK_BUCKET_PREFIX}__{graph_name}",
+            f"{RIAK_NODE_KEY_PREFIX}{nbr}__val",
+        )
+        neighbor_colors.add(nbr_color)
+
+    new_color = min({k for k in range(graph.degree(n) + 1)} - neighbor_colors)
+    put_request_riak(
+        f"{RIAK_BUCKET_PREFIX}__{graph_name}",
+        f"{RIAK_NODE_KEY_PREFIX}{n}__val",
+        new_color,
+    )
+
+
+def take_step(graph, client_partition_nodes):
+    for n in client_partition_nodes:
+        take_step_each_node(graph, n, client_partition_nodes)
+
+
 def main(graph_name, client_partition_nodes):
     graph = get_graph_v2(graph_name)
     logger.info(f"Loaded graph {graph}.")
@@ -136,6 +224,7 @@ def main(graph_name, client_partition_nodes):
     logger.info(f"Using Riak bucket: {riak_bucket_name}")
 
     init_data(riak_bucket_name, graph, client_partition_nodes)
+    take_step(graph, client_partition_nodes)
 
 
 if __name__ == "__main__":
