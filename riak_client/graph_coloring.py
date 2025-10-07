@@ -2,7 +2,7 @@ import os
 import sys
 import argparse
 
-from riak_client.client_helpers import get_partition_for_client
+from client_helpers import get_partition_for_client
 from riak_helpers import (
     get_request_riak,
     put_request_riak,
@@ -114,7 +114,7 @@ def take_step_each_node(graph, node):
     lock_acquired_for = []
     for lock_req, nbr in get_lexically_ordered_neighbors(node):
         if lock_req:
-            get_pet_lock(f"{RIAK_BUCKET_PREFIX}__{graph_name}", node, nbr)
+            get_pet_lock(node, nbr)
             lock_acquired_for.append(nbr)
 
         nbr_color = get_request_riak(
@@ -132,7 +132,7 @@ def take_step_each_node(graph, node):
 
     # release lock
     for nbr in lock_acquired_for:
-        release_pet_lock(f"{RIAK_BUCKET_PREFIX}__{graph_name}", node, nbr)
+        release_pet_lock(node, nbr)
 
 
 def take_step(graph):
@@ -154,6 +154,7 @@ if __name__ == "__main__":
     client_id = args.client_id
     num_clients = args.num_clients
     CLIENT_NODES = get_partition_for_client(graph, client_id, num_clients)
+    logger.info(f"Client {client_id} handling nodes: {CLIENT_NODES}.")
     RIAK_BUCKET_NAME = f"{RIAK_BUCKET_PREFIX}__{graph_name}"
     logger.info(f"Using Riak bucket: {RIAK_BUCKET_NAME}")
-    main(graph_name)
+    main(graph)
