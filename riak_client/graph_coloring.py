@@ -122,6 +122,7 @@ def get_pet_lock(riak_bucket_name, i, j, side):
     i < j
     side: i or j
     """
+    other_side = j if side == i else i
     logger.info(f"Acquiring lock for edge ({i}, {j}) by node {side}.")
     put_request_riak(
         riak_bucket_name, f"{RIAK_PETERSON_LCK_FLAG_KEY_PREFIX}{i}_{j}_{side}", True
@@ -134,9 +135,12 @@ def get_pet_lock(riak_bucket_name, i, j, side):
             riak_bucket_name, f"{RIAK_PETERSON_LCK_TURN_KEY_PREFIX}{i}_{j}"
         )
         flag_otherside = get_request_riak(
-            riak_bucket_name, f"{RIAK_PETERSON_LCK_FLAG_KEY_PREFIX}{i}_{j}_{j}"
+            riak_bucket_name,
+            f"{RIAK_PETERSON_LCK_FLAG_KEY_PREFIX}{i}_{j}_{other_side}",
         )
-        if flag_otherside and turn == side:
+        if turn == side and flag_otherside is True:
+            continue  # wait
+        else:
             break
 
     return True
@@ -286,6 +290,7 @@ if __name__ == "__main__":
     args = get_args_parser()
     graph_name = args.graph_name
     if args.delete_data:
+        logger.info("Cleaning database...")
         delete_data(graph_name)
         sys.exit(0)
     client_partition_nodes = args.client_partition_nodes
