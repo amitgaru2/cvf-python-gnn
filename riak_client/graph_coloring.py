@@ -88,7 +88,7 @@ def check_all_members_of(lst, *values):
 
 def get_lexically_ordered_neighbors(node):
     neighbors = get_request_riak(
-        f"{RIAK_BUCKET_PREFIX}__{graph_name}", f"{RIAK_NODE_KEY_PREFIX}{node}__meta"
+        RIAK_BUCKET_NAME, f"{RIAK_NODE_KEY_PREFIX}{node}__meta"
     )["nbrs"]
     neighbors.sort()
     for nbr in neighbors:
