@@ -7,7 +7,7 @@ set -eu
 # variables defined to be changed
 GRAPH_NAME="complete_graph_n100"
 
-SERVER_MACHINES=("manaslu5.uwyo.edu:8098" "manaslu6.uwyo.edu:8098" "manaslu7.uwyo.edu:8098")
+SERVER_MACHINES=("manaslu5.uwyo.edu:8098" "manaslu6.uwyo.edu:8098" "manaslu7.uwyo.edu:8098" "manaslu8.uwyo.edu:8098")
 CLIENT_MACHINES=("yangra1.uwyo.edu" "yangra2.uwyo.edu" "yangra3.uwyo.edu")
 
 
