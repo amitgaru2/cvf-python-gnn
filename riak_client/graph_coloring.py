@@ -105,14 +105,14 @@ def take_step_each_node(graph, node):
             lock_acquired_for.append(nbr)
 
         nbr_color = get_request_riak(
-            f"{RIAK_BUCKET_PREFIX}__{graph_name}",
+            RIAK_BUCKET_NAME,
             f"{RIAK_NODE_KEY_PREFIX}{nbr}__val",
         )
         neighbor_colors.add(nbr_color)
 
     new_color = min({k for k in range(graph.degree(node) + 1)} - neighbor_colors)
     put_request_riak(
-        f"{RIAK_BUCKET_PREFIX}__{graph_name}",
+        RIAK_BUCKET_NAME,
         f"{RIAK_NODE_KEY_PREFIX}{node}__val",
         new_color,
     )
