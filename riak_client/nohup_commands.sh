@@ -9,4 +9,6 @@ echo "Client ID: ""$ClientID"
 echo "Number of Clients: ""$NoOfClients"
 echo "RIAK_SERVER_URLS: ""$RIAK_SERVER_URLS"
 
-python graph_coloring_client.py --graph-name "$GraphName" --client_id "$ClientID" --num_clients "$NoOfClients"
+python3 graph_coloring.py --graph-name "$GraphName" --client-id "$ClientID" --num-clients "$NoOfClients"
+
+echo "Done execution!"

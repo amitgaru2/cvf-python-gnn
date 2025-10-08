@@ -8,10 +8,10 @@ set -eu
 SERVER_MACHINES=("manaslu5.uwyo.edu:8098" "manaslu6.uwyo.edu:8098" "manaslu7.uwyo.edu:8098")
 CLIENT_MACHINES=("yangra1.uwyo.edu" "yangra2.uwyo.edu" "yangra3.uwyo.edu")
 
-CLIENT_COPY_FILES=("run_nohup.sh" "nohup_commands.sh" "riak_helpers.py" "client_helpers.py" "graph_coloring.py")
+CLIENT_COPY_FILES=("run_nohup.sh" "nohup_commands.sh" "custom_logger.py" "riak_helpers.py" "client_helpers.py" "graph_helpers.py" "graph_coloring.py")
 CLIENT_COPY_DIRS=("graphs")
 
-GRAPH_NAME="complete_graph_n10"
+GRAPH_NAME="complete_graph_n15"
 # end of variables to be changed
 
 # copy the client script to all client machines
@@ -33,9 +33,9 @@ done
 SERVER_MACHINES_ENV=$(IFS=';'; echo "${SERVER_MACHINES[*]}")
 
 # prepare the database script
-echo "Preparing the database."
+echo -e "Preparing the database.\n"
 RIAK_SERVER_URLS="${SERVER_MACHINES_ENV}" python prepare_database.py --graph-name "${GRAPH_NAME}"
-echo "Done preparing the database."
+echo -e "Done preparing the database.\n"
 
 # execute the client script on all client machines
 timePrefix=$(date +"%H_%M")
