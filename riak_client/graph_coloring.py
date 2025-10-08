@@ -1,5 +1,3 @@
-import os
-import sys
 import argparse
 
 from client_helpers import get_partition_for_client
@@ -12,12 +10,10 @@ from riak_helpers import (
     RIAK_PETERSON_LCK_TURN_KEY_PREFIX,
 )
 
-utils_path = os.path.join(os.getenv("CVF_PROJECT_DIR", ""), "utils")
-sys.path.append(utils_path)
-
 
 from custom_logger import logger
-from command_line_helpers import get_graph_v2
+
+from graph_helpers import get_graph
 
 
 def get_args_parser():
@@ -138,7 +134,7 @@ def main(graph):
 if __name__ == "__main__":
     args = get_args_parser()
     graph_name = args.graph_name
-    graph = get_graph_v2(graph_name)
+    graph = get_graph(graph_name)
     logger.info(f"Found graph {graph}.")
     if args.client_id >= args.num_clients or args.client_id < 0:
         raise Exception("Client ID must be in the range [0, num_clients-1].")

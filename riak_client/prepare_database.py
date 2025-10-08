@@ -1,4 +1,3 @@
-import os
 import sys
 import argparse
 
@@ -10,11 +9,8 @@ from riak_helpers import (
     RIAK_NODE_KEY_PREFIX,
 )
 
-utils_path = os.path.join(os.getenv("CVF_PROJECT_DIR", ""), "utils")
-sys.path.append(utils_path)
-
 from custom_logger import logger
-from command_line_helpers import get_graph_v2
+from graph_helpers import get_graph
 
 
 def get_args_parser():
@@ -67,7 +63,7 @@ def main(riak_bucket_name, graph):
 if __name__ == "__main__":
     args = get_args_parser()
     graph_name = args.graph_name
-    graph = get_graph_v2(graph_name)
+    graph = get_graph(graph_name)
     logger.info(f"Found graph {graph}.")
     riak_bucket_name = f"{RIAK_BUCKET_PREFIX}__{graph_name}"
     logger.info(f"Cleaning existing data in the bucket {riak_bucket_name}.")

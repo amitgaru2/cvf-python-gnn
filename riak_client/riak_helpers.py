@@ -1,12 +1,6 @@
-import os
-import sys
 import json
 
 import requests
-
-utils_path = os.path.join(os.getenv("CVF_PROJECT_DIR", ""), "utils")
-sys.path.append(utils_path)
-
 
 from custom_logger import logger
 

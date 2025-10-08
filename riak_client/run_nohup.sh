@@ -5,6 +5,9 @@ export PYTHONDONTWRITEBYTECODE=1
 jobID="$1"
 echo "Job ID: ""$jobID"
 
+serverAddress="$2"
+echo "Server Address: ""$serverAddress"
+
 dateDir=$(date +"%y_%m_%d")
 hostName=$(hostname | sed 's/\./_/g')
 logLocationDir="../client_script_logs/${hostName}/${dateDir}/"
