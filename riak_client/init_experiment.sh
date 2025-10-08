@@ -5,13 +5,14 @@
 set -eu
 
 # variables defined to be changed
+GRAPH_NAME="complete_graph_n15"
+
 SERVER_MACHINES=("manaslu5.uwyo.edu:8098" "manaslu6.uwyo.edu:8098" "manaslu7.uwyo.edu:8098")
 CLIENT_MACHINES=("yangra1.uwyo.edu" "yangra2.uwyo.edu" "yangra3.uwyo.edu")
 
+
 CLIENT_COPY_FILES=("run_nohup.sh" "nohup_commands.sh" "custom_logger.py" "riak_helpers.py" "client_helpers.py" "graph_helpers.py" "graph_coloring.py")
 CLIENT_COPY_DIRS=("graphs")
-
-GRAPH_NAME="complete_graph_n15"
 # end of variables to be changed
 
 # copy the client script to all client machines
