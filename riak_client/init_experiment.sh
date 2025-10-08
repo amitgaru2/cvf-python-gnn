@@ -8,7 +8,7 @@ set -eu
 SERVER_MACHINES=("manaslu5.uwyo.edu" "manaslu6.uwyo.edu" "manaslu7.uwyo.edu")
 CLIENT_MACHINES=("yangra1.uwyo.edu" "yangra2.uwyo.edu" "yangra3.uwyo.edu")
 
-CLIENT_COPY_FILES=("client_helpers.py" "graph_coloring.py" "run_nohup.sh" "nohup_commands.sh")
+CLIENT_COPY_FILES=("run_nohup.sh" "nohup_commands.sh" "riak_helpers.py" "prepare_database.py" "client_helpers.py" "graph_coloring.py")
 # end of variables to be changed
 
 # copy the client script to all client machines
@@ -24,10 +24,12 @@ for client in "${CLIENT_MACHINES[@]}"; do
 done
 
 # execute the client script on all client machines
+timePrefix=$(date +"%H_%M")
+Clients_Job_ID="""$timePrefix""_"$(shuf -i 10000-99999 -n 1)
 for client_id in "${!CLIENT_MACHINES[@]}"; do
     client="${CLIENT_MACHINES[$client_id]}"
     echo "Executing run_nohup.sh on $client."
-    # ssh "$client" "cd ~/research/client_scripts && bash run_nohup.sh"
+    ssh "$client" "cd ~/research/client_scripts && chmod +x run_nohup.sh && ./run_nohup.sh ${Clients_Job_ID}"
     echo -e "Done executing run_nohup.sh on $client.\n"
 done
 
