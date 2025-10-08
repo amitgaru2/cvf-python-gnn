@@ -1,15 +1,22 @@
+import os
 import json
+import random
 
 import requests
 
 from custom_logger import logger
 
-RING_SIZE = 8
-RIAK_BASE_URL = "http://localhost:8098"
+# RING_SIZE = 8
+# RIAK_BASE_URL = "http://localhost:8098"
+RIAK_BASE_URLS = os.getenv("RIAK_SERVER_URLS", ["http://localhost:8098"])
 RIAK_BUCKET_PREFIX = "graph_coloring"
 RIAK_NODE_KEY_PREFIX = "node_"
 RIAK_PETERSON_LCK_FLAG_KEY_PREFIX = "L_FLAG_"
 RIAK_PETERSON_LCK_TURN_KEY_PREFIX = "L_TURN_"
+
+
+def get_random_riak_base_url():
+    return random.choice(RIAK_BASE_URLS)
 
 
 def put_request_riak(bucket_name, key, value):
@@ -20,7 +27,7 @@ def put_request_riak(bucket_name, key, value):
         -d '{"name":"BAlice2"}' \
         http://127.0.0.1:8098/buckets/users/keys/user1
     """
-    url = f"{RIAK_BASE_URL}/buckets/{bucket_name}/keys/{key}"
+    url = f"{get_random_riak_base_url()}/buckets/{bucket_name}/keys/{key}"
     headers = {"Content-Type": "application/json"}
     data = value
 
@@ -44,9 +51,9 @@ def put_request_riak(bucket_name, key, value):
 
 def get_request_riak(bucket_name, key, params={}):
     if key:
-        url = f"{RIAK_BASE_URL}/buckets/{bucket_name}/keys/{key}"
+        url = f"{get_random_riak_base_url()}/buckets/{bucket_name}/keys/{key}"
     else:
-        url = f"{RIAK_BASE_URL}/buckets/{bucket_name}/keys"
+        url = f"{get_random_riak_base_url()}/buckets/{bucket_name}/keys"
     headers = {"Content-Type": "application/json"}
     response = requests.get(url, headers=headers, params=params)
     if response.status_code == 200:
@@ -64,7 +71,7 @@ def get_request_riak(bucket_name, key, params={}):
 
 
 def delete_request_riak(bucket_name, key):
-    url = f"{RIAK_BASE_URL}/buckets/{bucket_name}/keys/{key}"
+    url = f"{get_random_riak_base_url()}/buckets/{bucket_name}/keys/{key}"
     try:
         response = requests.delete(url)
         response.raise_for_status()

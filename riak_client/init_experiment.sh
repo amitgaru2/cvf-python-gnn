@@ -34,8 +34,7 @@ python prepare_db.py
 # execute the client script on all client machines
 timePrefix=$(date +"%H_%M")
 Clients_Job_ID="""$timePrefix""_"$(shuf -i 10000-99999 -n 1)
-for client_id in "${!CLIENT_MACHINES[@]}"; do
-    client="${CLIENT_MACHINES[$client_id]}"
+for client in "${CLIENT_MACHINES[@]}"; do
     echo "Executing run_nohup.sh on $client."
     ssh "$client" "cd ~/research/client_scripts && chmod +x run_nohup.sh && ./run_nohup.sh ${Clients_Job_ID}"
     echo -e "Done executing run_nohup.sh on $client.\n"
