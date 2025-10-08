@@ -5,11 +5,13 @@
 set -eu
 
 # variables defined to be changed
-SERVER_MACHINES=("manaslu5.uwyo.edu" "manaslu6.uwyo.edu" "manaslu7.uwyo.edu")
+SERVER_MACHINES=("manaslu5.uwyo.edu:8098" "manaslu6.uwyo.edu:8098" "manaslu7.uwyo.edu:8098")
 CLIENT_MACHINES=("yangra1.uwyo.edu" "yangra2.uwyo.edu" "yangra3.uwyo.edu")
 
 CLIENT_COPY_FILES=("run_nohup.sh" "nohup_commands.sh" "riak_helpers.py" "client_helpers.py" "graph_coloring.py")
 CLIENT_COPY_DIRS=("graphs")
+
+GRAPH_NAME="complete_graph_n10"
 # end of variables to be changed
 
 # copy the client script to all client machines
@@ -31,7 +33,9 @@ done
 SERVER_MACHINES_ENV=$(IFS=';'; echo "${SERVER_MACHINES[*]}")
 
 # prepare the database script
-RIAK_SERVER_URLS="${SERVER_MACHINES_ENV}" python prepare_db.py
+echo "Preparing the database."
+RIAK_SERVER_URLS="${SERVER_MACHINES_ENV}" python prepare_database.py --graph-name "${GRAPH_NAME}"
+echo "Done preparing the database."
 
 # execute the client script on all client machines
 timePrefix=$(date +"%H_%M")
@@ -39,7 +43,7 @@ Clients_Job_ID="""$timePrefix""_"$(shuf -i 10000-99999 -n 1)
 for client_id in "${!CLIENT_MACHINES[@]}"; do
     client="${CLIENT_MACHINES[$client_id]}"
     echo "Executing run_nohup.sh on $client."
-    ssh "$client" "cd ~/research/client_scripts && chmod +x run_nohup.sh && RIAK_SERVER_URLS=\"${SERVER_MACHINES_ENV}\" ./run_nohup.sh ${Clients_Job_ID} ${client_id} ${#CLIENT_MACHINES[@]}"
+    ssh "$client" "cd ~/research/client_scripts && chmod +x run_nohup.sh && RIAK_SERVER_URLS=\"${SERVER_MACHINES_ENV}\" ./run_nohup.sh ${Clients_Job_ID} ${GRAPH_NAME} ${client_id} ${#CLIENT_MACHINES[@]}"
     echo -e "Done executing run_nohup.sh on $client.\n"
 done
 
