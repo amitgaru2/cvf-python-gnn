@@ -28,15 +28,18 @@ for client in "${CLIENT_MACHINES[@]}"; do
 done
 
 
+SERVER_MACHINES_ENV=$(IFS=';'; echo "${SERVER_MACHINES[*]}")
+
 # prepare the database script
-python prepare_db.py
+RIAK_SERVER_URLS="${SERVER_MACHINES_ENV}" python prepare_db.py
 
 # execute the client script on all client machines
 timePrefix=$(date +"%H_%M")
 Clients_Job_ID="""$timePrefix""_"$(shuf -i 10000-99999 -n 1)
-for client in "${CLIENT_MACHINES[@]}"; do
+for client_id in "${!CLIENT_MACHINES[@]}"; do
+    client="${CLIENT_MACHINES[$client_id]}"
     echo "Executing run_nohup.sh on $client."
-    ssh "$client" "cd ~/research/client_scripts && chmod +x run_nohup.sh && ./run_nohup.sh ${Clients_Job_ID}"
+    ssh "$client" "cd ~/research/client_scripts && chmod +x run_nohup.sh && RIAK_SERVER_URLS=\"${SERVER_MACHINES_ENV}\" ./run_nohup.sh ${Clients_Job_ID} ${client_id} ${#CLIENT_MACHINES[@]}"
     echo -e "Done executing run_nohup.sh on $client.\n"
 done
 

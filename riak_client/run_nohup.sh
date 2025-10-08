@@ -3,10 +3,12 @@ set -eu
 export PYTHONDONTWRITEBYTECODE=1
 
 jobID="$1"
+clientID="$2"
+NoOfClients="$3"
 echo "Job ID: ""$jobID"
-
-serverAddress="$2"
-echo "Server Address: ""$serverAddress"
+echo "Client ID: ""$clientID"
+echo "Number of Clients: ""$NoOfClients"
+echo "RIAK_SERVER_URLS: ""$RIAK_SERVER_URLS"
 
 dateDir=$(date +"%y_%m_%d")
 hostName=$(hostname | sed 's/\./_/g')
@@ -24,4 +26,4 @@ sed -i '/^$/d' ${tempFileLocation}
 chmod +x ${tempFileLocation}
 
 echo "Started at : "$(date)
-nohup ./${tempFileLocation} > "$logLocation" 2>&1 <&- &
+nohup ./${tempFileLocation} ${clientID} ${NoOfClients} > "$logLocation" 2>&1 <&- &

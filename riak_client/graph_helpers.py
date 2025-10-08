@@ -46,6 +46,9 @@ class Graph:
             raise ValueError(f"Node {node} does not exist in the graph")
         return self.adj[node]
 
+    def __str__(self):
+        return f"Graph(name={self.name}, nodes={self.nodes()})"
+
 
 def get_graph(graph_name) -> Graph | None:
     logger.debug('Locating Graph: "%s".', graph_name)

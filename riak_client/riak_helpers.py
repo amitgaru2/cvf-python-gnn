@@ -8,11 +8,13 @@ from custom_logger import logger
 
 # RING_SIZE = 8
 # RIAK_BASE_URL = "http://localhost:8098"
-RIAK_BASE_URLS = os.getenv("RIAK_SERVER_URLS", ["http://localhost:8098"])
+RIAK_BASE_URLS = os.getenv("RIAK_SERVER_URLS", "http://localhost:8098").split(";")
 RIAK_BUCKET_PREFIX = "graph_coloring"
 RIAK_NODE_KEY_PREFIX = "node_"
 RIAK_PETERSON_LCK_FLAG_KEY_PREFIX = "L_FLAG_"
 RIAK_PETERSON_LCK_TURN_KEY_PREFIX = "L_TURN_"
+
+logger.info(f"Using RIAK_BASE_URLS: {RIAK_BASE_URLS}")
 
 
 def get_random_riak_base_url():
