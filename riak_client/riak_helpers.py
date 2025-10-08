@@ -39,7 +39,7 @@ def put_request_riak(bucket_name, key, value):
     try:
         response = requests.put(url, json=data, headers=headers)
         response.raise_for_status()
-        logger.info(f"Wrote {{ {key}: {value} }} to the Bucket: {bucket_name}.")
+        logger.info(f"Wrote to {url}.")
         logger.debug(f"Success: {response.status_code}")
         if response.text:
             logger.debug("Response body:", response.text)
@@ -66,6 +66,7 @@ def get_request_riak(bucket_name, key, params={}):
             value = response.json()  # attempt to parse JSON
         except json.JSONDecodeError:
             value = response.text  # fallback to raw text
+        logger.info(f"Read from {url}.")
     elif response.status_code == 404:
         logger.error(f"Key '{key}' not found in bucket '{bucket_name}'.")
         value = None
