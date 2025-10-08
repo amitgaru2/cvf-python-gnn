@@ -1,3 +1,4 @@
+import time
 import argparse
 
 from client_helpers import get_partition_for_client
@@ -132,6 +133,7 @@ def main(graph):
 
 
 if __name__ == "__main__":
+    start_time = time.time()
     args = get_args_parser()
     graph_name = args.graph_name
     graph = get_graph(graph_name)
@@ -145,3 +147,4 @@ if __name__ == "__main__":
     RIAK_BUCKET_NAME = f"{RIAK_BUCKET_PREFIX}__{graph_name}"
     logger.info(f"Using Riak bucket: {RIAK_BUCKET_NAME}")
     main(graph)
+    logger.info(f"Total time taken: {time.time() - start_time} seconds.")
