@@ -99,6 +99,9 @@ def get_lexically_ordered_neighbors(node):
 def take_step_each_node(graph, node):
     neighbor_colors = set()
     lock_acquired_for = []
+    self_color = get_request_riak(
+        RIAK_BUCKET_NAME, f"{RIAK_NODE_KEY_PREFIX}{node}__val"
+    )
     for nbr in get_lexically_ordered_neighbors(node):
         lock_req = nbr not in CLIENT_NODES
         if lock_req:
@@ -111,14 +114,15 @@ def take_step_each_node(graph, node):
         )
         neighbor_colors.add(nbr_color)
 
-    new_color = min({k for k in range(graph.degree(node) + 1)} - neighbor_colors)
-    put_request_riak(
-        RIAK_BUCKET_NAME,
-        f"{RIAK_NODE_KEY_PREFIX}{node}__val",
-        new_color,
-    )
+    if self_color in neighbor_colors:
+        new_color = min({k for k in range(graph.degree(node) + 1)} - neighbor_colors)
+        put_request_riak(
+            RIAK_BUCKET_NAME,
+            f"{RIAK_NODE_KEY_PREFIX}{node}__val",
+            new_color,
+        )
 
-    # release lock
+    # release locks
     for nbr in lock_acquired_for:
         release_pet_lock(node, nbr)
 

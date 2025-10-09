@@ -1,4 +1,5 @@
 import sys
+import random
 import argparse
 
 from riak_helpers import (
@@ -34,6 +35,16 @@ def delete_data(riak_bucket_name):
         delete_request_riak(riak_bucket_name, key)
 
 
+def read_and_log_data(riak_bucket_name):
+    logger.info(f"Reading Riak bucket: {riak_bucket_name}")
+
+    keys = get_request_riak(riak_bucket_name, "", params={"keys": "true"})["keys"]
+    for key in keys:
+        if key.startswith(RIAK_NODE_KEY_PREFIX):
+            value = get_request_riak(riak_bucket_name, key)
+            logger.info(f"Key: {key}, Value: {value}")
+
+
 def init_graph_data(riak_bucket_name, graph):
     logger.info(f"Writing initial graph data.")
 
@@ -44,7 +55,9 @@ def init_graph_data(riak_bucket_name, graph):
 
 
 def init_config_data(riak_bucket_name, graph):
-    init_config = tuple(0 for _ in range(graph.number_of_nodes()))
+    init_config = tuple(
+        random.choice(range(graph.degree(n))) for n in sorted(graph.nodes())
+    )
     logger.info(f"Writing initial configuration: {init_config}.")
 
     for i in range(graph.number_of_nodes()):
@@ -69,8 +82,10 @@ if __name__ == "__main__":
         sys.exit(1)
     logger.info(f"Found graph {graph}.")
     riak_bucket_name = f"{RIAK_BUCKET_PREFIX}__{graph_name}"
-    logger.info(f"Cleaning existing data in the bucket {riak_bucket_name}.")
-    delete_data(riak_bucket_name)
-    logger.info(f"Cleanup done.")
-    main(riak_bucket_name, graph)
-    logger.info(f"Database preparation done.")
+    read_and_log_data(riak_bucket_name)
+    # logger.info(f"Cleaning existing data in the bucket {riak_bucket_name}.")
+    # delete_data(riak_bucket_name)
+    # logger.info(f"Cleanup done.")
+    # main(riak_bucket_name, graph)
+    # logger.info(f"Database preparation done.")
+
