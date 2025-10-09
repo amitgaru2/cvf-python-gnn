@@ -64,6 +64,9 @@ if __name__ == "__main__":
     args = get_args_parser()
     graph_name = args.graph_name
     graph = get_graph(graph_name)
+    if graph is None:
+        logger.error(f"Graph {graph_name} not found.")
+        sys.exit(1)
     logger.info(f"Found graph {graph}.")
     riak_bucket_name = f"{RIAK_BUCKET_PREFIX}__{graph_name}"
     logger.info(f"Cleaning existing data in the bucket {riak_bucket_name}.")
