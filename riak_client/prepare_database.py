@@ -82,10 +82,9 @@ if __name__ == "__main__":
         sys.exit(1)
     logger.info(f"Found graph {graph}.")
     riak_bucket_name = f"{RIAK_BUCKET_PREFIX}__{graph_name}"
-    read_and_log_data(riak_bucket_name)
-    # logger.info(f"Cleaning existing data in the bucket {riak_bucket_name}.")
-    # delete_data(riak_bucket_name)
-    # logger.info(f"Cleanup done.")
-    # main(riak_bucket_name, graph)
-    # logger.info(f"Database preparation done.")
-
+    # read_and_log_data(riak_bucket_name)
+    logger.info(f"Cleaning existing data in the bucket {riak_bucket_name}.")
+    delete_data(riak_bucket_name)
+    logger.info(f"Cleanup done.")
+    main(riak_bucket_name, graph)
+    logger.info(f"Database preparation done.")
