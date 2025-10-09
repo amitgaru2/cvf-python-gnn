@@ -16,11 +16,21 @@ def verify(graph, node):
         RIAK_BUCKET_NAME,
         f"{RIAK_NODE_KEY_PREFIX}{node}__val",
     )
+    if not (0 <= self_color <= graph.degree(node)):  # strict checks
+        raise Exception(f"Invalid color {self_color} assigned to the node {node}.")
+
     for nbr in graph.neighbors(node):
         nbr_color = get_request_riak(
             RIAK_BUCKET_NAME,
             f"{RIAK_NODE_KEY_PREFIX}{nbr}__val",
         )
+        if not (
+            0 <= nbr_color <= graph.degree(nbr)
+        ):  # strict checks to avoid none values
+            raise Exception(
+                f"Invalid color {nbr_color} assigned to the neighbor {nbr} of node {node}."
+            )
+
         if self_color == nbr_color:
             return False
 
