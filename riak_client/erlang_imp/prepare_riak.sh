@@ -6,6 +6,7 @@ main(Args) ->
     %% my_logger:setup(),
 
     %% Parse arguments (simple example)
+    io:format("Preparing Riak with arguments: ~p~n", [Args]),
     case Args of
         ["--graph-name", GraphName] ->
             io:format("Graph name: ~s~n", [GraphName]),
