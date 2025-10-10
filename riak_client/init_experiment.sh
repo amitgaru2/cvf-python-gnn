@@ -12,7 +12,8 @@ CLIENT_MACHINES=("yangra1.uwyo.edu" "yangra2.uwyo.edu" "yangra3.uwyo.edu" "manas
 
 
 CLIENT_COPY_FILES=("run_nohup.sh" "nohup_commands.sh" "custom_logger.py" "riak_helpers.py" "client_helpers.py" "graph_helpers.py" "graph_coloring.py" "verify_graph_coloring.py")
-CLIENT_COPY_DIRS=("graphs")
+# CLIENT_COPY_DIRS=("graphs")
+CLIENT_COPY_DIRS=()
 # end of variables to be changed
 
 # copy the client script to all client machines
@@ -20,6 +21,7 @@ for client in "${CLIENT_MACHINES[@]}"; do
     echo "Setting up client machine: $client."
     ssh "$client" "rm -rf ~/research/client_scripts"
     ssh "$client" "mkdir -p ~/research/client_scripts"
+    ssh "$client" "mkdir -p ~/research/client_scripts/graphs"
     echo "Copying files and directories to $client."
     for file in "${CLIENT_COPY_FILES[@]}"; do
         scp "$file" "$client:~/research/client_scripts/"
@@ -27,6 +29,7 @@ for client in "${CLIENT_MACHINES[@]}"; do
     for dir in "${CLIENT_COPY_DIRS[@]}"; do
         scp -r "$dir" "$client:~/research/client_scripts/"
     done
+    scp graphs/${GRAPH_NAME}.txt "$client:~/research/client_scripts/graphs/"
     echo -e "Done copying files and directories to $client.\n"
 done
 
