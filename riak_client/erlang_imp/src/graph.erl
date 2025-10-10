@@ -9,7 +9,8 @@
     to_string/1
 ]).
 
--define(GRAPHS_DIR, "graphs").
+-define(PRIV_DIR, code:priv_dir(riak_client_project)).
+-define(GRAPHS_DIR, filename:join(?PRIV_DIR, "graphs")).
 
 -record(graph, {
     adj :: map(),
