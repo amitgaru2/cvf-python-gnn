@@ -24,15 +24,18 @@ init() ->
     application:ensure_all_started(public_key),
     RIAK_URLS = os:getenv("RIAK_SERVER_URLS", ?DEFAULT_RIAK_URLS),
     URLList = string:tokens(RIAK_URLS, ";"),
-    put(riak_urls, [ "http://" ++ U || U <- URLList ]),
+    put(riak_urls, ["http://" ++ U || U <- URLList]),
     io:format("Using RIAK_BASE_URLS: ~p~n", [get(riak_urls)]),
     ok.
 
 get_random_riak_base_url() ->
     Urls = get(riak_urls),
     case Urls of
-        undefined -> init(), get_random_riak_base_url();
-        [] -> "http://localhost:8098";
+        undefined ->
+            init(),
+            get_random_riak_base_url();
+        [] ->
+            "http://localhost:8098";
         _ ->
             RandomIndex = rand:uniform(length(Urls)),
             lists:nth(RandomIndex, Urls)
@@ -45,7 +48,7 @@ get_random_riak_base_url() ->
 put_request_riak(BucketName, Key, Value) ->
     BaseUrl = get_random_riak_base_url(),
     Url = io_lib:format("~s/buckets/~s/keys/~s", [BaseUrl, BucketName, Key]),
-    io:format("PUT to URL: ~s~n", [lists:flatten(Url)]),
+    io:format("PUT to URL: ~s~n the value: ~p", [lists:flatten(Url), Value]),
     Json = jsx:encode(Value),
     io:format("PUT to ~s with value: ~s~n", [lists:flatten(Url), Json]),
     Headers = [{"Content-Type", "application/json"}],
@@ -71,10 +74,11 @@ get_request_riak(BucketName, Key) ->
 
 get_request_riak(BucketName, Key, Params) ->
     BaseUrl = get_random_riak_base_url(),
-    URL = case Key of
-        undefined -> io_lib:format("~s/buckets/~s/keys", [BaseUrl, BucketName]);
-        _ -> io_lib:format("~s/buckets/~s/keys/~s", [BaseUrl, BucketName, Key])
-    end,
+    URL =
+        case Key of
+            undefined -> io_lib:format("~s/buckets/~s/keys", [BaseUrl, BucketName]);
+            _ -> io_lib:format("~s/buckets/~s/keys/~s", [BaseUrl, BucketName, Key])
+        end,
     FullURL = lists:flatten(URL),
     case httpc:request(get, {FullURL, []}, [], [{params, Params}]) of
         {ok, {{_, 200, _}, _Headers, Body}} ->

@@ -103,7 +103,7 @@ init_graph_data(RiakBucketName, Graph) ->
         fun(N) ->
             NodeKey = io_lib:format("~s~p__meta", [?RIAK_NODE_KEY_PREFIX, N]),
             Meta = #{
-                "nbrs" => graph:neighbors(Graph, N)
+                nbrs => graph:neighbors(Graph, N)
             },
             io:format("Writing node ~p metadata ~p to Riak with key ~s~n", [
                 N, Meta, lists:flatten(NodeKey)
