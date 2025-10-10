@@ -1,8 +1,8 @@
 {application, riak_client_project, [
-    {description, "My Erlang Project"},
+    {description, "Riak Client Project"},
     {vsn, "0.1.0"},
     {registered, []},
     {applications, [kernel, stdlib]},
-    {mod, {my_project_app, []}},
+    {mod, {riak_client_app, []}},
     {env, []}
 ]}.
