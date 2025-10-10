@@ -45,7 +45,9 @@ get_random_riak_base_url() ->
 put_request_riak(BucketName, Key, Value) ->
     BaseUrl = get_random_riak_base_url(),
     Url = io_lib:format("~s/buckets/~s/keys/~s", [BaseUrl, BucketName, Key]),
+    io:format("PUT to URL: ~s~n", [lists:flatten(Url)]),
     Json = jsx:encode(Value),
+    io:format("PUT to ~s with value: ~s~n", [lists:flatten(Url), Json]),
     Headers = [{"Content-Type", "application/json"}],
     case httpc:request(put, {lists:flatten(Url), Headers, "application/json", Json}, [], []) of
         {ok, {{_, 200, _}, _RespHeaders, Body}} ->

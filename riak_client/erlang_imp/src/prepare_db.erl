@@ -19,9 +19,9 @@
 start() ->
     %% Mimic Python's argparse
     Args = init:get_arguments(),
-    case proplists:get_value("graph-name", Args) of
+    case proplists:get_value('graph-name', Args) of
         undefined ->
-            io:format("Usage: erl -noshell -s prepare_db start --graph-name <name> -s init stop~n"),
+            io:format("Usage: erl -noshell -s prepare_db start -graph-name <name> -s init stop~n"),
             halt(1);
         GraphNameList ->
             GraphName = lists:flatten(GraphNameList),
@@ -98,12 +98,16 @@ read_and_log_data(RiakBucketName) ->
 init_graph_data(RiakBucketName, Graph) ->
     io:format("Writing initial graph data...~n"),
     Ns = graph:nodes(Graph),
+    % io:format("Graph nodes: ~p~n", [Ns]),
     lists:foreach(
         fun(N) ->
             NodeKey = io_lib:format("~s~p__meta", [?RIAK_NODE_KEY_PREFIX, N]),
             Meta = #{
-                <<"nbrs">> => graph:neighbors(Graph, N)
+                "nbrs" => graph:neighbors(Graph, N)
             },
+            io:format("Writing node ~p metadata ~p to Riak with key ~s~n", [
+                N, Meta, lists:flatten(NodeKey)
+            ]),
             riak_client:put_request_riak(RiakBucketName, lists:flatten(NodeKey), Meta)
         end,
         Ns
