@@ -55,9 +55,10 @@ def init_graph_data(riak_bucket_name, graph):
 
 
 def init_config_data(riak_bucket_name, graph):
-    init_config = tuple(
-        random.choice(range(graph.degree(n))) for n in sorted(graph.nodes())
-    )
+    # init_config = tuple(
+    #     random.choice(range(graph.degree(n))) for n in sorted(graph.nodes())
+    # )  # random initial configuration
+    init_config = tuple(0 for _ in graph.nodes())  # all zeros initial configuration
     logger.info(f"Writing initial configuration: {init_config}.")
 
     for i in range(graph.number_of_nodes()):
