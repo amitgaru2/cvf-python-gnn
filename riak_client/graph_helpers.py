@@ -47,7 +47,7 @@ class Graph:
         return self.adj[node]
 
     def __str__(self):
-        return f"Graph(name={self.name}, nodes={self.nodes()})"
+        return f"Graph(name={self.name}, N={self.number_of_nodes()})"
 
 
 def get_graph(graph_name) -> Graph | None:
