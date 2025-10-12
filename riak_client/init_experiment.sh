@@ -51,7 +51,7 @@ RIAK_SERVER_URLS="${SERVER_MACHINES_ENV}" python prepare_database.py --graph-nam
 echo -e "Done preparing the database.\n"
 
 echo -e "Update bucket properties:\n"
-curl -X PUT -H "Content-Type: application/json" -d '{"props":{"n_val":${BUCKET__PROPS__N_VAL}, "r":${BUCKET__PROPS__R}, "w":${BUCKET__PROPS__W}, "dw":${BUCKET__PROPS__DW}}}' http://${SERVER_MACHINES[0]}/buckets/graph_coloring__${GRAPH_NAME}/props
+curl -X PUT -H "Content-Type: application/json" -d "{\"props\":{\"n_val\":${BUCKET__PROPS__N_VAL}, \"r\":${BUCKET__PROPS__R}, \"w\":${BUCKET__PROPS__W}, \"dw\":${BUCKET__PROPS__DW}}}" http://${SERVER_MACHINES[0]}/buckets/graph_coloring__${GRAPH_NAME}/props
 echo -e "Done updating bucket properties.\n"
 
 echo -e "Bucket properties:"
