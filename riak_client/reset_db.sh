@@ -9,7 +9,7 @@ for server in "${SERVER_MACHINES[@]}"; do
     ssh "$server" "~/research/riak/_build/rel/rel/riak/bin/riak stop"
     ssh "$server" "rm -rf ~/research/riak/_build/rel/rel/riak/data/bitcask/*"
     echo "Contents of bitcask after deletion (should be empty):"
-    ssh "$server" "ls ~/research/riak/_build/rel/rel/riak/data/bitcask/*"
+    ssh "$server" "ls ~/research/riak/_build/rel/rel/riak/data/bitcask"
     ssh "$server" "~/research/riak/_build/rel/rel/riak/bin/riak daemon"
     echo -e "Done cleaning up machine: $server.\n"
 done
