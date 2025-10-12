@@ -41,6 +41,10 @@ echo -e "Preparing the database.\n"
 RIAK_SERVER_URLS="${SERVER_MACHINES_ENV}" python prepare_database.py --graph-name "${GRAPH_NAME}"
 echo -e "Done preparing the database.\n"
 
+echo -e "Bucket properties:"
+curl http://${SERVER_MACHINES[0]}/buckets/graph_coloring__${GRAPH_NAME}/props
+echo -e "\n"
+
 # execute the client script on all client machines
 timePrefix=$(date +"%H_%M")
 Clients_Job_ID="""$timePrefix""_"$(shuf -i 10000-99999 -n 1)
