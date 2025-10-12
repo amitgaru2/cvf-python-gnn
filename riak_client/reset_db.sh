@@ -13,3 +13,10 @@ for server in "${SERVER_MACHINES[@]}"; do
     ssh "$server" "~/research/riak/_build/rel/rel/riak/bin/riak daemon"
     echo -e "Done cleaning up machine: $server.\n"
 done
+
+# verify servers are running
+for server in "${SERVER_MACHINES[@]}"; do
+    echo "Verifying riak status on machine: $server."
+    ssh "$server" "~/research/riak/_build/rel/rel/riak/bin/riak status"
+    echo -e "Done verifying riak status on machine: $server.\n"
+done
