@@ -18,6 +18,11 @@ CLIENT_MACHINES=("yangra1.uwyo.edu" "yangra2.uwyo.edu" "yangra3.uwyo.edu" "yangr
 CLIENT_COPY_FILES=("run_nohup.sh" "nohup_commands.sh" "custom_logger.py" "riak_helpers.py" "client_helpers.py" "graph_helpers.py" "graph_coloring.py" "verify_graph_coloring.py")
 # CLIENT_COPY_DIRS=("graphs")
 CLIENT_COPY_DIRS=()
+
+BUCKET__PROPS__N_VAL=3
+BUCKET__PROPS__R=1
+BUCKET__PROPS__W=1
+BUCKET__PROPS__DW=1
 # end of variables to be changed
 
 # copy the client script to all client machines
@@ -44,6 +49,10 @@ SERVER_MACHINES_ENV=$(IFS=';'; echo "${SERVER_MACHINES[*]}")
 echo -e "Preparing the database.\n"
 RIAK_SERVER_URLS="${SERVER_MACHINES_ENV}" python prepare_database.py --graph-name "${GRAPH_NAME}"
 echo -e "Done preparing the database.\n"
+
+echo -e "Update bucket properties:\n"
+curl -X PUT -H "Content-Type: application/json" -d '{"props":{"n_val":${BUCKET__PROPS__N_VAL}, "r":${BUCKET__PROPS__R}, "w":${BUCKET__PROPS__W}, "dw":${BUCKET__PROPS__DW}}}' http://${SERVER_MACHINES[0]}/buckets/graph_coloring__${GRAPH_NAME}/props
+echo -e "Done updating bucket properties.\n"
 
 echo -e "Bucket properties:"
 curl http://${SERVER_MACHINES[0]}/buckets/graph_coloring__${GRAPH_NAME}/props
