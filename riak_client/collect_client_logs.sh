@@ -6,8 +6,10 @@ CLIENT_MACHINES=("yangra1.uwyo.edu" "yangra2.uwyo.edu" "yangra3.uwyo.edu" "yangr
                  "yangra9.uwyo.edu" "yangra10.uwyo.edu" "yangra11.uwyo.edu" \
                  "manaslu3.uwyo.edu" "manaslu4.uwyo.edu" \
                  "manaslu9.uwyo.edu" "manaslu10.uwyo.edu" "manaslu11.uwyo.edu" "manaslu12.uwyo.edu")
-dateDir="25_10_12"
-jobID="14_34_69925"
+
+CLIENT_MACHINES=("yangra7.uwyo.edu")
+dateDir="25_10_13"
+jobID="01_24_51884"
 # ===================================================
 # collect the client logs from all client machines
 for client in "${CLIENT_MACHINES[@]}"; do
@@ -15,6 +17,7 @@ for client in "${CLIENT_MACHINES[@]}"; do
     mkdir -p "./client_script_logs/${hostName}/${dateDir}"
     echo "Fetching from client machine: $client."
     scp "$client:~/research/client_script_logs/${hostName}/${dateDir}/${jobID}.log" ./client_script_logs/${hostName}/${dateDir}/${jobID}.log
+    cat ./client_script_logs/${hostName}/${dateDir}/${jobID}.log | grep Total
     echo -e "Done fetching from $client.\n"
 done
 echo "=== Client logs collection complete. ==="
