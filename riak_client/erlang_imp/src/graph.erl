@@ -17,18 +17,10 @@
     name :: string()
 }).
 
-%% -------------------------------------------------------------
-%% Constructor
-%% -------------------------------------------------------------
-
 new(AdjacencyDict, Name) when is_map(AdjacencyDict), is_list(Name) ->
     #graph{adj = AdjacencyDict, name = Name};
 new(_, _) ->
     error({type_error, "Input must be a dictionary (map)"}).
-
-%% -------------------------------------------------------------
-%% Accessor functions
-%% -------------------------------------------------------------
 
 nodes(#graph{adj = Adj}) ->
     maps:keys(Adj).
@@ -55,10 +47,6 @@ neighbors(#graph{adj = Adj}, Node) ->
 to_string(#graph{name = Name, adj = Adj}) ->
     io_lib:format("Graph(name=~s, N=~p)", [Name, length(maps:keys(Adj))]).
 
-%% -------------------------------------------------------------
-%% Load graph from file
-%% -------------------------------------------------------------
-
 get_graph(GraphName) ->
     FullPath = filename:join(?GRAPHS_DIR, GraphName ++ ".txt"),
     my_logger:info(io_lib:format("Locating Graph: ~s", [GraphName])),
@@ -74,10 +62,6 @@ get_graph(GraphName) ->
             io:format("Error reading file ~s: ~p~n", [FullPath, Reason]),
             undefined
     end.
-
-%% -------------------------------------------------------------
-%% Helper to parse adjacency list lines
-%% -------------------------------------------------------------
 
 parse_lines([], Acc) ->
     Acc;
