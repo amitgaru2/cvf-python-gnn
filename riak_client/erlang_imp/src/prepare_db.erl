@@ -13,6 +13,7 @@
 -define(RIAK_NODE_KEY_PREFIX, "node_").
 
 start() ->
+    my_logger:setup(),
     Args = init:get_arguments(),
     case proplists:get_value('graph-name', Args) of
         undefined ->
@@ -25,12 +26,14 @@ start() ->
 
 usage() ->
     my_logger:error(
-        io_lib:format("Usage: erl -noshell -s prepare_db start -graph-name <name> -s init stop~n")
+        io_lib:format(
+            "Usage: erl -noshell -s prepare_db start -graph-name <name> -s init stop.", []
+        )
     ),
     halt(1).
 
 main(GraphName) ->
-    my_logger:info(io_lib:format("Locating graph ~s...", [GraphName])),
+    my_logger:info(io_lib:format("Locating graph ~s.", [GraphName])),
     Graph = graph:get_graph(GraphName),
     case Graph of
         undefined ->
@@ -40,7 +43,7 @@ main(GraphName) ->
             my_logger:info(io_lib:format("Found graph: ~s", [graph:to_string(Graph)])),
             RiakBucketName = ?RIAK_BUCKET_PREFIX ++ "__" ++ GraphName,
             my_logger:info(
-                io_lib:format("Cleaning existing data in bucket ~s...", [RiakBucketName])
+                io_lib:format("Cleaning existing data in bucket ~s.", [RiakBucketName])
             ),
             delete_data(RiakBucketName),
             my_logger:info(io_lib:format("Cleanup done.", [])),
@@ -54,7 +57,7 @@ init_data(RiakBucketName, Graph) ->
     init_config_data(RiakBucketName, Graph).
 
 delete_data(RiakBucketName) ->
-    io:format("Deleting Riak bucket: ~s~n", [RiakBucketName]),
+    my_logger:info(io_lib:format("Deleting Riak bucket: ~s", [RiakBucketName])),
     KeysResult = riak_client:get_request_riak(RiakBucketName, undefined, "keys=true"),
     case KeysResult of
         #{<<"keys">> := Keys} ->
@@ -65,11 +68,11 @@ delete_data(RiakBucketName) ->
                 Keys
             );
         _ ->
-            io:format("No keys found for bucket ~s.~n", [RiakBucketName])
+            my_logger:warning(io_lib:format("No keys found for bucket ~s.", [RiakBucketName]))
     end.
 
 read_and_log_data(RiakBucketName) ->
-    io:format("Reading Riak bucket: ~s~n", [RiakBucketName]),
+    my_logger:info(io_lib:format("Reading Riak bucket: ~s", [RiakBucketName])),
     KeysResult = riak_client:get_request_riak(RiakBucketName, undefined, "keys=true"),
     case KeysResult of
         #{<<"keys">> := Keys} ->
@@ -81,13 +84,13 @@ read_and_log_data(RiakBucketName) ->
                             ok;
                         _ ->
                             Value = riak_client:get_request_riak(RiakBucketName, Key),
-                            io:format("Key: ~s, Value: ~p~n", [Key, Value])
+                            my_logger:info(io_lib:format("Key: ~s, Value: ~p", [Key, Value]))
                     end
                 end,
                 Keys
             );
         _ ->
-            io:format("No keys found.~n")
+            my_logger:warning(io_lib:format("No keys found for bucket ~s.", [RiakBucketName]))
     end.
 
 init_graph_data(RiakBucketName, Graph) ->
@@ -122,7 +125,7 @@ init_config_data(RiakBucketName, Graph) ->
                 true ->
                     ok;
                 false ->
-                    io:format("Failed to write node ~p to Riak.~n", [I]),
+                    my_logger:error(io_lib:format("Failed to write node ~p to Riak.", [I])),
                     halt(1)
             end
         end,

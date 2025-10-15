@@ -15,7 +15,6 @@
 -define(RIAK_PETERSON_LCK_TURN_KEY_PREFIX, "L_TURN_").
 
 init() ->
-    my_logger:setup(),
     application:ensure_all_started(inets),
     application:ensure_all_started(crypto),
     application:ensure_all_started(public_key),

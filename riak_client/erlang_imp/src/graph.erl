@@ -53,7 +53,7 @@ neighbors(#graph{adj = Adj}, Node) ->
     end.
 
 to_string(#graph{name = Name, adj = Adj}) ->
-    io_lib:format("Graph(name=~s, nodes=~p)", [Name, maps:keys(Adj)]).
+    io_lib:format("Graph(name=~s, N=~p)", [Name, length(maps:keys(Adj))]).
 
 %% -------------------------------------------------------------
 %% Load graph from file
