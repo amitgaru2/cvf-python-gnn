@@ -1,0 +1,5 @@
+-define(DEFAULT_RIAK_URLS, "localhost:8098").
+-define(RIAK_BUCKET_PREFIX, "graph_coloring").
+-define(RIAK_NODE_KEY_PREFIX, "node_").
+-define(RIAK_PETERSON_LCK_FLAG_KEY_PREFIX, "L_FLAG_").
+-define(RIAK_PETERSON_LCK_TURN_KEY_PREFIX, "L_TURN_").
