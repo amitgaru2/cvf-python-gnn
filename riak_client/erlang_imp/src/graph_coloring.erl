@@ -2,8 +2,8 @@
 -export([start/0]).
 
 start() ->
+    my_logger:setup(),
     Args = init:get_arguments(),
-    % io:format("Graph coloring module loaded with args: ~p~n", [Args]),
     case
         {
             proplists:get_value('graph-name', Args),
@@ -24,6 +24,8 @@ start() ->
                 "Starting graph coloring with graph: ~s, client ID: ~p, number of clients: ~p~n",
                 [GraphName, ClientId, NumClients]
             ),
+            Graph = graph:get_graph(GraphName),
+            main(Graph, ClientId, NumClients),
             halt(0)
     end,
     ok.
@@ -41,3 +43,7 @@ safe_int(Str) when is_list(Str) ->
     catch
         _:_ -> {error, invalid_integer}
     end.
+
+main(Graph, ClientId, NumClients) ->
+    my_logger:info(io_lib:format("Loaded graph: ~s~n", [graph:to_string(Graph)])),
+    ok.
