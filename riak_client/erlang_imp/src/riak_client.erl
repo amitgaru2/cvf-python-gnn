@@ -83,9 +83,12 @@ get_request_riak(BucketName, Key, _Params) ->
     case httpc:request(get, {FullURL, []}, [], []) of
         {ok, {{_, 200, _}, _Headers, Body}} ->
             my_logger:info(io_lib:format("Read from ~s.", [FullURL])),
-            case catch jsx:decode(Body, [return_maps]) of
-                {'EXIT', _} -> Body;
-                Json -> Json
+            case catch jsx:decode(list_to_binary(Body), [return_maps]) of
+                {'EXIT', Reason} ->
+                    my_logger:error(io_lib:format("Error decoding JSON: ~p~n", [Reason])),
+                    Body;
+                Json ->
+                    Json
             end;
         {ok, {{_, 404, _}, _, _}} ->
             io:format("Key '~s' not found in bucket '~s'.~n", [Key, BucketName]),
