@@ -1,5 +1,6 @@
 -module(graph_coloring).
 -export([start/0]).
+-record(graph, {adj, name}).
 
 start() ->
     my_logger:setup(),
@@ -58,11 +59,27 @@ main(Graph, ClientId, NumClients) ->
     take_step(Graph),
     ok.
 
+get_lexically_ordered_neighbors(Graph, Node) ->
+    Response = riak_client:get_request_riak(
+        io_lib:format("graph_coloring__~s", [Graph#graph.name]),
+        io_lib:format("node~p__meta", [Node])
+    ),
+    Neighbors = maps:get(<<"nbrs">>, Response),
+    SortedNeighbors = lists:sort(Neighbors),
+    my_logger:info(
+        io_lib:format("Node ~p has lexically ordered neighbors: ~p~n", [Node, SortedNeighbors])
+    ),
+    ok.
+
 take_step_each_node(Graph, Node) ->
     Neighbors = graph:neighbors(Graph, Node),
     my_logger:info(io_lib:format("Node ~p has neighbors: ~p~n", [Node, Neighbors])),
-    SelfColor = riak_client:get_request_riak("colors", Node, #{}),
+    SelfColor = riak_client:get_request_riak(
+        io_lib:format("graph_coloring__~s", [Graph#graph.name]),
+        io_lib:format("node~p__val", [Node])
+    ),
     my_logger:info(io_lib:format("Node ~p has color: ~p~n", [Node, SelfColor])),
+    get_lexically_ordered_neighbors(Graph, Node),
     ok.
 
 take_step(Graph) ->

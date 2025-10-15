@@ -72,7 +72,7 @@ put_request_riak(BucketName, Key, Value) ->
 get_request_riak(BucketName, Key) ->
     get_request_riak(BucketName, Key, []).
 
-get_request_riak(BucketName, Key, Params) ->
+get_request_riak(BucketName, Key, _Params) ->
     BaseUrl = get_random_riak_base_url(),
     URL =
         case Key of
@@ -80,9 +80,9 @@ get_request_riak(BucketName, Key, Params) ->
             _ -> io_lib:format("~s/buckets/~s/keys/~s", [BaseUrl, BucketName, Key])
         end,
     FullURL = lists:flatten(URL),
-    case httpc:request(get, {FullURL, []}, [], [{params, Params}]) of
+    case httpc:request(get, {FullURL, []}, [], []) of
         {ok, {{_, 200, _}, _Headers, Body}} ->
-            io:format("Read from ~s.~n", [FullURL]),
+            my_logger:info(io_lib:format("Read from ~s.", [FullURL])),
             case catch jsx:decode(Body, [return_maps]) of
                 {'EXIT', _} -> Body;
                 Json -> Json
