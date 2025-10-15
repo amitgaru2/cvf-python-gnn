@@ -31,7 +31,10 @@ start() ->
             my_logger:info(
                 io_lib:format("Loaded graph: ~s~n", [graph:to_string(Graph)])
             ),
-            main(Graph, ClientId, NumClients),
+            Partition = partition:get_partition_for_client(
+                graph:nodes(Graph), ClientId, NumClients
+            ),
+            main(Graph, Partition),
             halt(0)
     end,
     ok.
@@ -55,8 +58,8 @@ safe_int(Str) when is_list(Str) ->
         _:_ -> {error, invalid_integer}
     end.
 
-main(Graph, ClientId, NumClients) ->
-    take_step(Graph),
+main(Graph, Partition) ->
+    take_step(Graph, Partition),
     ok.
 
 get_lexically_ordered_neighbors(Graph, Node) ->
@@ -65,23 +68,38 @@ get_lexically_ordered_neighbors(Graph, Node) ->
         io_lib:format("node~p__meta", [Node])
     ),
     Neighbors = maps:get(<<"nbrs">>, Response),
-    SortedNeighbors = lists:sort(Neighbors),
-    my_logger:info(
-        io_lib:format("Node ~p has lexically ordered neighbors: ~p~n", [Node, SortedNeighbors])
-    ),
+    lists:sort(Neighbors).
+
+get_pet_lock(Node, Nbr) ->
+    Side = Node,
+    OtherSide = Nbr,
     ok.
 
-take_step_each_node(Graph, Node) ->
-    Neighbors = graph:neighbors(Graph, Node),
-    my_logger:info(io_lib:format("Node ~p has neighbors: ~p~n", [Node, Neighbors])),
+take_step_each_node(Graph, Node, Partition) ->
     SelfColor = riak_client:get_request_riak(
         io_lib:format("graph_coloring__~s", [Graph#graph.name]),
         io_lib:format("node~p__val", [Node])
     ),
     my_logger:info(io_lib:format("Node ~p has color: ~p~n", [Node, SelfColor])),
-    get_lexically_ordered_neighbors(Graph, Node),
+    SortedNeighbors = get_lexically_ordered_neighbors(Graph, Node),
+    lists:foreach(
+        fun(Nbr) ->
+            case lists:member(Nbr, Partition) of
+                true ->
+                    ok;
+                false ->
+                    get_pet_lock(Node, Nbr)
+            end,
+            NbrColor = riak_client:get_request_riak(
+                io_lib:format("graph_coloring__~s", [Graph#graph.name]),
+                io_lib:format("node~p__val", [Nbr])
+            ),
+            ok
+        end,
+        SortedNeighbors
+    ),
     ok.
 
-take_step(Graph) ->
-    lists:foreach(fun(Node) -> take_step_each_node(Graph, Node) end, graph:nodes(Graph)),
+take_step(Graph, Partition) ->
+    lists:foreach(fun(Node) -> take_step_each_node(Graph, Node, Partition) end, graph:nodes(Graph)),
     ok.
