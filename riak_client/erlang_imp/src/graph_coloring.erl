@@ -162,7 +162,7 @@ take_step_each_node(Graph, Node, Partition) ->
             ok
     end,
     % release locks
-    % release_pet_lock(Graph, Node, Nbr) || Nbr <- AcquiredLocks,
+    [release_pet_lock(Graph, Node, Nbr) || Nbr <- AcquiredLocks],
     ok.
 
 take_step(Graph, Partition) ->

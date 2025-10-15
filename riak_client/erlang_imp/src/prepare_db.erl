@@ -1,5 +1,5 @@
 -module(prepare_db).
--export([main/2, delete_data/1, read_and_log_data/1, init_graph_data/2, init_config_data/2, start/0]).
+-export([start/0]).
 
 -include_lib("stdlib/include/assert.hrl").
 
@@ -12,47 +12,50 @@
 -define(RIAK_BUCKET_PREFIX, "graph_coloring").
 -define(RIAK_NODE_KEY_PREFIX, "node_").
 
-%% -------------------------------------------------------------
-%% Entry point
-%% -------------------------------------------------------------
-
 start() ->
-    %% Mimic Python's argparse
     Args = init:get_arguments(),
     case proplists:get_value('graph-name', Args) of
         undefined ->
-            io:format("Usage: erl -noshell -s prepare_db start -graph-name <name> -s init stop~n"),
-            halt(1);
+            usage();
         GraphNameList ->
+            % ["graphname"] -> "graphname"
             GraphName = lists:flatten(GraphNameList),
-            run(GraphName)
+            main(GraphName)
     end.
 
-run(GraphName) ->
-    logger:info("Locating graph ~s...~n", [GraphName]),
+usage() ->
+    my_logger:error(
+        io_lib:format("Usage: erl -noshell -s prepare_db start -graph-name <name> -s init stop~n")
+    ),
+    halt(1).
+
+main(GraphName) ->
+    my_logger:info(io_lib:format("Locating graph ~s...", [GraphName])),
     Graph = graph:get_graph(GraphName),
     case Graph of
         undefined ->
-            io:format("Graph ~s not found.~n", [GraphName]),
+            my_logger:error(io_lib:format("Graph ~s not found.", [GraphName])),
             halt(1);
         _ ->
-            io:format("Found graph: ~s~n", [graph:to_string(Graph)]),
+            my_logger:info(io_lib:format("Found graph: ~s", [graph:to_string(Graph)])),
             RiakBucketName = ?RIAK_BUCKET_PREFIX ++ "__" ++ GraphName,
-            io:format("Cleaning existing data in bucket ~s...~n", [RiakBucketName]),
+            my_logger:info(
+                io_lib:format("Cleaning existing data in bucket ~s...", [RiakBucketName])
+            ),
             delete_data(RiakBucketName),
-            io:format("Cleanup done.~n"),
-            main(RiakBucketName, Graph),
-            io:format("Database preparation done.~n"),
+            my_logger:info(io_lib:format("Cleanup done.", [])),
+            % init_data(RiakBucketName, Graph),
+            my_logger:info(io_lib:format("Database preparation done.", [])),
             halt(0)
     end.
 
-%% -------------------------------------------------------------
-%% Delete data in Riak bucket
-%% -------------------------------------------------------------
+init_data(RiakBucketName, Graph) ->
+    init_graph_data(RiakBucketName, Graph),
+    init_config_data(RiakBucketName, Graph).
 
 delete_data(RiakBucketName) ->
     io:format("Deleting Riak bucket: ~s~n", [RiakBucketName]),
-    KeysResult = riak_client:get_request_riak(RiakBucketName, undefined, #{"keys" => "true"}),
+    KeysResult = riak_client:get_request_riak(RiakBucketName, undefined, "keys=true"),
     case KeysResult of
         #{<<"keys">> := Keys} ->
             lists:foreach(
@@ -65,13 +68,9 @@ delete_data(RiakBucketName) ->
             io:format("No keys found for bucket ~s.~n", [RiakBucketName])
     end.
 
-%% -------------------------------------------------------------
-%% Read and log data
-%% -------------------------------------------------------------
-
 read_and_log_data(RiakBucketName) ->
     io:format("Reading Riak bucket: ~s~n", [RiakBucketName]),
-    KeysResult = riak_client:get_request_riak(RiakBucketName, undefined, #{"keys" => "true"}),
+    KeysResult = riak_client:get_request_riak(RiakBucketName, undefined, "keys=true"),
     case KeysResult of
         #{<<"keys">> := Keys} ->
             lists:foreach(
@@ -91,36 +90,29 @@ read_and_log_data(RiakBucketName) ->
             io:format("No keys found.~n")
     end.
 
-%% -------------------------------------------------------------
-%% Write graph metadata
-%% -------------------------------------------------------------
-
 init_graph_data(RiakBucketName, Graph) ->
-    io:format("Writing initial graph data...~n"),
+    my_logger:info(io_lib:format("Writing initial graph data...", [])),
     Ns = graph:nodes(Graph),
-    % io:format("Graph nodes: ~p~n", [Ns]),
     lists:foreach(
         fun(N) ->
             NodeKey = io_lib:format("~s~p__meta", [?RIAK_NODE_KEY_PREFIX, N]),
             Meta = #{
                 nbrs => graph:neighbors(Graph, N)
             },
-            io:format("Writing node ~p metadata ~p to Riak with key ~s~n", [
-                N, Meta, lists:flatten(NodeKey)
-            ]),
+            my_logger:info(
+                io_lib:format("Writing node ~p metadata ~p to Riak with key ~s", [
+                    N, Meta, lists:flatten(NodeKey)
+                ])
+            ),
             riak_client:put_request_riak(RiakBucketName, lists:flatten(NodeKey), Meta)
         end,
         Ns
     ).
 
-%% -------------------------------------------------------------
-%% Write initial configuration values
-%% -------------------------------------------------------------
-
 init_config_data(RiakBucketName, Graph) ->
     Ns = lists:sort(graph:nodes(Graph)),
     InitConfig = [rand:uniform(graph:degree(Graph, N)) - 1 || N <- Ns],
-    io:format("Writing initial configuration: ~p~n", [InitConfig]),
+    my_logger:info(io_lib:format("Writing initial configuration: ~p", [InitConfig])),
     NodeCount = graph:number_of_nodes(Graph),
     lists:foreach(
         fun(I) ->
@@ -136,11 +128,3 @@ init_config_data(RiakBucketName, Graph) ->
         end,
         lists:seq(0, NodeCount - 1)
     ).
-
-%% -------------------------------------------------------------
-%% Main orchestration
-%% -------------------------------------------------------------
-
-main(RiakBucketName, Graph) ->
-    init_graph_data(RiakBucketName, Graph),
-    init_config_data(RiakBucketName, Graph).
