@@ -21,18 +21,14 @@ start() ->
             {ok, ClientId} = safe_int(ClientIdStr),
             {ok, NumClients} = safe_int(NumClientsStr),
             my_logger:info(
-                lists:flatten(
-                    io_lib:format(
-                        "Starting graph coloring with graph: ~s, client ID: ~p, number of clients: ~p~n",
-                        [GraphName, ClientId, NumClients]
-                    )
+                io_lib:format(
+                    "Starting graph coloring with graph: ~s, client ID: ~p, number of clients: ~p",
+                    [GraphName, ClientId, NumClients]
                 )
             ),
             Graph = graph:get_graph(GraphName),
             my_logger:info(
-                lists:flatten(
-                    io_lib:format("Loaded graph: ~s~n", [graph:to_string(Graph)])
-                )
+                io_lib:format("Loaded graph: ~s~n", [graph:to_string(Graph)])
             ),
             main(Graph, ClientId, NumClients),
             halt(0)
@@ -59,4 +55,14 @@ safe_int(Str) when is_list(Str) ->
     end.
 
 main(Graph, ClientId, NumClients) ->
+    take_step(Graph),
+    ok.
+
+take_step_each_node(Graph, Node) ->
+    Neighbors = graph:neighbors(Graph, Node),
+    my_logger:info(io_lib:format("Node ~p has neighbors: ~p~n", [Node, Neighbors])),
+    ok.
+
+take_step(Graph) ->
+    lists:foreach(fun(Node) -> take_step_each_node(Graph, Node) end, graph:nodes(Graph)),
     ok.
