@@ -12,10 +12,7 @@
 -define(PRIV_DIR, code:priv_dir(riak_client_project)).
 -define(GRAPHS_DIR, filename:join(?PRIV_DIR, "graphs")).
 
--record(graph, {
-    adj :: map(),
-    name :: string()
-}).
+-include("graph.hrl").
 
 new(AdjacencyDict, Name) when is_map(AdjacencyDict), is_list(Name) ->
     #graph{adj = AdjacencyDict, name = Name};

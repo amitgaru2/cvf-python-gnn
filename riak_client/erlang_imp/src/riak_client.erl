@@ -53,9 +53,9 @@ put_request_riak(BucketName, Key, Value) ->
     end.
 
 get_request_riak(BucketName, Key) ->
-    get_request_riak(BucketName, Key, []).
+    get_request_riak(BucketName, Key, undefined).
 
-get_request_riak(BucketName, Key, _ParamStr) ->
+get_request_riak(BucketName, Key, ParamStr) ->
     BaseUrl = get_random_riak_base_url(),
     URL =
         case Key of
@@ -63,11 +63,11 @@ get_request_riak(BucketName, Key, _ParamStr) ->
             _ -> io_lib:format("~s/buckets/~s/keys/~s", [BaseUrl, BucketName, Key])
         end,
     FullURL =
-        case _ParamStr of
+        case ParamStr of
             undefined ->
                 lists:flatten(URL);
             _ ->
-                io_lib:format("~s?~s", [lists:flatten(URL), _ParamStr])
+                io_lib:format("~s?~s", [lists:flatten(URL), ParamStr])
         end,
     case httpc:request(get, {FullURL, []}, [], []) of
         {ok, {{_, Code, _}, _Headers, Body}} when Code >= 200, Code < 300 ->
@@ -96,10 +96,10 @@ delete_request_riak(BucketName, Key) ->
     BaseUrl = get_random_riak_base_url(),
     URL = io_lib:format("~s/buckets/~s/keys/~s", [BaseUrl, BucketName, Key]),
     FullURL = lists:flatten(URL),
+    my_logger:info(io_lib:format("Delete from ~s.", [FullURL])),
     case httpc:request(delete, {FullURL, []}, [], []) of
         {ok, {{_, Code, _}, _RespHeaders, Body}} when Code >= 200, Code < 300 ->
-            my_logger:info(io_lib:format("Delete from ~s.", [FullURL])),
-            my_logger:info(
+            my_logger:debug(
                 io_lib:format("Deleted key '~s' from bucket '~s'.", [Key, BucketName])
             ),
             my_logger:debug(io_lib:format("Response: ~s.", [Body])),
