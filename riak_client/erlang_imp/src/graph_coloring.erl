@@ -20,9 +20,11 @@ start() ->
         {GraphName, ClientIdStr, NumClientsStr} ->
             {ok, ClientId} = safe_int(ClientIdStr),
             {ok, NumClients} = safe_int(NumClientsStr),
-            io:format(
-                "Starting graph coloring with graph: ~s, client ID: ~p, number of clients: ~p~n",
-                [GraphName, ClientId, NumClients]
+            my_logger:info(
+                io:format(
+                    "Starting graph coloring with graph: ~s, client ID: ~p, number of clients: ~p~n",
+                    [GraphName, ClientId, NumClients]
+                )
             ),
             Graph = graph:get_graph(GraphName),
             main(Graph, ClientId, NumClients),
@@ -31,7 +33,7 @@ start() ->
     ok.
 
 usage() ->
-    io:format(
+    my_logger:warning(
         "Usage: erl -noshell -s graph_coloring start -graph-name <name> -client-id <id> -num-clients <num> -s init stop~n"
     ),
     halt(1).
