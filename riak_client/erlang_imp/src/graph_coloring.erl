@@ -29,6 +29,11 @@ start() ->
                 )
             ),
             Graph = graph:get_graph(GraphName),
+            my_logger:info(
+                lists:flatten(
+                    io_lib:format("Loaded graph: ~s~n", [graph:to_string(Graph)])
+                )
+            ),
             main(Graph, ClientId, NumClients),
             halt(0)
     end,
@@ -36,7 +41,12 @@ start() ->
 
 usage() ->
     my_logger:warning(
-        "Usage: erl -noshell -s graph_coloring start -graph-name <name> -client-id <id> -num-clients <num> -s init stop"
+        lists:flatten(
+            io_lib:format(
+                "Usage: erl -noshell -s graph_coloring start -graph-name <name> -client-id <id> -num-clients <num> -s init stop",
+                []
+            )
+        )
     ),
     halt(1).
 
@@ -49,9 +59,4 @@ safe_int(Str) when is_list(Str) ->
     end.
 
 main(Graph, ClientId, NumClients) ->
-    my_logger:info(
-        lists:flatten(
-            io_lib:format("Loaded graph: ~s~n", [graph:to_string(Graph)])
-        )
-    ),
     ok.
