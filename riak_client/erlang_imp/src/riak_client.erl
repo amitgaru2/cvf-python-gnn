@@ -46,7 +46,6 @@ put_request_riak(BucketName, Key, Value) ->
     Headers = [{"Content-Type", "application/json"}],
     case httpc:request(put, {FullURL, Headers, "application/json", Json}, [], []) of
         {ok, {{_, Code, _}, _RespHeaders, Body}} when Code >= 200, Code < 300 ->
-            my_logger:info(io_lib:format("PUT to URL: ~s the value: ~p", [FullURL, Value])),
             my_logger:debug(io_lib:format("Response: ~s.", [Body])),
             true;
         {ok, {{_, Code, _}, _, Body}} ->

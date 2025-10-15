@@ -47,7 +47,7 @@ main(GraphName) ->
             ),
             delete_data(RiakBucketName),
             my_logger:info(io_lib:format("Cleanup done.", [])),
-            % init_data(RiakBucketName, Graph),
+            init_data(RiakBucketName, Graph),
             my_logger:info(io_lib:format("Database preparation done.", [])),
             halt(0)
     end.
@@ -71,27 +71,27 @@ delete_data(RiakBucketName) ->
             my_logger:warning(io_lib:format("No keys found for bucket ~s.", [RiakBucketName]))
     end.
 
-read_and_log_data(RiakBucketName) ->
-    my_logger:info(io_lib:format("Reading Riak bucket: ~s", [RiakBucketName])),
-    KeysResult = riak_client:get_request_riak(RiakBucketName, undefined, "keys=true"),
-    case KeysResult of
-        #{<<"keys">> := Keys} ->
-            lists:foreach(
-                fun(KeyBin) ->
-                    Key = binary_to_list(KeyBin),
-                    case string:prefix(Key, ?RIAK_NODE_KEY_PREFIX) of
-                        nomatch ->
-                            ok;
-                        _ ->
-                            Value = riak_client:get_request_riak(RiakBucketName, Key),
-                            my_logger:info(io_lib:format("Key: ~s, Value: ~p", [Key, Value]))
-                    end
-                end,
-                Keys
-            );
-        _ ->
-            my_logger:warning(io_lib:format("No keys found for bucket ~s.", [RiakBucketName]))
-    end.
+% read_and_log_data(RiakBucketName) ->
+%     my_logger:info(io_lib:format("Reading Riak bucket: ~s", [RiakBucketName])),
+%     KeysResult = riak_client:get_request_riak(RiakBucketName, undefined, "keys=true"),
+%     case KeysResult of
+%         #{<<"keys">> := Keys} ->
+%             lists:foreach(
+%                 fun(KeyBin) ->
+%                     Key = binary_to_list(KeyBin),
+%                     case string:prefix(Key, ?RIAK_NODE_KEY_PREFIX) of
+%                         nomatch ->
+%                             ok;
+%                         _ ->
+%                             Value = riak_client:get_request_riak(RiakBucketName, Key),
+%                             my_logger:info(io_lib:format("Key: ~s, Value: ~p", [Key, Value]))
+%                     end
+%                 end,
+%                 Keys
+%             );
+%         _ ->
+%             my_logger:warning(io_lib:format("No keys found for bucket ~s.", [RiakBucketName]))
+%     end.
 
 init_graph_data(RiakBucketName, Graph) ->
     my_logger:info(io_lib:format("Writing initial graph data...", [])),
@@ -113,8 +113,9 @@ init_graph_data(RiakBucketName, Graph) ->
     ).
 
 init_config_data(RiakBucketName, Graph) ->
-    Ns = lists:sort(graph:nodes(Graph)),
-    InitConfig = [rand:uniform(graph:degree(Graph, N)) - 1 || N <- Ns],
+    % Ns = lists:sort(graph:nodes(Graph)),
+    % InitConfig = [rand:uniform(graph:degree(Graph, N)) - 1 || N <- Ns],
+    InitConfig = [0 || _ <- graph:nodes(Graph)],
     my_logger:info(io_lib:format("Writing initial configuration: ~p", [InitConfig])),
     NodeCount = graph:number_of_nodes(Graph),
     lists:foreach(
