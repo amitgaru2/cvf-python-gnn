@@ -61,6 +61,8 @@ main(Graph, ClientId, NumClients) ->
 take_step_each_node(Graph, Node) ->
     Neighbors = graph:neighbors(Graph, Node),
     my_logger:info(io_lib:format("Node ~p has neighbors: ~p~n", [Node, Neighbors])),
+    SelfColor = riak_client:get_request_riak("colors", Node, #{}),
+    my_logger:info(io_lib:format("Node ~p has color: ~p~n", [Node, SelfColor])),
     ok.
 
 take_step(Graph) ->

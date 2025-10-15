@@ -61,7 +61,7 @@ to_string(#graph{name = Name, adj = Adj}) ->
 
 get_graph(GraphName) ->
     FullPath = filename:join(?GRAPHS_DIR, GraphName ++ ".txt"),
-    io:format("Locating Graph: ~s~n", [GraphName]),
+    my_logger:info(io_lib:format("Locating Graph: ~s", [GraphName])),
     case file:read_file(FullPath) of
         {ok, Bin} ->
             Lines = string:split(binary_to_list(Bin), "\n", all),
