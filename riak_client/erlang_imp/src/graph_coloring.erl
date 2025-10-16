@@ -44,14 +44,12 @@ start() ->
 
 usage() ->
     my_logger:warning(
-        lists:flatten(
-            io_lib:format(
-                "Usage: erl -noshell -s graph_coloring start -graph-name <name> -client-id <id> -num-clients <num> -s init stop",
-                []
-            )
+        io_lib:format(
+            "Usage: erl -noshell -s graph_coloring start -graph-name <name> -client-id <id> -num-clients <num> -s init stop",
+            []
         )
     ),
-    halt(1).
+    ok.
 
 safe_int(Str) when is_list(Str) ->
     FlatStr = lists:flatten(Str),
