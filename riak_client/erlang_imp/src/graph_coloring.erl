@@ -1,5 +1,5 @@
 -module(graph_coloring).
--export([start/0]).
+-export([start/0, safe_int/1, get_lexically_ordered_neighbors/2]).
 -record(graph, {adj, name}).
 
 start() ->
@@ -149,7 +149,7 @@ take_step_each_node(Graph, Node, Partition) ->
         io_lib:format("graph_coloring__~s", [Graph#graph.name]),
         io_lib:format("node_~p__val", [Node])
     ),
-    my_logger:info(io_lib:format("Node ~p has color: ~p", [Node, SelfColor])),
+    my_logger:debug(io_lib:format("Node ~p has color: ~p", [Node, SelfColor])),
     SortedNeighbors = get_lexically_ordered_neighbors(Graph, Node),
     AcquiredLocks = [],
     NbrColors = [],
@@ -176,5 +176,8 @@ take_step(Graph, Partition) ->
     lists:foreach(fun(Node) -> take_step_each_node(Graph, Node, Partition) end, graph:nodes(Graph)),
     ok.
 
-to_boolean(Str) when Str == "true" -> true;
-to_boolean(_) -> false.
+to_boolean(Str) when Str == "true" ->
+    io:format("true occurred", []),
+    true;
+to_boolean(_) ->
+    false.
