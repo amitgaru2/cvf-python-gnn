@@ -8,7 +8,7 @@ set -eu
 GRAPH_NAME="$1"
 
 SERVER_MACHINES=("mteverest2.uwyo.edu:8098")
-CLIENT_MACHINES=("lhotse3.uwyo.edu")
+CLIENT_MACHINES=("lhotse3.uwyo.edu" "lhotse4.uwyo.edu")
 
 
 CLIENT_COPY_FILES=("run_nohup.sh" "nohup_commands.sh")
