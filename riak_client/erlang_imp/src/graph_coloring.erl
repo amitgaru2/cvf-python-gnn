@@ -37,10 +37,8 @@ start() ->
             my_logger:info(
                 io_lib:format("Client ~p has partition: ~p", [ClientId, Partition])
             ),
-            main(Graph, Partition),
-            ok
-    end,
-    ok.
+            main(Graph, Partition)
+    end.
 
 usage() ->
     my_logger:warning(
@@ -49,7 +47,7 @@ usage() ->
             []
         )
     ),
-    ok.
+    init:stop(1).
 
 safe_int(Str) when is_list(Str) ->
     FlatStr = lists:flatten(Str),
@@ -61,7 +59,7 @@ safe_int(Str) when is_list(Str) ->
 
 main(Graph, Partition) ->
     take_step(Graph, Partition),
-    ok.
+    init:stop(0).
 
 get_lexically_ordered_neighbors(Graph, Node) ->
     Response = riak_client:get_request_riak(
