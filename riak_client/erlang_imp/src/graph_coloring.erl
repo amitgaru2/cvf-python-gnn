@@ -38,7 +38,7 @@ start() ->
                 io_lib:format("Client ~p has partition: ~p", [ClientId, Partition])
             ),
             main(Graph, Partition),
-            halt(0)
+            ok
     end,
     ok.
 
@@ -127,8 +127,8 @@ release_pet_lock(Graph, Node, Nbr) ->
     ),
     ok.
 
-get_neighbor_color([], Graph, Node, Partition, {NbrColors, AcquiredLocks}) ->
-    {NbrColors, AcquiredLocks};
+get_neighbor_color([], _, _, _, Acc) ->
+    Acc;
 get_neighbor_color([Nbr | Rest], Graph, Node, Partition, {NbrColors, AcquiredLocks}) ->
     case lists:member(Nbr, Partition) of
         true ->
