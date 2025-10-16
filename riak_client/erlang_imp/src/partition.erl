@@ -20,7 +20,7 @@ distribute([Num | Rest], M, Partitions) ->
 add_to_partition(Partitions, Index, Num) ->
     {Left, [Current | Right]} = lists:split(Index, Partitions),
     NewPartition = [Num | Current],
-    [Left | [NewPartition | Right]].
+    Left ++ [NewPartition | Right].
 
 %% Get the partition assigned to a given client (by index)
 get_partition_for_client(GraphNodes, ClientId, M) ->

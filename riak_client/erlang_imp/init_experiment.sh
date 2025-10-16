@@ -7,7 +7,7 @@ set -eu
 # variables defined to be changed
 GRAPH_NAME="$1"
 
-SERVER_MACHINES=("localhost:8098")
+SERVER_MACHINES=("mteverest2.uwyo.edu:8098")
 CLIENT_MACHINES=("lhotse3.uwyo.edu")
 
 

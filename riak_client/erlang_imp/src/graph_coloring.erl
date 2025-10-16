@@ -171,7 +171,7 @@ take_step_each_node(Graph, Node, Partition) ->
     ok.
 
 take_step(Graph, Partition) ->
-    lists:foreach(fun(Node) -> take_step_each_node(Graph, Node, Partition) end, graph:nodes(Graph)),
+    lists:foreach(fun(Node) -> take_step_each_node(Graph, Node, Partition) end, Partition),
     ok.
 
 to_boolean(Str) when Str == "true" ->
