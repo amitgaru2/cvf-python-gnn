@@ -37,17 +37,15 @@ start() ->
             my_logger:info(
                 io_lib:format("Client ~p has partition: ~p", [ClientId, Partition])
             ),
-            main(Graph, Partition),
-            ok
-    end,
-    ok.
+            main(Graph, Partition)
+    end.
 
 usage() ->
     io:format(
         "Usage: erl -noshell -s verify_graph_coloring start -graph-name <name> -client-id <id> -num-clients <num> -s init stop~n",
         []
     ),
-    ok.
+    init:stop(1).
 
 verify([], _, _) ->
     true;
@@ -102,4 +100,4 @@ main(Graph, Partition) ->
             [PassedCount, FailedCount]
         )
     ),
-    ok.
+    init:stop(0).
