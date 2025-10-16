@@ -175,5 +175,6 @@ take_step(Graph, Partition) ->
 to_boolean(Str) when Str == "true" ->
     io:format("true occurred", []),
     true;
-to_boolean(_) ->
+to_boolean(_Others) ->
+    io:format("found others ~p", [_Others]),
     false.
