@@ -28,3 +28,6 @@ nohup_logs/
 
 test.txt
 
+
+erl_crash.dump
+*.beam
