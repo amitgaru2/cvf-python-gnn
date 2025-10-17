@@ -96,6 +96,7 @@ verifyNode([Node | Rest], Graph, {Passed, Failed}) ->
 
 main(Graph, Partition) ->
     {PassedCount, FailedCount} = verifyNode(Partition, Graph, {0, 0}),
+    io:format("Passed: ~p, Failed: ~p~n", [PassedCount, FailedCount]),
     my_logger:info(
         io_lib:format(
             "Verification complete. Passed: ~p, Failed: ~p",
