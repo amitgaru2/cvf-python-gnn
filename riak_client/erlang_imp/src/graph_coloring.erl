@@ -102,13 +102,11 @@ get_pet_lock(Graph, Node, Nbr) ->
             io_lib:format("graph_coloring__~s", [Graph#graph.name]),
             io_lib:format("L_TURN_~p_~p", [I, J])
         ),
-        FlagOtherSide = to_boolean(
-            riak_client:get_request_riak(
-                io_lib:format("graph_coloring__~s", [Graph#graph.name]),
-                io_lib:format("L_FLAG_~p_~p_~p", [I, J, OtherSide])
-            )
+        FlagOtherSide = riak_client:get_request_riak(
+            io_lib:format("graph_coloring__~s", [Graph#graph.name]),
+            io_lib:format("L_FLAG_~p_~p_~p", [I, J, OtherSide])
         ),
-        (Turn == Side) and FlagOtherSide
+        (Turn == Side) and (FlagOtherSide == true)
     end,
     loop_until(ConditionFun),
     ok.
