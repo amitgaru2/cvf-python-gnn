@@ -45,10 +45,10 @@ def main(graph):
         passed = verify(graph, node)
         if passed:
             passed_count += 1
-            logger.info(f"Node {node} passed verification.")
+            logger.debug(f"Node {node} passed verification.")
         else:
             failed_count += 1
-            logger.error(f"Node {node} failed verification.")
+            logger.warning(f"Node {node} failed verification.")
 
     logger.info(
         f"Verification complete: Total : {len(CLIENT_NODES)} | Passed: {passed_count} | Failed: {failed_count}."
