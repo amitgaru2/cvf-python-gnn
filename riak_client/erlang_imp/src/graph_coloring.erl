@@ -47,7 +47,7 @@ usage() ->
             []
         )
     ),
-    init:stop(1).
+    halt(1).
 
 safe_int(Str) when is_list(Str) ->
     FlatStr = lists:flatten(Str),
@@ -59,7 +59,7 @@ safe_int(Str) when is_list(Str) ->
 
 main(Graph, Partition) ->
     take_step(Graph, Partition),
-    init:stop(0).
+    ok.
 
 get_lexically_ordered_neighbors(Graph, Node) ->
     Response = riak_client:get_request_riak(
@@ -77,7 +77,7 @@ get_i_j_ordering(Node, Nbr) ->
 loop_until(ConditionFun) ->
     case ConditionFun() of
         true ->
-            io:format("looping...~n", []),
+            % io:format("looping...~n", []),
             loop_until(ConditionFun);
         false ->
             ok
@@ -169,10 +169,3 @@ take_step_each_node(Graph, Node, Partition) ->
 take_step(Graph, Partition) ->
     lists:foreach(fun(Node) -> take_step_each_node(Graph, Node, Partition) end, Partition),
     ok.
-
-to_boolean(Str) when Str == "true" ->
-    io:format("true occurred", []),
-    true;
-to_boolean(_Others) ->
-    io:format("found others ~p", [_Others]),
-    false.

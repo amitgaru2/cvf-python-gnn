@@ -41,11 +41,13 @@ start() ->
     end.
 
 usage() ->
-    io:format(
-        "Usage: erl -noshell -s verify_graph_coloring start -graph-name <name> -client-id <id> -num-clients <num> -s init stop~n",
-        []
+    my_logger:warning(
+        io_lib:format(
+            "Usage: erl -noshell -s verify_graph_coloring start -graph-name <name> -client-id <id> -num-clients <num> -s init stop",
+            []
+        )
     ),
-    init:stop(1).
+    halt(1).
 
 verify([], _, _) ->
     true;
@@ -100,4 +102,4 @@ main(Graph, Partition) ->
             [PassedCount, FailedCount]
         )
     ),
-    init:stop(0).
+    ok.

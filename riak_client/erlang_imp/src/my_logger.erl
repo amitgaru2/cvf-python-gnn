@@ -1,5 +1,5 @@
 -module(my_logger).
--export([setup/0, info/1, warning/1, error/1, debug/1]).
+-export([setup/0, info/1, warning/1, error/1, debug/1, flush/0]).
 
 setup() ->
     _ = logger:remove_handler(default),
