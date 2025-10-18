@@ -1,9 +1,11 @@
 import os
 import json
+import time
 import random
 
 import requests
 
+from functools import wraps
 from custom_logger import logger
 
 # RING_SIZE = 8
@@ -20,10 +22,43 @@ RIAK_PETERSON_LCK_TURN_KEY_PREFIX = "L_TURN_"
 logger.info(f"Using RIAK_BASE_URLS: {RIAK_BASE_URLS}")
 
 
+def retry(
+    backoff_factor=1,
+    exceptions=(requests.exceptions.RequestException,),
+):
+    """
+    Retry decorator with exponential backoff.
+
+    :param retries: Number of retries before giving up
+    :param backoff_factor: Multiplier for wait time between retries
+    :param exceptions: Tuple of exception classes to catch
+    """
+
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            attempt = 0
+            while True:
+                try:
+                    return func(*args, **kwargs)
+                except exceptions as e:
+                    attempt += 1
+                    wait = backoff_factor * (2 ** (attempt - 1))
+                    logger.info(
+                        f"Attempt {attempt} failed: {e}. Retrying in {wait}s..."
+                    )
+                    time.sleep(wait)
+
+        return wrapper
+
+    return decorator
+
+
 def get_random_riak_base_url():
     return random.choice(RIAK_BASE_URLS)
 
 
+@retry()
 def put_request_riak(bucket_name, key, value):
     """
     Implements the equivalent of:
@@ -54,6 +89,7 @@ def put_request_riak(bucket_name, key, value):
         return False
 
 
+@retry()
 def get_request_riak(bucket_name, key, params={}):
     if key:
         url = f"{get_random_riak_base_url()}/buckets/{bucket_name}/keys/{key}"
@@ -76,6 +112,7 @@ def get_request_riak(bucket_name, key, params={}):
     return value
 
 
+@retry()
 def delete_request_riak(bucket_name, key):
     url = f"{get_random_riak_base_url()}/buckets/{bucket_name}/keys/{key}"
     try:

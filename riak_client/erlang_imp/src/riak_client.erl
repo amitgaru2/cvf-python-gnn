@@ -38,7 +38,7 @@ put_request_riak(BucketName, Key, Value) ->
     Url = io_lib:format("~s/buckets/~s/keys/~s", [BaseUrl, BucketName, Key]),
     FullURL = lists:flatten(Url),
     Json = jsx:encode(Value),
-    my_logger:info(io_lib:format("PUT to ~s with value: ~s", [lists:flatten(Url), Json])),
+    my_logger:debug(io_lib:format("PUT to ~s with value: ~s", [lists:flatten(Url), Json])),
     Headers = [{"Content-Type", "application/json"}],
     case httpc:request(put, {FullURL, Headers, "application/json", Json}, [], []) of
         {ok, {{_, Code, _}, _RespHeaders, Body}} when Code >= 200, Code < 300 ->
@@ -71,7 +71,7 @@ get_request_riak(BucketName, Key, ParamStr) ->
         end,
     case httpc:request(get, {FullURL, []}, [], []) of
         {ok, {{_, Code, _}, _Headers, Body}} when Code >= 200, Code < 300 ->
-            my_logger:info(io_lib:format("Read from ~s.", [FullURL])),
+            my_logger:debug(io_lib:format("Read from ~s.", [FullURL])),
             case catch jsx:decode(list_to_binary(Body), [return_maps]) of
                 {'EXIT', Reason} ->
                     my_logger:error(io_lib:format("Error decoding JSON: ~p.", [Reason])),
@@ -96,7 +96,7 @@ delete_request_riak(BucketName, Key) ->
     BaseUrl = get_random_riak_base_url(),
     URL = io_lib:format("~s/buckets/~s/keys/~s", [BaseUrl, BucketName, Key]),
     FullURL = lists:flatten(URL),
-    my_logger:info(io_lib:format("Delete from ~s.", [FullURL])),
+    my_logger:debug(io_lib:format("Delete from ~s.", [FullURL])),
     case httpc:request(delete, {FullURL, []}, [], []) of
         {ok, {{_, Code, _}, _RespHeaders, Body}} when Code >= 200, Code < 300 ->
             my_logger:debug(
