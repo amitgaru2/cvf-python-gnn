@@ -9,8 +9,8 @@ CLIENT_MACHINES=("yangra1.uwyo.edu" "yangra2.uwyo.edu" "yangra3.uwyo.edu" "yangr
                  "manaslu9.uwyo.edu" "manaslu10.uwyo.edu" "manaslu11.uwyo.edu" "manaslu12.uwyo.edu")
 
 # CLIENT_MACHINES=("yangra2.uwyo.edu" "yangra3.uwyo.edu")
-dateDir="25_10_17"
-jobID="12_44_66189"
+dateDir="25_10_18"
+jobID="19_57_21613"
 # ===================================================
 # collect the client logs from all client machines
 for client in "${CLIENT_MACHINES[@]}"; do
