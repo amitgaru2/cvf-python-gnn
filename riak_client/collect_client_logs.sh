@@ -16,6 +16,8 @@ for client in "${CLIENT_MACHINES[@]}"; do
     mkdir -p "./client_script_logs/${hostName}/${dateDir}"
     echo "Fetching from client machine: $client."
     scp "$client:~/research/client_script_logs/${hostName}/${dateDir}/${jobID}.log" ./client_script_logs/${hostName}/${dateDir}/${jobID}.log
+    # cat ./client_script_logs/${hostName}/${dateDir}/${jobID}.log | grep "Writing initial" || true
+    cat ./client_script_logs/${hostName}/${dateDir}/${jobID}.log | grep "Database preparation" || true
     cat ./client_script_logs/${hostName}/${dateDir}/${jobID}.log | grep Total || true
     echo -e "Done fetching from $client.\n"
 done

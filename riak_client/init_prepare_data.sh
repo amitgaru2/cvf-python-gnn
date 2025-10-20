@@ -1,6 +1,11 @@
 #!/bin/bash
 set -eu
 
+# reset db
+echo -e "Resetting Riak database on all server machines..."
+source reset_db.sh
+echo -e "Done resetting Riak database on all server machines.\n"
+
 # variables defined to be changed
 GRAPH_NAME="$1"
 
