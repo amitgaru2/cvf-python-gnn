@@ -1,7 +1,3 @@
-#!/bin/bash
-# ===================================================
-# This script is meant to be run in the local machine
-# ===================================================
 set -eu
 
 # variables defined to be changed
@@ -13,20 +9,9 @@ CLIENT_COPY_FILES=("run_nohup.sh" "nohup_commands.sh" "custom_logger.py" "riak_h
 # CLIENT_COPY_DIRS=("graphs")
 CLIENT_COPY_DIRS=()
 
-CLIENT_SCRIPT=$(cat <<EOF
-python3 graph_coloring.py --graph-name ${GraphName} --client-id ${ClientID} --num-clients ${NoOfClients}
-echo -e "\nVerifying results...\n"
-python3 verify_graph_coloring.py --graph-name ${GraphName} --client-id ${ClientID} --num-clients ${NoOfClients}
-EOF
-)
 
-BUCKET__PROPS__N_VAL=3
-BUCKET__PROPS__R=2
-BUCKET__PROPS__W=2
-BUCKET__PROPS__DW=2
-# end of variables to be changed
+CLIENT_SCRIPT=python populate_data_client.py --graph-name "$GRAPH_NAME" --client-id "$CLIENT_ID" --num-clients "$NUM_CLIENTS"
 
-# copy the client script to all client machines
 for client in "${CLIENT_MACHINES[@]}"; do
     echo "Setting up client machine: $client."
     ssh "$client" "rm -rf ~/research/client_scripts"
@@ -47,22 +32,6 @@ for client in "${CLIENT_MACHINES[@]}"; do
         EOF"
     echo -e "Done creating client script for $client.\n"
 done
-
-
-SERVER_MACHINES_ENV=$(IFS=';'; echo "${SERVER_MACHINES[*]}")
-
-# prepare the database script
-echo -e "Preparing the database.\n"
-RIAK_SERVER_URLS="${SERVER_MACHINES_ENV}" python prepare_database.py --graph-name "${GRAPH_NAME}"
-echo -e "Done preparing the database.\n"
-
-echo -e "Update bucket properties:\n"
-curl -X PUT -H "Content-Type: application/json" -d "{\"props\":{\"n_val\":${BUCKET__PROPS__N_VAL}, \"r\":${BUCKET__PROPS__R}, \"w\":${BUCKET__PROPS__W}, \"dw\":${BUCKET__PROPS__DW}}}" http://${SERVER_MACHINES[0]}/buckets/graph_coloring__${GRAPH_NAME}/props
-echo -e "Done updating bucket properties.\n"
-
-echo -e "Bucket properties:"
-curl http://${SERVER_MACHINES[0]}/buckets/graph_coloring__${GRAPH_NAME}/props
-echo -e "\n"
 
 # execute the client script on all client machines
 timePrefix=$(date +"%H_%M")

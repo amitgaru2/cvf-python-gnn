@@ -9,8 +9,9 @@ echo "Client ID: ""$ClientID"
 echo "Number of Clients: ""$NoOfClients"
 echo "RIAK_SERVER_URLS: ""$RIAK_SERVER_URLS"
 
-python3 graph_coloring.py --graph-name "$GraphName" --client-id "$ClientID" --num-clients "$NoOfClients"
-echo -e "\nVerifying results...\n"
-python3 verify_graph_coloring.py --graph-name "$GraphName" --client-id "$ClientID" --num-clients "$NoOfClients"
+# python3 graph_coloring.py --graph-name "$GraphName" --client-id "$ClientID" --num-clients "$NoOfClients"
+# echo -e "\nVerifying results...\n"
+# python3 verify_graph_coloring.py --graph-name "$GraphName" --client-id "$ClientID" --num-clients "$NoOfClients"
+source client_script.sh
 
 echo "Done execution!"

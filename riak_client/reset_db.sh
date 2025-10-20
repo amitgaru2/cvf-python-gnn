@@ -1,7 +1,7 @@
 #!/bin/bash
 set -eu
 
-SERVER_MACHINES=("manaslu5.uwyo.edu" "manaslu6.uwyo.edu" "manaslu7.uwyo.edu" "manaslu8.uwyo.edu")
+source commons_experiment.sh
 
 # copy the client script to all client machines
 for server in "${SERVER_MACHINES[@]}"; do
