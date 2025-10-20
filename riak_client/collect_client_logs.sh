@@ -4,8 +4,11 @@ set -eu
 source commons_experiment.sh
 
 # CLIENT_MACHINES=("yangra2.uwyo.edu" "yangra3.uwyo.edu")
-dateDir="25_10_18"
-jobID="19_57_21613"
+#dateDir="25_10_20"
+#jobID="08_56_79749"
+
+dateDir=$1
+jobID=$2
 # ===================================================
 # collect the client logs from all client machines
 for client in "${CLIENT_MACHINES[@]}"; do
