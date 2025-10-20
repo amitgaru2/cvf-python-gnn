@@ -5,3 +5,7 @@ CLIENT_MACHINES=("yangra1.uwyo.edu" "yangra2.uwyo.edu" "yangra3.uwyo.edu" "yangr
                  "nuptse1.uwyo.edu" "nuptse2.uwyo.edu" "nuptse3.uwyo.edu" "nuptse4.uwyo.edu" \
                  "manaslu3.uwyo.edu" "manaslu4.uwyo.edu" \
                  "manaslu9.uwyo.edu" "manaslu10.uwyo.edu" "manaslu11.uwyo.edu" "manaslu12.uwyo.edu")
+
+CLIENT_MACHINES=("nuptse1" "nuptse2" \
+		 "manaslu10" \
+		)

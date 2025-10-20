@@ -13,13 +13,6 @@ CLIENT_COPY_FILES=("run_nohup.sh" "nohup_commands.sh" "custom_logger.py" "riak_h
 # CLIENT_COPY_DIRS=("graphs")
 CLIENT_COPY_DIRS=()
 
-CLIENT_SCRIPT=$(cat <<EOF
-python3 graph_coloring.py --graph-name ${GraphName} --client-id ${ClientID} --num-clients ${NoOfClients}
-echo -e "\nVerifying results...\n"
-python3 verify_graph_coloring.py --graph-name ${GraphName} --client-id ${ClientID} --num-clients ${NoOfClients}
-EOF
-)
-
 BUCKET__PROPS__N_VAL=3
 BUCKET__PROPS__R=2
 BUCKET__PROPS__W=2
@@ -41,10 +34,23 @@ for client in "${CLIENT_MACHINES[@]}"; do
     done
     scp graphs/${GRAPH_NAME}.txt "$client:~/research/client_scripts/graphs/"
     echo -e "Done copying files and directories to $client.\n"
+done
+
+
+NUM_CLIENTS=${#CLIENT_MACHINES[@]}
+
+for client_id in "${!CLIENT_MACHINES[@]}"; do
+    client="${CLIENT_MACHINES[$client_id]}"
+    CLIENT_SCRIPT=$(cat <<EOF
+python3 graph_coloring.py --graph-name "$GRAPH_NAME" --client-id "$client_id" --num-clients "$NUM_CLIENTS"
+echo -e "\nVerifying results...\n"
+python3 verify_graph_coloring.py --graph-name "$GRAPH_NAME" --client-id "$client_id" --num-clients "$NUM_CLIENTS"
+EOF
+)
     echo -e "Creating client script for $client.\n"
     ssh "$client" "cat << 'EOF' > ~/research/client_scripts/client_script.sh
-        ${CLIENT_SCRIPT}
-        EOF"
+${CLIENT_SCRIPT}
+EOF"
     echo -e "Done creating client script for $client.\n"
 done
 
@@ -52,9 +58,9 @@ done
 SERVER_MACHINES_ENV=$(IFS=';'; echo "${SERVER_MACHINES[*]}")
 
 # prepare the database script
-echo -e "Preparing the database.\n"
-RIAK_SERVER_URLS="${SERVER_MACHINES_ENV}" python prepare_database.py --graph-name "${GRAPH_NAME}"
-echo -e "Done preparing the database.\n"
+# echo -e "Preparing the database.\n"
+# RIAK_SERVER_URLS="${SERVER_MACHINES_ENV}" python prepare_database.py --graph-name "${GRAPH_NAME}"
+# echo -e "Done preparing the database.\n"
 
 echo -e "Update bucket properties:\n"
 curl -X PUT -H "Content-Type: application/json" -d "{\"props\":{\"n_val\":${BUCKET__PROPS__N_VAL}, \"r\":${BUCKET__PROPS__R}, \"w\":${BUCKET__PROPS__W}, \"dw\":${BUCKET__PROPS__DW}}}" http://${SERVER_MACHINES[0]}/buckets/graph_coloring__${GRAPH_NAME}/props

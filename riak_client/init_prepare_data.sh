@@ -1,3 +1,4 @@
+#!/bin/bash
 set -eu
 
 # variables defined to be changed
@@ -5,12 +6,10 @@ GRAPH_NAME="$1"
 
 source commons_experiment.sh
 
-CLIENT_COPY_FILES=("run_nohup.sh" "nohup_commands.sh" "custom_logger.py" "riak_helpers.py" "client_helpers.py" "graph_helpers.py" "graph_coloring.py" "verify_graph_coloring.py")
+CLIENT_COPY_FILES=("run_nohup.sh" "nohup_commands.sh" "custom_logger.py" "riak_helpers.py" "client_helpers.py" "graph_helpers.py" "populate_data_client.py")
 # CLIENT_COPY_DIRS=("graphs")
 CLIENT_COPY_DIRS=()
 
-
-CLIENT_SCRIPT=python populate_data_client.py --graph-name "$GRAPH_NAME" --client-id "$CLIENT_ID" --num-clients "$NUM_CLIENTS"
 
 for client in "${CLIENT_MACHINES[@]}"; do
     echo "Setting up client machine: $client."
@@ -26,12 +25,24 @@ for client in "${CLIENT_MACHINES[@]}"; do
     done
     scp graphs/${GRAPH_NAME}.txt "$client:~/research/client_scripts/graphs/"
     echo -e "Done copying files and directories to $client.\n"
+done
+
+
+NUM_CLIENTS=${#CLIENT_MACHINES[@]}
+for client_id in "${!CLIENT_MACHINES[@]}"; do
+    client="${CLIENT_MACHINES[$client_id]}"
+	CLIENT_SCRIPT=$(cat <<EOF
+python3 populate_data_client.py --graph-name "$GRAPH_NAME" --client-id "$client_id" --num-clients "$NUM_CLIENTS"
+EOF
+)
     echo -e "Creating client script for $client.\n"
     ssh "$client" "cat << 'EOF' > ~/research/client_scripts/client_script.sh
-        ${CLIENT_SCRIPT}
-        EOF"
+${CLIENT_SCRIPT}
+EOF"
     echo -e "Done creating client script for $client.\n"
 done
+
+SERVER_MACHINES_ENV=$(IFS=';'; echo "${SERVER_MACHINES[*]}")
 
 # execute the client script on all client machines
 timePrefix=$(date +"%H_%M")

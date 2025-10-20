@@ -4,7 +4,8 @@ set -eu
 source commons_experiment.sh
 
 # copy the client script to all client machines
-for server in "${SERVER_MACHINES[@]}"; do
+for item in "${SERVER_MACHINES[@]}"; do
+	server="${item%%:*}"
     echo "Cleaning up machine: $server."
     ssh "$server" "~/research/riak/_build/rel/rel/riak/bin/riak stop"
     ssh "$server" "rm -rf ~/research/riak/_build/rel/rel/riak/data/bitcask/*"
@@ -15,7 +16,8 @@ for server in "${SERVER_MACHINES[@]}"; do
 done
 
 # verify servers are running
-for server in "${SERVER_MACHINES[@]}"; do
+for item in "${SERVER_MACHINES[@]}"; do
+	server="${item%%:*}"
     echo "Verifying riak status on machine: $server."
     ssh "$server" "~/research/riak/_build/rel/rel/riak/bin/riak status"
     echo -e "Done verifying riak status on machine: $server.\n"
