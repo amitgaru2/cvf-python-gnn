@@ -6,4 +6,8 @@ CLIENT_MACHINES=("yangra1.uwyo.edu" "yangra2.uwyo.edu" "yangra3.uwyo.edu" "yangr
                  "manaslu3.uwyo.edu" "manaslu4.uwyo.edu" \
                  "manaslu9.uwyo.edu" "manaslu10.uwyo.edu" "manaslu11.uwyo.edu" "manaslu12.uwyo.edu")
 
-CLIENT_MACHINES=("nuptse1")
+# CLIENT_MACHINES=("manaslu3.uwyo.edu" "manaslu4.uwyo.edu" \
+#                  "manaslu9.uwyo.edu" "manaslu10.uwyo.edu" "manaslu11.uwyo.edu" "manaslu12.uwyo.edu")
+
+SERVER_MACHINES_ENV=$(IFS=';'; echo "${SERVER_MACHINES[*]}")
+NUM_CLIENTS=${#CLIENT_MACHINES[@]}
