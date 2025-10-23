@@ -23,8 +23,8 @@ def main(graph_names, planar=False, plot=False, save_to_file=False):
             nx.draw_networkx(
                 G,
                 pos=pos,
-                node_color="white",
-                font_color="black",
+                node_color="black",
+                font_color="white",
                 ax=fig.add_subplot(),
                 font_size=60,
                 node_size=5000,
@@ -32,8 +32,8 @@ def main(graph_names, planar=False, plot=False, save_to_file=False):
         else:
             nx.draw_networkx(
                 G,
-                node_color="white",
-                font_color="black",
+                node_color="black",
+                font_color="white",
                 ax=fig.add_subplot(),
                 font_size=60,
                 node_size=5000,
