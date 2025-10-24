@@ -15,6 +15,7 @@ RIAK_BASE_URLS = [
     for url in os.getenv("RIAK_SERVER_URLS", "localhost:8098").split(";")
 ]
 RIAK_BUCKET_PREFIX = "graph_coloring"
+RIAK_LCK_BUCKET_PREFIX = "graph_coloring_lck"
 RIAK_NODE_KEY_PREFIX = "node_"
 RIAK_PETERSON_LCK_FLAG_KEY_PREFIX = "L_FLAG_"
 RIAK_PETERSON_LCK_TURN_KEY_PREFIX = "L_TURN_"
@@ -44,7 +45,7 @@ def retry(
                 except exceptions as e:
                     attempt += 1
                     wait = backoff_factor * (2 ** (attempt - 1))
-                    logger.info(
+                    logger.warning(
                         f"Attempt {attempt} failed: {e}. Retrying in {wait}s..."
                     )
                     time.sleep(wait)

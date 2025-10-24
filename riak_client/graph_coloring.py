@@ -7,6 +7,7 @@ from riak_helpers import (
     put_request_riak,
     RIAK_NODE_KEY_PREFIX,
     RIAK_BUCKET_PREFIX,
+    RIAK_LCK_BUCKET_PREFIX,
     RIAK_PETERSON_LCK_FLAG_KEY_PREFIX,
     RIAK_PETERSON_LCK_TURN_KEY_PREFIX,
 )
@@ -53,17 +54,17 @@ def get_pet_lock(node, nbr):
     (i, j) = get_i_j_ordering(node, nbr)
     logger.info(f"Acquiring lock for edge ({i}, {j}) by node {side}.")
     put_request_riak(
-        RIAK_BUCKET_NAME, f"{RIAK_PETERSON_LCK_FLAG_KEY_PREFIX}{i}_{j}_{side}", True
+        RIAK_LCK_BUCKET_NAME, f"{RIAK_PETERSON_LCK_FLAG_KEY_PREFIX}{i}_{j}_{side}", True
     )
     put_request_riak(
-        RIAK_BUCKET_NAME, f"{RIAK_PETERSON_LCK_TURN_KEY_PREFIX}{i}_{j}", side
+        RIAK_LCK_BUCKET_NAME, f"{RIAK_PETERSON_LCK_TURN_KEY_PREFIX}{i}_{j}", side
     )
     while True:
         turn = get_request_riak(
-            RIAK_BUCKET_NAME, f"{RIAK_PETERSON_LCK_TURN_KEY_PREFIX}{i}_{j}"
+            RIAK_LCK_BUCKET_NAME, f"{RIAK_PETERSON_LCK_TURN_KEY_PREFIX}{i}_{j}"
         )
         flag_otherside = get_request_riak(
-            RIAK_BUCKET_NAME,
+            RIAK_LCK_BUCKET_NAME,
             f"{RIAK_PETERSON_LCK_FLAG_KEY_PREFIX}{i}_{j}_{other_side}",
         )  # None if the key not found in the bucket
         if turn == side and flag_otherside is True:
@@ -79,7 +80,9 @@ def release_pet_lock(node, nbr):
     (i, j) = get_i_j_ordering(node, nbr)
     logger.info(f"Releasing lock for edge ({i}, {j}) by node {side}.")
     put_request_riak(
-        RIAK_BUCKET_NAME, f"{RIAK_PETERSON_LCK_FLAG_KEY_PREFIX}{i}_{j}_{side}", False
+        RIAK_LCK_BUCKET_NAME,
+        f"{RIAK_PETERSON_LCK_FLAG_KEY_PREFIX}{i}_{j}_{side}",
+        False,
     )
 
 
@@ -149,6 +152,7 @@ if __name__ == "__main__":
     CLIENT_NODES = get_partition_for_client(graph, client_id, num_clients)
     logger.info(f"Client {client_id} handling nodes: {CLIENT_NODES}.")
     RIAK_BUCKET_NAME = f"{RIAK_BUCKET_PREFIX}__{graph_name}"
+    RIAK_LCK_BUCKET_NAME = f"{RIAK_LCK_BUCKET_PREFIX}__{graph_name}"
     logger.info(f"Using Riak bucket: {RIAK_BUCKET_NAME}")
     main(graph)
     logger.info(f"Total time taken: {time.time() - start_time} seconds.")
