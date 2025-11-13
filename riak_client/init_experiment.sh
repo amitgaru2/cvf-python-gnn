@@ -14,9 +14,9 @@ CLIENT_COPY_FILES=("run_nohup.sh" "nohup_commands.sh" "custom_logger.py" "riak_h
 CLIENT_COPY_DIRS=()
 
 BUCKET__PROPS__N_VAL=3
-BUCKET__PROPS__R=1
-BUCKET__PROPS__W=1
-BUCKET__PROPS__DW=1
+BUCKET__PROPS__R=3
+BUCKET__PROPS__W=3
+BUCKET__PROPS__DW=3
 # end of variables to be changed
 
 # copy the client script to all client machines
@@ -52,8 +52,6 @@ EOF"
 done
 
 
-# SERVER_MACHINES_ENV=$(IFS=';'; echo "${SERVER_MACHINES[*]}")
-
 # prepare the database script
 echo -e "Preparing the database.\n"
 RIAK_SERVER_URLS="${SERVER_MACHINES_ENV}" python prepare_database.py --graph-name "${GRAPH_NAME}"
@@ -67,8 +65,6 @@ echo -e "Bucket properties:"
 curl http://${SERVER_MACHINES[0]}/buckets/graph_coloring__${GRAPH_NAME}/props
 echo -e "\n"
 
-# # add delay to server machines
-# source add_delay.sh 100
 
 # execute the client script on all client machines
 timePrefix=$(date +"%H_%M")
