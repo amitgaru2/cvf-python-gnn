@@ -4,8 +4,7 @@ CLIENT_MACHINES=("yangra1.uwyo.edu" "yangra2.uwyo.edu" "yangra3.uwyo.edu" "yangr
                  "manaslu1.uwyo.edu" "manaslu2.uwyo.edu" "manaslu3.uwyo.edu" "manaslu4.uwyo.edu" \
                  "manaslu9.uwyo.edu" "manaslu10.uwyo.edu" "manaslu11.uwyo.edu" "manaslu12.uwyo.edu")
 
-# CLIENT_MACHINES=("yangra2.uwyo.edu" "yangra3.uwyo.edu" \
-#                  )
+# CLIENT_MACHINES=("yangra3.uwyo.edu" )
 
 # CLIENT_MACHINES=("manaslu1.uwyo.edu" "manaslu2.uwyo.edu" "manaslu3.uwyo.edu" "manaslu4.uwyo.edu")
 SERVER_MACHINES_ENV=$(IFS=';'; echo "${SERVER_MACHINES[*]}")

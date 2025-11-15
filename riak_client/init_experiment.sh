@@ -14,9 +14,9 @@ CLIENT_COPY_FILES=("run_nohup.sh" "nohup_commands.sh" "custom_logger.py" "riak_h
 CLIENT_COPY_DIRS=()
 
 BUCKET__PROPS__N_VAL=3
-BUCKET__PROPS__R=3
-BUCKET__PROPS__W=3
-BUCKET__PROPS__DW=3
+BUCKET__PROPS__R=1
+BUCKET__PROPS__W=1
+BUCKET__PROPS__DW=1
 # end of variables to be changed
 
 # copy the client script to all client machines
