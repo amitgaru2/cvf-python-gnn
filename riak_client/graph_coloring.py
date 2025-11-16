@@ -4,6 +4,7 @@ import argparse
 from client_helpers import get_partition_for_client
 from riak_helpers import (
     get_request_riak,
+    get_stats,
     put_request_riak,
     RIAK_NODE_KEY_PREFIX,
     RIAK_BUCKET_PREFIX,
@@ -155,4 +156,5 @@ if __name__ == "__main__":
     RIAK_LCK_BUCKET_NAME = f"{RIAK_LCK_BUCKET_PREFIX}__{graph_name}"
     logger.info(f"Using Riak bucket: {RIAK_BUCKET_NAME}")
     main(graph)
+    get_stats()
     logger.info(f"Total time taken: {time.time() - start_time} seconds.")

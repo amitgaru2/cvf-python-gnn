@@ -2,10 +2,13 @@ import os
 import json
 import time
 import random
+import functools
 
 import requests
 
 from functools import wraps
+from collections import defaultdict
+
 from custom_logger import logger
 
 # RING_SIZE = 8
@@ -21,6 +24,36 @@ RIAK_PETERSON_LCK_FLAG_KEY_PREFIX = "L_FLAG_"
 RIAK_PETERSON_LCK_TURN_KEY_PREFIX = "L_TURN_"
 
 logger.info(f"Using RIAK_BASE_URLS: {RIAK_BASE_URLS}")
+
+TIMING_STATS = defaultdict(
+    lambda: {
+        "min": float("inf"),
+        "max": float("-inf"),
+        "total": 0.0,
+        "count": 0,
+    }
+)
+
+
+def track_timing(func):
+    """Decorator to track min/max/avg execution time per function."""
+    func_name = func.__name__
+
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        start = time.perf_counter()
+        result = func(*args, **kwargs)
+        duration = time.perf_counter() - start
+
+        stats = TIMING_STATS[func_name]
+        stats["min"] = min(stats["min"], duration)
+        stats["max"] = max(stats["max"], duration)
+        stats["total"] += duration
+        stats["count"] += 1
+
+        return result
+
+    return wrapper
 
 
 def retry(
@@ -60,6 +93,7 @@ def get_random_riak_base_url():
 
 
 @retry()
+@track_timing
 def put_request_riak(bucket_name, key, value):
     """
     Implements the equivalent of:
@@ -91,6 +125,7 @@ def put_request_riak(bucket_name, key, value):
 
 
 @retry()
+@track_timing
 def get_request_riak(bucket_name, key, params={}):
     if key:
         url = f"{get_random_riak_base_url()}/buckets/{bucket_name}/keys/{key}"
@@ -131,3 +166,21 @@ def delete_request_riak(bucket_name, key):
     except Exception as e:
         logger.error(f"Error: {e}")
         return False
+
+
+def get_stats():
+    """Return the timing stats collected so far."""
+    stats_summary = {}
+    for func_name, stats in TIMING_STATS.items():
+        avg = stats["total"] / stats["count"] if stats["count"] > 0 else 0.0
+        stats_summary[func_name] = {
+            "min": stats["min"],
+            "max": stats["max"],
+            "avg": avg,
+            "count": stats["count"],
+        }
+        logger.info(
+            f"Function '{func_name}': min={stats['min']:.6f}s, "
+            f"max={stats['max']:.6f}s, avg={avg:.6f}s over {stats['count']} calls."
+        )
+    return stats_summary
