@@ -51,6 +51,10 @@ EOF"
     echo -e "Done creating client script for $client.\n"
 done
 
+echo -e "Update bucket properties to quorum:\n"
+curl -X PUT -H "Content-Type: application/json" -d "{\"props\":{\"n_val\":${BUCKET__PROPS__N_VAL}, \"r\":\"quorum\", \"w\":\"quorum\", \"dw\":\"quorum\"}}" http://${SERVER_MACHINES[0]}/buckets/graph_coloring__${GRAPH_NAME}/props
+echo -e "Done updating bucket properties.\n"
+
 
 # prepare the database script
 echo -e "Preparing the database.\n"

@@ -30,9 +30,10 @@ def get_args_parser():
 def delete_data(riak_bucket_name):
     logger.info(f"Deleting Riak bucket: {riak_bucket_name}")
 
-    keys = get_request_riak(riak_bucket_name, "", params={"keys": "true"})["keys"]
-    for key in keys:
-        delete_request_riak(riak_bucket_name, key)
+    keys = get_request_riak(riak_bucket_name, "", params={"keys": "true"})
+    if keys and "keys" in keys:
+        for key in keys["keys"]:
+            delete_request_riak(riak_bucket_name, key)
 
 
 def read_and_log_data(riak_bucket_name):
