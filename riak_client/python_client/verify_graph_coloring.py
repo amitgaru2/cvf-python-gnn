@@ -4,7 +4,7 @@ from custom_logger import logger
 from graph_helpers import get_graph
 from graph_coloring import get_args_parser
 from client_helpers import get_partition_for_client
-from riak_client.python_client.riak_helpers import (
+from riak_helpers import (
     RIAK_BUCKET_PREFIX,
     RIAK_NODE_KEY_PREFIX,
     get_request_riak,
@@ -65,7 +65,9 @@ if __name__ == "__main__":
         raise Exception("Client ID must be in the range [0, num_clients-1].")
     client_id = args.client_id
     num_clients = args.num_clients
-    CLIENT_NODES = get_partition_for_client(graph, client_id, num_clients)
+    CLIENT_NODES = get_partition_for_client(
+        graph.number_of_nodes(), client_id, num_clients
+    )
     logger.info(f"Client {client_id} handling nodes: {CLIENT_NODES}.")
     RIAK_BUCKET_NAME = f"{RIAK_BUCKET_PREFIX}__{graph_name}"
     logger.info(f"Using Riak bucket: {RIAK_BUCKET_NAME}")
