@@ -13,6 +13,12 @@
         num_clients: "{{ groups['riak_clients'] | length }}"
         riak_servers: "{{ groups['riak_servers'] | join(';') }}"
 
+    - name: Generate job date
+      set_fact:
+        job_date: "{{ lookup('pipe', 'date +%Y_%m_%d') }}"
+      run_once: true
+      delegate_to: localhost
+
     - name: Generate unique client job ID
       set_fact:
         client_job_id: "{{ lookup('pipe', 'date +%H_%M') }}_{{ 90000 | random(10000) }}"
@@ -21,6 +27,7 @@
     
     - name: Share client_job_id with all hosts
       set_fact:
+        job_date: "{{ hostvars[groups['riak_clients'][0]].job_date }}"
         client_job_id: "{{ hostvars[groups['riak_clients'][0]].client_job_id }}"
 
     - debug:
@@ -44,8 +51,16 @@
         path: "{{ deploy_path }}/nohup_commands.sh"
         mode: '0755'
 
+    - name: Ensure log directory exists in the host
+      file:
+        path: "ansible_logs/{{ job_date }}"
+        state: directory
+        mode: '0755'
+      run_once: true
+      delegate_to: localhost
+
     - name: Prepare database
-      shell: python3 prepare_database.py --graph-name "{{graph}}" > ../ansible_logs/{{ client_job_id }}.log 2>&1
+      shell: python3 prepare_database.py --graph-name "{{graph}}" > ../ansible_logs/{{ job_date }}/{{ client_job_id }}.log 2>&1
       environment:
         RIAK_SERVER_URLS: "{{ riak_servers }}"
       run_once: true
