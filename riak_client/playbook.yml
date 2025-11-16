@@ -6,9 +6,6 @@
   vars:
     deploy_path: /opt/client_app
     bucket_n_val: 3
-    bucket_r_val: quorom
-    bucket_w_val: quorom
-    bucket_dw_val: quorom
 
   tasks:
     - name: Set client-specific variables
@@ -73,7 +70,10 @@
         chdir: "python_client/"
 
     - name: Update bucket properties
-      command: curl -X PUT -H "Content-Type: application/json" -d "{\"props\":{\"n_val\":{{ bucket_n_val }}, \"r\":{{ bucket_r_val }}, \"w\":{{ bucket_w_val }}, \"dw\":{{bucket_dw_val}}}}" http://{{groups['riak_servers'][0]}}:8098/buckets/graph_coloring__{{graph}}/props
+      command: >
+        curl -X PUT -H "Content-Type: application/json"
+        -d '{"props":{"n_val": "{{ bucket_n_val }}", "r": "{{ bucket_r_val }}", "w": "{{ bucket_w_val }}", "dw": "{{ bucket_dw_val }}"}}'
+        http://{{ groups['riak_servers'][0] }}:8098/buckets/graph_coloring__{{ graph }}/props
       run_once: true
       delegate_to: localhost
 
