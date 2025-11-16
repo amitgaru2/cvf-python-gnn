@@ -9,12 +9,12 @@ def consistent_partition(numbers, m):
     return partitions
 
 
-def get_partition_for_client(graph, client_id, m):
+def get_partition_for_client(N, client_id, m):
     """
     Get the partition of nodes assigned to a client based on its ID.
     m: total number of clients.
     client_id: ID of the client (0 to m-1).
     """
-    nodes = list(graph.nodes())
+    nodes = list(range(N))
     partitions = consistent_partition(nodes, m)
     return partitions[client_id]

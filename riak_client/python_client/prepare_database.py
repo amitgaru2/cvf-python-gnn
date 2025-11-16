@@ -1,17 +1,18 @@
 import sys
 import argparse
 
-from python_client.riak_helpers import (
+from riak_helpers import (
     delete_request_riak,
     get_request_riak,
     put_request_riak,
     RIAK_BUCKET_PREFIX,
     RIAK_LCK_BUCKET_PREFIX,
+    RIAK_GRAPH_KEY_PREFIX,
     RIAK_NODE_KEY_PREFIX,
 )
 
-from python_client.custom_logger import logger
-from python_client.graph_helpers import get_graph
+from custom_logger import logger
+from graph_helpers import get_graph
 
 
 def get_args_parser():
@@ -48,6 +49,10 @@ def read_and_log_data(riak_bucket_name):
 
 def init_graph_data(riak_bucket_name, graph):
     logger.info(f"Writing initial graph data.")
+
+    node_key = f"{RIAK_GRAPH_KEY_PREFIX}__meta"
+    meta = {"num_nodes": graph.number_of_nodes()}
+    put_request_riak(riak_bucket_name, node_key, meta)
 
     for n in graph.nodes():
         node_key = f"{RIAK_NODE_KEY_PREFIX}{n}__meta"

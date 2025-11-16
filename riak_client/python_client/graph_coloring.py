@@ -2,10 +2,11 @@ import time
 import argparse
 
 from client_helpers import get_partition_for_client
-from riak_client.python_client.riak_helpers import (
+from riak_helpers import (
     get_request_riak,
     get_stats,
     put_request_riak,
+    RIAK_GRAPH_KEY_PREFIX,
     RIAK_NODE_KEY_PREFIX,
     RIAK_BUCKET_PREFIX,
     RIAK_LCK_BUCKET_PREFIX,
@@ -15,8 +16,6 @@ from riak_client.python_client.riak_helpers import (
 
 
 from custom_logger import logger
-
-from graph_helpers import get_graph
 
 
 def get_args_parser():
@@ -100,12 +99,13 @@ def get_lexically_ordered_neighbors(node):
         yield nbr
 
 
-def take_step_each_node(graph, node):
+def take_step_each_node(node):
     neighbor_colors = set()
     lock_acquired_for = []
     self_color = get_request_riak(
         RIAK_BUCKET_NAME, f"{RIAK_NODE_KEY_PREFIX}{node}__val"
     )
+    degree_of_node = 0
     for nbr in get_lexically_ordered_neighbors(node):
         lock_req = nbr not in CLIENT_NODES
         if lock_req:
@@ -117,9 +117,10 @@ def take_step_each_node(graph, node):
             f"{RIAK_NODE_KEY_PREFIX}{nbr}__val",
         )
         neighbor_colors.add(nbr_color)
+        degree_of_node += 1
 
     if self_color in neighbor_colors:
-        new_color = min({k for k in range(graph.degree(node) + 1)} - neighbor_colors)
+        new_color = min({k for k in range(degree_of_node + 1)} - neighbor_colors)
         put_request_riak(
             RIAK_BUCKET_NAME,
             f"{RIAK_NODE_KEY_PREFIX}{node}__val",
@@ -131,30 +132,30 @@ def take_step_each_node(graph, node):
         release_pet_lock(node, nbr)
 
 
-def take_step(graph):
+def take_step():
     for node in CLIENT_NODES:
-        take_step_each_node(graph, node)
+        take_step_each_node(node)
 
 
-def main(graph):
-    take_step(graph)
+def main():
+    take_step()
 
 
 if __name__ == "__main__":
     start_time = time.time()
     args = get_args_parser()
     graph_name = args.graph_name
-    graph = get_graph(graph_name)
-    logger.info(f"Found graph {graph}.")
     if args.client_id >= args.num_clients or args.client_id < 0:
         raise Exception("Client ID must be in the range [0, num_clients-1].")
     client_id = args.client_id
     num_clients = args.num_clients
-    CLIENT_NODES = get_partition_for_client(graph, client_id, num_clients)
-    logger.info(f"Client {client_id} handling nodes: {CLIENT_NODES}.")
     RIAK_BUCKET_NAME = f"{RIAK_BUCKET_PREFIX}__{graph_name}"
     RIAK_LCK_BUCKET_NAME = f"{RIAK_LCK_BUCKET_PREFIX}__{graph_name}"
+    graph = get_request_riak(RIAK_BUCKET_NAME, f"{RIAK_GRAPH_KEY_PREFIX}__meta")
+    CLIENT_NODES = get_partition_for_client(graph["num_nodes"], client_id, num_clients)
+    logger.info(f"Client {client_id} handling nodes: {CLIENT_NODES}.")
+
     logger.info(f"Using Riak bucket: {RIAK_BUCKET_NAME}")
-    main(graph)
+    main()
     get_stats()
     logger.info(f"Total time taken: {time.time() - start_time} seconds.")

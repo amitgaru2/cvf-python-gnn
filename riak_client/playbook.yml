@@ -44,18 +44,15 @@
         path: "{{ deploy_path }}/nohup_commands.sh"
         mode: '0755'
 
-    - name: Make client_script.sh executable
-      file:
-        path: "{{ deploy_path }}/client_script.sh"
-        mode: '0755'
-
     - name: Prepare database
-      shell: python3 prepare_database.py --graph-name "{{graph}}" > ansible_logs/{{ client_job_id }}.log 2>&1
+      shell: python3 prepare_database.py --graph-name "{{graph}}" > ../ansible_logs/{{ client_job_id }}.log 2>&1
       environment:
         RIAK_SERVER_URLS: "{{ riak_servers }}"
       run_once: true
       delegate_to: localhost
-      register: script_output
+      args:
+        chdir: "python_client/"
+
 
     - name: Execute client application
       command: ./run_nohup.sh {{client_job_id}} {{graph}} {{client_id}} {{num_clients}}

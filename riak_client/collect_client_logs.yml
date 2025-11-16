@@ -1,0 +1,14 @@
+---
+- name: Execute experiments on the clients
+  hosts: riak_clients
+  remote_user: agaru
+
+  vars:
+    logs_path: /opt/client_script_logs
+
+  tasks:
+    - name: Sync logs
+      fetch:
+        src: "{{logs_path}}/{{inventory_hostname}}/{{date}}/{{job_id}}.log"
+        dest: "client_script_logs/{{date}}/{{job_id}}/{{inventory_hostname}}.log"
+        flat: yes

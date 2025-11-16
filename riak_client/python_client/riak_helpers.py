@@ -9,7 +9,7 @@ import requests
 from functools import wraps
 from collections import defaultdict
 
-from .custom_logger import logger
+from custom_logger import logger
 
 # RING_SIZE = 8
 # RIAK_BASE_URL = "http://localhost:8098"
@@ -19,6 +19,7 @@ RIAK_BASE_URLS = [
 ]
 RIAK_BUCKET_PREFIX = "graph_coloring"
 RIAK_LCK_BUCKET_PREFIX = "graph_coloring_lck"
+RIAK_GRAPH_KEY_PREFIX = "graph"
 RIAK_NODE_KEY_PREFIX = "node_"
 RIAK_PETERSON_LCK_FLAG_KEY_PREFIX = "L_FLAG_"
 RIAK_PETERSON_LCK_TURN_KEY_PREFIX = "L_TURN_"
