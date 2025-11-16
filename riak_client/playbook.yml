@@ -6,6 +6,9 @@
   vars:
     deploy_path: /opt/client_app
     bucket_n_val: 3
+    bucket_r_val: quorom
+    bucket_w_val: quorom
+    bucket_dw_val: quorom
 
   tasks:
     - name: Set client-specific variables
@@ -51,6 +54,11 @@
       file:
         path: "{{ deploy_path }}/nohup_commands.sh"
         mode: '0755'
+    
+    - name: Kill existing client processes
+      command: pkill python3
+      become: yes
+      ignore_errors: yes
 
     - name: Ensure log directory exists in the host
       file:
@@ -70,10 +78,17 @@
         chdir: "python_client/"
 
     - name: Update bucket properties
-      command: >
+      shell: >
         curl -X PUT -H "Content-Type: application/json"
-        -d '{"props":{"n_val": "{{ bucket_n_val }}", "r": "{{ bucket_r_val }}", "w": "{{ bucket_w_val }}", "dw": "{{ bucket_dw_val }}"}}'
+        -d '{"props":{"n_val": {{ bucket_n_val }}, "r": {{ bucket_r_val }}, "w": {{ bucket_w_val }}, "dw": {{ bucket_dw_val }} }}'
         http://{{ groups['riak_servers'][0] }}:8098/buckets/graph_coloring__{{ graph }}/props
+      run_once: true
+      delegate_to: localhost
+      register: curl_output
+
+    - name: Print the curl output
+      debug:
+        msg: "{{ curl_output.stdout }}"
       run_once: true
       delegate_to: localhost
 
