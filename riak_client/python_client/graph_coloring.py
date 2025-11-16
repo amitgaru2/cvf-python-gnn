@@ -2,7 +2,7 @@ import time
 import argparse
 
 from client_helpers import get_partition_for_client
-from riak_helpers import (
+from riak_client.python_client.riak_helpers import (
     get_request_riak,
     get_stats,
     put_request_riak,

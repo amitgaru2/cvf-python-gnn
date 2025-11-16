@@ -4,7 +4,7 @@ from custom_logger import logger
 from graph_helpers import get_graph
 from graph_coloring import get_args_parser
 from client_helpers import get_partition_for_client
-from riak_helpers import (
+from riak_client.python_client.riak_helpers import (
     RIAK_BUCKET_PREFIX,
     RIAK_NODE_KEY_PREFIX,
     get_request_riak,

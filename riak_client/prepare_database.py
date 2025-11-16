@@ -1,7 +1,7 @@
 import sys
 import argparse
 
-from riak_helpers import (
+from python_client.riak_helpers import (
     delete_request_riak,
     get_request_riak,
     put_request_riak,
@@ -10,8 +10,8 @@ from riak_helpers import (
     RIAK_NODE_KEY_PREFIX,
 )
 
-from custom_logger import logger
-from graph_helpers import get_graph
+from python_client.custom_logger import logger
+from python_client.graph_helpers import get_graph
 
 
 def get_args_parser():

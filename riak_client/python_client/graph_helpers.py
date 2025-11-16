@@ -1,6 +1,6 @@
 import os
 
-from custom_logger import logger
+from .custom_logger import logger
 
 GRAPHS_DIR = "graphs"
 

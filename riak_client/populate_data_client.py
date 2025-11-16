@@ -3,7 +3,7 @@
 import sys
 import argparse
 
-from riak_helpers import (
+from riak_client.python_client.riak_helpers import (
     RIAK_BUCKET_PREFIX,
     get_request_riak,
     put_request_riak,

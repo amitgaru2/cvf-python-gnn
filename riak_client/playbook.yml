@@ -1,0 +1,66 @@
+---
+- name: Execute experiments on the clients
+  hosts: riak_clients
+  remote_user: agaru
+
+  vars:
+    deploy_path: /opt/client_app
+
+  tasks:
+    - name: Set client-specific variables
+      set_fact:
+        client_id: "{{ groups['riak_clients'].index(inventory_hostname) }}"
+        num_clients: "{{ groups['riak_clients'] | length }}"
+        riak_servers: "{{ groups['riak_servers'] | join(';') }}"
+
+    - name: Generate unique client job ID
+      set_fact:
+        client_job_id: "{{ lookup('pipe', 'date +%H_%M') }}_{{ 90000 | random(10000) }}"
+      run_once: true
+      delegate_to: localhost
+    
+    - name: Share client_job_id with all hosts
+      set_fact:
+        client_job_id: "{{ hostvars[groups['riak_clients'][0]].client_job_id }}"
+
+    - debug:
+        var: client_job_id
+
+    - name: Copy client files
+      become: yes
+      synchronize:
+        src: python_client/
+        dest: "{{ deploy_path }}/"
+        recursive: yes
+        delete: no
+    
+    - name: Make run_nohup.sh executable
+      file:
+        path: "{{ deploy_path }}/run_nohup.sh"
+        mode: '0755'
+    
+    - name: Make nohup_commands.sh executable
+      file:
+        path: "{{ deploy_path }}/nohup_commands.sh"
+        mode: '0755'
+
+    - name: Make client_script.sh executable
+      file:
+        path: "{{ deploy_path }}/client_script.sh"
+        mode: '0755'
+
+    - name: Prepare database
+      shell: python3 prepare_database.py --graph-name "{{graph}}" > ansible_logs/{{ client_job_id }}.log 2>&1
+      environment:
+        RIAK_SERVER_URLS: "{{ riak_servers }}"
+      run_once: true
+      delegate_to: localhost
+      register: script_output
+
+    - name: Execute client application
+      command: ./run_nohup.sh {{client_job_id}} {{graph}} {{client_id}} {{num_clients}}
+      become: yes
+      environment:
+        RIAK_SERVER_URLS: "{{ riak_servers }}"
+      args:
+        chdir: "{{ deploy_path }}"

@@ -9,13 +9,13 @@ import requests
 from functools import wraps
 from collections import defaultdict
 
-from custom_logger import logger
+from .custom_logger import logger
 
 # RING_SIZE = 8
 # RIAK_BASE_URL = "http://localhost:8098"
 RIAK_BASE_URLS = [
-    f"http://{url}"
-    for url in os.getenv("RIAK_SERVER_URLS", "localhost:8098").split(";")
+    f"http://{url}:8098"
+    for url in os.getenv("RIAK_SERVER_URLS", "localhost").split(";")
 ]
 RIAK_BUCKET_PREFIX = "graph_coloring"
 RIAK_LCK_BUCKET_PREFIX = "graph_coloring_lck"
