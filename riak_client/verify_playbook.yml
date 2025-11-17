@@ -1,0 +1,61 @@
+---
+- name: Execute experiments on the clients
+  hosts: riak_clients
+  remote_user: agaru
+
+  vars:
+    deploy_path: /opt/client_app
+   
+  tasks:
+    - name: Set client-specific variables
+      set_fact:
+        client_id: "{{ groups['riak_clients'].index(inventory_hostname) }}"
+        num_clients: "{{ groups['riak_clients'] | length }}"
+        riak_servers: "{{ groups['riak_servers'] | join(';') }}"
+
+    - name: Share client_job_id with all hosts
+      set_fact:
+        job_date: "{{ date }}"
+        client_job_id: "{{ job_id }}"
+
+
+    - name: Copy client files
+      become: yes
+      synchronize:
+        src: python_client/
+        dest: "{{ deploy_path }}/"
+        recursive: yes
+        delete: no
+    
+    - name: Copy run_nohup.sh
+      copy:
+        src: run_nohup.sh
+        dest: "{{ deploy_path }}/run_nohup.sh"
+        mode: '0755'
+   
+    - name: Copy nohup_commands.sh
+      copy:
+        src: nohup_commands.sh
+        dest: "{{ deploy_path }}/nohup_commands.sh"
+        mode: '0755'
+   
+    
+    - name: Kill existing client processes
+      command: pkill python3
+      become: yes
+      ignore_errors: yes
+
+    - name: Create client script
+      copy:
+        dest: "{{deploy_path}}/client_script.sh"
+        content: |
+          python3 verify_graph_coloring.py --graph-name "$GraphName" --client-id "$ClientID" --num-clients "$NoOfClients"
+          echo -e "\nDone execution...\n"
+          
+    - name: Execute client application
+      command: ./run_nohup.sh {{client_job_id}}_verify {{job_date}} {{graph}} {{client_id}} {{num_clients}}
+      become: yes
+      environment:
+        RIAK_SERVER_URLS: "{{ riak_servers }}"
+      args:
+        chdir: "{{ deploy_path }}"

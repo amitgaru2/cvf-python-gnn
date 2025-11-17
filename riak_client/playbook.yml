@@ -45,15 +45,24 @@
         recursive: yes
         delete: no
     
-    - name: Make run_nohup.sh executable
-      file:
-        path: "{{ deploy_path }}/run_nohup.sh"
+    - name: Copy run_nohup.sh
+      copy:
+        src: run_nohup.sh
+        dest: "{{ deploy_path }}/run_nohup.sh"
         mode: '0755'
-    
-    - name: Make nohup_commands.sh executable
-      file:
-        path: "{{ deploy_path }}/nohup_commands.sh"
+   
+    - name: Copy nohup_commands.sh
+      copy:
+        src: nohup_commands.sh
+        dest: "{{ deploy_path }}/nohup_commands.sh"
         mode: '0755'
+
+    - name: Create client script
+      copy:
+        dest: "{{deploy_path}}/client_script.sh"
+        content: |
+          python3 graph_coloring.py --graph-name "$GraphName" --client-id "$ClientID" --num-clients "$NoOfClients"
+          echo -e "\nDone execution...\n"
     
     - name: Kill existing client processes
       command: pkill python3
@@ -97,7 +106,7 @@
         seconds: 10
 
     - name: Execute client application
-      command: ./run_nohup.sh {{client_job_id}} {{graph}} {{client_id}} {{num_clients}}
+      command: ./run_nohup.sh {{client_job_id}} {{job_date}} {{graph}} {{client_id}} {{num_clients}}
       become: yes
       environment:
         RIAK_SERVER_URLS: "{{ riak_servers }}"

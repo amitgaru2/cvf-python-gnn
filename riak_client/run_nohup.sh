@@ -3,18 +3,21 @@ set -eu
 export PYTHONDONTWRITEBYTECODE=1
 
 jobID="$1"
-GraphName="$2"
-ClientId="$3"
-NoOfClients="$4"
+jobStartDate="$2"
+GraphName="$3"
+ClientId="$4"
+NoOfClients="$5"
+
 echo "Job ID: ""$jobID"
+echo "Job Start Date: ""$jobStartDate"
 echo "Graph Name: ""$GraphName"
 echo "Client ID: ""$ClientId"
 echo "Number of Clients: ""$NoOfClients"
 echo "RIAK_SERVER_URLS: ""$RIAK_SERVER_URLS"
 
-dateDir=$(date +"%y_%m_%d")
+# dateDir=$(date +"%y_%m_%d")
 hostName=$(hostname | sed 's/\./_/g')
-logLocationDir="../client_script_logs/${hostName}/${dateDir}/"
+logLocationDir="../client_script_logs/${hostName}/${jobStartDate}/"
 mkdir -p "$logLocationDir"
 logLocation="${logLocationDir}""$jobID"".log"
 
