@@ -1,0 +1,8 @@
+{application, riak_client_project, [
+    {description, "Riak Client Project"},
+    {vsn, "0.1.0"},
+    {registered, []},
+    {applications, [kernel, stdlib]},
+    {mod, {riak_client_app, []}},
+    {env, []}
+]}.

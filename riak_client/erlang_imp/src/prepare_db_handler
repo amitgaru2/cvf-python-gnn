@@ -1,0 +1,5 @@
+#!/usr/bin/env escript
+%%! -smp enable -sname prepare_db_handler
+
+main(Args) ->
+    ok.

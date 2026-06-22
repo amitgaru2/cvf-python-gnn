@@ -1,0 +1,161 @@
+import time
+import argparse
+
+from client_helpers import get_partition_for_client
+from riak_helpers import (
+    get_request_riak,
+    get_stats,
+    put_request_riak,
+    RIAK_GRAPH_KEY_PREFIX,
+    RIAK_NODE_KEY_PREFIX,
+    RIAK_BUCKET_PREFIX,
+    RIAK_LCK_BUCKET_PREFIX,
+    RIAK_PETERSON_LCK_FLAG_KEY_PREFIX,
+    RIAK_PETERSON_LCK_TURN_KEY_PREFIX,
+)
+
+
+from custom_logger import logger
+
+
+def get_args_parser():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--graph-name",
+        type=str,
+        required=True,
+    )
+
+    parser.add_argument(
+        "--client-id",
+        type=int,
+        required=True,
+    )
+
+    parser.add_argument(
+        "--num-clients",
+        type=int,
+        required=True,
+    )
+
+    args = parser.parse_args()
+
+    return args
+
+
+def get_i_j_ordering(node, nbr):
+    (i, j) = (node, nbr) if node < nbr else (nbr, node)
+    return (i, j)
+
+
+def get_pet_lock(node, nbr):
+    side = node
+    other_side = nbr
+    (i, j) = get_i_j_ordering(node, nbr)
+    logger.info(f"Acquiring lock for edge ({i}, {j}) by node {side}.")
+    put_request_riak(
+        RIAK_LCK_BUCKET_NAME, f"{RIAK_PETERSON_LCK_FLAG_KEY_PREFIX}{i}_{j}_{side}", True
+    )
+    put_request_riak(
+        RIAK_LCK_BUCKET_NAME, f"{RIAK_PETERSON_LCK_TURN_KEY_PREFIX}{i}_{j}", side
+    )
+    while True:
+        turn = get_request_riak(
+            RIAK_LCK_BUCKET_NAME, f"{RIAK_PETERSON_LCK_TURN_KEY_PREFIX}{i}_{j}"
+        )
+        flag_otherside = get_request_riak(
+            RIAK_LCK_BUCKET_NAME,
+            f"{RIAK_PETERSON_LCK_FLAG_KEY_PREFIX}{i}_{j}_{other_side}",
+        )  # None if the key not found in the bucket
+        if turn == side and flag_otherside is True:
+            continue  # wait
+        else:
+            break
+
+    return True
+
+
+def release_pet_lock(node, nbr):
+    side = node
+    (i, j) = get_i_j_ordering(node, nbr)
+    logger.info(f"Releasing lock for edge ({i}, {j}) by node {side}.")
+    put_request_riak(
+        RIAK_LCK_BUCKET_NAME,
+        f"{RIAK_PETERSON_LCK_FLAG_KEY_PREFIX}{i}_{j}_{side}",
+        False,
+    )
+
+
+def check_all_members_of(lst, *values):
+    return not (set(values) - set(lst))
+
+
+def get_lexically_ordered_neighbors(node):
+    neighbors = get_request_riak(
+        RIAK_BUCKET_NAME, f"{RIAK_NODE_KEY_PREFIX}{node}__meta"
+    )["nbrs"]
+    neighbors.sort()
+    for nbr in neighbors:
+        yield nbr
+
+
+def take_step_each_node(node):
+    neighbor_colors = set()
+    lock_acquired_for = []
+    self_color = get_request_riak(
+        RIAK_BUCKET_NAME, f"{RIAK_NODE_KEY_PREFIX}{node}__val"
+    )
+    degree_of_node = 0
+    for nbr in get_lexically_ordered_neighbors(node):
+        lock_req = nbr not in CLIENT_NODES
+        if lock_req:
+            get_pet_lock(node, nbr)
+            lock_acquired_for.append(nbr)
+
+        nbr_color = get_request_riak(
+            RIAK_BUCKET_NAME,
+            f"{RIAK_NODE_KEY_PREFIX}{nbr}__val",
+        )
+        neighbor_colors.add(nbr_color)
+        degree_of_node += 1
+
+    if self_color in neighbor_colors:
+        new_color = min({k for k in range(degree_of_node + 1)} - neighbor_colors)
+        put_request_riak(
+            RIAK_BUCKET_NAME,
+            f"{RIAK_NODE_KEY_PREFIX}{node}__val",
+            new_color,
+        )
+
+    # release locks
+    for nbr in lock_acquired_for:
+        release_pet_lock(node, nbr)
+
+
+def take_step():
+    for node in CLIENT_NODES:
+        take_step_each_node(node)
+
+
+def main():
+    take_step()
+
+
+if __name__ == "__main__":
+    start_time = time.time()
+    args = get_args_parser()
+    graph_name = args.graph_name
+    if args.client_id >= args.num_clients or args.client_id < 0:
+        raise Exception("Client ID must be in the range [0, num_clients-1].")
+    client_id = args.client_id
+    num_clients = args.num_clients
+    RIAK_BUCKET_NAME = f"{RIAK_BUCKET_PREFIX}__{graph_name}"
+    RIAK_LCK_BUCKET_NAME = f"{RIAK_LCK_BUCKET_PREFIX}__{graph_name}"
+    graph = get_request_riak(RIAK_BUCKET_NAME, f"{RIAK_GRAPH_KEY_PREFIX}__meta")
+    CLIENT_NODES = get_partition_for_client(graph["num_nodes"], client_id, num_clients)
+    logger.info(f"Client {client_id} handling nodes: {CLIENT_NODES}.")
+
+    logger.info(f"Using Riak bucket: {RIAK_BUCKET_NAME}")
+    main()
+    get_stats()
+    logger.info(f"Total time taken: {time.time() - start_time} seconds.")

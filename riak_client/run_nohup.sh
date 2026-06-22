@@ -1,0 +1,34 @@
+#!/bin/bash
+set -eu
+export PYTHONDONTWRITEBYTECODE=1
+
+jobID="$1"
+jobStartDate="$2"
+GraphName="$3"
+ClientId="$4"
+NoOfClients="$5"
+
+echo "Job ID: ""$jobID"
+echo "Job Start Date: ""$jobStartDate"
+echo "Graph Name: ""$GraphName"
+echo "Client ID: ""$ClientId"
+echo "Number of Clients: ""$NoOfClients"
+echo "RIAK_SERVER_URLS: ""$RIAK_SERVER_URLS"
+
+# dateDir=$(date +"%y_%m_%d")
+hostName=$(hostname | sed 's/\./_/g')
+logLocationDir="../client_script_logs/${hostName}/${jobStartDate}/"
+mkdir -p "$logLocationDir"
+logLocation="${logLocationDir}""$jobID"".log"
+
+echo "Log location: ""$logLocation"
+
+commanLocation="nohup_commands.sh"
+tempFileLocation="temp.sh"
+cp ${commanLocation} ${tempFileLocation}
+sed -i '2,${/^#/d}' ${tempFileLocation}
+sed -i '/^$/d' ${tempFileLocation}
+chmod +x ${tempFileLocation}
+
+echo "Started at : "$(date)
+nohup ./${tempFileLocation} ${GraphName} ${ClientId} ${NoOfClients} > "$logLocation" 2>&1 <&- &
